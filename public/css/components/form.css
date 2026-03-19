@@ -1,0 +1,152 @@
+/* training_edit.css */
+.scrollable-form-container {
+    height: 100%;
+    border-radius: 15px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.form-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.form-header img {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.form-section {
+    margin-bottom: 40px;
+}
+
+.form-section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #34495e;
+    border-left: 4px solid #0d6efd;
+    padding-left: 12px;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-col {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 250px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #f9f9f9;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.form-actions {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.date-pair-container {
+    display: flex;
+    position: relative;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.date-pair-container.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.remove-date {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 18px;
+    color: #dc3545;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .form-col {
+        flex: 1 1 100%;
+    }
+}
+
+#trainings-informations {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 0;
+}
+
+.file-upload-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+.file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.file-upload-area {
+    border: 2px dashed #d1d1d1;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.file-upload-area:hover {
+    border-color: #0d6efd;
+    background-color: #e9f0ff;
+}
+
+.browse-link {
+    color: #0d6efd;
+    text-decoration: underline;
+    cursor: pointer;
+}

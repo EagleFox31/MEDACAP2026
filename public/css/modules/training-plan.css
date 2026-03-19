@@ -1,0 +1,119 @@
+/* Background overlay */
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(10px);
+    transform: scale(1.05);
+    background-image:
+            linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1)),
+            url('../../images/welc_tech.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 25px;
+    z-index: 0;
+}
+
+.content-container {
+    position: relative;
+    z-index: 1;
+    border-radius: 25px;
+    overflow: hidden;
+    padding: 10px;
+}
+
+/* Masque la scrollbar mais garde le scroll vertical actif */
+.scrollable-vertical {
+    -ms-overflow-style: none;  /* IE et Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scrollable-vertical::-webkit-scrollbar {
+    width: 0px;                /* Chrome, Safari, Opera */
+    background: transparent;   /* facultatif, pour s’assurer qu’elle est invisible */
+}
+
+
+/* Styles spécifiques pour les filtres */
+.filter-header, .training-header {
+    background: linear-gradient(135deg, rgb(248, 250, 251) 0%, rgb(250, 251, 251) 100%) !important;
+    color: #333 !important;
+    text-align: center !important;
+    padding: 1rem !important;
+}
+
+.filter-header h5, .training-header h5 {
+    color: #333 !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
+    margin: 0 auto !important;
+}
+
+/* Styles pour les cartes de statistiques */
+.card.bg-light-primary { background-color: rgba(59, 130, 246, 0.1) !important; }
+.card.bg-light-warning { background-color: rgba(245, 158, 11, 0.1) !important; }
+.card.bg-light-success { background-color: rgba(16, 185, 129, 0.1) !important; }
+.card.bg-light-danger { background-color: rgba(239, 68, 68, 0.1) !important; }
+
+.icon-shape {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.icon-shape.bg-primary { background-color: var(--cfao-green) !important; }
+.icon-shape.bg-warning { background-color: #f59e0b !important; }
+.icon-shape.bg-success { background-color: #10b981 !important; }
+.icon-shape.bg-danger { background-color: var(--cfao-red) !important; }
+
+/* Adaptations pour les écrans mobiles */
+@media (max-width: 992px) {
+    .row {
+        flex-direction: column-reverse;
+    }
+
+    .col-lg-3 {
+        margin-bottom: 20px;
+    }
+
+    .card.glass-effect {
+        min-height: auto;
+    }
+}
+
+/* Optimisations */
+.glass-effect {
+    will-change: transform, box-shadow;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Éviter les animations coûteuses sur les éléments cachés */
+.detail-row:not(.active) {
+    display: none;
+}
+
+/* Limiter les repaints */
+.progress-bar {
+    will-change: width;
+}
+
+.table-responsive{
+    height: 1000px;
+}
+
+.badge-light-success { background-color: #E8F5E9; color: #2E7D32; }
+.badge-light-danger { background-color: #FFEBEE; color: #C62828; }
+.badge-light-warning { background-color: #FFF8E1; color: #F57F17; }
+
+/* Ajouter ces styles pour l'adaptation du calendrier */
+#kt_calendar_app .fc {
+    height: 100% !important;
+}
+#kt_calendar_app .fc-view-harness {
+    flex: 1;
+    min-height: 0;
+}

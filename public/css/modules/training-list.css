@@ -1,0 +1,17 @@
+/* Background overlay */
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(10px);
+    transform: scale(1.05);
+    background-image:
+            linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1)),
+            url('../../images/welc_tech.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 25px;
+    z-index: 0;
+}

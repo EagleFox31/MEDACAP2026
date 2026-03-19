@@ -1,0 +1,40 @@
+# Dependencies
+/vendor/
+
+# Logs
+*.log
+/logs/
+
+# Environment / config sensible
+.env
+config.local.php
+
+# PHP cache
+*.cache
+/tmp/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads utilisateurs (binaires lourds, pas dans git)
+/public/uploads/
+/public/logos/custom/
+
+# Claude Code
+.claude/
+
+# Scripts de debug temporaires
+fix_dashboard.php
+fix_dashboard.py
+check_coll.php
+check_data.php
+check_deploys.php
+check_subs.php
+check_subs_hierarchy.php
+check_user_fields.php

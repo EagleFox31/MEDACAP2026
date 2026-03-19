@@ -1,0 +1,1 @@
+{"$and":[{"profile":"Manager","active":true},{"_id":{"$oid":"663a4ed5fa7700005400266e"}}]}

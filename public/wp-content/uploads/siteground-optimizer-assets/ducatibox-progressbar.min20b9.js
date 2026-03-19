@@ -1,0 +1,1 @@
+(function(a){"use strict";var b=function(a,b){elementorFrontend.waypoint(a.find('.pxl--progressbar'),function(){b(this).progressbar()})};a(window).on('elementor/frontend/init',function(){elementorFrontend.hooks.addAction('frontend/element_ready/pxl_progressbar.default',b)})})(jQuery)

@@ -1,0 +1,109 @@
+/**
+ * MEDACAP Background Manager
+ * Centralized background styling system
+ */
+
+/* Base container for the page background */
+.page-background-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 25px;
+}
+
+/* Background overlay with blur effect */
+.page-background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(10px);
+    transform: scale(1.05);  /* Prevents blur edges from showing */
+    background-size: cover;
+    background-position: center;
+    border-radius: 25px;
+    z-index: 0;
+}
+
+/* Gradient overlay options */
+.page-background-overlay.with-gradient {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1)), var(--bg-image-url);
+}
+
+.page-background-overlay.without-gradient {
+    background-image: var(--bg-image-url);
+}
+
+/* Content container - sits above the background */
+.page-content-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    padding: 20px;
+}
+
+/* Background image classes */
+.bg-welcome-tech {
+    --bg-image-url: url('../../public/images/welcome_tech.png');
+}
+
+.bg-welcome {
+    --bg-image-url: url('../../public/images/welcome.jpg');
+}
+
+.bg-dashboard {
+    --bg-image-url: url('../../public/images/tof_dashboard_tech.png');
+}
+
+.bg-training {
+    --bg-image-url: url('../../public/images/training_bg.jpg');
+}
+
+.bg-quiz {
+    --bg-image-url: url('../../public/images/quiz_bg.jpg');
+}
+
+/* Custom backgrounds - specify inline with style attribute */
+.bg-custom {
+    /* Will use the --bg-image-url custom property set inline */
+    /* Usage: <div class="page-background-overlay bg-custom" style="--bg-image-url: url('path/to/image.jpg')"></div> */
+}
+
+/* Customization options */
+.blur-none {
+    filter: none;
+}
+
+.blur-light {
+    filter: blur(5px);
+}
+
+.blur-heavy {
+    filter: blur(15px);
+}
+
+/* Darker gradient option */
+.with-gradient.darker {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3)), var(--bg-image-url);
+}
+
+/* Lighter gradient option */
+.with-gradient.lighter {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.05)), var(--bg-image-url);
+}
+
+/* Additional padding options for content container */
+.page-content-container.padding-small {
+    padding: 10px;
+}
+
+.page-content-container.padding-large {
+    padding: 30px;
+}
+
+.page-content-container.padding-none {
+    padding: 0;
+}

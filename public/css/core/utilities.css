@@ -1,0 +1,112 @@
+/* Effets de carte */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+    border-radius: 15px !important;
+    transition: var(--transition) !important;
+}
+
+.glass-effect:hover {
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.2) !important;
+    transform: translateY(-3px) !important;
+}
+
+.depth-effect {
+    transform: translateZ(0);
+    box-shadow: var(--shadow-large) !important;
+    transition: var(--transition) !important;
+}
+
+.depth-effect:hover {
+    transform: translateY(-5px) translateZ(0);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Boutons */
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.custom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.12);
+    transition: all 0.3s ease;
+    flex: 1 1 auto;
+    min-width: 80px;
+    color: var(--cfao-white);
+}
+
+.custom-btn:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+    transform: scale(1.05);
+}
+
+.custom-btn:active {
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
+    transform: scale(1);
+}
+
+.custom-btn.positive {
+    background-color: var(--cfao-green);
+}
+
+.custom-btn.positive:hover {
+    background-color: #2563eb;
+}
+
+.custom-btn.negative {
+    background-color: var(--cfao-red);
+}
+
+.custom-btn.negative:hover {
+    background-color: #a20b11;
+}
+
+.custom-btn.neutral {
+    background-color: var(--cfao-white);
+    color: var(--cfao-red);
+    border: 2px solid var(--cfao-red);
+}
+
+.custom-btn.neutral:hover {
+    background-color: #ffe5e6;
+}
+.ui-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+}
+
+.toast-content {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    backdrop-filter: blur(8px);
+    color: white;
+    font-weight: 500;
+}

@@ -1,0 +1,1015 @@
+:root {
+    /* Couleurs de l'entreprise */
+    --primary-black: #1a1a1a;
+    --primary-red: #dc2626;
+    --primary-navy: #1e3a8a;
+    --secondary-navy: #3b82f6;
+    --light-gray: #f8fafc;
+    --medium-gray: #64748b;
+    --dark-gray: #334155;
+    --white: #ffffff;
+    --border-color: #e2e8f0;
+    --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Effet de glassmorphisme pour les cartes */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
+    border-radius: 15px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Effet hover sur les titres */
+.glass-effect:hover {
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.2) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Style pour les titres dans les cartes glassmorphisme */
+.glass-effect h1,
+.glass-effect h2 {
+    color: var(--primary-black) !important;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Effet de profondeur pour les cartes */
+.depth-effect {
+    transform: translateZ(0);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 12px 20px -2px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.depth-effect:hover {
+    transform: translateY(-5px) translateZ(0);
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05),
+        0 20px 25px -5px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Reset et base */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--primary-black);
+    line-height: 1.6;
+}
+
+/* Conteneur principal */
+.content {
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.container-fluid {
+    max-width: 1400px;
+    /* Restored max-width for better readability */
+    margin: 0 auto;
+    padding: 1rem;
+    /* Reduced padding for more content space */
+}
+
+/* Titre principal */
+h1 {
+    color: var(--primary-black);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+}
+
+/* Cards principales */
+.card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.card:hover {
+    box-shadow:
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    transform: translateY(-8px);
+}
+
+/* Stats cards spécifiques - Style compact horizontal */
+.stats-card {
+    border-radius: var(--border-radius);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 4px 20px 0 rgba(0, 0, 0, 0.1),
+        0 1px 5px 0 rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    overflow: hidden;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Styles spécifiques pour les cartes KPI du dashboard */
+.kpi-card-trainings {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 193, 7, 0.2)) !important;
+    border: 1px solid rgba(255, 193, 7, 0.6) !important;
+}
+
+.kpi-card-validated {
+    background: linear-gradient(135deg, rgba(2, 117, 216, 0.4), rgba(2, 117, 216, 0.2)) !important;
+    border: 1px solid rgba(2, 117, 216, 0.6) !important;
+}
+
+/* Nombres plus gros pour les cartes KPI */
+#kpiRow .big-number {
+    font-size: 2.2rem !important;
+    font-weight: 900 !important;
+}
+
+/* Textes et icônes en blanc pour les cartes KPI */
+.kpi-card-trainings .card-body,
+.kpi-card-validated .card-body,
+.kpi-card-trainings .card-header-bg,
+.kpi-card-validated .card-header-bg {
+    color: white !important;
+}
+
+.kpi-card-trainings .card-body .fas,
+.kpi-card-validated .card-body .fas {
+    color: white !important;
+}
+
+.kpi-card-trainings .card-body .big-number,
+.kpi-card-validated .card-body .big-number {
+    color: white !important;
+}
+
+.kpi-card-trainings .card-body div[style*="color:black"],
+.kpi-card-validated .card-body div[style*="color:black"] {
+    color: white !important;
+}
+
+.kpi-card-trainings .card-body div,
+.kpi-card-validated .card-body div {
+    color: white !important;
+}
+
+.kpi-card-trainings .card-header-bg h5,
+.kpi-card-validated .card-header-bg h5 {
+    color: white !important;
+}
+
+/* Au hover, revenir au noir pour la lisibilité */
+.kpi-card-trainings:hover .card-body,
+.kpi-card-validated:hover .card-body,
+.kpi-card-trainings:hover .card-header-bg,
+.kpi-card-validated:hover .card-header-bg {
+    color: black !important;
+}
+
+.kpi-card-trainings:hover .card-body .fas,
+.kpi-card-validated:hover .card-body .fas {
+    color: black !important;
+}
+
+.kpi-card-trainings:hover .card-body .big-number,
+.kpi-card-validated:hover .card-body .big-number {
+    color: black !important;
+}
+
+.kpi-card-trainings:hover .card-body div[style*="color:black"],
+.kpi-card-validated:hover .card-body div[style*="color:black"] {
+    color: black !important;
+}
+
+.kpi-card-trainings:hover .card-body div,
+.kpi-card-validated:hover .card-body div {
+    color: black !important;
+}
+
+.kpi-card-trainings:hover .card-header-bg h5,
+.kpi-card-validated:hover .card-header-bg h5 {
+    color: black !important;
+}
+
+.stats-card:hover {
+    box-shadow:
+        0 15px 30px 0 rgba(0, 0, 0, 0.1),
+        0 5px 15px 0 rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(30, 58, 138, 0.2) inset;
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(30, 58, 138, 0.3);
+}
+
+.stats-card .card-body {
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.stats-card .big-number {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary-black);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.03em;
+}
+
+.stats-card .card-title-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-black);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0;
+    line-height: 1.1;
+}
+
+
+
+
+/* En-têtes de cards - Supprimées pour les stats cards */
+.card-header-bg {
+    background: linear-gradient(135deg, var(--primary-black) 0%, var(--primary-navy) 100%);
+    color: var(--white);
+    padding: 0.75rem 1rem;
+    border: none;
+    margin: 0;
+}
+
+.card-header-bg h5 {
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0;
+}
+
+/* Style pastel pour les en-têtes de filtre et formations */
+.filter-header,
+.training-header {
+    background: linear-gradient(135deg, rgb(248, 250, 251) 0%, rgb(250, 251, 251) 100%) !important;
+    color: #333 !important;
+    text-align: center !important;
+    padding: 1rem !important;
+}
+
+.filter-header h5,
+.training-header h5 {
+    color: #333 !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
+    margin: 0 auto !important;
+}
+
+/* Headers cachés pour les stats cards */
+.stats-card .card-header-bg {
+    display: none;
+}
+
+/* Corps des cards */
+.card-body {
+    padding: 0.75rem;
+}
+
+/* Grands chiffres */
+.big-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-black);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* Badges et indicateurs */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.badge.bg-info {
+    background-color: var(--secondary-navy) !important;
+    color: var(--white);
+}
+
+.badge.bg-secondary {
+    background-color: var(--medium-gray) !important;
+    color: var(--white);
+}
+
+.badge.bg-dark {
+    background-color: var(--primary-black) !important;
+    color: var(--white);
+}
+
+.bg-navy {
+    background-color: var(--primary-navy) !important;
+    color: var(--white);
+}
+
+.badge.bg-success {
+    background-color: var(--primary-red) !important;
+    color: var(--white);
+}
+
+/* Barres de progression */
+.progress {
+    height: 16px;
+    /* Increased height from 8px to 16px */
+    background-color: #333333;
+    /* Darker gray background */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-red) 0%, var(--primary-navy) 100%);
+    transition: width 1s ease-in-out;
+    border-radius: 8px;
+    font-size: 14px;
+    /* Larger percentage text */
+    font-weight: bold;
+    line-height: 16px;
+    /* Match the new height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-bar.bg-success {
+    background: linear-gradient(90deg, var(--primary-red) 0%, var(--primary-navy) 100%);
+}
+
+.progress-bar.bg-warning {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+}
+
+.progress-bar.bg-danger {
+    background: linear-gradient(90deg, var(--primary-red) 0%, #b91c1c 100%);
+}
+
+.progress-bar.bg-secondary {
+    background: rgb(16, 16, 16) !important;
+    color: var(--white);
+}
+
+/* Texte secondaire */
+.text-muted {
+    color: var(--primary-navy) !important;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Boutons */
+.btn {
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+    color: var(--white);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-large);
+    color: var(--white);
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--border-color);
+    color: var(--dark-gray);
+    background: var(--white);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--primary-black);
+    color: var(--white);
+    border-color: var(--primary-black);
+}
+
+/* Style personnalisé pour le bouton "Appliquer les filtres" */
+#applyFiltersButton,
+#applyFiltersButton.btn,
+#applyFiltersButton.btn-primary {
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+#applyFiltersButton:hover,
+#applyFiltersButton.btn:hover,
+#applyFiltersButton.btn-primary:hover {
+    background-color: #f8f9fa !important;
+    background-image: none !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    color: black !important;
+}
+
+#applyFiltersButton .ki-duotone,
+#applyFiltersButton .ki-duotone .path1,
+#applyFiltersButton .ki-duotone .path2 {
+    color: black !important;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-navy);
+    color: var(--primary-navy);
+    background: var(--white);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-navy);
+    color: var(--white);
+}
+
+/* Formulaires */
+.form-control,
+.form-select {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--primary-black);
+    background-color: var(--white);
+    transition: var(--transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-navy);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    outline: none;
+}
+
+/* Tableaux */
+.table {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+}
+
+.table th {
+    background-color: var(--light-gray);
+    color: var(--primary-black);
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    padding: 1rem;
+    border: none;
+}
+
+.table td {
+    padding: 1rem;
+    color: var(--primary-black);
+    font-weight: 500;
+    border-color: var(--border-color);
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>td {
+    background-color: rgba(248, 250, 252, 0.5);
+}
+
+.table-hover>tbody>tr:hover>td {
+    background-color: rgba(30, 58, 138, 0.05);
+}
+
+/* Indicateurs de niveau */
+.level-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Conteneurs de graphiques */
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    padding: 0.75rem;
+}
+
+.double-doughnut-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto;
+}
+
+/* Panel de filtres */
+.filter-panel {
+    background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-light);
+}
+
+/* États des filtres */
+.filter-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.filter-locked {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.filter-locked::after {
+    content: "🔒";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner-border {
+    color: var(--primary-navy);
+}
+
+.spinner-grow {
+    color: var(--primary-navy);
+}
+
+/* Overlay de chargement */
+#loadingOverlay {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes highlight-success {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
+
+.highlight-update {
+    animation: highlight-success 1.5s ease;
+}
+
+/* Couleurs spécifiques pour les graphiques */
+.chart-primary {
+    color: var(--primary-navy);
+}
+
+.chart-secondary {
+    color: var(--primary-red);
+}
+
+.chart-tertiary {
+    color: var(--primary-black);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+        max-width: calc(100% - 1rem);
+        margin: 0 0.5rem;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    .big-number {
+        font-size: 1.5rem;
+    }
+
+    .stats-card .big-number {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Améliorations pour l'accessibilité */
+.card:focus-within {
+    outline: 2px solid var(--primary-navy);
+    outline-offset: 2px;
+}
+
+/* Styles pour les états de succès/erreur */
+.border-success {
+    border-color: var(--primary-red) !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+/* Typographie améliorée */
+strong {
+    color: var(--primary-black);
+    font-weight: 600;
+}
+
+/* Espacements cohérents */
+.mb-4 {
+    margin-bottom: 0.75rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.25rem !important;
+}
+
+.mb-5 {
+    margin-bottom: 1rem !important;
+}
+
+/* Style pour les icônes spécifiquement dans les cartes du dashboard */
+.card .ki-duotone,
+.card .fas,
+.card .far {
+    color: black !important;
+}
+
+/* Assurez-vous que tous les chemins de l'icône sont aussi noirs */
+.card .ki-duotone .path1,
+.card .ki-duotone .path2,
+.card .ki-duotone .path3,
+.card .ki-duotone .path4 {
+    color: black !important;
+}
+
+/* Style spécifique pour les icônes dans les titres de carte */
+.card-title .ki-duotone,
+.chart-title .ki-duotone,
+h1 .ki-duotone,
+h2 .ki-duotone {
+    color: black !important;
+}
+
+/* Conteneur de stats en ligne */
+.stats-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    flex: 0 0 280px;
+    /* 0 shrink | 0 grow | 280px basis  */
+    max-width: 280px;
+}
+
+.stats-row .stats-card {
+    flex: 1;
+    min-width: 250px;
+}
+
+@media (max-width: 768px) {
+    .stats-row {
+        flex-direction: column;
+    }
+
+    .stats-row .stats-card {
+        max-width: none;
+    }
+}
+
+/* Styles pour histogrammes */
+/* Style pour les histogrammes ApexCharts */
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+.test-levels-chart {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    margin-left: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow:
+        0 4px 20px 0 rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    transition: all 0.3s ease;
+}
+
+.test-levels-chart:hover {
+    box-shadow:
+        0 8px 30px 0 rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    transform: translateY(-3px);
+}
+
+.chart-title {
+    text-align: center;
+    background: white;
+    color: #333;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Shadow custom pour les éléments importants */
+.elevated {
+    box-shadow: var(--shadow-large);
+}
+
+/* Améliorations pour le contraste */
+.text-contrast {
+    color: var(--primary-black);
+    font-weight: 600;
+}
+
+/* 1.  Crée (ou sur-écrit) une teinte plus dark */
+.bg-charcoal {
+    --bs-progress-bar-bg: #374151;
+    /* slate-700 style */
+    color: #fff;
+    /* texte toujours lisible */
+}
+
+/* Style pour le tooltip personnalisé */
+.custom-tooltip {
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 5px;
+    margin-bottom: 30px;
+    /* Plus d'espace en bas pour le tooltip */
+    position: relative;
+    z-index: 999;
+    pointer-events: none;
+    /* Empêche les interactions avec le tooltip */
+}
+
+/* Ajout d'une flèche au tooltip */
+.custom-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid rgba(0, 0, 0, 0.85);
+}
+
+/* Assurez-vous que le tooltip est toujours au-dessus des autres éléments */
+.apexcharts-tooltip {
+    z-index: 1000 !important;
+    top: -70px !important;
+    /* Force le tooltip à s'afficher au-dessus */
+    overflow: visible !important;
+}
+
+.apexcharts-tooltip-title {
+    display: none !important;
+}
+
+/* Masquer les tooltips par défaut d'ApexCharts */
+.apexcharts-tooltip-text-y-value,
+.apexcharts-tooltip-text-y-label {
+    display: none !important;
+}
+
+/* Style for technician-specific indicators */
+.technician-specific-notice {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.technician-specific-notice:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.histogram-card .histogram {
+  background:#fff;
+  border-radius:6px;   /* même rayon que le bar chart */
+  padding:0.5rem;      /* padding réduit */
+}
+
+/* Padding spécifique pour les cartes d'histogrammes */
+.histogram-card .card-body {
+    padding: 0.5rem !important;
+}
+
+
+
+
+
+/* Ajustements supplémentaires pour un affichage compact */
+@media (max-width: 1400px) {
+    .container-fluid {
+        max-width: calc(100% - 1rem);
+        padding: 0.75rem;
+        margin: 0 0.5rem;
+    }
+    
+    /* Force les cartes à être plus petites sur les écrans moyens */
+    .stats-card {
+        min-height: 80px !important;
+    }
+    
+    .stats-card .big-number {
+        font-size: 1.25rem !important;
+    }
+    
+    .stats-card .card-title-text {
+        font-size: 0.7rem !important;
+    }
+    
+    /* Réduction des marges */
+    .mb-5 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .mt-5 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    /* Ajustement des graphiques */
+    .chart-container {
+        height: 250px !important;
+    }
+    
+    .histogram {
+        height: 250px !important;
+    }
+    
+    /* Titres plus petits */
+    h1, h2, h3, h4, h5 {
+        font-size: 1rem !important;
+    }
+    
+    /* Supprimé la règle de grille pour permettre flex-nowrap */
+}
+
+/* Force l'affichage en colonnes sur mobile */
+@media (max-width: 992px) {
+    .row {
+        margin: 0 !important;
+    }
+    
+    .col-md-9, .col-md-3 {
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Panneau de filtres en bas sur mobile */
+    .col-md-3 {
+        order: 2;
+        margin-top: 1rem;
+    }
+}
+
+/* Ajustements pour éviter le débordement */
+.overflow-auto {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
+
+/* Force les cartes à ne pas dépasser */
+.flex-grow-1 {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+/* Marges pour les cartes de titre */
+.card.depth-effect.mb-5,
+.card.glass-effect.depth-effect.mb-5 {
+    margin-left: 0.25rem !important;
+    margin-right: 0.25rem !important;
+}
+
+/* Sur mobile, réduire les marges des titres */
+@media (max-width: 768px) {
+    .card.depth-effect.mb-5,
+    .card.glass-effect.depth-effect.mb-5 {
+        margin-left: 0.5rem !important;
+        margin-right: 0.5rem !important;
+    }
+}
