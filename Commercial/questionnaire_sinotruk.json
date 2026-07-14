@@ -1,0 +1,139 @@
+{
+  "questionnaire_FR": "QUESTIONNAIRE COMMERCIAL SINOTRUK",
+  "questionnaire_EN": "SALES ASSESSMENT: SINOTRUK",
+  "brand": "SINOTRUK",
+  "sections": [
+    {
+      "section_FR": "CONNAISSANCE GÉNÉRALE",
+      "section_EN": "GENERAL KNOWLEDGE",
+      "questions": [
+        {
+          "id": "s_gen_1",
+          "minChars": 10,
+          "text_FR": "Qui sommes-nous ?",
+          "text_EN": "Who are we?"
+        },
+        {
+          "id": "s_gen_2",
+          "minChars": 10,
+          "text_FR": "Quelles sont les valeurs de CFAO ?",
+          "text_EN": "What are CFAO's core values?"
+        },
+        {
+          "id": "s_gen_3",
+          "minChars": 15,
+          "text_FR": "Quelle est l'importance de mettre en place une organisation comme la nôtre ?",
+          "text_EN": "Why is it important to have an organisation like ours?"
+        },
+        {
+          "id": "s_gen_4",
+          "minChars": 15,
+          "text_FR": "Que souhaitez-vous changer dans notre organisation ? Pourquoi ?",
+          "text_EN": "What would you like to change in our organisation? Why?"
+        },
+        {
+          "id": "s_gen_5",
+          "minChars": 10,
+          "text_FR": "Pourquoi acheter un véhicule chez CFAO ?",
+          "text_EN": "Why purchase a vehicle from CFAO?"
+        },
+        {
+          "id": "s_gen_6",
+          "minChars": 10,
+          "text_FR": "Quel est le délai de réception d'un matériel dont la commande est passée en juin ?",
+          "text_EN": "What is the delivery lead time for equipment ordered in June?"
+        },
+        {
+          "id": "s_gen_7",
+          "minChars": 20,
+          "text_FR": "Quels sont les documents à fournir avant la livraison (par le client) et après livraison (par le commercial au client) ?",
+          "text_EN": "What documents must be provided prior to delivery (by the client) and post-delivery (by the sales representative to the client)?"
+        },
+        {
+          "id": "s_gen_8",
+          "minChars": 10,
+          "text_FR": "Citez par ordre d'importance vos principaux concurrents.",
+          "text_EN": "List your primary competitors in order of importance."
+        }
+      ]
+    },
+    {
+      "section_FR": "CONNAISSANCE PRODUIT",
+      "section_EN": "PRODUCT KNOWLEDGE",
+      "questions": [
+        {
+          "id": "s_prod_1",
+          "minChars": 15,
+          "text_FR": "Quels sont les modèles de la gamme LIGHT (précisez les différentes carrosseries) que nous commercialisons ?",
+          "text_EN": "What models in the LIGHT range (specifying the various body types) do we market?"
+        },
+        {
+          "id": "s_prod_2",
+          "minChars": 5,
+          "text_FR": "Quelle est la consommation aux 100 km d'une camionnette 3.5T et 5T ?",
+          "text_EN": "What is the fuel consumption per 100 km for a 3.5T and 5T van?"
+        },
+        {
+          "id": "s_prod_3",
+          "minChars": 5,
+          "text_FR": "Quelle est la puissance fiscale d'une camionnette 3,5T ?",
+          "text_EN": "What is the fiscal horsepower of a 3.5T van?"
+        },
+        {
+          "id": "s_prod_4",
+          "minChars": 5,
+          "text_FR": "Quelle est la longueur carrossable d'une camionnette 7T ?",
+          "text_EN": "What is the usable cargo body length of a 7T van?"
+        },
+        {
+          "id": "s_prod_5",
+          "minChars": 15,
+          "text_FR": "Quels sont les modèles de la gamme MÉDIUM (précisez les différentes carrosseries) que nous commercialisons ?",
+          "text_EN": "What models in the MEDIUM range (specifying the various body types) do we market?"
+        },
+        {
+          "id": "s_prod_6",
+          "minChars": 15,
+          "text_FR": "Quelle est la différence fondamentale entre un 4X4P 10T et un 4X4P 22T ?",
+          "text_EN": "What is the fundamental difference between a 4X4P 10T and a 4X4P 22T?"
+        },
+        {
+          "id": "s_prod_7",
+          "minChars": 15,
+          "text_FR": "Quels sont les modèles de la gamme HEAVY (préciser les différentes carrosseries) que nous commercialisons ?",
+          "text_EN": "What models in the HEAVY range (specifying the various body types) do we market?"
+        },
+        {
+          "id": "s_prod_8",
+          "minChars": 5,
+          "text_FR": "D'après la fiche technique, quelle est la consommation d'un mixeur 6X4 aux 100 km ?",
+          "text_EN": "According to the technical specifications, what is the fuel consumption of a 6X4 mixer per 100 km?"
+        },
+        {
+          "id": "s_prod_9",
+          "minChars": 15,
+          "text_FR": "Quelle est la différence entre le 6X4 371CV Routier et le 6X4 371CV (ancien 380CV) ?",
+          "text_EN": "What is the difference between the 6X4 371HP On-Road and the 6X4 371HP (formerly 380HP)?"
+        },
+        {
+          "id": "s_prod_10",
+          "minChars": 10,
+          "text_FR": "Citez les différents types de pneus que l'on peut monter sur des camions HEAVY ?",
+          "text_EN": "List the different types of tyres that can be fitted to HEAVY trucks."
+        },
+        {
+          "id": "s_prod_11",
+          "minChars": 15,
+          "text_FR": "Définissez l'empattement et donnez l'empattement d'un 6X4P et d'un 8X4P châssis nu.",
+          "text_EN": "Define wheelbase and give the wheelbase of a bare-chassis 6X4P and 8X4P."
+        },
+        {
+          "id": "s_prod_12",
+          "minChars": 5,
+          "text_FR": "Combien de vitesses possède le HOWO MAX 4X2T ?",
+          "text_EN": "How many gears does the HOWO MAX 4X2T feature?"
+        }
+      ]
+    }
+  ]
+}

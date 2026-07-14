@@ -1,0 +1,140 @@
+{
+  "questionnaire_FR": "QUESTIONNAIRE COMMERCIAL BUS ET CHARIOTS",
+  "questionnaire_EN": "SALES ASSESSMENT: KING LONG & FORKLIFTS",
+  "brand_FR": "KING LONG ET CHARIOTS",
+  "brand_EN": "KING LONG & FORKLIFTS",
+  "sections": [
+    {
+      "section_FR": "CONNAISSANCE GÉNÉRALE",
+      "section_EN": "GENERAL KNOWLEDGE",
+      "questions": [
+        {
+          "id": "bc_gen_1",
+          "minChars": 10,
+          "text_FR": "Qui sommes-nous ?",
+          "text_EN": "Who are we?"
+        },
+        {
+          "id": "bc_gen_2",
+          "minChars": 10,
+          "text_FR": "Quelles sont les valeurs de CFAO ?",
+          "text_EN": "What are CFAO's core values?"
+        },
+        {
+          "id": "bc_gen_3",
+          "minChars": 15,
+          "text_FR": "Quelle est l'importance de mettre en place une organisation comme la nôtre ?",
+          "text_EN": "Why is it important to have an organisation like ours?"
+        },
+        {
+          "id": "bc_gen_4",
+          "minChars": 15,
+          "text_FR": "Que souhaitez-vous changer dans notre organisation ? Pourquoi ?",
+          "text_EN": "What would you like to change in our organisation? Why?"
+        },
+        {
+          "id": "bc_gen_5",
+          "minChars": 10,
+          "text_FR": "Pourquoi acheter un véhicule chez CFAO ?",
+          "text_EN": "Why purchase a vehicle from CFAO?"
+        },
+        {
+          "id": "bc_gen_6",
+          "minChars": 10,
+          "text_FR": "Quel est le délai de réception d'un matériel dont la commande est passée en juin ?",
+          "text_EN": "What is the delivery lead time for equipment ordered in June?"
+        },
+        {
+          "id": "bc_gen_7",
+          "minChars": 20,
+          "text_FR": "Quels sont les documents à fournir avant la livraison (par le client) et après livraison (par le commercial au client) ?",
+          "text_EN": "What documents must be provided prior to delivery (by the client) and post-delivery (by the sales representative to the client)?"
+        },
+        {
+          "id": "bc_gen_8",
+          "minChars": 10,
+          "text_FR": "Citez par ordre d'importance vos principaux concurrents.",
+          "text_EN": "List your primary competitors in order of importance."
+        }
+      ]
+    },
+    {
+      "section_FR": "CONNAISSANCE PRODUIT",
+      "section_EN": "PRODUCT KNOWLEDGE",
+      "questions": [
+        {
+          "id": "bc_prod_9",
+          "minChars": 10,
+          "text_FR": "Quels sont les modèles de chariots élévateurs que nous commercialisons ?",
+          "text_EN": "What models of forklifts do we market?"
+        },
+        {
+          "id": "bc_prod_10",
+          "minChars": 15,
+          "text_FR": "Quelle est la différence entre un chariot à GAZ et un chariot électrique ?",
+          "text_EN": "What is the difference between a gas-powered forklift and an electric forklift?"
+        },
+        {
+          "id": "bc_prod_11",
+          "minChars": 15,
+          "text_FR": "Quels sont les secteurs d'activités qui nécessitent l'usage de chariots dans la manutention ?",
+          "text_EN": "Which business sectors require the use of forklifts for material handling?"
+        },
+        {
+          "id": "bc_prod_12",
+          "minChars": 10,
+          "text_FR": "Qu'est-ce qu'un transpalette ?",
+          "text_EN": "What is a pallet truck?"
+        },
+        {
+          "id": "bc_prod_13",
+          "minChars": 15,
+          "text_FR": "Quels sont les modèles de la gamme KING WIN / KING LONG (citez toutes les déclinaisons de chaque modèle) que nous commercialisons ?",
+          "text_EN": "What models in the KING WIN / KING LONG range (specifying all variants of each model) do we market?"
+        },
+        {
+          "id": "bc_prod_14",
+          "minChars": 15,
+          "text_FR": "Quelle est la différence fondamentale entre notre bus 33 places, un Coaster et un Fuso ROSA ?",
+          "text_EN": "What is the fundamental difference between our 33-seater bus, a Coaster, and a Fuso ROSA?"
+        },
+        {
+          "id": "bc_prod_15",
+          "minChars": 10,
+          "text_FR": "Quelle est la cible du KING WIN Fourgon ?",
+          "text_EN": "What is the target market for the KING WIN Van?"
+        },
+        {
+          "id": "bc_prod_16",
+          "minChars": 10,
+          "text_FR": "D'après la fiche technique, quel bus peut-on proposer à un client souhaitant transporter 75 personnes ?",
+          "text_EN": "According to the technical specifications, which bus would you recommend for a client needing to transport 75 people?"
+        },
+        {
+          "id": "bc_prod_17",
+          "minChars": 15,
+          "text_FR": "Quelle est la différence entre un bus à moteur avant et un bus à moteur arrière ?",
+          "text_EN": "What is the difference between a front-engine bus and a rear-engine bus?"
+        },
+        {
+          "id": "bc_prod_18",
+          "minChars": 10,
+          "text_FR": "Quel type de moteur équipe les bus KINGLONG 68 et 56 places ?",
+          "text_EN": "What type of engine is fitted in the 68 and 56-seater KING LONG buses?"
+        },
+        {
+          "id": "bc_prod_19",
+          "minChars": 10,
+          "text_FR": "Combien de types de suspensions équipent les bus KINGLONG ?",
+          "text_EN": "How many suspension types do KING LONG buses feature?"
+        },
+        {
+          "id": "bc_prod_20",
+          "minChars": 5,
+          "text_FR": "Quelle est la capacité en litres du réservoir d'un bus de 68 places ?",
+          "text_EN": "What is the fuel tank capacity in litres of a 68-seater bus?"
+        }
+      ]
+    }
+  ]
+}
