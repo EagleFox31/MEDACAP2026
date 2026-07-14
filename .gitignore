@@ -1,40 +1,89 @@
+# =============================================================================
+# MEDACAP — Git ignore (push GitHub)
+# Commercial/ et concours/ sont volontairement versionnés (modules applicatifs).
+# =============================================================================
+
 # Dependencies
 /vendor/
+/node_modules/
 
-# Logs
+# Logs & cache
 *.log
 /logs/
-
-# Environment / config sensible
-.env
-config.local.php
-
-# PHP cache
 *.cache
 /tmp/
 
-# IDE
+# Environment / secrets
+.env
+.env.*
+config.local.php
+
+# IDE / outils locaux
 .idea/
 .vscode/
+.gemini/
+.cursor/
 *.swp
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Uploads utilisateurs (binaires lourds, pas dans git)
+# Uploads utilisateurs (binaires lourds)
 /public/uploads/
 /public/logos/custom/
+/public/previews/
 
 # Claude Code
 .claude/
 
-# Scripts de debug temporaires
-fix_dashboard.php
-fix_dashboard.py
-check_coll.php
-check_data.php
-check_deploys.php
-check_subs.php
-check_subs_hierarchy.php
-check_user_fields.php
+# --- Données sensibles / exports / Excel RH ---
+/exports/
+/scripts/out/
+*.xlsx
+*.xls
+*.xlsm
+# Fichiers source CFAO / copies locales (racine)
+/Copie*.xlsx
+/*Copie*.xlsx
+
+# --- Scripts one-shot & debug (racine du projet uniquement) ---
+/check_*.php
+/debug_*.php
+/find_*.php
+/analyze_*.php
+/inspect_*.php
+/get_*.php
+/list_*.php
+/search_*.php
+/scratch_*.php
+/test_*.php
+/cli_*.php
+/compare_*.php
+/migrate_*.php
+/reset_*.php
+/verify_*.php
+/setup_*.php
+/calculate_*.php
+/cross_module_*.php
+/read_*.php
+/update_*.php
+/delete_*.php
+/fix_*.php
+/fix_*.py
+
+# Load tests k6 (artefacts)
+/scripts/k6/out/
+
+# Rapports / dumps temporaires
+/expert_declaratif_results.txt
+/full_technician_report*.txt
+/technicians_report*.md
+/questions.json
+/null
+
+# Fichiers "copy" / brouillons internes (views)
+**/* copy.php
+**/*_copy.php
+**/*copy2.php
+**/*copy.php
