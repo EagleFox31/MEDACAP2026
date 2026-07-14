@@ -1,0 +1,40 @@
+# Fichier d'exclusion pour deploy.ps1
+# Lignes vides et commentaires (#) sont ignorés.
+#
+# [dirs]  → dossiers non copiés (robocopy /XD)
+# [files] → fichiers / motifs non copiés (robocopy /XF, wildcards OK)
+
+[dirs]
+.git
+.vscode
+.gemini
+node_modules
+scripts/k6/out
+public/previews
+Commercial
+
+[files]
+deploy.ps1
+deploy.exclude
+check_*.php
+debug_*.php
+find_*.php
+analyze_*.php
+inspect_*.php
+get_distinct_*.php
+list_users_*.php
+search_*.php
+scratch_*.php
+test_*.php
+cli_*.php
+compare_*.php
+migrate_*.php
+reset_*.php
+verify_*.php
+setup_*.php
+calculate_*.php
+cross_module_*.php
+expert_declaratif_results.txt
+full_technician_report*.txt
+technicians_report*.md
+null
