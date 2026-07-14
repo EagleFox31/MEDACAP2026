@@ -25,22 +25,17 @@ function poolCpQuizzes():array{global $quizzes;$out=[];$cursor=$quizzes->find(['
 function quizStockSize($quizDoc):int{$t=(int)($quizDoc['total']??0);if($t>0)return $t;$raw=$quizDoc['questions']??[];if($raw instanceof BSONArray)$raw=$raw->getArrayCopy();if(!is_array($raw))return 0;return count($raw);}
 function distributeByStock(array $quizDocs,int $target):array{$stock=0;$ids=[];foreach($quizDocs as $q){$t=quizStockSize($q);$stock+=$t;$ids[(string)$q['_id']]=$t;}if($stock<=0||$target<=0)return[];$alloc=[];$frac=[];foreach($ids as $k=>$t){$r=($t/$stock)*$target;$alloc[$k]=(int)floor($r);$frac[$k]=$r-$alloc[$k];}$given=array_sum($alloc);$rem=$target-$given;if($rem>0){arsort($frac,SORT_NUMERIC);foreach(array_keys($frac)as $k){if($rem<=0)break;$alloc[$k]++;$rem--;}}return $alloc;}
 function sampleQuestionsOfQuiz($quizDoc,int $n):array{global $questions;if($n<=0)return[];$raw=$quizDoc['questions']??[];if($raw instanceof BSONArray)$raw=$raw->getArrayCopy();if(!is_array($raw)||empty($raw))return[];$ids=[];foreach($raw as $x){$oid=toOid(is_string($x)?$x:($x instanceof ObjectId?(string)$x:null));if($oid)$ids[(string)$oid]=$oid;}if(empty($ids))return[];$active=[];$cur=$questions->find(['_id'=>['$in'=>array_values($ids)],'active'=>true],['projection'=>['_id'=>1]]);foreach($cur as $qd)$active[]=$qd['_id'];if(empty($active))return[];return pickRandom($active,$n);}
-function buildFixedPaper(string $label,array $brands,int $qcmCount,array $ratio,array $orientationOids=[],bool $includeCp=true):ObjectId{global $papers;if($includeCp){$cpTarget=(int)round($qcmCount*0.10);if($qcmCount>0&&$cpTarget===0)$cpTarget=1;}else{$cpTarget=0;}$brandTarget=max(0,$qcmCount-$cpTarget);$brandPool=poolBrandQuizzes($brands);$cpPool=$includeCp?poolCpQuizzes():[];$brandAlloc=distributeByStock($brandPool,$brandTarget);$cpAlloc=$includeCp?distributeByStock($cpPool,$cpTarget):[];$pickedQ=[];$sourceQuizIds=[];$specQuizMap=[];$useQuiz=function($q)use(&$sourceQuizIds,&$specQuizMap){$qid=(string)$q['_id'];$sourceQuizIds[$qid]=$q['_id'];$spec=(string)($q['speciality']??'');if($spec!==''&&!isset($specQuizMap[$spec]))$specQuizMap[$spec]=$q['_id'];};$byIdDoc=[];foreach($brandPool as $q){$byIdDoc[(string)$q['_id']]=$q;}foreach($cpPool as $q){$byIdDoc[(string)$q['_id']]=$q;}foreach($brandAlloc as $qid=>$take){if($take<=0||!isset($byIdDoc[$qid]))continue;$doc=$byIdDoc[$qid];$useQuiz($doc);$pickedQ=array_merge($pickedQ,sampleQuestionsOfQuiz($doc,$take));}foreach($cpAlloc as $qid=>$take){if($take<=0||!isset($byIdDoc[$qid]))continue;$doc=$byIdDoc[$qid];$useQuiz($doc);$pickedQ=array_merge($pickedQ,sampleQuestionsOfQuiz($doc,$take));}$need=$qcmCount-count($pickedQ);if($need>0){$allActive=[];foreach($byIdDoc as $doc){$allActive=array_merge($allActive,sampleQuestionsOfQuiz($doc,999999));}$seen=[];foreach($pickedQ as $x){$seen[(string)$x]=1;}$rest=[];foreach($allActive as $x){$k=(string)$x;if(!isset($seen[$k]))$rest[]=$x;}shuffle($rest);$pickedQ=array_merge($pickedQ,array_slice($rest,0,$need));}if(count($pickedQ)>$qcmCount)$pickedQ=array_slice($pickedQ,0,$qcmCount);shuffle($pickedQ);$doc=['label'=>$label,'type'=>'Factuel','mode'=>'mixed','level'=>'Mixed','brand'=>array_values(array_unique($brands)),'ratios'=>['Junior'=>(int)($ratio['Junior']??50),'Senior'=>(int)($ratio['Senior']??45),'Expert'=>(int)($ratio['Expert']??5)],'counts'=>['QCM_total'=>$qcmCount,'QCM_brand'=>array_sum($brandAlloc),'QCM_cp'=>array_sum($cpAlloc)],'source_quizzes'=>array_values($sourceQuizIds),'specQuizMap'=>$specQuizMap,'questions'=>$pickedQ,'orientation'=>dedupOids($orientationOids),'active'=>true,'created'=>date('Y-m-d H:i:s')];$res=$papers->insertOne($doc);return $res->getInsertedId();}
+function buildFixedPaper(string $label,array $brands,int $qcmCount,array $ratio,array $orientationOids=[],bool $includeCp=true,int $durationHour=1,int $durationMinute=0):ObjectId{global $papers;if($includeCp){$cpTarget=(int)round($qcmCount*0.10);if($qcmCount>0&&$cpTarget===0)$cpTarget=1;}else{$cpTarget=0;}$brandTarget=max(0,$qcmCount-$cpTarget);$brandPool=poolBrandQuizzes($brands);$cpPool=$includeCp?poolCpQuizzes():[];$brandAlloc=distributeByStock($brandPool,$brandTarget);$cpAlloc=$includeCp?distributeByStock($cpPool,$cpTarget):[];$pickedQ=[];$sourceQuizIds=[];$specQuizMap=[];$useQuiz=function($q)use(&$sourceQuizIds,&$specQuizMap){$qid=(string)$q['_id'];$sourceQuizIds[$qid]=$q['_id'];$spec=(string)($q['speciality']??'');if($spec!==''&&!isset($specQuizMap[$spec]))$specQuizMap[$spec]=$q['_id'];};$byIdDoc=[];foreach($brandPool as $q){$byIdDoc[(string)$q['_id']]=$q;}foreach($cpPool as $q){$byIdDoc[(string)$q['_id']]=$q;}foreach($brandAlloc as $qid=>$take){if($take<=0||!isset($byIdDoc[$qid]))continue;$doc=$byIdDoc[$qid];$useQuiz($doc);$pickedQ=array_merge($pickedQ,sampleQuestionsOfQuiz($doc,$take));}foreach($cpAlloc as $qid=>$take){if($take<=0||!isset($byIdDoc[$qid]))continue;$doc=$byIdDoc[$qid];$useQuiz($doc);$pickedQ=array_merge($pickedQ,sampleQuestionsOfQuiz($doc,$take));}$need=$qcmCount-count($pickedQ);if($need>0){$allActive=[];foreach($byIdDoc as $doc){$allActive=array_merge($allActive,sampleQuestionsOfQuiz($doc,999999));}$seen=[];foreach($pickedQ as $x){$seen[(string)$x]=1;}$rest=[];foreach($allActive as $x){$k=(string)$x;if(!isset($seen[$k]))$rest[]=$x;}shuffle($rest);$pickedQ=array_merge($pickedQ,array_slice($rest,0,$need));}if(count($pickedQ)>$qcmCount)$pickedQ=array_slice($pickedQ,0,$qcmCount);shuffle($pickedQ);$doc=['label'=>$label,'type'=>'Factuel','mode'=>'mixed','level'=>'Mixed','brand'=>array_values(array_unique($brands)),'ratios'=>['Junior'=>(int)($ratio['Junior']??50),'Senior'=>(int)($ratio['Senior']??45),'Expert'=>(int)($ratio['Expert']??5)],'counts'=>['QCM_total'=>$qcmCount,'QCM_brand'=>array_sum($brandAlloc),'QCM_cp'=>array_sum($cpAlloc)],'source_quizzes'=>array_values($sourceQuizIds),'specQuizMap'=>$specQuizMap,'questions'=>$pickedQ,'orientation'=>dedupOids($orientationOids),'duration'=>['hour'=>$durationHour,'minute'=>$durationMinute,'second'=>0],'hour'=>$durationHour,'minute'=>$durationMinute,'second'=>0,'active'=>true,'created'=>date('Y-m-d H:i:s')];$res=$papers->insertOne($doc);return $res->getInsertedId();}
 
 $orientationOptions=[];
 try{$oc=$orientCol->find(['active'=>true,'scope'=>'global'],['projection'=>['_id'=>1,'title'=>1],'sort'=>['title'=>1]]);foreach($oc as $q)$orientationOptions[]=['id'=>(string)$q->_id,'title'=>(string)$q['title']];}catch(\Throwable $e){}
 $success=null;$error=null;$createdPaperId=null;
-if($_SERVER['REQUEST_METHOD']==='POST'){try{$label=s($_POST['label']??'');$brands=isset($_POST['brand'])?arr_str((array)$_POST['brand']):[];$qcmCount=max(1,(int)($_POST['qcm_count']??50));$ratio=['Junior'=>(int)($_POST['ratio_junior']??50),'Senior'=>(int)($_POST['ratio_senior']??45),'Expert'=>(int)($_POST['ratio_expert']??5)];$orientationIds=[];foreach((array)($_POST['orientation_selected']??[])as $id){$oid=toOid($id);if($oid)$orientationIds[]=$oid;}$includeCp=isset($_POST['include_cp']);if($label===''||empty($brands))throw new \RuntimeException("Le label et au moins une marque sont requis.");$paperId=buildFixedPaper($label,$brands,$qcmCount,$ratio,$orientationIds,$includeCp);$createdPaperId=(string)$paperId;$success="Épreuve figée créée avec succès";}catch(\Throwable $e){$error="Erreur : ".$e->getMessage();}}
+if($_SERVER['REQUEST_METHOD']==='POST'){try{$label=s($_POST['label']??'');$brands=isset($_POST['brand'])?arr_str((array)$_POST['brand']):[];$qcmCount=max(1,(int)($_POST['qcm_count']??50));$ratio=['Junior'=>(int)($_POST['ratio_junior']??50),'Senior'=>(int)($_POST['ratio_senior']??45),'Expert'=>(int)($_POST['ratio_expert']??5)];$durationHour=max(0,min(8,(int)($_POST['duration_hour']??1)));$durationMinute=max(0,min(59,(int)($_POST['duration_minute']??0)));if($durationHour===0&&$durationMinute===0)throw new \RuntimeException("La durée doit être supérieure à 0 minute.");$orientationIds=[];foreach((array)($_POST['orientation_selected']??[])as $id){$oid=toOid($id);if($oid)$orientationIds[]=$oid;}$includeCp=isset($_POST['include_cp']);if($label===''||empty($brands))throw new \RuntimeException("Le label et au moins une marque sont requis.");$paperId=buildFixedPaper($label,$brands,$qcmCount,$ratio,$orientationIds,$includeCp,$durationHour,$durationMinute);$createdPaperId=(string)$paperId;$success="Épreuve figée créée avec succès";}catch(\Throwable $e){$error="Erreur : ".$e->getMessage();}}
 include_once "partials/header.php";
 openBackgroundContainer();
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nouvelle épreuve figée — CFAO Mobility Academy</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 :root{
   --card:#ffffffb3; --card-border:rgba(255,255,255,.85); --hdr:#ffffffeb;
   --shadow:0 2px 16px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
@@ -51,7 +46,7 @@ openBackgroundContainer();
   --err:#ef4444; --err-lt:#fef2f2; --r:14px; --rs:9px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',system-ui,sans-serif;padding:24px 18px 80px;min-height:100vh;}
+.cfp-page{font-family:'Inter',system-ui,sans-serif;padding:24px 18px 80px;}
 .shell{max-width:960px;margin:0 auto;}
 
 .pg-head{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--hdr);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:16px;}
@@ -158,8 +153,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;hei
 .btn svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .shint{font-size:.74rem;color:var(--sub);}
 </style>
-</head>
-<body>
+<div class="cfp-page">
 <div class="shell">
 
 <div class="pg-head">
@@ -211,6 +205,18 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;hei
           <div class="qwrap" id="qv"><div class="qb brd" style="flex:45"></div><div class="qb cp" style="flex:5"></div></div>
           <div class="qleg"><div class="ql"><div class="qld brd"></div><span id="bl">45 marques</span></div><div class="ql"><div class="qld cp"></div><span id="cl">5 CP</span></div></div>
         </div>
+      </div>
+    </div>
+    <div class="r2">
+      <div class="field">
+        <label>Durée (heures) <span class="req">*</span></label>
+        <input type="number" min="0" max="8" step="1" name="duration_hour" value="<?=htmlspecialchars($_POST['duration_hour']??'1')?>">
+        <div class="hint">Valeur recommandée : 1 à 3 heures</div>
+      </div>
+      <div class="field">
+        <label>Durée (minutes) <span class="req">*</span></label>
+        <input type="number" min="0" max="59" step="1" name="duration_minute" value="<?=htmlspecialchars($_POST['duration_minute']??'0')?>">
+        <div class="hint">Entre 0 et 59 minutes</div>
       </div>
     </div>
     <div class="trow">
@@ -289,6 +295,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;hei
 
 </form>
 </div>
+</div>
 <script>
 function uQ(){const n=parseInt(document.getElementById('qi').value)||0,h=document.getElementById('ct').checked,c=h?Math.max(1,Math.round(n*.1)):0,b=n-c;document.getElementById('qv').innerHTML=`<div class="qb brd" style="flex:${b||1}"></div>`+(h?`<div class="qb cp" style="flex:${c}"></div>`:'');document.getElementById('bl').textContent=b+' marques';document.getElementById('cl').textContent=h?c+' CP':'—';}
 function uR(k,v){v=parseInt(v);({'J':'vJ','S':'vS','E':'vE'}[k]&&(document.getElementById({'J':'vJ','S':'vS','E':'vE'}[k]).innerHTML=v+'<span>%</span>'));document.getElementById('h'+k).value=v;cR();}
@@ -300,5 +307,4 @@ function cO(){document.querySelectorAll('input[name="orientation_selected[]"]').
 function copyLink(){const t=document.getElementById('lc')?.textContent||'';navigator.clipboard.writeText(t).catch(()=>{});const b=document.querySelector('.cbtn');b.textContent='✓ Copié';setTimeout(()=>b.textContent='Copier',2000);}
 uQ();uB();uO();cR();
 </script>
-</body></html>
-<?php closeBackgroundContainer();include_once "partials/footer.php";?>
+<?php closeBackgroundContainer(); include_once "partials/footer.php"; ?>

@@ -48,6 +48,13 @@ function buildQuizLink(array $item): string
              .  '&user='  . urlencode($_GET['user']);
     }
 
+    /* Cas “candidats” pour Admin : pré-filtre par pays de la filiale */
+    if ($key === 'candidats'
+        && isset($_SESSION['profile'], $_SESSION['country'])
+        && $_SESSION['profile'] === 'Admin') {
+        $url .= '?country=' . urlencode($_SESSION['country']);
+    }
+
     return $url;
 }
 

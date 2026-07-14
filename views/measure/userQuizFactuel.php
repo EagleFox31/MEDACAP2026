@@ -611,6 +611,8 @@ class QuizPostHandler {
             $allocData = $alloc->findOne(['user' => new ObjectId($this->userId), 'test' => new ObjectId($this->testId)]);
             if ($allocData) {
                 $alloc->updateOne(['_id' => $allocData['_id']], ['$set' => ['active' => true]]);
+                require_once __DIR__ . '/includes/allocation_progression.php';
+                allocationProgression_tryUnlockNextLevel($alloc, new ObjectId($this->userId), $this->level);
             }
             $exam = $this->userData['exam'] ?? null;
             if ($exam) {

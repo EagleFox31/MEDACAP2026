@@ -1,12 +1,24 @@
 <?php
 session_start();
-include_once "../language.php";
+if (isset($_GET['lang']) && ($_GET['lang'] === 'EN' || $_GET['lang'] === 'FR')) {
+    $_SESSION['lang'] = $_GET['lang'];
+}
+$lang = $_SESSION['lang'] ?? 'FR';
+if ($lang === 'EN') {
+    include_once "../language_EN.php";
+} else {
+    include_once "../language.php";
+}
 
 if (!isset($_SESSION["id"])) {
     header("Location: ../../");
     exit();
 } else {
+    $candidate_nav_title = $evaluation_completee ?? 'Évaluation complétée';
+    $candidate_nav_subtitle = $cand_congrat_subtitle ?? 'Merci pour votre participation';
     include_once "partials/header.php";
+    include_once "../partials/background-manager.php";
+    setPageBackground("bg-welcome-tech");
     ?>
     <!--begin::Title-->
     <title><?php echo isset($evaluation_completee) ? $evaluation_completee : 'Évaluation Complétée'; ?> | CFAO Mobility Academy</title>
@@ -17,7 +29,6 @@ if (!isset($_SESSION["id"])) {
     <link rel="stylesheet" href="../../public/css/core/utilities.css">
     <link rel="stylesheet" href="../../public/css/modules/skeleton-loader.css">
     <link rel="stylesheet" href="../../public/css/modules/training-plan.css">
-    <link rel="stylesheet" href="/MEDACAP/public/css/background-manager.css">
 
     <style>
         :root {
@@ -36,10 +47,13 @@ if (!isset($_SESSION["id"])) {
             --light: #FFFFFF;
         }
 
-        .content-container {
+        .congrat-wrap {
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: calc(100vh - 220px);
+            width: 100%;
+            padding: 1.5rem 0;
         }
 
         .lms-card {
@@ -315,10 +329,8 @@ if (!isset($_SESSION["id"])) {
         }
     </style>
 
-    <!--begin::Body-->
-    <div class="content-container fs-6 page-background-container" id="kt_content">
-        <div class="page-background-overlay with-gradient bg-welcome-tech"></div>
-        <div class="page-content-container">
+    <?php openBackgroundContainer(); ?>
+    <div class="congrat-wrap">
         <div class="lms-card glass-effect">
             <div class="lms-card-header">
                 <!-- Achievement badge with animation -->
@@ -380,14 +392,12 @@ if (!isset($_SESSION["id"])) {
 
             <!-- Actions -->
             <div class="lms-actions">
-                <a href="./dashboard" class="lms-btn-primary">
-                    <i class="fas fa-arrow-right me-2"></i><?php echo isset($retour_tableau_bord) ? $retour_tableau_bord : 'Retour au Tableau de Bord'; ?>
+                <a href="./logout.php" class="lms-btn-primary">
+                    <i class="fas fa-right-from-bracket me-2"></i><?php echo isset($se_deconnecter) ? $se_deconnecter : 'Se déconnecter'; ?>
                 </a>
             </div>
         </div>
     </div>
-        </div> <!--end::page-content-container-->
-    </div> <!--end::Body-->
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -437,7 +447,10 @@ if (!isset($_SESSION["id"])) {
         });
     </script>
 
-    <?php include_once "partials/footer.php"; ?>
+    <?php
+    closeBackgroundContainer();
+    include_once "partials/footer.php";
+    ?>
     <?php
 }
 ?>

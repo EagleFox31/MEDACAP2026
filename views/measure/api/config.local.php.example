@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copier en config.local.php (non versionné).
+ *
+ * Mongo — résolution automatique si `mongoUri` est absent :
+ *   dev  : 127.0.0.1 → 10.68.0.7 si local indispo
+ *   prod : 10.68.0.7 uniquement
+ *
+ * Postgres (à venir) : même clé `env` + bloc `postgres` (non lu pour l’instant).
+ */
+return [
+    'portalBridgeKey' => 'demo-cfao-portal',
+    'env' => 'dev', // dev | prod
+    'mongoDb' => 'academy',
+    'mongoHost' => '10.68.0.7',
+    'mongoLocalHost' => '127.0.0.1',
+    'mongoPort' => 27017,
+    'mongoProbeCacheTtl' => 30,
+    // Forcer une URI (désactive le fallback auto) :
+    // 'mongoUri' => 'mongodb://127.0.0.1:27017',
+    // 'postgres' => [
+    //     'host' => '10.68.0.7',
+    //     'localHost' => '127.0.0.1',
+    //     'dbname' => 'cfao_academy',
+    // ],
+];

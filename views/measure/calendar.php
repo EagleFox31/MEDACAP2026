@@ -512,7 +512,7 @@ openBackgroundContainer('', 'id="kt_content"');
 ?>
     <!-- Main title card -->
     <div class="container-xxl">
-        <div class="card shadow-sm mb-5 w-75 mx-auto">
+        <div class="card shadow-sm mb-5">
             <div class="card-body py-3">
                 <h1 class="text-dark fw-bold text-center fs-1 m-0">
                     <?= $calendar ?>

@@ -14,7 +14,7 @@ if (!function_exists('renderFilterBox')) {
      * @return void
      */
     function renderFilterBox($filters, $formId = 'kt_post', $layout = 'horizontal') {
-        $layoutClass = $layout === 'horizontal' ? 'd-flex flex-wrap gap-3 w-100' : 'd-flex flex-column gap-3 w-100';
+        $layoutClass = $layout === 'horizontal' ? 'd-flex flex-wrap gap-3 w-100 justify-content-center' : 'd-flex flex-column gap-3 w-100 align-items-center';
 
         echo '<div id="' . htmlspecialchars($formId) . '" class="' . $layoutClass . ' align-items-end" data-ajax-filters="true">';
 
@@ -45,12 +45,17 @@ if (!function_exists('renderFilterSelectAjax')) {
         $isActive   = ($selected !== '' && $selected !== 'all');
         $wrapClass  = 'filter-field' . ($isActive ? ' filter-field--active' : '');
 
+        $displayLabel = $label;
+        if ($isActive && isset($filter['resultCount'])) {
+            $displayLabel .= ' (' . (int)$filter['resultCount'] . ')';
+        }
+
         echo '<div class="' . $wrapClass . '">';
         echo '<label for="' . htmlspecialchars($key) . '" class="filter-field-label">';
         if ($icon) {
             echo '<i class="' . htmlspecialchars($icon) . ' ' . htmlspecialchars($iconColor) . '"></i>';
         }
-        echo htmlspecialchars($label);
+        echo htmlspecialchars($displayLabel);
         echo '</label>';
         echo '<select id="' . htmlspecialchars($key) . '" name="' . htmlspecialchars($key) . '" class="form-select ajax-filter" data-filter-key="' . htmlspecialchars($key) . '" onchange="this.form.submit()">';
 

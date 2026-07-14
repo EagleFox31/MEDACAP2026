@@ -47,7 +47,8 @@ final class RequestParams {
     public $paperId;
     public $paperOid;
     public $dateFilter;
-    public $campaign;   // ← NOUVEAU
+    public $campaign;
+    public $oriFilters; // ['questionId' => 'valeur sélectionnée']
     public $baseParams;
 
     public static function fromGlobals() {
@@ -63,7 +64,16 @@ final class RequestParams {
         $r->paperOid   = ($r->paperId && preg_match('/^[0-9a-f]{24}$/i', $r->paperId)) ? new ObjectId($r->paperId) : null;
         $r->dateFilter = isset($_GET['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', trim($_GET['date']))
             ? trim($_GET['date']) : null;
-        $r->campaign   = isset($_GET['campaign'])  ? trim($_GET['campaign'])  : null; // ← NOUVEAU
+        $r->campaign   = isset($_GET['campaign'])  ? trim($_GET['campaign'])  : null;
+        // Filtres orientation dynamiques : ?ori[qid]=valeur
+        $r->oriFilters = [];
+        if (isset($_GET['ori']) && is_array($_GET['ori'])) {
+            foreach ($_GET['ori'] as $qid => $val) {
+                $qid = trim((string)$qid);
+                $val = trim((string)$val);
+                if ($qid !== '' && $val !== '') $r->oriFilters[$qid] = $val;
+            }
+        }
         $r->baseParams = $_GET;
         return $r;
     }
@@ -105,8 +115,12 @@ final class MongoFactory {
 |  Query Builder (SRP: construit pipeline candidats)
 |============================================================ */
 final class CandidateQueryBuilder {
-    private $cfg; private $req;
-    public function __construct(AppConfig $cfg, RequestParams $req) { $this->cfg=$cfg; $this->req=$req; }
+    private $cfg; private $req; private $paperOriQuestions;
+    public function __construct(AppConfig $cfg, RequestParams $req, $paperOriQuestions = []) {
+        $this->cfg = $cfg;
+        $this->req = $req;
+        $this->paperOriQuestions = $paperOriQuestions;
+    }
 
     public function baseMatch() {
         $m = [
@@ -238,6 +252,31 @@ final class CandidateQueryBuilder {
                         ['$limit'=>1],
                     ]))),
                     'as'=>'resOri'
+                ]],
+
+                // Tous les résultats factuels groupés par paper (pour la modal)
+                ['$lookup'=>[
+                    'from'=>'results',
+                    'let'=>['uid'=>'$_id'],
+                    'pipeline'=>[
+                        ['$match'=>[
+                            '$expr'=>[
+                                '$and'=>[
+                                    ['$eq'=>['$user','$$uid']],
+                                    ['$eq'=>['$type','Factuel']],
+                                    ['$eq'=>['$level','Mixed']],
+                                ]
+                            ],
+                            'userAnswers'=>['$exists'=>true]
+                        ]],
+                        ['$sort'=>['created'=>-1]],
+                        ['$group'=>[
+                            '_id'=>['$ifNull'=>['$paper', null]],
+                            'score'=>['$first'=>'$score'],
+                            'total'=>['$first'=>'$total'],
+                        ]],
+                    ],
+                    'as'=>'allPaperResults'
                 ]],
 
                 // Filiale -> drapeau
@@ -375,25 +414,62 @@ final class CandidateQueryBuilder {
                     ]
                 ]],
 
-                // Sorties
-                ['$project'=>[
-                    '_id'=>0,
-                    'fullname'=>1,
-                    'country'=>['$ifNull'=>['$sub_country', ['$ifNull'=>['$country','']]]],
-                    'flagPath'=>1,
-                    'agency'=>['$ifNull'=>['$agency','']],
-                    'attempted'=>1,
-                    'pct'=>['$round'=>['$pct',1]],
-                    'statusKey'=>1,
-                    'gender'=>1,
-                    'oriLocations'=>1,
-                    'oriWorkshops'=>1,
-                    'sumScore'=>1,'sumTotal'=>1,
-                    'role'=>1,  // exposé pour debug éventuel
-                ]],
-                ['$limit'=>2000]
             ]
         );
+
+        // ─── Champs orientation dynamiques (selon paper sélectionné) ───
+        if (!empty($this->paperOriQuestions)) {
+            $dynFields = [];
+            foreach ($this->paperOriQuestions as $qid => $q) {
+                $fieldName = 'oriQ_' . $qid;
+                $dynFields[$fieldName] = [
+                    '$let' => [
+                        'vars' => [
+                            'hit' => ['$arrayElemAt' => [[
+                                '$filter' => [
+                                    'input' => '$oriAnsArr',
+                                    'as'    => 'a',
+                                    'cond'  => ['$eq' => ['$$a.id', $qid]],
+                                ]
+                            ], 0]]
+                        ],
+                        'in' => ['$map' => [
+                            'input' => ['$ifNull' => ['$$hit.selected', []]],
+                            'as'    => 'v',
+                            'in'    => ['$trim' => ['input' => '$$v']],
+                        ]]
+                    ]
+                ];
+            }
+            $pipeline[] = ['$addFields' => $dynFields];
+        }
+        // ───────────────────────────────────────────────────────────────
+
+        // ─── Sorties ───────────────────────────────────────────────────
+        $project = [
+            '_id'      => 0,
+            'fullname' => 1,
+            'country'  => ['$ifNull' => ['$sub_country', ['$ifNull' => ['$country', '']]]],
+            'flagPath' => 1,
+            'agency'   => ['$ifNull' => ['$agency', '']],
+            'attempted'=> 1,
+            'pct'      => ['$round' => ['$pct', 1]],
+            'statusKey'=> 1,
+            'gender'   => 1,
+            'oriLocations' => 1,
+            'oriWorkshops' => 1,
+            'sumScore' => 1, 'sumTotal' => 1,
+            'role'     => 1,
+            'userId'          => ['$toString' => '$_id'],
+            'allPaperResults' => 1,
+            'oriAnsArr'       => 1,
+        ];
+        // Inclure les champs dynamiques dans la projection
+        foreach ($this->paperOriQuestions as $qid => $q) {
+            $project['oriQ_' . $qid] = 1;
+        }
+        $pipeline[] = ['$project' => $project];
+        $pipeline[] = ['$limit' => 2000];
 
         return $pipeline;
     }
@@ -488,6 +564,59 @@ final class CampaignRepository {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /* ============================================================
+|  Paper Orientation Loader
+|  Charge les questions d'orientation d'un paper donné
+|============================================================ */
+final class PaperOrientationLoader {
+    private $papersCol;
+    private $oriQCol;
+
+    public function __construct($papersCol, $oriQCol) {
+        $this->papersCol = $papersCol;
+        $this->oriQCol   = $oriQCol;
+    }
+
+    /** Retourne ['questionId' => ['id'=>..., 'label'=>..., 'options'=>[...]]] */
+    public function load($paperOid) {
+        if (!$paperOid) return [];
+        $paper = $this->papersCol->findOne(['_id' => $paperOid], ['projection' => ['orientation' => 1]]);
+        if (!$paper || empty($paper['orientation'])) return [];
+
+        $oriIds = [];
+        foreach ($paper['orientation'] as $o) {
+            $oid = ($o instanceof ObjectId) ? $o : null;
+            if ($oid) $oriIds[] = $oid;
+        }
+        if (empty($oriIds)) return [];
+
+        // Fetch questions
+        $byId = [];
+        $cursor = $this->oriQCol->find(['_id' => ['$in' => $oriIds]]);
+        foreach ($cursor as $q) {
+            $qid  = (string)$q['_id'];
+            $opts = [];
+            if (isset($q['options']) && is_iterable($q['options'])) {
+                foreach ($q['options'] as $o) { $opts[] = (string)$o; }
+            }
+            $byId[$qid] = [
+                'id'      => $qid,
+                'label'   => (string)($q['label'] ?? $q['text'] ?? 'Question'),
+                'options' => $opts,
+            ];
+        }
+
+        // Respecter l'ordre du paper
+        $ordered = [];
+        foreach ($oriIds as $oid) {
+            $qid = (string)$oid;
+            if (isset($byId[$qid])) $ordered[$qid] = $byId[$qid];
+        }
+        return $ordered;
+    }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+/* ============================================================
 |  Services (tri, export…)
 |============================================================ */
 final class CandidateService {
@@ -508,6 +637,18 @@ final class CandidateService {
             $wrks = (array)($c['oriWorkshops'] ?? []);
             if ($loc  && !in_array($loc,  $locs, true)) return false;
             if ($work && !in_array($work, $wrks, true)) return false;
+            return true;
+        }));
+    }
+
+    /** Filtrage orientation dynamique selon les questions du paper sélectionné */
+    public function filterByOrientationDynamic($cands, $oriFilters) {
+        if (empty($oriFilters)) return $cands;
+        return array_values(array_filter($cands, function($c) use ($oriFilters) {
+            foreach ($oriFilters as $qid => $val) {
+                $answers = (array)($c['oriQ_' . $qid] ?? []);
+                if (!in_array($val, $answers, true)) return false;
+            }
             return true;
         }));
     }
@@ -630,6 +771,61 @@ final class CandidatePresenter {
 
     public function dataOloc(){ return htmlspecialchars(Arrays::strJoin($this->locs()),ENT_QUOTES,'UTF-8'); }
     public function dataOwork(){ return htmlspecialchars(Arrays::strJoin($this->works()),ENT_QUOTES,'UTF-8'); }
+
+    /** JSON : [{label, score, total, pct}] pour chaque paper testé */
+    public function dataResults($paperLabelMap = []) {
+        $results = $this->c['allPaperResults'] ?? [];
+        if ($results instanceof \MongoDB\Model\BSONArray) {
+            $results = $results->getArrayCopy();
+        }
+        $out = [];
+        foreach ((array)$results as $r) {
+            if ($r instanceof \MongoDB\Model\BSONDocument) {
+                $r = $r->getArrayCopy();
+            } else {
+                $r = (array)$r;
+            }
+            $pid   = isset($r['_id']) ? (string)$r['_id'] : '';
+            $score = (int)($r['score'] ?? 0);
+            $total = (int)($r['total'] ?? 0);
+            $pct   = $total > 0 ? round($score / $total * 100, 1) : 0;
+            $label = ($pid !== '' && isset($paperLabelMap[$pid])) ? $paperLabelMap[$pid] : 'Test inconnu';
+            $out[] = ['label' => $label, 'score' => $score, 'total' => $total, 'pct' => $pct];
+        }
+        return htmlspecialchars(json_encode($out, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+    }
+
+    /** JSON : [{label, values}] pour chaque question d'orientation du paper */
+    public function dataOriAnswers($paperOriQs = []) {
+        $oriArr = $this->c['oriAnsArr'] ?? [];
+        if ($oriArr instanceof \MongoDB\Model\BSONArray) {
+            $oriArr = $oriArr->getArrayCopy();
+        }
+        // Map questionId -> selected values
+        $answerMap = [];
+        foreach ((array)$oriArr as $ans) {
+            if ($ans instanceof \MongoDB\Model\BSONDocument) {
+                $ans = $ans->getArrayCopy();
+            } else {
+                $ans = (array)$ans;
+            }
+            $qid = (string)($ans['id'] ?? '');
+            $sel = isset($ans['selected']) ? $ans['selected'] : [];
+            if ($sel instanceof \MongoDB\Model\BSONArray) $sel = $sel->getArrayCopy();
+            if ($qid !== '') $answerMap[$qid] = array_map('strval', (array)$sel);
+        }
+        $out = [];
+        if (!empty($paperOriQs)) {
+            foreach ($paperOriQs as $qid => $q) {
+                $out[] = ['label' => $q['label'], 'values' => $answerMap[$qid] ?? []];
+            }
+        } else {
+            foreach ($answerMap as $qid => $vals) {
+                $out[] = ['label' => $qid, 'values' => $vals];
+            }
+        }
+        return htmlspecialchars(json_encode($out, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+    }
 }
 
 /* ============================================================
@@ -640,22 +836,46 @@ $req = RequestParams::fromGlobals();
 if (!$req->isExport) setPageBackground("bg-dashboard");
 
 try {
-    $mongo   = new MongoFactory($cfg);
-    $usersCol= $mongo->col('users');
-    $oriQCol = $mongo->col('orientation_questions');
+    $mongo    = new MongoFactory($cfg);
+    $usersCol = $mongo->col('users');
+    $oriQCol  = $mongo->col('orientation_questions');
+    $papersCol= $mongo->col('papers');
 
-    // ── Campagnes disponibles (avant filtre candidats) ────────────
-    $campaignRepo    = new CampaignRepository($usersCol);
+    // ── Campagnes disponibles ──────────────────────────────────────
+    $campaignRepo       = new CampaignRepository($usersCol);
     $availableCampaigns = $campaignRepo->getDistinct();
     // ──────────────────────────────────────────────────────────────
 
-    $qb   = new CandidateQueryBuilder($cfg,$req);
-    $repo = new CandidateRepository($usersCol,$qb);
+    // ── Questions d'orientation du paper sélectionné ───────────────
+    $paperOriLoader    = new PaperOrientationLoader($papersCol, $oriQCol);
+    $paperOriQuestions = $paperOriLoader->load($req->paperOid);
+
+    // Si pas de paper direct mais une campagne est sélectionnée :
+    // chercher le paper par son label (= nom de la campagne)
+    if (empty($paperOriQuestions) && $req->campaign) {
+        $campPaper = $papersCol->findOne(
+            ['active' => true, 'label' => $req->campaign],
+            ['projection' => ['_id' => 1]]
+        );
+        if ($campPaper) {
+            $paperOriQuestions = $paperOriLoader->load($campPaper['_id']);
+        }
+    }
+    // ──────────────────────────────────────────────────────────────
+
+    $qb   = new CandidateQueryBuilder($cfg, $req, $paperOriQuestions);
+    $repo = new CandidateRepository($usersCol, $qb);
     $candidates = $repo->fetchAll();
 
-    $svc  = new CandidateService($cfg);
+    $svc = new CandidateService($cfg);
     $candidatesFiltered = $svc->filterByStatus($candidates, $req->status);
-    $candidatesFiltered = $svc->filterByOrientation($candidatesFiltered, $req->oloc, $req->owork);
+
+    // Filtrage orientation : dynamique si paper avec orientation, sinon classique oloc/owork
+    if (!empty($paperOriQuestions) && !empty($req->oriFilters)) {
+        $candidatesFiltered = $svc->filterByOrientationDynamic($candidatesFiltered, $req->oriFilters);
+    } else {
+        $candidatesFiltered = $svc->filterByOrientation($candidatesFiltered, $req->oloc, $req->owork);
+    }
 
     list($attempted, $notAttempted) = $svc->splitAttempted($candidatesFiltered);
     $svc->sortByPctDescThenName($attempted);
@@ -663,13 +883,22 @@ try {
     $othersAttempted = array_slice($attempted, 3);
     $statusCounts    = $svc->statusCounts($candidates);
 
-    // Distinct options Orientation
-    $optRepo = new OrientationOptionsRepository($oriQCol,$cfg);
-    list($distinctLoc,$distinctWork) = $optRepo->getDistinctFromQuestions($candidates);
+    // Carte paperId -> label (pour la modal)
+    $paperLabelMap = [];
+    try {
+        $allPapers = $papersCol->find([], ['projection' => ['_id' => 1, 'label' => 1]]);
+        foreach ($allPapers as $paper) {
+            $paperLabelMap[(string)$paper['_id']] = (string)($paper['label'] ?? '?');
+        }
+    } catch (Throwable $e) {}
+
+    // Distinct options orientation (mode classique, sans paper sélectionné)
+    $optRepo = new OrientationOptionsRepository($oriQCol, $cfg);
+    list($distinctLoc, $distinctWork) = $optRepo->getDistinctFromQuestions($candidates);
 
     // Export
     if ($req->isExport) {
-        (new CsvExporter($cfg))->export($leaderboard,$othersAttempted,$notAttempted);
+        (new CsvExporter($cfg))->export($leaderboard, $othersAttempted, $notAttempted);
     }
 } catch (Throwable $e) {
     http_response_code(500);
@@ -686,7 +915,7 @@ function number1($f){ return number_format((float)$f,1); }
 include "./partials/header.php";
 ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-<title>Candidats — Campagne Technicien 2025 | CFAO Mobility Academy</title>
+<title>Etat d'Avancement des Campagnes de Recrutement | CFAO Mobility Academy</title>
 
 <style>
 body,.campaign-wrap{font-size:1.1rem}
@@ -752,7 +981,7 @@ body,.campaign-wrap{font-size:1.1rem}
   <div class="card shadow-sm mb-4 card-title-white">
     <div class="card-body p-4">
       <h1 class="text-dark fw-bold text-center fs-1">
-        <i class="fa-solid fa-id-card-clip me-2"></i>Candidats — Technicien 2025
+        <i class="fa-solid fa-id-card-clip me-2"></i>Etat d'Avancement des Campagnes de Recrutement
         <?php if ($req->campaign): ?>
           <span class="campaign-badge"><i class="fa-solid fa-flag me-1"></i><?= h($req->campaign) ?></span>
         <?php endif; ?>
@@ -784,7 +1013,9 @@ body,.campaign-wrap{font-size:1.1rem}
                      data-score="<?= number1($p->pct()) ?>"
                      data-status="<?= h($p->statusLabel()) ?>"
                      data-oloc="<?= $p->dataOloc() ?>"
-                     data-owork="<?= $p->dataOwork() ?>">
+                     data-owork="<?= $p->dataOwork() ?>"
+                     data-results="<?= $p->dataResults($paperLabelMap) ?>"
+                     data-ori="<?= $p->dataOriAnswers($paperOriQuestions) ?>">
                   <div class="rank">#<?= $i ?></div>
                   <div class="name"><?= h($p->name()) ?></div>
                   <div class="meta">
@@ -835,7 +1066,9 @@ body,.campaign-wrap{font-size:1.1rem}
                       data-score="<?= number1($p->pct()) ?>"
                       data-status="<?= h($p->statusLabel()) ?>"
                       data-oloc="<?= $locStr ?>"
-                      data-owork="<?= $wrkStr ?>">
+                      data-owork="<?= $wrkStr ?>"
+                      data-results="<?= $p->dataResults($paperLabelMap) ?>"
+                      data-ori="<?= $p->dataOriAnswers($paperOriQuestions) ?>">
                       <td><strong>#<?= $rank++ ?></strong></td>
                       <td><?= h($p->name()) ?></td>
                       <td><?= $p->flag()?("<img src='".h($p->flag())."' class='flag-img' alt='flag'> "):""; ?><?= h($p->country()) ?></td>
@@ -904,7 +1137,9 @@ body,.campaign-wrap{font-size:1.1rem}
                        data-score="<?= number1($p->pct()) ?>"
                        data-status="<?= h($p->statusLabel()) ?>"
                        data-oloc="<?= $locStr ?>"
-                       data-owork="<?= $wrkStr ?>">
+                       data-owork="<?= $wrkStr ?>"
+                       data-results="<?= $p->dataResults($paperLabelMap) ?>"
+                       data-ori="<?= $p->dataOriAnswers($paperOriQuestions) ?>">
                     <div class="candidate-left">
                       <div class="candidate-avatar"><img src="<?= h($p->avatarImg()) ?>" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:12px"></div>
                       <div>
@@ -981,22 +1216,72 @@ body,.campaign-wrap{font-size:1.1rem}
             el.className='badge-score '+cls;
             el.textContent = isFinite(v) ? (v.toFixed(1)+'%') : '—';
           }
+          function escHtml(str){
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+          }
+          function scoreClass(pct){
+            if (pct>=80) return 'score-green';
+            if (pct>=51) return 'score-yellow';
+            return 'score-orange';
+          }
           function openModalFrom(el){
-            const name = el.getAttribute('data-name') || '—';
+            const name    = el.getAttribute('data-name')    || '—';
             const country = el.getAttribute('data-country') || '—';
-            const flag = el.getAttribute('data-flag') || '';
-            const score = el.getAttribute('data-score') || '';
-            const status = el.getAttribute('data-status') || '—';
-            const oloc = el.getAttribute('data-oloc') || '';
-            const owork= el.getAttribute('data-owork') || '';
-            document.getElementById('mName').textContent = name;
+            const flag    = el.getAttribute('data-flag')    || '';
+            const score   = el.getAttribute('data-score')   || '';
+            const status  = el.getAttribute('data-status')  || '—';
+            const resultsJson = el.getAttribute('data-results') || '[]';
+            const oriJson     = el.getAttribute('data-ori')     || '[]';
+
+            document.getElementById('mName').textContent    = name;
             document.getElementById('mCountry').textContent = country;
             const flagEl = document.getElementById('mFlag');
-            if (flag){ flagEl.src = flag; flagEl.style.display='inline-block'; } else { flagEl.style.display='none'; }
+            if (flag){ flagEl.src=flag; flagEl.style.display='inline-block'; } else { flagEl.style.display='none'; }
             document.getElementById('mStatus').textContent = status;
             setScoreChip(document.getElementById('mScore'), score);
-            document.getElementById('mOLoc').textContent  = oloc  || '—';
-            document.getElementById('mOWork').textContent = owork || '—';
+
+            // ── Résultats par test ───────────────────────────────
+            var results = [];
+            try { results = JSON.parse(resultsJson); } catch(e){}
+            var mResultsBody = document.getElementById('mResultsBody');
+            if (!results.length){
+              mResultsBody.innerHTML = '<span class="text-muted">Aucun résultat enregistré.</span>';
+            } else {
+              var html = '<table class="table table-sm table-bordered mb-0"><thead><tr>'
+                       + '<th>Test</th><th>Note</th><th>Score %</th>'
+                       + '</tr></thead><tbody>';
+              for (var i=0;i<results.length;i++){
+                var r   = results[i];
+                var pct = parseFloat(r.pct||0);
+                var cls = scoreClass(pct);
+                html += '<tr><td>' + escHtml(r.label) + '</td>'
+                      + '<td>' + r.score + '/' + r.total + '</td>'
+                      + '<td><span class="badge-score ' + cls + '" style="min-width:64px;display:inline-block;text-align:center">'
+                      + pct.toFixed(1) + '%</span></td></tr>';
+              }
+              html += '</tbody></table>';
+              mResultsBody.innerHTML = html;
+            }
+
+            // ── Réponses d'orientation ───────────────────────────
+            var oriAnswers = [];
+            try { oriAnswers = JSON.parse(oriJson); } catch(e){}
+            var mOriBody = document.getElementById('mOriBody');
+            if (!oriAnswers.length){
+              mOriBody.innerHTML = '<span class="text-muted">Aucune réponse d\'orientation.</span>';
+            } else {
+              var oriHtml = '';
+              for (var j=0;j<oriAnswers.length;j++){
+                var q    = oriAnswers[j];
+                var vals = (q.values && q.values.length) ? q.values.join(', ') : '—';
+                oriHtml += '<div class="mb-1">'
+                         + '<span class="text-muted fw-bold">' + escHtml(q.label) + ' :</span> '
+                         + escHtml(vals)
+                         + '</div>';
+              }
+              mOriBody.innerHTML = oriHtml;
+            }
+
             new bootstrap.Modal(document.getElementById('candModal')).show();
           }
           document.querySelectorAll('.js-cand').forEach(el=>{
@@ -1082,7 +1367,9 @@ body,.campaign-wrap{font-size:1.1rem}
             <hr class="my-3">
 
             <div class="mb-2 section-title"><i class="fa-solid fa-location-dot me-2"></i>Orientation</div>
-            <div class="section-hint mb-2">Filtrer par lieux & ateliers choisis</div>
+            <div class="section-hint mb-2">
+              <?= !empty($paperOriQuestions) ? 'Filtres selon les questions du test sélectionné' : 'Filtrer par lieux & ateliers choisis' ?>
+            </div>
 
             <form method="get" class="filter-orientation">
               <?php
@@ -1110,25 +1397,50 @@ body,.campaign-wrap{font-size:1.1rem}
                 <?php endif; ?>
               </div>
 
-              <div class="w-100 mb-3">
-                <label class="form-label mb-1 fw-bold">Lieux choisis</label>
-                <select name="oloc" class="form-select" onchange="this.form.submit()">
-                  <option value="">— Tous —</option>
-                  <?php foreach ($distinctLoc as $v): ?>
-                    <option value="<?= h($v) ?>" <?= $req->oloc===$v?'selected':'' ?>><?= h($v) ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
+              <?php if (!empty($paperOriQuestions)): ?>
+                <!-- ── Filtres dynamiques selon le paper ── -->
+                <?php foreach ($paperOriQuestions as $qid => $q): ?>
+                  <div class="w-100 mb-3">
+                    <label class="form-label mb-1 fw-bold"><?= h($q['label']) ?></label>
+                    <select name="ori[<?= h($qid) ?>]" class="form-select" onchange="this.form.submit()">
+                      <option value="">— Tous —</option>
+                      <?php foreach ($q['options'] as $opt): ?>
+                        <option value="<?= h($opt) ?>"
+                          <?= (isset($req->oriFilters[$qid]) && $req->oriFilters[$qid] === $opt) ? 'selected' : '' ?>>
+                          <?= h($opt) ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+                <?php endforeach; ?>
+                <?php if (!empty($req->oriFilters)): ?>
+                  <a href="<?= h(UrlBuilder::build($req->baseParams, ['ori'=>null])) ?>"
+                     class="btn btn-sm btn-outline-secondary w-100">
+                    <i class="fa-solid fa-times me-1"></i>Effacer les filtres orientation
+                  </a>
+                <?php endif; ?>
 
-              <div class="w-100">
-                <label class="form-label mb-1 fw-bold">Ateliers choisis</label>
-                <select name="owork" class="form-select" onchange="this.form.submit()">
-                  <option value="">— Tous —</option>
-                  <?php foreach ($distinctWork as $v): ?>
-                    <option value="<?= h($v) ?>" <?= $req->owork===$v?'selected':'' ?>><?= h($v) ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
+              <?php else: ?>
+                <!-- ── Filtres classiques Lieu + Atelier (pas de paper sélectionné) ── -->
+                <div class="w-100 mb-3">
+                  <label class="form-label mb-1 fw-bold">Lieux choisis</label>
+                  <select name="oloc" class="form-select" onchange="this.form.submit()">
+                    <option value="">— Tous —</option>
+                    <?php foreach ($distinctLoc as $v): ?>
+                      <option value="<?= h($v) ?>" <?= $req->oloc===$v?'selected':'' ?>><?= h($v) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="w-100">
+                  <label class="form-label mb-1 fw-bold">Ateliers choisis</label>
+                  <select name="owork" class="form-select" onchange="this.form.submit()">
+                    <option value="">— Tous —</option>
+                    <?php foreach ($distinctWork as $v): ?>
+                      <option value="<?= h($v) ?>" <?= $req->owork===$v?'selected':'' ?>><?= h($v) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+              <?php endif; ?>
             </form>
 
           </div>
@@ -1142,25 +1454,33 @@ body,.campaign-wrap{font-size:1.1rem}
 
 <!-- Modal -->
 <div class="modal fade" id="candModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" style="max-width:720px">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" style="max-width:760px">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">
+        <h5 class="modal-title d-flex align-items-center gap-2 flex-wrap">
           <span id="mName">—</span>
-          <span class="ms-2 badge rounded-pill bg-secondary" id="mStatus">—</span>
+          <span class="badge rounded-pill bg-secondary" id="mStatus">—</span>
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="d-flex align-items-center gap-3 mb-3">
+        <!-- En-tête : pays + score global -->
+        <div class="d-flex align-items-center gap-3 mb-4">
           <img id="mFlag" src="" alt="" class="flag-img" style="display:none">
           <div class="fw-bold text-muted" id="mCountry">—</div>
           <div class="ms-auto badge-score" id="mScore">—</div>
         </div>
+
+        <!-- Résultats par test -->
+        <div class="p-3 border rounded-3 mb-3">
+          <div class="fw-bold mb-2"><i class="fa-solid fa-chart-bar me-2"></i>Résultats par test</div>
+          <div id="mResultsBody"><span class="text-muted">Aucun résultat.</span></div>
+        </div>
+
+        <!-- Réponses d'orientation -->
         <div class="p-3 border rounded-3">
-          <div class="fw-bold mb-2"><i class="fa-solid fa-location-dot me-2"></i>Orientation</div>
-          <div><span class="text-muted">Lieux:</span> <span id="mOLoc">—</span></div>
-          <div><span class="text-muted">Ateliers:</span> <span id="mOWork">—</span></div>
+          <div class="fw-bold mb-2"><i class="fa-solid fa-location-dot me-2"></i>Réponses d'orientation</div>
+          <div id="mOriBody"><span class="text-muted">Aucune réponse d'orientation.</span></div>
         </div>
       </div>
       <div class="modal-footer">

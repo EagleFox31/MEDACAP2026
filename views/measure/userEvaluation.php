@@ -390,6 +390,7 @@ class ManagerQuizResultSaver {
         $this->quizData = $quizData;
     }
     public function save($allQuestions, $userAnswer, $time) {
+        global $il_maitrise;
         try {
             $quizConfigs = ManagerQuizConstants::$SPECIALTIES;
             $perQuizProposals = [];
@@ -404,13 +405,36 @@ class ManagerQuizResultSaver {
             $quizQuestion = [];
             $totalQuestions = count($allQuestions);
             $score = 0;
-            $correctAnswer = 'Il maîtrise';
+            $positiveStrings = [
+                "Il maitrise (le technicien réalise cette tâche professionnelle)",
+                "Il maîtrise (le technicien réalise cette tâche professionnelle)",
+                "He masters (the technician performs this professional task)",
+                "Il maîtrise",
+                "Il maitrise",
+                "He masters",
+                "Je maitrise (je réalise cette tâche professionnelle seul)",
+                "Je maîtrise (je réalise cette tâche professionnelle seul)",
+                "I master (I perform this professional task alone)"
+            ];
+            if (isset($il_maitrise) && !empty($il_maitrise)) {
+                $positiveStrings[] = $il_maitrise;
+            }
+
             for ($i = 0; $i < $totalQuestions; $i++) {
                 $qData = $allQuestions[$i];
                 $question = $qData['question'];
                 $userAns = $userAnswer[$i];
                 $speciality = $qData['specialty'];
-                $isCorrect = ($userAns === $correctAnswer);
+                
+                $isCorrect = false;
+                $normalizedAns = trim($userAns);
+                foreach ($positiveStrings as $posStr) {
+                    if (strcasecmp($normalizedAns, trim($posStr)) === 0) {
+                        $isCorrect = true;
+                        break;
+                    }
+                }
+                
                 if ($isCorrect) $score++;
                 $abbrev = array_search($speciality, $quizConfigs);
                 $postKey = 'quiz' . $abbrev;

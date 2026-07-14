@@ -584,6 +584,7 @@ if ($isQCMProfile) {
          */
         private function filterTechnicians($query)
         {
+            $query['isCandidat'] = ['$ne' => true];
             $techIds = [];
             foreach ($this->collections['users']->find($query) as $tech) {
                 if ($tech["profile"] == "Technicien" || ($tech["profile"] == "Manager" && $tech["test"] == true)) {
@@ -719,8 +720,7 @@ if ($isQCMProfile) {
         private function fetchResults($validIds)
         {
             $allResults = [];
-            $projection = ['projection' => ['user' => 1, 'level' => 1, 'type' => 1, 'typeR' => 1, 'score' => 1, 'total' => 1]];
-            foreach ($this->collections['results']->find(['user' => ['$in' => $validIds], 'active' => true], $projection) as $result) {
+            foreach ($this->collections['results']->find(['user' => ['$in' => $validIds], 'active' => true]) as $result) {
                 $uid = (string)$result['user'];
                 $typeR = $result['typeR'] ?? 'unknown';
                 $allResults[$uid][$result['level']][$result['type']][$typeR] = $result;
@@ -1115,7 +1115,7 @@ if ($isQCMProfile) {
      */
     function getUsersByLevel($users, $level = null, $brand = '', $subsidiaryFilter = null)
     {
-        $simpleFilter = ['active' => true];
+        $simpleFilter = ['active' => true, 'isCandidat' => ['$ne' => true]];
         if ($level !== null) {
             $simpleFilter['level'] = $level;
         }
@@ -1130,11 +1130,14 @@ if ($isQCMProfile) {
             ]]
         ];
 
-        $deptClauses = getDepartmentClauses($users);
-        if (!empty($deptClauses)) {
-            $andClauses[] = ['$or' => $deptClauses];
-        } elseif (isset($_SESSION['department']) && $_SESSION['department'] !== 'Equipment & Motors') {
-            $simpleFilter['department'] = $_SESSION['department'];
+        $isGroupScope = in_array($_SESSION['profile'] ?? '', ['Super Admin', 'Directeur Groupe']);
+        if (!$isGroupScope) {
+            $deptClauses = getDepartmentClauses($users);
+            if (!empty($deptClauses)) {
+                $andClauses[] = ['$or' => $deptClauses];
+            } elseif (isset($_SESSION['department']) && $_SESSION['department'] !== 'Equipment & Motors') {
+                $simpleFilter['department'] = $_SESSION['department'];
+            }
         }
 
         if ($brand !== '') {
@@ -1940,7 +1943,7 @@ if ($isQCMProfile) {
                             <?php } ?>
                         </div>
 
-                        <?php if (in_array($_SESSION['profile'], ['Super Admin', 'Directeur des Opérations', 'Directeur Pièce et Service', 'Admin', 'Ressource Humaine', 'Directeur Groupe'])) { ?>
+                        <?php if (in_array($_SESSION['profile'], ['Super Admin', 'Directeur des Opérations', 'Directeur Pièce et Service', 'Directeur Général', 'Admin', 'Ressource Humaine', 'Directeur Groupe'])) { ?>
                             <?php renderTitleSection('ki-duotone ki-chart-pie fs-2 me-3', 2, 'Taux de participation aux tests'); ?>
                             <div id="<?php echo $chartContainerId; ?>" class="row mb-4"></div>
 
@@ -2023,9 +2026,9 @@ if ($isQCMProfile) {
                         <!-- Section Résultats par Type -->
                         <?php renderTitleSection('ki-duotone ki-users fs-2 me-3', 2, 'Résultats aux tests par type de tests'); ?>
 
-                        <div class="row g-6">
+                        <div class="row">
                             <div class="col-xl-3">
-                                <div class="card glassmorphism result-card">
+                                <div class="card result-card">
                                     <div class="text-center">
                                         <h5 class="mt-2" style="margin-top: 18px !important;">Résultats Niveau Junior</h5>
                                     </div>
@@ -2035,7 +2038,7 @@ if ($isQCMProfile) {
                                 </div>
                             </div>
                             <div class="col-xl-3">
-                                <div class="card glassmorphism result-card">
+                                <div class="card result-card">
                                     <div class="text-center">
                                         <h5 class="mt-2" style="margin-top: 18px !important;">Résultats Niveau Senior</h5>
                                     </div>
@@ -2045,7 +2048,7 @@ if ($isQCMProfile) {
                                 </div>
                             </div>
                             <div class="col-xl-3">
-                                <div class="card glassmorphism result-card">
+                                <div class="card result-card">
                                     <div class="text-center">
                                         <h5 class="mt-2" style="margin-top: 18px !important;">Résultats Niveau Expert</h5>
                                     </div>
@@ -2055,7 +2058,7 @@ if ($isQCMProfile) {
                                 </div>
                             </div>
                             <div class="col-xl-3">
-                                <div class="card glassmorphism result-card">
+                                <div class="card result-card">
                                     <div class="text-center">
                                         <h5 class="mt-2" style="margin-top: 18px !important;">Total : 03 Niveaux</h5>
                                     </div>
@@ -2067,6 +2070,54 @@ if ($isQCMProfile) {
                         </div>
                     <?php } ?>
                     <!-- ===== FIN SECTION RÉSULTATS ===== -->
+
+                    <!-- ===== SECTION MANAGERS (Directeur Général uniquement) ===== -->
+                    <?php if ($_SESSION['profile'] === 'Directeur Général') :
+                        $dirSubsidiary = $subsidiaryFilter ?? ($_SESSION['subsidiary'] ?? '');
+                        $managersList  = $users->find(['profile' => 'Manager', 'active' => true, 'subsidiary' => $dirSubsidiary])->toArray();
+                    ?>
+                    <div class="my-5"></div>
+                    <?php renderTitleSection('ki-duotone ki-people fs-2 me-3', 2, 'Suivi des évaluations déclaratives par manager'); ?>
+                    <div class="row g-4 mb-5">
+                        <?php if (empty($managersList)) : ?>
+                            <div class="col-12 text-center text-muted">Aucun manager trouvé pour cette filiale.</div>
+                        <?php endif; ?>
+                        <?php foreach ($managersList as $mgr) :
+                            $mgrId      = $mgr['_id'];
+                            $mgrName    = htmlspecialchars(($mgr['firstName'] ?? '') . ' ' . ($mgr['lastName'] ?? ''));
+                            $totalTechs = (int)$users->count(['manager' => $mgrId, 'profile' => 'Technicien', 'active' => true, 'isCandidat' => ['$ne' => true]]);
+                            $evaluated  = (int)$allocations->count(['type' => 'Declaratif', 'activeManager' => true, 'active' => true, 'managerId' => $mgrId]);
+                            $pct        = $totalTechs > 0 ? round($evaluated * 100 / $totalTechs) : 0;
+                            $barColor   = $pct >= 100 ? '#1bc5bd' : ($pct >= 50 ? '#ffa800' : '#f64e60');
+                            $badge      = $pct >= 100 ? 'success' : ($pct >= 50 ? 'warning' : 'danger');
+                            $label      = $pct >= 100 ? 'Complet' : ($pct > 0 ? 'En cours' : 'Non démarré');
+                        ?>
+                        <div class="col-md-4 col-lg-3">
+                            <div class="card glassmorphism p-4 h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="symbol symbol-45px me-3">
+                                        <span class="symbol-label bg-light-primary">
+                                            <i class="ki-duotone ki-profile-user fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark"><?= $mgrName ?></div>
+                                        <span class="badge badge-light-<?= $badge ?> fs-8"><?= $label ?></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between fs-7 text-muted mb-1">
+                                    <span><?= $evaluated ?> / <?= $totalTechs ?> techniciens évalués</span>
+                                    <span class="fw-bold" style="color:<?= $barColor ?>"><?= $pct ?>%</span>
+                                </div>
+                                <div class="progress" style="height:8px;border-radius:4px;">
+                                    <div class="progress-bar" role="progressbar" style="width:<?= $pct ?>%;background:<?= $barColor ?>;" aria-valuenow="<?= $pct ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; // Directeur Général ?>
+
                 <?php } ?>
             <?php endif; ?>
         </div>
@@ -2148,7 +2199,6 @@ if ($isQCMProfile) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.50.0/apexcharts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
     <!-- Styles CSS pour l'animation de chargement fluide -->
     <style>
@@ -2280,9 +2330,6 @@ if ($isQCMProfile) {
                             responsive: true,
                             plugins: {
                                 legend: {
-                                    display: false
-                                },
-                                datalabels: {
                                     display: false
                                 },
                                 tooltip: {

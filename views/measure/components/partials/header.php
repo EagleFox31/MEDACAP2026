@@ -131,7 +131,7 @@ $country = $_SESSION["country"] ?? '';
     // Map countries to their respective subsidiary name
     $subsidiaries = [
         "CFAO MOTORS BURKINA",
-        "CAMEROON MOTORS INDUSTRIES",
+        "CFAO MOBILITY CAMEROON",
         "CFAO MOTORS CONGO",
         "CFAO MOTORS COTE D'IVOIRE",
         "CFAO MOTORS GABON",

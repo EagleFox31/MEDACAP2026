@@ -275,6 +275,8 @@ function processValidation(array $ctx=null): void
         'numberTest'=>$cnt+1,'time'=>$time,'active'=>true,'created'=>date('d-m-Y H:i:s'),
     ]);
     col(COLL_ALLOCATIONS)->updateOne(['user'=>$userId,'test'=>$testId],['$set'=>['active'=>true]]);
+    require_once __DIR__ . '/includes/allocation_progression.php';
+    allocationProgression_tryUnlockNextLevel(col(COLL_ALLOCATIONS), $userId, $level);
     col(COLL_EXAMS)->updateOne(['_id'=>$exam['_id']],['$set'=>['active'=>false]]);
     if(isset($ctx['technician']['firstName'])){
         $tech=$ctx['technician'];$admins=getAdminsDocs($tech,db());if($admins){

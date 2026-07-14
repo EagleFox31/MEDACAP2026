@@ -41,7 +41,8 @@
         'Super Admin'                 => 'dashboardAdmin',
         'Admin'                       => 'dashboardAdmin',
         'Directeur Pièce et Service'  => 'dashboardAdmin',
-        'Directeur Groupe'  => 'dashboardAdmin',
+        'Directeur Groupe'   => 'dashboardAdmin',
+        'Directeur Général'  => 'dashboardAdmin',
 
         // RH
         'Ressource Humaine'           => 'dashboardrh',
@@ -183,7 +184,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
     // Map countries to their respective subsidiary name
     $subsidiaries = [
         "CFAO MOTORS BURKINA",
-        "CAMEROON MOTORS INDUSTRIES",
+        "CFAO MOBILITY CAMEROON",
         "CFAO MOTORS CONGO",
         "CFAO MOTORS COTE D'IVOIRE",
         "CFAO MOTORS GABON",
@@ -195,7 +196,11 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
         "CFAO MOTORS RWANDA"
         // Add more subsidiaries here
     ];
-                                  
+
+    if (($_SESSION['profile'] ?? '') === 'Candidat') {
+        include __DIR__ . '/candidateHeader.php';
+        return;
+    }
     ?>
 
     <!DOCTYPE html>
@@ -251,6 +256,19 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
         <meta name="keywords"
             content="Craft, bootstrap, bootstrap 5, admin themes, dark mode, free admin themes, bootstrap admin, bootstrap dashboard" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <?php
+        $documentTitle = $GLOBALS['pageTitle'] ?? null;
+        if ($documentTitle === null) {
+            $pageKey = pathinfo($_SERVER['PHP_SELF'] ?? '', PATHINFO_FILENAME);
+            $pageTitles = [
+                'importCandidat' => 'Importation de candidats',
+                'candidats' => "État d'avancement des campagnes",
+                'resend_import_mail' => 'Rattrapage mail import',
+            ];
+            $documentTitle = $pageTitles[$pageKey] ?? ($displayModule ?: 'CFAO Mobility Academy');
+        }
+        ?>
+        <title><?= htmlspecialchars((string)$documentTitle, ENT_QUOTES, 'UTF-8') ?> | CFAO Mobility Academy</title>
         <meta property="og:locale" content="en_US" />
         <meta property="og:type" content="article" />
         <meta property="og:title" content="Craft - Bootstrap 5 HTML Admin Dashboard Theme" />
@@ -356,7 +374,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                 <!--begin::Aside-->
                 <?php if (
                     $_SESSION["profile"] == "Super Admin" ||
-                    $_SESSION["profile"] == "Admin" || $_SESSION["profile"] == "Ressource Humaine" || $_SESSION["profile"] == "Directeur Pièce et Service"  || $_SESSION["profile"] == "Directeur des Opérations" || $_SESSION["profile"] == "Directeur Groupe" || $_SESSION["profile"] == "Manager" || $_SESSION["profile"] == "Technicien" ||
+                    $_SESSION["profile"] == "Admin" || $_SESSION["profile"] == "Ressource Humaine" || $_SESSION["profile"] == "Directeur Pièce et Service"  || $_SESSION["profile"] == "Directeur des Opérations" || $_SESSION["profile"] == "Directeur Groupe" || $_SESSION["profile"] == "Directeur Général" || $_SESSION["profile"] == "Manager" || $_SESSION["profile"] == "Technicien" ||
     $_SESSION["profile"] == "Candidat"
                 ) { ?>
                     <div id="kt_aside" class="aside aside-default  aside-hoverable " data-kt-drawer="true"
@@ -406,6 +424,10 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                     <div class="menu-content text-center"><span
                                             class="fw-bolder text-black text-uppercase fs-5"><?php echo $dop_space ?></span>
                                     </div>
+                                <?php } elseif ($_SESSION["profile"] == "Directeur Général") { ?>
+                                    <div class="menu-content text-center"><span
+                                            class="fw-bolder text-black text-uppercase fs-4"><?php echo $directeur_filiale ?></span>
+                                    </div>
                                 <?php } elseif ($_SESSION["profile"] == "Directeur Groupe") { ?>
                                     <div class="menu-content text-center"><span
                                             class="fw-bolder text-black text-uppercase fs-4"><?php echo $dir_grp_space ?></span>
@@ -442,12 +464,16 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                     data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="20px"
                                     data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer">
                                     <!--begin:Menu item-->
+                                <?php
+                                    $currentPageMeasure = pathinfo(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), PATHINFO_FILENAME);
+                                    $isDashboardMeasure = ($currentPageMeasure === $dashboardBase);
+                                ?>
                                 <div class="menu-item show">
                                         <!-- begin:Menu link -->
-                                        <div class="menu-item">
-                                           
+                                        <div class="menu-item <?php echo $isDashboardMeasure ? 'here' : ''; ?>">
+
                                                 <!-- Pour Directeur Groupe : afficher "Participation aux tests" -->
-                                                <a class="menu-link" href="<?= htmlspecialchars($DASHBOARD_ROUTE, ENT_QUOTES, 'UTF-8') ?>">
+                                                <a class="menu-link <?php echo $isDashboardMeasure ? 'active' : ''; ?>" href="<?= htmlspecialchars($DASHBOARD_ROUTE, ENT_QUOTES, 'UTF-8') ?>">
                                                     <span class="menu-icon">
                                                         <i class="ki-duotone ki-element-11 fs-2">
                                                             <span class="path1"></span>
@@ -462,17 +488,34 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <!-- Dynamic Menu Items -->
                                         <?php
-                                            /* ——— Directeur Groupe ——— */
-                                            if ($_SESSION['profile'] === 'Directeur Groupe') {
+                                            /* ——— Directeur Général ——— */
+                                            if ($_SESSION['profile'] === 'Directeur Général') {
                                                 foreach ($menuStructure as $groupName => $items) {
-                                                    // NE PAS afficher le titre du groupe pour Directeur Groupe
-                                                    // Afficher directement les items sans titre de groupe
+                                                    echo '<div class="menu-content">';
+                                                    echo '<span class="fw-bold text-black text-uppercase fs-70">'
+                                                        . htmlspecialchars(groupLabel($items, $lang))
+                                                        . '</span></div>';
+                                                    foreach ($items as $item) {
+                                                        echoItem($item, $lang);
+                                                    }
+                                                    echo '<div class="menu-item"><div class="menu-content"></div></div>';
+                                                }
+
+                                            /* ——— Directeur Groupe ——— */
+                                            } elseif ($_SESSION['profile'] === 'Directeur Groupe') {
+                                                foreach ($menuStructure as $groupName => $items) {
+                                                    echo '<div class="menu-content">';
+                                                    echo '<span class="fw-bold text-black text-uppercase fs-70">'
+                                                        . htmlspecialchars(groupLabel($items, $lang))
+                                                        . '</span></div>';
+
                                                     foreach ($items as $item) {
                                                         echoItem($item, $lang);
                                                     }
 
                                                     echo '<div class="menu-item"><div class="menu-content"></div></div>';
                                                 }
+
                                             }
 
                                         /* ——— Manager ——— */
@@ -596,6 +639,58 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         }
                                         ?>
 
+
+                                        <?php if ($_SESSION['profile'] === 'Super Admin'): ?>
+                                        <!-- ===== OUTILS SUPER ADMIN (hardcodés) ===== -->
+                                        <div class="menu-content">
+                                            <span class="fw-bold text-black text-uppercase fs-70">Outils Admin</span>
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'fix_username') !== false) ? 'active' : ''; ?>"
+                                               href="/medacap/fix_username.php">
+                                                <span class="menu-icon">
+                                                    <i class="ki-duotone ki-pencil fs-2">
+                                                        <span class="path1"></span><span class="path2"></span>
+                                                    </i>
+                                                </span>
+                                                <span class="menu-title">Correction username</span>
+                                            </a>
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'activation') !== false) ? 'active' : ''; ?>"
+                                               href="/medacap/views/explore/createUser.php">
+                                                <span class="menu-icon">
+                                                    <i class="ki-duotone ki-user-tick fs-2">
+                                                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                                                    </i>
+                                                </span>
+                                                <span class="menu-title">Créer un utilisateur</span>
+                                            </a>
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'create_fixed_paper') !== false) ? 'active' : ''; ?>"
+                                               href="/medacap/views/measure/create_fixed_paper.php">
+                                                <span class="menu-icon">
+                                                    <i class="ki-duotone ki-notepad-edit fs-2">
+                                                        <span class="path1"></span><span class="path2"></span>
+                                                    </i>
+                                                </span>
+                                                <span class="menu-title">Générateur d'épreuve figée</span>
+                                            </a>
+                                        </div>
+                                        <div class="menu-item">
+                                            <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'loadtest') !== false) ? 'active' : ''; ?>"
+                                               href="/medacap/views/measure/loadtest.php">
+                                                <span class="menu-icon">
+                                                    <i class="ki-duotone ki-rocket fs-2">
+                                                        <span class="path1"></span><span class="path2"></span>
+                                                    </i>
+                                                </span>
+                                                <span class="menu-title">Test de charge candidats</span>
+                                            </a>
+                                        </div>
+                                        <div class="menu-item"><div class="menu-content"></div></div>
+                                        <?php endif; ?>
 
                                         <!--begin:Menu item-->
                                         <div class="menu-item">

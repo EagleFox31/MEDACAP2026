@@ -68,7 +68,7 @@ if (!isset($_SESSION["id"])) {
             }
         }
     }
-    elseif ($_SESSION['profile'] == "Super Admin") {
+    elseif ($_SESSION['profile'] == "Super Admin" || $_SESSION['profile'] == "Directeur Groupe") {
         // Super Admin with country filter
         if (isset($_GET['country'])) {
             $selectedCountry = $_GET['country'];
@@ -190,7 +190,7 @@ if (!isset($_SESSION["id"])) {
                             <input type="text" id="search" class="form-control form-control-solid w-250px ps-12" placeholder="Recherche...">
                         </div>
                         <div class="d-flex gap-2">
-                        <?php if ($_SESSION['profile'] == "Manager" || $_SESSION['profile'] == "Admin" || $_SESSION['profile'] == "Super Admin") { ?>
+                        <?php if ($_SESSION['profile'] == "Manager" || $_SESSION['profile'] == "Admin" || $_SESSION['profile'] == "Super Admin" || $_SESSION['profile'] == "Directeur Groupe") { ?>
                         <a href="./bilanTestNotes" class="btn btn-light-primary">
                             <i class="ki-duotone ki-chart-simple fs-2 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                             Voir les notes
@@ -212,9 +212,10 @@ if (!isset($_SESSION["id"])) {
         
         <?php 
         // Check if user has appropriate permissions
-        if ($_SESSION['profile'] == "Super Admin" || $_SESSION['profile'] == "Admin" || 
-            $_SESSION["profile"] == "Ressource Humaine" || $_SESSION['profile'] == "Directeur Pièce et Service" || 
-            $_SESSION['profile'] == "Directeur des Opérations" || $_SESSION['profile'] == "Manager") { 
+        if ($_SESSION['profile'] == "Super Admin" || $_SESSION['profile'] == "Directeur Groupe" ||
+            $_SESSION['profile'] == "Admin" || $_SESSION["profile"] == "Ressource Humaine" ||
+            $_SESSION['profile'] == "Directeur Pièce et Service" || $_SESSION['profile'] == "Directeur des Opérations" ||
+            $_SESSION['profile'] == "Manager") {
         ?>
         
         <!--begin::Post-->

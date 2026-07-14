@@ -1,4 +1,10 @@
         <!--begin::Footer-->
+<?php
+if (($_SESSION['profile'] ?? '') === 'Candidat') {
+    include __DIR__ . '/candidateFooter.php';
+    return;
+}
+?>
         <div class="footer py-4 d-flex flex-lg-column " id="kt_footer">
             <!--begin::Container-->
             <div class=" container-fluid  d-flex flex-column flex-md-row flex-stack">

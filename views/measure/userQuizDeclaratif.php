@@ -384,6 +384,12 @@ class QuizResultSaver {
                     ['_id' => $alloc->_id],
                     ['$set' => ['active' => true]]
                 );
+                require_once __DIR__ . '/includes/allocation_progression.php';
+                allocationProgression_tryUnlockNextLevel(
+                    $this->db->getCollection('allocations'),
+                    new ObjectId($this->userId),
+                    $this->level
+                );
             }
         } catch (Exception $e) {
             error_log("Error updating allocation: " . $e->getMessage());
@@ -539,6 +545,7 @@ class QuizPostHandler {
         }
     }
     private function processResults($userAnswer, $time, $exam) {
+        global $je_maitrise;
         $score = 0;
         $proposal = [];
         $specialtyScores = [];
@@ -548,12 +555,37 @@ class QuizPostHandler {
         $questionsTag = array_map(function($q) {
             return (string)$q['question']['_id'];
         }, $this->allQuestions);
-        $correctAnswer = 'Je maîtrise'; // Assuming French; adjust via language.php if needed
+        
+        $positiveStrings = [
+            "Je maitrise (je réalise cette tâche professionnelle seul)",
+            "Je maîtrise (je réalise cette tâche professionnelle seul)",
+            "I master (I perform this professional task alone)",
+            "Je maîtrise",
+            "Je maitrise",
+            "I master",
+            "Il maitrise (le technicien réalise cette tâche professionnelle)",
+            "Il maîtrise (le technicien réalise cette tâche professionnelle)",
+            "He masters (the technician performs this professional task)"
+        ];
+        if (isset($je_maitrise) && !empty($je_maitrise)) {
+            $positiveStrings[] = $je_maitrise;
+        }
+
         foreach ($this->allQuestions as $index => $q) {
             $shortSpeciality = $q['short'];
             $userAns = $userAnswer[$index];
             $specialtyScores[$shortSpeciality]['total']++;
-            if ($userAns === $correctAnswer) {
+            
+            $isCorrect = false;
+            $normalizedAns = trim($userAns);
+            foreach ($positiveStrings as $posStr) {
+                if (strcasecmp($normalizedAns, trim($posStr)) === 0) {
+                    $isCorrect = true;
+                    break;
+                }
+            }
+            
+            if ($isCorrect) {
                 $score++;
                 $specialtyScores[$shortSpeciality]['correct']++;
                 $proposal[] = "Oui";
