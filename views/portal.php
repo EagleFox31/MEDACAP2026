@@ -21,6 +21,11 @@ if (!isset($_SESSION["profile"])) {
 $profile = $_SESSION["profile"];
 $department = isset($_SESSION['department']) ? $_SESSION['department'] : '';
 
+if (strcasecmp((string)$profile, 'Candidat') === 0) {
+    header('Location: measure/candidatePaperHome');
+    exit();
+}
+
 // Truncate user name
 $firstName = $_SESSION["firstName"] ?? '';
 $lastName = $_SESSION["lastName"] ?? '';
@@ -121,7 +126,7 @@ $landing_pages = [
     'measure' => [
         'default' => 'measure/dashboard',
         'Technicien' => 'measure/ListeDesQcm',
-        'Manager' => 'measure/dashboard',
+        'Manager' => 'measure/dashboardAdmin',
         'Directeur Groupe' => 'measure/dashboardAdmin',
         'Directeur Pièce et Service' => 'measure/dashboardAdmin',
         'Directeur des Opérations' => 'measure/dashboardAdmin',
@@ -133,6 +138,8 @@ $landing_pages = [
     ],
     'explore' => [
         'default' => 'explore/dashboard',
+        'Directeur Pièce et Service' => 'explore/stateAgency',
+        'Directeur des Opérations'   => 'explore/stateAgency',
     ],
     'define' => [
         'default' => 'define/dashboard',
@@ -928,7 +935,18 @@ if (!empty($department) && $show_brands) {
                 </a>
             </div>
         </div>
+        </div>
     </div>
+
+    <?php if (in_array($profile, ['Super Admin', 'Admin', 'Ressource Humaine', 'Directeur Groupe', 'Directeur Général'])): ?>
+    <div style="margin-top: 20px; text-align: center; z-index: 1; position: relative;">
+        <a href="measure/manageRecruitment.php" class="card-step" style="display: inline-block; width: auto; padding: 12px 25px; border-radius: 30px; background: rgba(230, 34, 68, 0.2); border-color: rgba(230, 34, 68, 0.4);">
+            <i class="fas fa-users" style="font-size: 1.5rem; margin-right: 10px; display: inline-block; vertical-align: middle;"></i>
+            <h3 style="display: inline-block; margin: 0; vertical-align: middle; font-size: 1.1rem;"><?= $lang === 'FR' ? 'Gérer une Campagne de Recrutement' : 'Manage Recruitment Campaign' ?></h3>
+        </a>
+    </div>
+    <?php endif; ?>
+
     <?php if ($show_brands): ?>
         <div class="brand-carousel">
             <div class="brand-container">

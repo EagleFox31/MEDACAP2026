@@ -17,8 +17,9 @@ use MongoDB\Exception\Exception;
 function filterUsersByProfile($academy, $profile, $country = null, $level = null, $agency = null, $managerId = null) {
     
     $filter = [
-        'active' => true,
-        'profile' => ['$in' => ['Technicien', 'Manager']] // Filtrer les techniciens et managers
+        'active'     => true,
+        'isCandidat' => ['$ne' => true],
+        'profile'    => ['$in' => ['Technicien', 'Manager']]
     ];
 
     // Filtrer uniquement les managers qui ont "test: true"
@@ -39,16 +40,21 @@ function filterUsersByProfile($academy, $profile, $country = null, $level = null
         if ($level) {
             $filter['level'] = $level;
         }
-    } elseif ($profile === "Directeur Pièce et Service" || $profile === "Directeur des Opérations" || $profile === "Admin") {
-        // Directeur Filiale ou Admin : limiter au pays de l'utilisateur
-        $filter['country'] = $_SESSION['country'] ?? null; // Toujours utiliser le pays de la session
+    } elseif ($profile === "Directeur Général") {
+        // Directeur Général : limiter à sa filiale
+        $filter['subsidiary'] = $_SESSION['subsidiary'] ?? null;
         if ($level) {
             $filter['level'] = $level;
         }
-        // Si l'utilisateur est Admin et a un département non vide et non null, limiter au département
-        if ($profile === "Admin" && !empty($_SESSION['department']) && $_SESSION['department'] !== null) {
-            // Ajouter le filtre sur le département tout en conservant le filtre $or pour techniciens et managers
-            $filter['department'] = $_SESSION['department'];
+    } elseif ($profile === "Directeur Pièce et Service" || $profile === "Directeur des Opérations" || $profile === "Admin") {
+        // Directeur Filiale ou Admin : limiter au pays de l'utilisateur
+        $filter['country'] = $_SESSION['country'] ?? null;
+        // Admin est restreint à sa propre filiale (subsidiary)
+        if ($profile === "Admin" && isset($_SESSION['subsidiary']) && $_SESSION['subsidiary'] !== null) {
+            $filter['subsidiary'] = $_SESSION['subsidiary'];
+        }
+        if ($level) {
+            $filter['level'] = $level;
         }
     } elseif ($profile === "Manager") {
         // Manager : limiter au pays de l'utilisateur
@@ -66,6 +72,23 @@ function filterUsersByProfile($academy, $profile, $country = null, $level = null
     // Ajouter un filtre de manager si spécifié
     if ($managerId && $managerId !== 'all') {
         $filter['manager'] = new ObjectId($managerId);
+    }
+
+    // Ajouter le filtre de département généralisé (sauf pour les profils transverses sans restriction)
+    if (!in_array($profile, ["Directeur Groupe", "Super Admin", "Directeur Général"]) && !empty($_SESSION['department']) && $_SESSION['department'] !== null) {
+        $userDept = trim($_SESSION['department']);
+        $deptArray = [$userDept];
+        
+        // Si le département est multiple (ex: "Equipment & Motors"), on sépare les parties
+        if (strpos($userDept, '&') !== false) {
+            $parts = explode('&', $userDept);
+            foreach ($parts as $part) {
+                $deptArray[] = trim($part);
+            }
+        }
+        
+        // Filtrer avec $in pour inclure le département complet et ses sous-parties
+        $filter['department'] = ['$in' => $deptArray];
     }
 
     // Exécuter la requête et retourner les résultats

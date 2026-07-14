@@ -104,7 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['lang'] = 'fr';
         }
         setcookie('lang', $_SESSION['lang'], time() + 31536000, '/');
-        header("Location: views/portal");
+        $redirectAfterLogin = 'views/portal';
+        if (strcasecmp((string)($login['profile'] ?? ''), 'Candidat') === 0) {
+            $redirectAfterLogin = 'views/measure/candidatePaperHome';
+        }
+        header("Location: " . $redirectAfterLogin);
         exit;
     }
 }
@@ -361,6 +365,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <button type="submit" name="login" class="submit-btn" id="submitBtn"><?php echo htmlspecialchars($acceder); ?></button>
             </form>
+            
         </div>
     </aside>
 </main>

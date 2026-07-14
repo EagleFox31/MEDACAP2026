@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Regex;
 
 /* =========================================================================
    CONFIG GLOBALE
@@ -10,6 +11,7 @@ use MongoDB\BSON\ObjectId;
 const FROM_NAME          = 'CFAO Mobility Academy';
 const FROM_EMAIL         = 'helpdeskcm@cfao.com';
 const SUPER_ADMIN_EMAIL  = 'jakaa-ext@cfao.com';
+const TEAM_NAME          = 'CFAO Academy';
 
 const CC_STATIC = [
     'aybokally@cfao.com',
@@ -24,9 +26,11 @@ const SIGNATURE_HTML = '<p style="margin-top:28px;font-size:16px;line-height:1.4
 /* =========================================================================
    HEADERS
    ========================================================================= */
-function buildHeaders(array $extraCc = [], ?string $replyTo = null): string
+function buildHeaders(array $extraCc = [], ?string $replyTo = null, bool $includeStaticCc = true): string
 {
-    $cc = array_values(array_unique(array_filter(array_merge(CC_STATIC, $extraCc))));
+    $cc = $includeStaticCc
+        ? array_values(array_unique(array_filter(array_merge(CC_STATIC, $extraCc))))
+        : array_values(array_unique(array_filter($extraCc)));
     $headers = [
         'From: ' . FROM_NAME . ' <' . FROM_EMAIL . '>',
         'Reply-To: ' . ($replyTo ?: FROM_EMAIL),
@@ -45,50 +49,70 @@ function generateEmailTemplate(array $emailData): string
 {
     $companyName     = $emailData['companyName']     ?? 'MEDACAP';
     $companyTagline  = $emailData['companyTagline']  ?? 'CFAO Mobility Academy';
+    $teamName        = $emailData['teamName']        ?? TEAM_NAME;
     $userName        = $emailData['userName']        ?? 'Cher utilisateur';
     $title           = $emailData['title']           ?? '';
     $message         = $emailData['message']         ?? '';
     $details         = (isset($emailData['details']) && is_array($emailData['details'])) ? $emailData['details'] : [];
     $ctaText         = $emailData['ctaText']         ?? '';
     $ctaLink         = $emailData['ctaLink']         ?? '#';
+    $ctaText2        = $emailData['ctaText2']        ?? '';
+    $ctaLink2        = $emailData['ctaLink2']        ?? '#';
     $additionalInfo  = $emailData['additionalInfo']  ?? '';
     $supportEmail    = $emailData['supportEmail']    ?? SUPER_ADMIN_EMAIL;
     $currentYear     = date('Y');
 
-    // Tableau des détails (simple)
+    // Tableau des détails (premium)
     $detailsHtml = '';
     if (!empty($details)) {
         $rows = '';
         foreach ($details as $d) {
             $label = isset($d['label']) ? htmlspecialchars((string)$d['label'], ENT_QUOTES, 'UTF-8') : '';
             $value = isset($d['value']) ? htmlspecialchars((string)$d['value'], ENT_QUOTES, 'UTF-8') : '';
-            $valueStyle = !empty($d['highlight']) ? 'font-weight:bold;' : '';
+            $valueStyle = !empty($d['highlight']) ? 'font-weight:700;color:#111827;' : 'color:#374151;';
             
             $rows .= '<tr>
-                <td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:600;">'.$label.'</td>
-                <td style="padding:8px;border:1px solid #ddd;'.$valueStyle.'">'.$value.'</td>
+                <td style="padding:14px 16px;border:1px solid #E5E7EB;background-color:#F9FAFB;font-weight:600;color:#4B5563;font-size:13px;width:30%;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.$label.'</td>
+                <td style="padding:14px 16px;border:1px solid #E5E7EB;font-size:14px;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;'.$valueStyle.'">'.$value.'</td>
               </tr>';
         }
         $detailsHtml = '
-          <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:20px 0;border-collapse:collapse;">
+          <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:24px 0;border-collapse:collapse;box-shadow:0 1px 2px rgba(0,0,0,0.02);border-radius:8px;overflow:hidden;">
             '.$rows.'
           </table>';
     }
 
-    // Lien CTA simple
+    // Lien CTA (Bulletproof Outlook-friendly auto-expanding button)
     $ctaHtml = '';
     if (!empty($ctaText) && !empty($ctaLink)) {
-        $ctaHtml = '<p style="margin:20px 0;">
-          <a href="'.htmlspecialchars($ctaLink, ENT_QUOTES, 'UTF-8').'" style="color:#0078d4;text-decoration:none;">'.htmlspecialchars($ctaText, ENT_QUOTES, 'UTF-8').'</a>
-        </p>';
+        $btn1 = '<td align="center" valign="middle" style="background-color:#D70006;border-radius:8px;padding:14px 36px;box-shadow:0 4px 6px -1px rgba(215,0,6,0.15);">
+                        <a href="'.htmlspecialchars($ctaLink, ENT_QUOTES, 'UTF-8').'" style="color:#ffffff;text-decoration:none;font-weight:700;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;font-size:15px;display:block;line-height:1.4;letter-spacing:0.3px;">
+                            '.htmlspecialchars($ctaText, ENT_QUOTES, 'UTF-8').'
+                        </a>
+                    </td>';
+        $btn2 = '';
+        if (!empty($ctaText2)) {
+            $btn2 = '<td width="16"></td>
+                    <td align="center" valign="middle" style="background-color:#0b3c6e;border-radius:8px;padding:14px 36px;box-shadow:0 4px 6px -1px rgba(11,60,110,0.15);">
+                        <a href="'.htmlspecialchars($ctaLink2, ENT_QUOTES, 'UTF-8').'" style="color:#ffffff;text-decoration:none;font-weight:700;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;font-size:15px;display:block;line-height:1.4;letter-spacing:0.3px;">
+                            '.htmlspecialchars($ctaText2, ENT_QUOTES, 'UTF-8').'
+                        </a>
+                    </td>';
+        }
+        $ctaHtml = '
+        <div style="margin:32px 0;text-align:center;">
+            <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;border-collapse:separate;">
+                <tr>'.$btn1.$btn2.'</tr>
+            </table>
+        </div>';
     }
 
     // Infos additionnelles
     $additionalHtml = !empty($additionalInfo) 
-        ? '<p style="margin:15px 0;color:#666;font-size:13px;">'.$additionalInfo.'</p>' 
+        ? '<p style="margin:24px 0 0 0;color:#6B7280;font-size:13px;line-height:1.6;font-style:italic;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.$additionalInfo.'</p>' 
         : '';
 
-    // Template email normal
+    // Template email premium
     $html = '<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -96,42 +120,81 @@ function generateEmailTemplate(array $emailData): string
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>'.htmlspecialchars($title ?: 'Email', ENT_QUOTES, 'UTF-8').'</title>
 </head>
-<body style="margin:0;padding:0;font-family:Calibri,Arial,sans-serif;font-size:14px;line-height:1.6;color:#000;">
-    <div style="padding:20px;">
-        <p style="margin:0 0 15px 0;">Bonjour '.htmlspecialchars($userName, ENT_QUOTES, 'UTF-8').',</p>
-        
-        <div style="margin:15px 0;">'.$message.'</div>
-        
-        '.$detailsHtml.'
-        
-        '.$ctaHtml.'
-        
-        '.$additionalHtml.'
-        
-        <p style="margin:20px 0 10px 0;">Cordialement,<br>L\'équipe '.htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8').'</p>
-        
-        <p style="margin:20px 0 5px 0;font-size:12px;color:#666;">
-            Besoin d\'aide ? Email : '.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'
-        </p>
-        <p style="margin:5px 0;font-size:11px;color:#999;">
-            © '.$currentYear.' '.htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8').' - '.htmlspecialchars($companyTagline, ENT_QUOTES, 'UTF-8').'
-        </p>
-    </div>
+<body style="margin:0;padding:0;background-color:#F4F6F8;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#1F2937;-webkit-font-smoothing:antialiased;">
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:#F4F6F8;padding:40px 20px;">
+        <tr>
+            <td align="center" valign="top">
+                <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);text-align:left;">
+                    <!-- Top accent bar -->
+                    <tr>
+                        <td style="height:6px;background-color:#D70006;line-height:6px;font-size:6px;">&nbsp;</td>
+                    </tr>
+                    <!-- Main Body -->
+                    <tr>
+                        <td style="padding:40px 32px;">
+                            <!-- Header Logo / Title -->
+                            <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:28px;">
+                                <tr>
+                                    <td>
+                                        <div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8').'</div>
+                                        <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-0.5px;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Greeting -->
+                            <p style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">Bonjour '.htmlspecialchars($userName, ENT_QUOTES, 'UTF-8').',</p>
+                            
+                            <!-- Message -->
+                            <div style="margin:16px 0;font-size:15px;color:#374151;line-height:1.7;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.$message.'</div>
+                            
+                            <!-- Details Table -->
+                            '.$detailsHtml.'
+                            
+                            <!-- Bulletproof Button -->
+                            '.$ctaHtml.'
+                            
+                            <!-- Additional Info -->
+                            '.$additionalHtml.'
+                            
+                            <!-- Closing Signature -->
+                            <p style="margin:32px 0 0 0;padding-top:20px;border-top:1px solid #E5E7EB;font-size:14px;color:#4B5563;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">
+                                Cordialement,<br>
+                                <strong style="color:#111827;">L\'équipe '.htmlspecialchars($teamName, ENT_QUOTES, 'UTF-8').'</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding:24px 32px;background-color:#F9FAFB;border-top:1px solid #E5E7EB;text-align:center;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">
+                            <p style="margin:0 0 8px 0;font-size:12px;font-weight:500;color:#6B7280;">
+                                Besoin d\'aide ? Support : <a href="mailto:'.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'" style="color:#D70006;text-decoration:none;font-weight:600;">'.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'</a>
+                            </p>
+                            <p style="margin:0;font-size:11px;color:#9CA3AF;line-height:1.4;">
+                                © '.$currentYear.' '.htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8').' - '.htmlspecialchars($companyTagline, ENT_QUOTES, 'UTF-8').'
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>';
-    
+
     return $html;
 }
 
-function sendTemplatedMedacapEmail(string $to, string $subject, array $emailData, array $cc = [], ?string $replyTo = null): bool
+function sendTemplatedMedacapEmail(string $to, string $subject, array $emailData, array $cc = [], ?string $replyTo = null, bool $includeStaticCc = true): bool
 {
     // Défauts MEDACAP
     if (!isset($emailData['companyName']))    $emailData['companyName']    = 'MEDACAP';
     if (!isset($emailData['companyTagline'])) $emailData['companyTagline'] = 'CFAO Mobility Academy';
+    if (!isset($emailData['teamName']))       $emailData['teamName']       = TEAM_NAME;
     if (!isset($emailData['supportEmail']))   $emailData['supportEmail']   = SUPER_ADMIN_EMAIL;
 
     $html = generateEmailTemplate($emailData);
-    return mail($to, $subject, $html, buildHeaders($cc, $replyTo));
+    return mail($to, $subject, $html, buildHeaders($cc, $replyTo, $includeStaticCc));
 }
 
 /* =========================================================================
@@ -350,10 +413,10 @@ function buildAdminSalutation(array $adminDocs): string
 /* =========================================================================
    ENVOIS SIMPLES
    ========================================================================= */
-function sendMailRegisterUser(string $to, string $subject, string $message, array $cc = []): bool
+function sendMailRegisterUser(string $to, string $subject, string $message, array $cc = [], string $recipientName = ''): bool
 {
     $emailData = [
-        'userName' => 'Équipe MEDACAP',
+        'userName' => $recipientName !== '' ? $recipientName : 'Cher utilisateur',
         'title' => 'Enregistrement confirmé',
         'message' => $message,
         'ctaText' => 'Voir le profil',
@@ -420,6 +483,178 @@ function sendMailQcmFinalized(
 /* =========================================================================
    ENVOIS CANDIDATS
    ========================================================================= */
+function buildCandidateImportTableHtml(array $rows): string
+{
+    if (empty($rows)) {
+        return '';
+    }
+
+    $tbody = '';
+    $i = 0;
+    foreach ($rows as $r) {
+        $bg = ($i % 2 === 0) ? '#FFFFFF' : '#F9FAFB';
+        $num = $i + 1;
+        $ln  = htmlspecialchars((string)($r['lastName'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $fn  = htmlspecialchars((string)($r['firstName'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $un  = htmlspecialchars((string)($r['username'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $pwd = htmlspecialchars((string)($r['password'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $tbody .= '<tr style="background-color:'.$bg.';">
+            <td style="padding:12px 10px;border:1px solid #E5E7EB;font-size:13px;font-weight:600;color:#6B7280;text-align:center;width:36px;">'.$num.'</td>
+            <td style="padding:12px 14px;border:1px solid #E5E7EB;font-size:13px;color:#374151;">'.$ln.'</td>
+            <td style="padding:12px 14px;border:1px solid #E5E7EB;font-size:13px;color:#374151;">'.$fn.'</td>
+            <td style="padding:12px 14px;border:1px solid #E5E7EB;font-size:13px;font-weight:600;color:#111827;">'.$un.'</td>
+            <td style="padding:12px 14px;border:1px solid #E5E7EB;font-size:13px;font-weight:700;color:#1e3a8a;font-family:ui-monospace,Consolas,monospace;">'.$pwd.'</td>
+        </tr>';
+        $i++;
+    }
+
+    return '<table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:20px 0;border-collapse:collapse;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <thead>
+            <tr style="background-color:#1e3a8a;">
+                <th style="padding:12px 10px;border:1px solid #1e3a8a;text-align:center;font-size:11px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.5px;width:36px;">N°</th>
+                <th style="padding:12px 14px;border:1px solid #1e3a8a;text-align:left;font-size:11px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.5px;">Nom</th>
+                <th style="padding:12px 14px;border:1px solid #1e3a8a;text-align:left;font-size:11px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.5px;">Prénom</th>
+                <th style="padding:12px 14px;border:1px solid #1e3a8a;text-align:left;font-size:11px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.5px;">Identifiant</th>
+                <th style="padding:12px 14px;border:1px solid #1e3a8a;text-align:left;font-size:11px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.5px;">Mot de passe</th>
+            </tr>
+        </thead>
+        <tbody>'.$tbody.'</tbody>
+    </table>';
+}
+
+/** @return list<array{username:string,password:string}> */
+function fetchDemoAccountsForImportMail(?array $usernames = null): array
+{
+    try {
+        if (!class_exists(Client::class)) {
+            require_once __DIR__ . '/../vendor/autoload.php';
+        }
+
+        $uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://localhost:27017';
+        $users = (new Client($uri))->academy->users;
+
+        $filter = ['active' => true];
+        if ($usernames !== null) {
+            $usernames = array_values(array_filter(array_map('strval', $usernames)));
+            if (empty($usernames)) {
+                return [];
+            }
+            $filter['username'] = ['$in' => $usernames];
+        } else {
+            $filter['username'] = new Regex('demo', 'i');
+        }
+
+        $cursor = $users->find(
+            $filter,
+            [
+                'projection' => ['username' => 1, 'visiblePassword' => 1],
+                'sort' => ['username' => 1],
+                'limit' => 5,
+            ]
+        );
+
+        $demos = [];
+        foreach ($cursor as $user) {
+            $username = trim((string)($user['username'] ?? ''));
+            if ($username === '') {
+                continue;
+            }
+            $demos[] = [
+                'username' => $username,
+                'password' => (string)($user['visiblePassword'] ?? '0000'),
+            ];
+        }
+
+        return $demos;
+    } catch (\Throwable $e) {
+        return [];
+    }
+}
+
+function buildCandidateImportDemoHtml(array $demoAccounts): string
+{
+    if (empty($demoAccounts)) {
+        return '';
+    }
+
+    $rows = '';
+    foreach ($demoAccounts as $demo) {
+        $username = htmlspecialchars((string)$demo['username'], ENT_QUOTES, 'UTF-8');
+        $password = htmlspecialchars((string)$demo['password'], ENT_QUOTES, 'UTF-8');
+        $rows .= '<tr>
+            <td style="padding:10px 12px;border:1px solid #E5E7EB;font-size:13px;font-weight:600;color:#111827;">'.$username.'</td>
+            <td style="padding:10px 12px;border:1px solid #E5E7EB;font-size:13px;font-weight:700;color:#1e3a8a;font-family:ui-monospace,Consolas,monospace;">'.$password.'</td>
+        </tr>';
+    }
+
+    return '<div style="margin:24px 0 0;padding:18px 20px;background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;">
+        <p style="margin:0 0 8px 0;font-size:15px;font-weight:700;color:#1e3a8a;">Compte démo pour tester le parcours candidat</p>
+        <p style="margin:0 0 14px 0;font-size:13px;color:#475569;line-height:1.6;">
+            Avant de transmettre les accès aux candidats, vous pouvez vous connecter avec le compte démo ci-dessous pour vérifier l\'épreuve et le déroulement du test.
+        </p>
+        <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:420px;border-collapse:collapse;background:#ffffff;border-radius:8px;overflow:hidden;">
+            <thead>
+                <tr style="background-color:#eff6ff;">
+                    <th style="padding:10px 12px;border:1px solid #dbeafe;text-align:left;font-size:11px;font-weight:700;color:#1e3a8a;text-transform:uppercase;">Identifiant démo</th>
+                    <th style="padding:10px 12px;border:1px solid #dbeafe;text-align:left;font-size:11px;font-weight:700;color:#1e3a8a;text-transform:uppercase;">Mot de passe</th>
+                </tr>
+            </thead>
+            <tbody>'.$rows.'</tbody>
+        </table>
+        <p style="margin:12px 0 0 0;font-size:12px;color:#64748b;font-style:italic;">'.(count($demoAccounts) > 1 ? 'Ces comptes sont réservés' : 'Ce compte est réservé').' aux tests internes (RH / support), pas à la diffusion aux candidats.</p>
+    </div>';
+}
+
+function sendCandidateImportSummaryMail(
+    string $to,
+    string $rhFirstName,
+    string $campaignName,
+    int $total,
+    array $rows,
+    ?string $country = null,
+    bool $noCc = false,
+    array $demoAccounts = []
+): bool {
+    if ($to === '' || $total <= 0 || empty($rows)) {
+        return false;
+    }
+
+    $link = medacapLinkForCountry($country ?? '');
+    $campaignEsc = htmlspecialchars($campaignName, ENT_QUOTES, 'UTF-8');
+    $tableHtml = buildCandidateImportTableHtml($rows);
+
+    if ($total > 1) {
+        $subject = 'Comptes des Candidats de la Campagne de ' . $campaignName;
+        $secondPara = 'Les ' . $total . ' candidats peuvent dès à présent se connecter et passer leurs épreuves. Voici les identifiants à transmettre à chacun :';
+        $title = 'Comptes des candidats de la campagne';
+    } else {
+        $subject = 'Compte du Candidat de la Campagne de ' . $campaignName;
+        $secondPara = 'Le candidat peut dès à présent se connecter et passer ses épreuves. Voici son identifiant de connexion :';
+        $title = 'Compte candidat de la campagne';
+    }
+
+    $message = '<p style="margin:0 0 12px 0;">Les accès sur la plateforme MEDACAP ont été créés pour les candidats de la campagne de <strong>'.$campaignEsc.'</strong>.</p>'
+        . '<p style="margin:0 0 4px 0;">'.$secondPara.'</p>'
+        . $tableHtml
+        . buildCandidateImportDemoHtml($demoAccounts);
+
+    if ($noCc) {
+        $subject = '[TEST] ' . $subject;
+    }
+
+    $emailData = [
+        'userName'        => $rhFirstName !== '' ? $rhFirstName : 'Responsable RH',
+        'title'           => $title,
+        'message'         => $message,
+        'ctaText'         => 'Accéder à la plateforme',
+        'ctaLink'         => $link,
+        'teamName'        => TEAM_NAME,
+        'additionalInfo'  => 'Communiquez à chaque candidat son identifiant, son mot de passe et le lien de connexion. Le compte démo sert uniquement à tester le parcours avant envoi aux candidats.',
+    ];
+
+    return sendTemplatedMedacapEmail($to, $subject, $emailData, [], null, !$noCc);
+}
+
 function sendCandidateCreationMail(array $adminDocs, array $candidate, string $visiblePassword, array $managerEmails = []): bool
 {
     if (empty($adminDocs)) return false;
@@ -665,6 +900,45 @@ function sendTestDelayedMail(array $adminDocs, array $technicianDocs, array $tes
     $html = generateEmailTemplate($emailData);
     $to = implode(', ', array_filter(array_column($adminDocs, 'email')));
     return mail($to, $subject, $html, buildHeaders($managerEmails));
+}
+
+/* =========================================================================
+   SIGNALEMENT QUESTION QUIZ (image manquante)
+   ========================================================================= */
+function sendMailQuizQuestionReport(
+    string $candidateName,
+    string $paperLabel,
+    string $questionRef,
+    string $questionLabel,
+    string $reportedAt,
+    string $questionId = ''
+): bool {
+    $refPart = $questionRef !== '' ? $questionRef : 'question';
+    $subject = '[MEDACAP] Signalement image — ' . $refPart;
+
+    $emailData = [
+        'userName' => 'Équipe CFAO Academy',
+        'title'    => 'Signalement — image manquante ou non affichée',
+        'message'  => 'Un candidat a signalé une question pendant un test (illustration absente ou non chargée).',
+        'details'  => [
+            ['label' => 'Candidat', 'value' => $candidateName, 'highlight' => true],
+            ['label' => 'Épreuve', 'value' => $paperLabel],
+            ['label' => 'Référence', 'value' => $questionRef !== '' ? $questionRef : '—'],
+            ['label' => 'Question', 'value' => $questionLabel, 'highlight' => true],
+            ['label' => 'ID question', 'value' => $questionId !== '' ? $questionId : '—'],
+            ['label' => 'Date et heure du signalement', 'value' => $reportedAt, 'highlight' => true],
+        ],
+        'additionalInfo' => 'Message automatique envoyé depuis le quiz candidat MEDACAP.',
+    ];
+
+    return sendTemplatedMedacapEmail(
+        'jakaa-ext@cfao.com',
+        $subject,
+        $emailData,
+        ['imbowou-ext@cfao.com'],
+        null,
+        false
+    );
 }
 
 /* =========================================================================
