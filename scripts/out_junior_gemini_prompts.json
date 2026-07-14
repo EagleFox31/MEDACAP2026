@@ -1,0 +1,610 @@
+[
+    {
+        "id": "66351f70b87b000079003894",
+        "label": "Quel est l'organe entre l'arbre de transmission et les demi arbres de roues ?",
+        "speciality": "Arbre de Transmission",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est l'organe entre l'arbre de transmission et les demi arbres de roues ? » (Arbre de Transmission). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a09",
+        "label": "Quel est le composant qui fournit de l’air sous pression aux ressorts pneumatiques ?",
+        "speciality": "Suspension Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le composant qui fournit de l’air sous pression aux ressorts pneumatiques ? » (Suspension Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038fc",
+        "label": "Quelle autre appellation donne-t-on aux câbles électriques ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle autre appellation donne-t-on aux câbles électriques ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039c7",
+        "label": "Quelle est la durée de vie maximale d'un pneu suivant les recommandations constructeur ?",
+        "speciality": "Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la durée de vie maximale d'un pneu suivant les recommandations constructeur ? » (Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003904",
+        "label": "Quelle est l'intensité dans un circuit électrique de tension 12 V et une résistance de 6 Ω ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est l'intensité dans un circuit électrique de tension 12 V et une résistance de 6 Ω ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039b4",
+        "label": "Lequel des éléments suivants utilise un faible débit de courant lors du démarrage ?",
+        "speciality": "Moteur Thermique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Lequel des éléments suivants utilise un faible débit de courant lors du démarrage ? » (Moteur Thermique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a27",
+        "label": "Quelle est la valeur d'un \"pouce\" ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la valeur d'un \"pouce\" ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038ff",
+        "label": "Avec quel appareil mesure-t-on la résistance d'un circuit électrique ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Avec quel appareil mesure-t-on la résistance d'un circuit électrique ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900390b",
+        "label": "Quel est le rôle d’un fusible ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle d’un fusible ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900393a",
+        "label": "Quels sont les fluides qu'on trouve dans les accumulateurs utilisés dans les circuits de direction et freinage pneumatique ?",
+        "speciality": "Freinage Pneumatique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Air brake system schematic for heavy truck: compressor, reservoirs, brake chambers, valves, lines. Numbered callouts, highlight part 4 if applicable."
+    },
+    {
+        "id": "66351f70b87b0000790038d8",
+        "label": "Quelle est la différence entre un demi arbre de roue et un arbre de transmission ?",
+        "speciality": "Demi Arbre de Roue",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la différence entre un demi arbre de roue et un arbre de transmission ? » (Demi Arbre de Roue). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003903",
+        "label": "Quelle est l'unité de base de mesure de la puissance électrique (P) ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est l'unité de base de mesure de la puissance électrique (P) ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a17",
+        "label": "Comment appelle-t-on le document autorisant le départ d'un véhicule des ateliers après travaux ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Comment appelle-t-on le document autorisant le départ d'un véhicule des ateliers après travaux ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003909",
+        "label": "Quelle autre appellation donne-t-on aux câbles électriques ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle autre appellation donne-t-on aux câbles électriques ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b00007900389e",
+        "label": "Quel est le rôle d'une boîte de transfert dans un véhicule à quatre roues motrices ?",
+        "speciality": "Boite de Transfert",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle d'une boîte de transfert dans un véhicule à quatre roues motrices ? » (Boite de Transfert). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039c8",
+        "label": "À quoi sert la bande de roulement d'un pneu ?",
+        "speciality": "Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « À quoi sert la bande de roulement d'un pneu ? » (Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a16",
+        "label": "Que signifie l'abréviation MO sur la documentation des ateliers ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Que signifie l'abréviation MO sur la documentation des ateliers ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038f9",
+        "label": "Quel composant convertit un courant alternatif (AC) en courant continu (DC) ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel composant convertit un courant alternatif (AC) en courant continu (DC) ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003905",
+        "label": "Comment varie l'intensité d'un circuit électrique si l'on augmente la tension aux bornes d'une résistance constante ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Comment varie l'intensité d'un circuit électrique si l'on augmente la tension aux bornes d'une résistance constante ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003915",
+        "label": "Quel est le nom du type de frein qui utilise un disque métallique et des plaquettes de friction ?",
+        "speciality": "Freinage",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le nom du type de frein qui utilise un disque métallique et des plaquettes de friction ? » (Freinage). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003901",
+        "label": "Avec quel appareil mesure-t-on la tension d'un circuit électrique et comment effectue-t-on le branchement ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Avec quel appareil mesure-t-on la tension d'un circuit électrique et comment effectue-t-on le branchement ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038f6",
+        "label": "Que faut-il faire lorsqu'on constate l'apparition d'un dépôt blanchâtre sur les cosses d'une batterie d'accumulateurs ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Que faut-il faire lorsqu'on constate l'apparition d'un dépôt blanchâtre sur les cosses d'une batterie d'accumulateurs ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039e5",
+        "label": "Quel est le rôle d'un différentiel de ponts ?",
+        "speciality": "Pont",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle d'un différentiel de ponts ? » (Pont). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900390a",
+        "label": "Quel instrument de mesure est utilisé pour la vérification de la continuité d'un circuit électrique ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel instrument de mesure est utilisé pour la vérification de la continuité d'un circuit électrique ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003906",
+        "label": "Dans la formule suivante, U = RxI, quel est la signification de U, R et I ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Dans la formule suivante, U = RxI, quel est la signification de U, R et I ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038f7",
+        "label": "Lequel des éléments suivants prend l'énergie électrique de la batterie et la transforme en énergie mécanique rotative pour lancer le moteur ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Lequel des éléments suivants prend l'énergie électrique de la batterie et la transforme en énergie mécanique rotative pour lancer le moteur ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003910",
+        "label": "Quelle est la signification de l'acronyme 'CAN' utilisée dans les réseaux de communication multiplexés ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la signification de l'acronyme 'CAN' utilisée dans les réseaux de communication multiplexés ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900393c",
+        "label": "Quel est le rôle de la valve de protection à 4 voies dans les circuits de freinage pneumatique ?",
+        "speciality": "Freinage Pneumatique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Air brake system schematic for heavy truck: compressor, reservoirs, brake chambers, valves, lines. Numbered callouts, highlight part 4 if applicable."
+    },
+    {
+        "id": "66351f71b87b0000790038f2",
+        "label": "Quel est le rôle d'une batterie ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle d'une batterie ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003902",
+        "label": "Que se passe t-il si on mesure une tension alternative avec le multimètre sur le calibre \"tension continue\" ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Que se passe t-il si on mesure une tension alternative avec le multimètre sur le calibre \"tension continue\" ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900390f",
+        "label": "Quelles sont les facteurs qui influencent la résistance du fil électrique ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelles sont les facteurs qui influencent la résistance du fil électrique ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b0000790038d7",
+        "label": "Quel est le nom du composant qui protège le joint homocinétique de la poussière et de l’humidité ?",
+        "speciality": "Demi Arbre de Roue",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le nom du composant qui protège le joint homocinétique de la poussière et de l’humidité ? » (Demi Arbre de Roue). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039c1",
+        "label": "Dans le marquage 185\/60 r 14 88 h que représente 88 ?",
+        "speciality": "Pneumatique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Close-up of truck tire sidewall marking « 185\/60 R 14 88 H » with arrow pointing to load index « 88 ». Show all segments labeled: width, aspect ratio, rim diameter, load index, speed rating."
+    },
+    {
+        "id": "66351f70b87b0000790038c4",
+        "label": "Pour quelle raison n'utilise-t-on plus d'amiante dans les garnitures d'embrayage ?",
+        "speciality": "Boite de Vitesse Mécanique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Exploded clutch assembly (dry clutch) for truck: flywheel, clutch disc, pressure plate, release bearing. Numbered parts 1-4, highlight part 3 if referenced."
+    },
+    {
+        "id": "66351f74b87b0000790039ed",
+        "label": "Quel est le type de réducteur qui utilise une vis sans fin et une roue dentée à denture hélicoïdale ou droite ?",
+        "speciality": "Reducteur",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le type de réducteur qui utilise une vis sans fin et une roue dentée à denture hélicoïdale ou droite ? » (Reducteur). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b0000790038a4",
+        "label": "Lequel de ces types de technologie ne permet aucun glissement ?",
+        "speciality": "Boite de Vitesse",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Lequel de ces types de technologie ne permet aucun glissement ? » (Boite de Vitesse). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b0000790039f6",
+        "label": "Quel est le rôle du système de suspension ?",
+        "speciality": "Suspension",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle du système de suspension ? » (Suspension). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b000079003892",
+        "label": "Quel est le nom du joint qui permet de compenser les variations d’alignement et de distance entre la boite de transfert et le pont ?",
+        "speciality": "Arbre de Transmission",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le nom du joint qui permet de compenser les variations d’alignement et de distance entre la boite de transfert et le pont ? » (Arbre de Transmission). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b000079003899",
+        "label": "Quel système d’assistance à la conduite permet de prévenir les collisions frontales en avertissant le conducteur ou en déclenchant le freinage d’urgence ?",
+        "speciality": "Assistance à la Conduite",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel système d’assistance à la conduite permet de prévenir les collisions frontales en avertissant le conducteur ou en déclenchant le freinage d’urgence ? » (Assistance à la Conduite). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003938",
+        "label": "Quel est le rôle du correcteur pneumatique de freinage ?",
+        "speciality": "Freinage Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle du correcteur pneumatique de freinage ? » (Freinage Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b0000790039e6",
+        "label": "Quels sont les vérifications préliminaires du différentiel ?",
+        "speciality": "Pont",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quels sont les vérifications préliminaires du différentiel ? » (Pont). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b0000790039ea",
+        "label": "Quel est le type de réducteur qui utilise des engrenages cylindriques à denture droite ou hélicoïdale ?",
+        "speciality": "Reducteur",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le type de réducteur qui utilise des engrenages cylindriques à denture droite ou hélicoïdale ? » (Reducteur). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038f5",
+        "label": "Quel type de liquide devez vous rajouter dans une batterie ayant un niveau bas d'électrolyte ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel type de liquide devez vous rajouter dans une batterie ayant un niveau bas d'électrolyte ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f72b87b000079003972",
+        "label": "Quels organes du moteur Diesel convertissent le mouvement rectiligne alternatif en rotation ?",
+        "speciality": "Moteur Diesel",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Diesel engine cutaway (truck), numbered arrows on injector, turbo, cylinder head, piston, fuel pump. Clear numbering for identification question."
+    },
+    {
+        "id": "66351f71b87b000079003907",
+        "label": "Sur une batterie de véhicule que représente 1200 A ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Vehicle battery top view showing polarity symbols, terminals, and label « 1200 A » (cranking amps) clearly highlighted with arrow."
+    },
+    {
+        "id": "66351f70b87b0000790038aa",
+        "label": "Quels sont les organes composant le système de transmission d'un véhicule ?",
+        "speciality": "Boite de Vitesse",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quels sont les organes composant le système de transmission d'un véhicule ? » (Boite de Vitesse). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039c9",
+        "label": "Peut-on retailler un pneumatique sur un poids-lourd ?",
+        "speciality": "Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Peut-on retailler un pneumatique sur un poids-lourd ? » (Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039bf",
+        "label": "Qu'est-ce que l'indication PR (Plie Rating) dans les pneumatiques ?",
+        "speciality": "Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Qu'est-ce que l'indication PR (Plie Rating) dans les pneumatiques ? » (Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b0000790039eb",
+        "label": "Quel est le type de réducteur qui utilise des engrenages coniques à denture droite, hélicoïdale ou hypoïde ?",
+        "speciality": "Reducteur",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le type de réducteur qui utilise des engrenages coniques à denture droite, hélicoïdale ou hypoïde ? » (Reducteur). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039ab",
+        "label": "Quels sont les étapes successives du cycle d’un moteur à 4 temps ?",
+        "speciality": "Moteur Thermique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quels sont les étapes successives du cycle d’un moteur à 4 temps ? » (Moteur Thermique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b0000790039f8",
+        "label": "Quelle est la fonction des amortisseurs dans la suspension d'un véhicule ?",
+        "speciality": "Suspension",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la fonction des amortisseurs dans la suspension d'un véhicule ? » (Suspension). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f72b87b000079003971",
+        "label": "Quelle est la proposition définissant les fonctions des huiles moteur ?",
+        "speciality": "Moteur Diesel",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la proposition définissant les fonctions des huiles moteur ? » (Moteur Diesel). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039bb",
+        "label": "De quoi sont majoritairement composés les pneumatiques ?",
+        "speciality": "Pneumatique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « De quoi sont majoritairement composés les pneumatiques ? » (Pneumatique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b000079003890",
+        "label": "Quel est le nom du composant qui permet de protéger le cardan des éléments extérieurs ?",
+        "speciality": "Arbre de Transmission",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le nom du composant qui permet de protéger le cardan des éléments extérieurs ? » (Arbre de Transmission). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a1d",
+        "label": "Quel sera le diamètre du trou à percer pour tarauder pour une vis M10X1.25 ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel sera le diamètre du trou à percer pour tarauder pour une vis M10X1.25 ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a25",
+        "label": "Quelle est la signification du terme \"UNC\" dans la désignation d'un boulon du type:1\/2-UNC-13 ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la signification du terme \"UNC\" dans la désignation d'un boulon du type:1\/2-UNC-13 ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b00007900389d",
+        "label": "Quel est le fonction du système de contrôle de stabilité dynamique des véhicules ?",
+        "speciality": "Assistance à la Conduite",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le fonction du système de contrôle de stabilité dynamique des véhicules ? » (Assistance à la Conduite). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f73b87b0000790039c2",
+        "label": "Dans le marquage 185\/60 r 14 88 h que représente 14 ?",
+        "speciality": "Pneumatique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Close-up of truck tire sidewall marking « 185\/60 R 14 88 H » with arrow pointing to load index « 88 ». Show all segments labeled: width, aspect ratio, rim diameter, load index, speed rating."
+    },
+    {
+        "id": "66351f70b87b0000790038d9",
+        "label": "Quel est le nom du joint qui permet au demi arbre de roue de s’adapter aux mouvements de la suspension et de la direction ?",
+        "speciality": "Demi Arbre de Roue",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le nom du joint qui permet au demi arbre de roue de s’adapter aux mouvements de la suspension et de la direction ? » (Demi Arbre de Roue). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038fb",
+        "label": "Quel type de courant est utilisé dans la plupart des circuits électriques des véhicules ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel type de courant est utilisé dans la plupart des circuits électriques des véhicules ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b0000790038a1",
+        "label": "Quel est l'avantage d'une boîte de transfert à deux vitesses par rapport à une boîte de transfert à une vitesse ?",
+        "speciality": "Boite de Transfert",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est l'avantage d'une boîte de transfert à deux vitesses par rapport à une boîte de transfert à une vitesse ? » (Boite de Transfert). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900390c",
+        "label": "Quelle est la formule et la citation de la loi d’OHM ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la formule et la citation de la loi d’OHM ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f72b87b000079003991",
+        "label": "Quel est le rôle principal d'un refroidisseur d’air \"After-Cooler\" ?",
+        "speciality": "Moteur Thermique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle principal d'un refroidisseur d’air \"After-Cooler\" ? » (Moteur Thermique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f72b87b000079003970",
+        "label": "Quelle est la proposition définissant la caractéristique principale des huiles moteur ?",
+        "speciality": "Moteur Diesel",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la proposition définissant la caractéristique principale des huiles moteur ? » (Moteur Diesel). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003918",
+        "label": "Quel est le rôle de la pompe à vide ?",
+        "speciality": "Freinage",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle de la pompe à vide ? » (Freinage). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b00007900389b",
+        "label": "Quel est le rôle principal du régulateur de vitesse adaptatif dans un système d’assistance à la conduite ?",
+        "speciality": "Assistance à la Conduite",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le rôle principal du régulateur de vitesse adaptatif dans un système d’assistance à la conduite ? » (Assistance à la Conduite). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b00007900393b",
+        "label": "Quel est le rôle du compresseur d’air dans le système de freinage pneumatique ?",
+        "speciality": "Freinage Pneumatique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Air brake system schematic for heavy truck: compressor, reservoirs, brake chambers, valves, lines. Numbered callouts, highlight part 4 if applicable."
+    },
+    {
+        "id": "66351f74b87b000079003a0d",
+        "label": "Quelle est la définition des 5S ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la définition des 5S ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f74b87b000079003a20",
+        "label": "Quelle est la signification du terme \"10\" dans la désignation d'une vis du type: H M10X1.5-50 classe 5.6 ?",
+        "speciality": "Transversale",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quelle est la signification du terme \"10\" dans la désignation d'une vis du type: H M10X1.5-50 classe 5.6 ? » (Transversale). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038f4",
+        "label": "Que faut-il débrancher en premier pour déconnecter une batterie sur un véhicule ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Que faut-il débrancher en premier pour déconnecter une batterie sur un véhicule ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b0000790038a8",
+        "label": "Quels sont les composants d’un convertisseur de couple dans la boîte de vitesses ?",
+        "speciality": "Boite de Vitesse",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quels sont les composants d’un convertisseur de couple dans la boîte de vitesses ? » (Boite de Vitesse). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038f8",
+        "label": "Comment appelle-t-on la partie tournante d'un alternateur ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Comment appelle-t-on la partie tournante d'un alternateur ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f70b87b0000790038c3",
+        "label": "Quel est le moyen utilisé pour commander le mécanisme de l'embrayage à sec ?",
+        "speciality": "Boite de Vitesse Mécanique",
+        "needs_image": true,
+        "priority": "HAUTE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Exploded clutch assembly (dry clutch) for truck: flywheel, clutch disc, pressure plate, release bearing. Numbered parts 1-4, highlight part 3 if referenced."
+    },
+    {
+        "id": "66351f70b87b0000790038d4",
+        "label": "Quel est le nom des gaz réfrigérants utilisés dans le système de climatisation des véhicules de nos jours ?",
+        "speciality": "Climatisation",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel est le nom des gaz réfrigérants utilisés dans le système de climatisation des véhicules de nos jours ? » (Climatisation). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b000079003908",
+        "label": "De quels paramètres dépend la résistance d'un fil ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « De quels paramètres dépend la résistance d'un fil ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    },
+    {
+        "id": "66351f71b87b0000790038fa",
+        "label": "Quel type de résistance est utilisé pour détecter le niveau de carburant ?",
+        "speciality": "Electricité et Electronique",
+        "needs_image": false,
+        "priority": "BASSE",
+        "gemini_prompt": "Technical training illustration for heavy-duty truck mechanic exam. Clean educational diagram, white background, high contrast, French labels, no watermark, no text clutter. Style: automotive workshop manual, vector-like clarity. Subject: Optional supportive diagram for: « Quel type de résistance est utilisé pour détecter le niveau de carburant ? » (Electricité et Electronique). Simple labeled parts, no answer text visible."
+    }
+]

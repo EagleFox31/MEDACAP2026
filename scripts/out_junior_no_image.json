@@ -1,0 +1,838 @@
+[
+    {
+        "id": "66351f70b87b000079003894",
+        "text": "Quel est l'organe entre l'arbre de transmission et les demi arbres de roues ?",
+        "speciality": "Arbre de Transmission",
+        "proposals": [
+            "Les roues",
+            "Le différentiel",
+            "La boîte de transfert",
+            "La boîte de vitesse"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a09",
+        "text": "Quel est le composant qui fournit de l’air sous pression aux ressorts pneumatiques  ?",
+        "speciality": "Suspension Pneumatique",
+        "proposals": [
+            "Un compresseur électrique",
+            "Une électrovanne de commande",
+            "Une électrovanne d’échappement",
+            "Un calculateur"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038fc",
+        "text": "Quelle autre appellation donne-t-on aux câbles électriques ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Connecteurs",
+            "Sertisseurs",
+            "Conducteurs",
+            "Terminaux"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039c7",
+        "text": "Quelle est la durée de vie maximal d'un pneu suivant les recommandations constructeur ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "5 ans",
+            "7 ans",
+            "9 ans",
+            "10 ans"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003904",
+        "text": "Quelle est intensité dans un circuit électrique de tension 12v et une résistance de 6 ohms ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "2A",
+            "72A",
+            "500 mA",
+            "Aucune de ces réponses"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039b4",
+        "text": "Lequel des éléments suivants utilise un faible débit de courant lors du démarrage ?",
+        "speciality": "Moteur Thermique",
+        "proposals": [
+            "Embrayage",
+            "Relais du démarreur",
+            "Démarrage moteur",
+            "Enroulement de champ"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a27",
+        "text": "Quelle est la valeur d'un \"pouce\" ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "25,40 mm",
+            "25,40 cm",
+            "24,50 mm",
+            "34,50 mm"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038ff",
+        "text": "Avec quel appareil mesure t-on la résistance d'un circuit électrique ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Avec un ohmmètre",
+            "Avec un voltmètre",
+            "Avec un wattmètre",
+            "Avec un ampèremètre"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900390b",
+        "text": "Quel est le rôle d’un fusible  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Le fusible permet de faire passer une intensité excessive de courant dans un circuit électrique",
+            "Le fusible permet de protéger un circuit électrique en cas surtension par rupture de son filament",
+            "Le fusible permet d’empêcher la circulation du courant dans un circuit électrique",
+            "Le fusible permet de changer le sens de circulation du courant dans un circuit électrique"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900393a",
+        "text": "Quels sont les fluides qu'on trouve dans les accumulateurs utilisés dans les circuits de direction et freinage pneumatique ?",
+        "speciality": "Freinage Pneumatique",
+        "proposals": [
+            "L'huile et l'eau",
+            "L'huile et l'azote",
+            "L'azote et l'eau",
+            "L'air et l'azote"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038d8",
+        "text": "Quelle est la différence entre un demi arbre de roue et un arbre de transmission  ?",
+        "speciality": "Demi Arbre de Roue",
+        "proposals": [
+            "Un demi arbre de roue est plus court qu’un arbre de transmission",
+            "Un demi arbre de roue est plus flexible qu’un arbre de transmission",
+            "Un demi arbre de roue relie la roue au différentiel, tandis qu’un arbre de transmission relie le différentiel à la boîte de vitesses",
+            "Un demi arbre de roue est plus résistant qu’un arbre de transmission"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003903",
+        "text": "Quelle est l'unité de base de mesure de la puissance électrique (P) ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Ohm",
+            "Ampère",
+            "Watt",
+            "Volt"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a17",
+        "text": "Comment appelle t-on le document autorisant le départ d'un véhicule des ateliers après travaux ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "Le bon de livraison",
+            "Le bon de commande",
+            "Le bon de sortie",
+            "Le laissez passer"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003909",
+        "text": "Quelle autre appellation donne-t-on aux câbles électriques  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Connecteurs",
+            "Sertisseurs",
+            "Conducteurs",
+            "Terminaux"
+        ]
+    },
+    {
+        "id": "66351f70b87b00007900389e",
+        "text": "Quel est le rôle d'une boîte de transfert dans un véhicule à quatre roues motrices  ?",
+        "speciality": "Boite de Transfert",
+        "proposals": [
+            "Elle permet de répartir le couple entre les deux essieux",
+            "Elle permet de changer le rapport de démultiplication entre le moteur et les roues",
+            "Elle permet de synchroniser la vitesse des roues avant et arrière",
+            "Elle permet de bloquer le différentiel central"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039c8",
+        "text": "A quoi sert le bande de roulement d'un pneu ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "Transmettre les forces entre les pneu et le revêtement routier",
+            "Évacuer rapidement l'eau",
+            "Assurer un confort suffisant",
+            "Assurer un niveau sonore acceptable"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a16",
+        "text": "Que signifie l'abréviation MO sur la documentation des ateliers  ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "Méga-octet",
+            "Maintenance ordinaire",
+            "Main d'œuvre",
+            "Main ouverte"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f9",
+        "text": "Quel composant convertit un courant alternatif (AC) en courant continu (DC)  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Rotor",
+            "Redresseur",
+            "Stator",
+            "Régulateur"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003905",
+        "text": "Comment varie l'intensité d'un circuit électrique si l'on augmente la tension aux bornes d'une résistance constante ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Baisse",
+            "Augmente",
+            "Reste la même",
+            "Baisse puis augmente"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003915",
+        "text": "Quel est le nom du type de frein qui utilise un disque métallique et des plaquettes de friction  ?",
+        "speciality": "Freinage",
+        "proposals": [
+            "Le frein à disque",
+            "Le frein à tambour",
+            "Le frein à main",
+            "Le frein électromagnétique"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003901",
+        "text": "Avec quel appareil mesure t-on la tension d'un circuit électrique et comment effectue t-on le branchement  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Avec un ampèremètre branché en dérivation dans le circuit sous tension ou une pince ampèremétrique",
+            "Avec un voltmètre branché en série dans le circuit sous tension ou une pince ampèremétrique",
+            "Avec un voltmètre branché en dérivation dans le circuit sous tension",
+            "Avec un ampèremètre branché en série dans le circuit sous tension ou une une pince ampèremétrique"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f6",
+        "text": "Que faut-il faire lorsqu'on constate l'apparition d'un dépôt blanchâtre sur les cosses d'une batterie d'accumulateurs  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Gratter un fil '+' à la masse",
+            "Brancher un ampèremètre entre les bornes et vérifier que le courant circule encore correctement, si oui, cela suffit",
+            "Nettoyer avec une brosse métallique et à l'eau claire et enduire de graisse hydrofuge les cosses après les avoir branchées",
+            "Utiliser un voltmètre et vérifier que la tension entre les bornes est correcte"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039e5",
+        "text": "Quel est le rôle d'un différentiel de ponts  ?",
+        "speciality": "Pont",
+        "proposals": [
+            "Augmenter la puissance de freinage.",
+            "Éviter le patinage",
+            "Augmenter le couple de traction.",
+            "Permettre une vitesse indépendante de chaque roue dans un virage"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900390a",
+        "text": "Quel instrument de mesure est utilisé pour la vérification de la continuité d'un circuit électrique  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Avec un ampèremètre",
+            "Avec un ohmmètre",
+            "Avec un voltmètre",
+            "Un pied à coulisse"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003906",
+        "text": "Dans la formule suivante, U = RxI, quel est la signifiance de U, R et I ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "U = Débit de courant   R = Restriction      I = Intensité",
+            "U = Tension                R = Résistance      I = Inductance",
+            "U = Potentiel               R = Restriction      I = Inductance",
+            "U = Tension               R = Résistance      I = Intensité"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f7",
+        "text": "Lequel des éléments suivants prend l'énergie électrique de la batterie et la transforme en énergie mécanique rotative pour lancer le moteur  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Pignon",
+            "Relais de démarreur",
+            "Électrovanne",
+            "Démarreur"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003910",
+        "text": "Quelle est la signification de l'acronyme 'CAN' utilisée dans les réseaux de communication multiplexés  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Communication between Analogical and Numerical",
+            "Conversion from Analogical to Numerical",
+            "Controller Area Network",
+            "Communication Area Network"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900393c",
+        "text": "Quel est le rôle de la valve de protection à 4 voies dans les circuits de freinage pneumatique ?",
+        "speciality": "Freinage Pneumatique",
+        "proposals": [
+            "Assure l’indépendance des circuits en cas de défaillance pneumatique,",
+            "Régule la pression d’air dans le circuit de frein avant et arrière,",
+            "Commande la valve relais frein à main",
+            "Assure l’indépendance des valves relais"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f2",
+        "text": "Quelle est le rôle d'une batterie ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Permet de varier la tension dans le circuit électrique",
+            "Stabiliser la tension dans le système électrique",
+            "Réguler le courant électrique d'un circuit",
+            "Fournir l'alimentation en courant continu au véhicule"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003902",
+        "text": "Que se passe t-il si on mesure une tension alternative avec le multimètre sur le calibre \"tension continue\" ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "On lit la moitié de la tension réelle",
+            "Le fusible du multimètre saute",
+            "On lit: 0 volt",
+            "Le multimètre est endommagé"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900390f",
+        "text": "Quelles sont les facteurs qui influencent la résistance du fil électrique  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "La longueur, la flexibilité et la section",
+            "La matière, la longueur et la forme",
+            "La matière, la longueur et la section",
+            "La matière, la forme et la flexibilité"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038d7",
+        "text": "Quel est le nom du composant qui protège le joint homocinétique de la poussière et de l’humidité  ?",
+        "speciality": "Demi Arbre de Roue",
+        "proposals": [
+            "Le soufflet",
+            "La gaine",
+            "Le manchon",
+            "Le cache"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039c1",
+        "text": "Dans le marquage 185\/60 r 14 88 h que représente 88 ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "L'indice de charge",
+            "L'indice de vitesse",
+            "La gamme de prix",
+            "L'indice d'équilibre"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038c4",
+        "text": "Pour quelle raison n'utilise-t-on plus d'amiante dans les garnitures d'embrayage  ?",
+        "speciality": "Boite de Vitesse Mécanique",
+        "proposals": [
+            "Les garnitures avec de l'amiante sont trop onéreuse à fabriquer",
+            "L'amiante représente un risque pour la santé",
+            "Les réserves mondiales d'amiante sont presque épuisées",
+            "Toutes les réponses ci-dessus"
+        ]
+    },
+    {
+        "id": "66351f74b87b0000790039ed",
+        "text": "Quel est le type de réducteur qui utilise une vis sans fin et une roue dentée à denture hélicoïdale ou droite  ?",
+        "speciality": "Reducteur",
+        "proposals": [
+            "Le réducteur à engrenages parallèles",
+            "Le réducteur à engrenages coniques",
+            "Le réducteur à engrenages planétaires",
+            "Le réducteur à vis sans fin"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038a4",
+        "text": "Lequel de ces types de technologie ne permet aucun glissement  ?",
+        "speciality": "Boite de Vitesse",
+        "proposals": [
+            "Embrayage",
+            "Engrenage",
+            "Embiellage",
+            "Entraînement par courroie"
+        ]
+    },
+    {
+        "id": "66351f74b87b0000790039f6",
+        "text": "Quelle est le rôle du système de suspension  ?",
+        "speciality": "Suspension",
+        "proposals": [
+            "Permet d’absorber les vibrations du véhicule causées par les inégalités de la route",
+            "Permet de changer la trajectoire du véhicule",
+            "Permet d’améliorer la dirigeabilité en déplacement",
+            "Permet de varier la force de freinage en fonction de la vitesse du véhicule"
+        ]
+    },
+    {
+        "id": "66351f70b87b000079003892",
+        "text": "Quel est le nom du joint qui permet de compenser les variations d’alignement et de distance entre la boite de transfert et le pont  ?",
+        "speciality": "Arbre de Transmission",
+        "proposals": [
+            "Le joint coulissant",
+            "Le joint universel",
+            "Le joint de chiffon",
+            "Le joint prismatique"
+        ]
+    },
+    {
+        "id": "66351f70b87b000079003899",
+        "text": "Quel système d’assistance à la conduite permet de prévenir les collisions frontales en avertissant le conducteur ou en déclenchant le freinage d’urgence  ?",
+        "speciality": "Assistance à la Conduite",
+        "proposals": [
+            "Le système de détection de fatigue",
+            "Le système de détection des piétons",
+            "Le système de maintien de la distance de sécurité",
+            "Le système de prévention des collisions"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003938",
+        "text": "Quel est le rôle du correcteur pneumatique de freinage  ?",
+        "speciality": "Freinage Pneumatique",
+        "proposals": [
+            "Réguler la pression maximum dans le réservoir",
+            "Permettre la purge du circuit",
+            "Répartir le freinage entre l'avant et l'arrière en fonction de la charge",
+            "Favoriser la progressivité du freinage"
+        ]
+    },
+    {
+        "id": "66351f74b87b0000790039e6",
+        "text": "Quels sont les vérifications préliminaires du différentiel ?",
+        "speciality": "Pont",
+        "proposals": [
+            "étanchéité",
+            "Qualité de l'huile",
+            "Présence de bruits anormaux",
+            "Toutes les propositions sont justes"
+        ]
+    },
+    {
+        "id": "66351f74b87b0000790039ea",
+        "text": "Quel est le type de réducteur qui utilise des engrenages cylindriques à denture droite ou hélicoïdale  ?",
+        "speciality": "Reducteur",
+        "proposals": [
+            "Le réducteur à engrenages parallèles",
+            "Le réducteur à engrenages coniques",
+            "Le réducteur à engrenages planétaires",
+            "Le réducteur à vis sans fin"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f5",
+        "text": "Quel type de liquide devez vous rajouter dans une batterie ayant un niveau bas d'électrolyte ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Eau distillée avec de l'acide sulfurique",
+            "Acide sulfurique",
+            "Eau distillée",
+            "Acide chlorhydrique"
+        ]
+    },
+    {
+        "id": "66351f72b87b000079003972",
+        "text": "Quels organes du moteur Diesel convertissent le mouvement rectiligne alternatif en rotation  ?",
+        "speciality": "Moteur Diesel",
+        "proposals": [
+            "Le vilebrequin et l'arbre â came",
+            "La bielle et le vilebrequin",
+            "Le piston et le vilebrequin",
+            "Le vilebrequin et le volant moteur"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003907",
+        "text": "Sur une batterie de véhicule que représente 1200 A  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "L’intensité maximale au démarrage à froid",
+            "L’énergie",
+            "La capacité de la batterie",
+            "Rien de tout ceci"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038aa",
+        "text": "Quels sont les organes composant le système de transmission d'un véhicule  ?",
+        "speciality": "Boite de Vitesse",
+        "proposals": [
+            "Moteur – Embrayage – Boîte\/pont manuelle – Arbre de roue – Roue",
+            "Embrayage – Boîte\/pont manuelle – Arbre de roue – Roue",
+            "Démarreur – Boîte\/pont manuelle – Moteur – Arbre de roue – Roue",
+            "Embrayage – Boîte\/pont automatique – Moteur – Arbre de roue – Roue"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039c9",
+        "text": "Peut-on retailler un pneumatique sur un poids-lourd  ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "Oui car il on un tonnage supérieur à 3,5T",
+            "Non, c'est impossible",
+            "ça dépend de la marque du pneumatique",
+            "Oui car c'est moins chère"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039bf",
+        "text": "Qu'est-ce que l'indication PR (Plie Rating) dans les pneumatiques ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "Indication de durée de vie",
+            "Indication de solidité",
+            "Indication de l'année de construction",
+            "Indication du type de jante"
+        ]
+    },
+    {
+        "id": "66351f74b87b0000790039eb",
+        "text": "Quel est le type de réducteur qui utilise des engrenages coniques à denture droite, hélicoïdale ou hypoïde  ?",
+        "speciality": "Reducteur",
+        "proposals": [
+            "Le réducteur à engrenages parallèles",
+            "Le réducteur à engrenages coniques",
+            "Le réducteur à engrenages planétaires",
+            "Le réducteur à vis sans fin"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039ab",
+        "text": "Quel sont les étapes successives du cycle d’un moteur à 4 temps  ?",
+        "speciality": "Moteur Thermique",
+        "proposals": [
+            "Combustion et détente – Échappement – Compression – Admission",
+            "Échappement – Combustion et détente – Admission – Compression",
+            "Admission – Compression – Combustion et détente – Échappement",
+            "Admission – Échappement – Compression – Combustion et détente"
+        ]
+    },
+    {
+        "id": "66351f74b87b0000790039f8",
+        "text": "Quel est la fonction des amortisseurs dans la suspension d'un véhicule  ?",
+        "speciality": "Suspension",
+        "proposals": [
+            "Permettent de réduire la friction entre les différents éléments mécanique du véhicule",
+            "Permettent de compenser les effets provoques par le roulis latéral lors du virage",
+            "Permettent de réduire les oscillations causées par l'action des ressorts",
+            "Permettent de maintenir la géométrie globale des roues afin de ne pas risquer de déstabiliser le véhicule"
+        ]
+    },
+    {
+        "id": "66351f72b87b000079003971",
+        "text": "Quelle est la proposition définissant les fonctions des huiles moteur  ?",
+        "speciality": "Moteur Diesel",
+        "proposals": [
+            "Anticorrosion,refroidissant,lubrifiant",
+            "Refroidissant,lubrifiant,oxydant",
+            "Oxydant,Nettoyant,lubrifiant,basicité",
+            "Lubrifiant,refroidisssant,Nettoyant"
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039bb",
+        "text": "De quoi sont majoritairement composés les pneumatiques ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "De caoutchouc naturel",
+            "De charges ( carbone, silice,...)",
+            "De caoutchouc synthétique",
+            "De fibre de verre"
+        ]
+    },
+    {
+        "id": "66351f70b87b000079003890",
+        "text": "Quel est le nom du composant qui permet de protéger le cardan des éléments extérieurs  ?",
+        "speciality": "Arbre de Transmission",
+        "proposals": [
+            "Le soufflet de cardan",
+            "Le joint de cardan",
+            "Le joint pare-poussière",
+            "Le couvercle de cardan"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a1d",
+        "text": "Quel sera le diamètre du trou à percer pour tarauder pour une vis M10X1.25 ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "10 mm",
+            "11,25 mm",
+            "8,75 mm",
+            "10,25 mm"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a25",
+        "text": "Quelle est la signification du terme \"UNC\" dans la désignation d'un boulon du type:1\/2-UNC-13 ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "Classe de résistance",
+            "United Norme Class",
+            "Filet fin",
+            "Gros Filet"
+        ]
+    },
+    {
+        "id": "66351f70b87b00007900389d",
+        "text": "Quel est le fonction du système de contrôle de stabilité dynamique des véhicules ?",
+        "speciality": "Assistance à la Conduite",
+        "proposals": [
+            "Il permet de ralentir et immobiliser automatiquement le véhicule afin d’éviter les phénomènes de sous-virage et survirage",
+            "Il permet de freiner automatiquement une des roues du véhicule tout en réduisant le couple du moteur afin d’éviter les phénomènes de sous-virage et survirage",
+            "Il permet de faciliter au décollage l’adhésion automatique d‘une des roues du véhicule afin d’éviter les phénomènes de patinage",
+            "Il permet de faciliter au décollage l’adhésion automatique d‘une des roues du véhicule afin d’éviter les phénomènes de patinage."
+        ]
+    },
+    {
+        "id": "66351f73b87b0000790039c2",
+        "text": "Dans le marquage 185\/60 r 14 88 h que représente 14  ?",
+        "speciality": "Pneumatique",
+        "proposals": [
+            "Le diamètre intérieur du pneu",
+            "Le diamètre de la roue",
+            "Le diamètre de la jante",
+            "L'indice d'équilibre"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038d9",
+        "text": "Quel est le nom du joint qui permet au demi arbre de roue de s’adapter aux mouvements de la suspension et de la direction  ?",
+        "speciality": "Demi Arbre de Roue",
+        "proposals": [
+            "Le joint homocinétique",
+            "Le joint à rotule",
+            "Le joint à cardan",
+            "Le joint à soufflet"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038fb",
+        "text": "Quel type de courant est utilisé dans la plupart des circuits électriques des véhicules  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Courant continu (DC)",
+            "Courant fluctuant",
+            "Courant alternatif (AC)",
+            "Courant Oscillant (OC)"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038a1",
+        "text": "Quel est l'avantage d'une boîte de transfert à deux vitesses par rapport à une boîte de transfert à une vitesse  ?",
+        "speciality": "Boite de Transfert",
+        "proposals": [
+            "Elle offre plus de souplesse de conduite",
+            "Elle réduit la consommation de carburant",
+            "Elle augmente la puissance du moteur",
+            "Elle diminue le bruit du véhicule"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900390c",
+        "text": "Quel est la formule et la citation de la loi d’OHM  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "La loi d’OHM indique que la tension aux bornes d’un composant est proportionnelle à l’intensité du courant qui la traverse et se traduit par la formule U = R.I",
+            "La loi d’OHM indique que la tension aux bornes d’un composant est proportionnelle à l’intensité du courant qui la traverse et se traduit par la formule I = R.U",
+            "La loi d’OHM indique que la tension aux bornes d’un composant est proportionnelle à l’intensité du courant qui la traverse et se traduit par la formule R = U.I",
+            "La loi d’OHM indique que la tension aux bornes d’un composant est proportionnelle à l’intensité du courant qui la traverse et se traduit par la formule U = R + I"
+        ]
+    },
+    {
+        "id": "66351f72b87b000079003991",
+        "text": "Quel est le rôle principal d'un refroidisseur d’air \"After-Cooler\"  ?",
+        "speciality": "Moteur Thermique",
+        "proposals": [
+            "Refroidir l'air d’admission et augmenter le poids d'air admis dans les cylindres",
+            "Réchauffer l'air d'admission",
+            "Refroidir Ie turbo",
+            "Refroidir I 'air avant son entrée dans le turbo"
+        ]
+    },
+    {
+        "id": "66351f72b87b000079003970",
+        "text": "Quelle est la proposition définissant la caractéristique principale des huiles moteur  ?",
+        "speciality": "Moteur Diesel",
+        "proposals": [
+            "La densité",
+            "La viscosité",
+            "Le pouvoir antioxydant",
+            "La durée d'utilisation"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003918",
+        "text": "Quel est le rôle de la pompe à vide  ?",
+        "speciality": "Freinage",
+        "proposals": [
+            "La pompe à vide produit une pression négative par la rotation des engrenages",
+            "La pompe à vide augmente la pression du liquide de frein par la rotation des engrenages",
+            "La pompe à vide permet le desserrage rapide des roues après freinage",
+            "La pompe à vide permet de contrôler la pression du liquide de frein dans les cylindres récepteurs."
+        ]
+    },
+    {
+        "id": "66351f70b87b00007900389b",
+        "text": "Quel est le rôle principal du régulateur de vitesse adaptatif dans un système d’assistance à la conduite  ?",
+        "speciality": "Assistance à la Conduite",
+        "proposals": [
+            "Fournir de l’électricité au moteur",
+            "Refroidir le moteur",
+            "Maintenir une vitesse de conduite constante",
+            "Améliorer le confort de conduite et la stabilité du véhicule"
+        ]
+    },
+    {
+        "id": "66351f71b87b00007900393b",
+        "text": "Quel est le rôle du compresseur d’air dans le système de freinage pneumatique ?",
+        "speciality": "Freinage Pneumatique",
+        "proposals": [
+            "Augmenter la pression d’air",
+            "Produit de l’air",
+            "Purifier l’air",
+            "Filtrer l’air"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a0d",
+        "text": "Quel est la définition des 5S ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "Servir, Suivre, Sécuriser, Soutenir, Santé",
+            "Seiri,Seiten,Seiso,Seiketsu,Shitsuke",
+            "Seiri,Seiton,Seiso,Seiken,Soushi",
+            "Seiri,Seiton,Seiso,Seiketsu,Shitsuke"
+        ]
+    },
+    {
+        "id": "66351f74b87b000079003a20",
+        "text": "Quelle est la signification du terme \"10\" dans la désignation d'une vis du type: H M10X1.5-50 classe 5.6 ?",
+        "speciality": "Transversale",
+        "proposals": [
+            "Dimension (millimètre)",
+            "Dimension (centimètre)",
+            "Dimension (décimètre)",
+            "Dimension (mètre)"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f4",
+        "text": "Que faut-il débrancher en premier pour déconnecter une batterie sur un véhicule  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "La borne positive",
+            "La borne négative",
+            "Peu importe",
+            "Les deux simultanément"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038a8",
+        "text": "Quels sont les composants d’un convertisseur de couple dans la boîte de vitesses ?",
+        "speciality": "Boite de Vitesse",
+        "proposals": [
+            "Stator sur roue libre, turbine, impulseur",
+            "Pompe, différentiel, turbine",
+            "Rotor, inducteur, pompe",
+            "Stator, pompe, turbine"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038f8",
+        "text": "Comment appelle t-on la partie tournante d'un alternateur  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Redresseur",
+            "Stator",
+            "Diode",
+            "Rotor"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038c3",
+        "text": "Quel est le moyen utilisé pour commander le mécanisme de l'embrayage à sec ?",
+        "speciality": "Boite de Vitesse Mécanique",
+        "proposals": [
+            "Plateau de pression arrière",
+            "La butée coulissante",
+            "Plateau de pression avant",
+            "Ressorts de rappel"
+        ]
+    },
+    {
+        "id": "66351f70b87b0000790038d4",
+        "text": "Quel est le nom des gaz réfrigérants utilisés dans le système de climatisation des véhicules de nos jours  ?",
+        "speciality": "Climatisation",
+        "proposals": [
+            "Le R134a et R410A",
+            "Le R134a et le R1234yf",
+            "Le R134a et le R12",
+            "Le R1234yf et le R600A"
+        ]
+    },
+    {
+        "id": "66351f71b87b000079003908",
+        "text": "De quels paramètres dépend la résistance d'un fil  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "De sa longueur et sa section",
+            "De sa nature et sa longueur",
+            "De sa nature, sa longueur et sa section",
+            "De sa nature et sa section"
+        ]
+    },
+    {
+        "id": "66351f71b87b0000790038fa",
+        "text": "Quelle type de résistance est utilisé pour détecter le niveau de carburant  ?",
+        "speciality": "Electricité et Electronique",
+        "proposals": [
+            "Multimètre",
+            "Thermistance",
+            "Capteur de niveau de carburant",
+            "Rhéostat"
+        ]
+    }
+]

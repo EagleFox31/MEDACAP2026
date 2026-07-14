@@ -1,0 +1,610 @@
+[
+    {
+        "question_id": "66351f70b87b000079003894",
+        "image": "PL26-JR-66351f70b87b000079003894.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b000079003894.png",
+        "label": "Quel est l'organe entre l'arbre de transmission et les demi arbres de roues ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a09",
+        "image": "PL26-JR-66351f74b87b000079003a09.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a09.png",
+        "label": "Quel est le composant qui fournit de l’air sous pression aux ressorts pneumatiques ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038fc",
+        "image": "PL26-JR-66351f71b87b0000790038fc.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038fc.png",
+        "label": "Quelle autre appellation donne-t-on aux câbles électriques ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039c7",
+        "image": "PL26-JR-66351f73b87b0000790039c7.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039c7.png",
+        "label": "Quelle est la durée de vie maximale d'un pneu suivant les recommandations constructeur ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003904",
+        "image": "PL26-JR-66351f71b87b000079003904.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003904.png",
+        "label": "Quelle est l'intensité dans un circuit électrique de tension 12 V et une résistance de 6 Ω ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039b4",
+        "image": "PL26-JR-66351f73b87b0000790039b4.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039b4.png",
+        "label": "Lequel des éléments suivants utilise un faible débit de courant lors du démarrage ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a27",
+        "image": "PL26-JR-66351f74b87b000079003a27.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a27.png",
+        "label": "Quelle est la valeur d'un \"pouce\" ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038ff",
+        "image": "PL26-JR-66351f71b87b0000790038ff.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038ff.png",
+        "label": "Avec quel appareil mesure-t-on la résistance d'un circuit électrique ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900390b",
+        "image": "PL26-JR-66351f71b87b00007900390b.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900390b.png",
+        "label": "Quel est le rôle d’un fusible ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900393a",
+        "image": "PL26-JR-66351f71b87b00007900393a-frein-accumulateurs.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900393a-frein-accumulateurs.png",
+        "label": "Quels sont les fluides qu'on trouve dans les accumulateurs utilisés dans les circuits de direction et freinage pneumatique ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038d8",
+        "image": "PL26-JR-66351f70b87b0000790038d8.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038d8.png",
+        "label": "Quelle est la différence entre un demi arbre de roue et un arbre de transmission ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003903",
+        "image": "PL26-JR-66351f71b87b000079003903.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003903.png",
+        "label": "Quelle est l'unité de base de mesure de la puissance électrique (P) ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a17",
+        "image": "PL26-JR-66351f74b87b000079003a17.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a17.png",
+        "label": "Comment appelle-t-on le document autorisant le départ d'un véhicule des ateliers après travaux ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003909",
+        "image": "PL26-JR-66351f71b87b000079003909.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003909.png",
+        "label": "Quelle autre appellation donne-t-on aux câbles électriques ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b00007900389e",
+        "image": "PL26-JR-66351f70b87b00007900389e.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b00007900389e.png",
+        "label": "Quel est le rôle d'une boîte de transfert dans un véhicule à quatre roues motrices ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039c8",
+        "image": "PL26-JR-66351f73b87b0000790039c8.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039c8.png",
+        "label": "À quoi sert la bande de roulement d'un pneu ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a16",
+        "image": "PL26-JR-66351f74b87b000079003a16.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a16.png",
+        "label": "Que signifie l'abréviation MO sur la documentation des ateliers ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f9",
+        "image": "PL26-JR-66351f71b87b0000790038f9.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f9.png",
+        "label": "Quel composant convertit un courant alternatif (AC) en courant continu (DC) ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003905",
+        "image": "PL26-JR-66351f71b87b000079003905.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003905.png",
+        "label": "Comment varie l'intensité d'un circuit électrique si l'on augmente la tension aux bornes d'une résistance constante ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003915",
+        "image": "PL26-JR-66351f71b87b000079003915.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003915.png",
+        "label": "Quel est le nom du type de frein qui utilise un disque métallique et des plaquettes de friction ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003901",
+        "image": "PL26-JR-66351f71b87b000079003901.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003901.png",
+        "label": "Avec quel appareil mesure-t-on la tension d'un circuit électrique et comment effectue-t-on le branchement ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f6",
+        "image": "PL26-JR-66351f71b87b0000790038f6.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f6.png",
+        "label": "Que faut-il faire lorsqu'on constate l'apparition d'un dépôt blanchâtre sur les cosses d'une batterie d'accumulateurs ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039e5",
+        "image": "PL26-JR-66351f73b87b0000790039e5.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039e5.png",
+        "label": "Quel est le rôle d'un différentiel de ponts ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900390a",
+        "image": "PL26-JR-66351f71b87b00007900390a.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900390a.png",
+        "label": "Quel instrument de mesure est utilisé pour la vérification de la continuité d'un circuit électrique ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003906",
+        "image": "PL26-JR-66351f71b87b000079003906.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003906.png",
+        "label": "Dans la formule suivante, U = RxI, quel est la signification de U, R et I ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f7",
+        "image": "PL26-JR-66351f71b87b0000790038f7.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f7.png",
+        "label": "Lequel des éléments suivants prend l'énergie électrique de la batterie et la transforme en énergie mécanique rotative pour lancer le moteur ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003910",
+        "image": "PL26-JR-66351f71b87b000079003910.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003910.png",
+        "label": "Quelle est la signification de l'acronyme 'CAN' utilisée dans les réseaux de communication multiplexés ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900393c",
+        "image": "PL26-JR-66351f71b87b00007900393c-frein-valve-4voies.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900393c-frein-valve-4voies.png",
+        "label": "Quel est le rôle de la valve de protection à 4 voies dans les circuits de freinage pneumatique ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f2",
+        "image": "PL26-JR-66351f71b87b0000790038f2.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f2.png",
+        "label": "Quel est le rôle d'une batterie ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003902",
+        "image": "PL26-JR-66351f71b87b000079003902.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003902.png",
+        "label": "Que se passe t-il si on mesure une tension alternative avec le multimètre sur le calibre \"tension continue\" ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900390f",
+        "image": "PL26-JR-66351f71b87b00007900390f.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900390f.png",
+        "label": "Quelles sont les facteurs qui influencent la résistance du fil électrique ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038d7",
+        "image": "PL26-JR-66351f70b87b0000790038d7.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038d7.png",
+        "label": "Quel est le nom du composant qui protège le joint homocinétique de la poussière et de l’humidité ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039c1",
+        "image": "PL26-JR-66351f73b87b0000790039c1-pneu-88.png",
+        "file_exists": true,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039c1-pneu-88.png",
+        "label": "Dans le marquage 185\/60 r 14 88 h que représente 88 ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038c4",
+        "image": "PL26-JR-66351f70b87b0000790038c4-embrayage-amiante.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038c4-embrayage-amiante.png",
+        "label": "Pour quelle raison n'utilise-t-on plus d'amiante dans les garnitures d'embrayage ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f74b87b0000790039ed",
+        "image": "PL26-JR-66351f74b87b0000790039ed.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b0000790039ed.png",
+        "label": "Quel est le type de réducteur qui utilise une vis sans fin et une roue dentée à denture hélicoïdale ou droite ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038a4",
+        "image": "PL26-JR-66351f70b87b0000790038a4.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038a4.png",
+        "label": "Lequel de ces types de technologie ne permet aucun glissement ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b0000790039f6",
+        "image": "PL26-JR-66351f74b87b0000790039f6.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b0000790039f6.png",
+        "label": "Quel est le rôle du système de suspension ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b000079003892",
+        "image": "PL26-JR-66351f70b87b000079003892.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b000079003892.png",
+        "label": "Quel est le nom du joint qui permet de compenser les variations d’alignement et de distance entre la boite de transfert et le pont ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b000079003899",
+        "image": "PL26-JR-66351f70b87b000079003899.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b000079003899.png",
+        "label": "Quel système d’assistance à la conduite permet de prévenir les collisions frontales en avertissant le conducteur ou en déclenchant le freinage d’urgence ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003938",
+        "image": "PL26-JR-66351f71b87b000079003938.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003938.png",
+        "label": "Quel est le rôle du correcteur pneumatique de freinage ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b0000790039e6",
+        "image": "PL26-JR-66351f74b87b0000790039e6.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b0000790039e6.png",
+        "label": "Quels sont les vérifications préliminaires du différentiel ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b0000790039ea",
+        "image": "PL26-JR-66351f74b87b0000790039ea.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b0000790039ea.png",
+        "label": "Quel est le type de réducteur qui utilise des engrenages cylindriques à denture droite ou hélicoïdale ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f5",
+        "image": "PL26-JR-66351f71b87b0000790038f5.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f5.png",
+        "label": "Quel type de liquide devez vous rajouter dans une batterie ayant un niveau bas d'électrolyte ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f72b87b000079003972",
+        "image": "PL26-JR-66351f72b87b000079003972.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f72b87b000079003972.png",
+        "label": "Quels organes du moteur Diesel convertissent le mouvement rectiligne alternatif en rotation ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003907",
+        "image": "PL26-JR-66351f71b87b000079003907-batterie-1200A.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003907-batterie-1200A.png",
+        "label": "Sur une batterie de véhicule que représente 1200 A ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038aa",
+        "image": "PL26-JR-66351f70b87b0000790038aa.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038aa.png",
+        "label": "Quels sont les organes composant le système de transmission d'un véhicule ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039c9",
+        "image": "PL26-JR-66351f73b87b0000790039c9.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039c9.png",
+        "label": "Peut-on retailler un pneumatique sur un poids-lourd ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039bf",
+        "image": "PL26-JR-66351f73b87b0000790039bf.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039bf.png",
+        "label": "Qu'est-ce que l'indication PR (Plie Rating) dans les pneumatiques ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b0000790039eb",
+        "image": "PL26-JR-66351f74b87b0000790039eb.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b0000790039eb.png",
+        "label": "Quel est le type de réducteur qui utilise des engrenages coniques à denture droite, hélicoïdale ou hypoïde ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039ab",
+        "image": "PL26-JR-66351f73b87b0000790039ab.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039ab.png",
+        "label": "Quels sont les étapes successives du cycle d’un moteur à 4 temps ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b0000790039f8",
+        "image": "PL26-JR-66351f74b87b0000790039f8.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b0000790039f8.png",
+        "label": "Quelle est la fonction des amortisseurs dans la suspension d'un véhicule ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f72b87b000079003971",
+        "image": "PL26-JR-66351f72b87b000079003971.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f72b87b000079003971.png",
+        "label": "Quelle est la proposition définissant les fonctions des huiles moteur ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039bb",
+        "image": "PL26-JR-66351f73b87b0000790039bb.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039bb.png",
+        "label": "De quoi sont majoritairement composés les pneumatiques ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b000079003890",
+        "image": "PL26-JR-66351f70b87b000079003890.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b000079003890.png",
+        "label": "Quel est le nom du composant qui permet de protéger le cardan des éléments extérieurs ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a1d",
+        "image": "PL26-JR-66351f74b87b000079003a1d.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a1d.png",
+        "label": "Quel sera le diamètre du trou à percer pour tarauder pour une vis M10X1.25 ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a25",
+        "image": "PL26-JR-66351f74b87b000079003a25.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a25.png",
+        "label": "Quelle est la signification du terme \"UNC\" dans la désignation d'un boulon du type:1\/2-UNC-13 ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b00007900389d",
+        "image": "PL26-JR-66351f70b87b00007900389d.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b00007900389d.png",
+        "label": "Quel est le fonction du système de contrôle de stabilité dynamique des véhicules ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f73b87b0000790039c2",
+        "image": "PL26-JR-66351f73b87b0000790039c2-pneu-14.png",
+        "file_exists": true,
+        "path": "public\/files\/PL26-JR-66351f73b87b0000790039c2-pneu-14.png",
+        "label": "Dans le marquage 185\/60 r 14 88 h que représente 14 ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038d9",
+        "image": "PL26-JR-66351f70b87b0000790038d9-demi-arbre-joint.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038d9-demi-arbre-joint.png",
+        "label": "Quel est le nom du joint qui permet au demi arbre de roue de s’adapter aux mouvements de la suspension et de la direction ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038fb",
+        "image": "PL26-JR-66351f71b87b0000790038fb.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038fb.png",
+        "label": "Quel type de courant est utilisé dans la plupart des circuits électriques des véhicules ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038a1",
+        "image": "PL26-JR-66351f70b87b0000790038a1.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038a1.png",
+        "label": "Quel est l'avantage d'une boîte de transfert à deux vitesses par rapport à une boîte de transfert à une vitesse ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900390c",
+        "image": "PL26-JR-66351f71b87b00007900390c.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900390c.png",
+        "label": "Quelle est la formule et la citation de la loi d’OHM ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f72b87b000079003991",
+        "image": "PL26-JR-66351f72b87b000079003991.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f72b87b000079003991.png",
+        "label": "Quel est le rôle principal d'un refroidisseur d’air \"After-Cooler\" ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f72b87b000079003970",
+        "image": "PL26-JR-66351f72b87b000079003970.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f72b87b000079003970.png",
+        "label": "Quelle est la proposition définissant la caractéristique principale des huiles moteur ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003918",
+        "image": "PL26-JR-66351f71b87b000079003918.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003918.png",
+        "label": "Quel est le rôle de la pompe à vide ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b00007900389b",
+        "image": "PL26-JR-66351f70b87b00007900389b.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b00007900389b.png",
+        "label": "Quel est le rôle principal du régulateur de vitesse adaptatif dans un système d’assistance à la conduite ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b00007900393b",
+        "image": "PL26-JR-66351f71b87b00007900393b-frein-compresseur.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b00007900393b-frein-compresseur.png",
+        "label": "Quel est le rôle du compresseur d’air dans le système de freinage pneumatique ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a0d",
+        "image": "PL26-JR-66351f74b87b000079003a0d.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a0d.png",
+        "label": "Quelle est la définition des 5S ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f74b87b000079003a20",
+        "image": "PL26-JR-66351f74b87b000079003a20.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f74b87b000079003a20.png",
+        "label": "Quelle est la signification du terme \"10\" dans la désignation d'une vis du type: H M10X1.5-50 classe 5.6 ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f4",
+        "image": "PL26-JR-66351f71b87b0000790038f4.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f4.png",
+        "label": "Que faut-il débrancher en premier pour déconnecter une batterie sur un véhicule ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038a8",
+        "image": "PL26-JR-66351f70b87b0000790038a8.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038a8.png",
+        "label": "Quels sont les composants d’un convertisseur de couple dans la boîte de vitesses ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038f8",
+        "image": "PL26-JR-66351f71b87b0000790038f8.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038f8.png",
+        "label": "Comment appelle-t-on la partie tournante d'un alternateur ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038c3",
+        "image": "PL26-JR-66351f70b87b0000790038c3-embrayage-commande.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038c3-embrayage-commande.png",
+        "label": "Quel est le moyen utilisé pour commander le mécanisme de l'embrayage à sec ?",
+        "priority": "HAUTE"
+    },
+    {
+        "question_id": "66351f70b87b0000790038d4",
+        "image": "PL26-JR-66351f70b87b0000790038d4.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f70b87b0000790038d4.png",
+        "label": "Quel est le nom des gaz réfrigérants utilisés dans le système de climatisation des véhicules de nos jours ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b000079003908",
+        "image": "PL26-JR-66351f71b87b000079003908.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b000079003908.png",
+        "label": "De quels paramètres dépend la résistance d'un fil ?",
+        "priority": "BASSE"
+    },
+    {
+        "question_id": "66351f71b87b0000790038fa",
+        "image": "PL26-JR-66351f71b87b0000790038fa.png",
+        "file_exists": false,
+        "path": "public\/files\/PL26-JR-66351f71b87b0000790038fa.png",
+        "label": "Quel type de résistance est utilisé pour détecter le niveau de carburant ?",
+        "priority": "BASSE"
+    }
+]

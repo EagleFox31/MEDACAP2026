@@ -1,0 +1,1279 @@
+{
+    "summary": {
+        "backup_junior_with_image": 142,
+        "backup_junior_without_image": 371,
+        "bulk_manifest_count": 76,
+        "bulk_on_empty_backup": 76,
+        "bulk_overwrote_real_image": 0
+    },
+    "clear_image_field": {
+        "0": {
+            "ref": "Fac6",
+            "id": "66351f70b87b000079003894",
+            "wrong_new": "PL26-JR-66351f70b87b000079003894.png",
+            "backup_image": null
+        },
+        "1": {
+            "ref": "Fac333",
+            "id": "66351f74b87b000079003a09",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a09.png",
+            "backup_image": null
+        },
+        "2": {
+            "ref": "Fac100",
+            "id": "66351f71b87b0000790038fc",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038fc.png",
+            "backup_image": null
+        },
+        "3": {
+            "ref": "Fac293",
+            "id": "66351f73b87b0000790039c7",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039c7.png",
+            "backup_image": null
+        },
+        "4": {
+            "ref": "Fac108",
+            "id": "66351f71b87b000079003904",
+            "wrong_new": "PL26-JR-66351f71b87b000079003904.png",
+            "backup_image": null
+        },
+        "5": {
+            "ref": "Fac275",
+            "id": "66351f73b87b0000790039b4",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039b4.png",
+            "backup_image": null
+        },
+        "6": {
+            "ref": "Fac362",
+            "id": "66351f74b87b000079003a27",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a27.png",
+            "backup_image": null
+        },
+        "7": {
+            "ref": "Fac103",
+            "id": "66351f71b87b0000790038ff",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038ff.png",
+            "backup_image": null
+        },
+        "8": {
+            "ref": "Fac115",
+            "id": "66351f71b87b00007900390b",
+            "wrong_new": "PL26-JR-66351f71b87b00007900390b.png",
+            "backup_image": null
+        },
+        "10": {
+            "ref": "Fac66",
+            "id": "66351f70b87b0000790038d8",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038d8.png",
+            "backup_image": null
+        },
+        "11": {
+            "ref": "Fac107",
+            "id": "66351f71b87b000079003903",
+            "wrong_new": "PL26-JR-66351f71b87b000079003903.png",
+            "backup_image": null
+        },
+        "12": {
+            "ref": "Fac346",
+            "id": "66351f74b87b000079003a17",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a17.png",
+            "backup_image": null
+        },
+        "13": {
+            "ref": "Fac113",
+            "id": "66351f71b87b000079003909",
+            "wrong_new": "PL26-JR-66351f71b87b000079003909.png",
+            "backup_image": null
+        },
+        "14": {
+            "ref": "Fac15",
+            "id": "66351f70b87b00007900389e",
+            "wrong_new": "PL26-JR-66351f70b87b00007900389e.png",
+            "backup_image": null
+        },
+        "15": {
+            "ref": "Fac294",
+            "id": "66351f73b87b0000790039c8",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039c8.png",
+            "backup_image": null
+        },
+        "16": {
+            "ref": "Fac345",
+            "id": "66351f74b87b000079003a16",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a16.png",
+            "backup_image": null
+        },
+        "17": {
+            "ref": "Fac97",
+            "id": "66351f71b87b0000790038f9",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f9.png",
+            "backup_image": null
+        },
+        "18": {
+            "ref": "Fac109",
+            "id": "66351f71b87b000079003905",
+            "wrong_new": "PL26-JR-66351f71b87b000079003905.png",
+            "backup_image": null
+        },
+        "19": {
+            "ref": "Fac124",
+            "id": "66351f71b87b000079003915",
+            "wrong_new": "PL26-JR-66351f71b87b000079003915.png",
+            "backup_image": null
+        },
+        "20": {
+            "ref": "Fac105",
+            "id": "66351f71b87b000079003901",
+            "wrong_new": "PL26-JR-66351f71b87b000079003901.png",
+            "backup_image": null
+        },
+        "21": {
+            "ref": "Fac94",
+            "id": "66351f71b87b0000790038f6",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f6.png",
+            "backup_image": null
+        },
+        "22": {
+            "ref": "Fac302",
+            "id": "66351f73b87b0000790039e5",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039e5.png",
+            "backup_image": null
+        },
+        "23": {
+            "ref": "Fac114",
+            "id": "66351f71b87b00007900390a",
+            "wrong_new": "PL26-JR-66351f71b87b00007900390a.png",
+            "backup_image": null
+        },
+        "24": {
+            "ref": "Fac110",
+            "id": "66351f71b87b000079003906",
+            "wrong_new": "PL26-JR-66351f71b87b000079003906.png",
+            "backup_image": null
+        },
+        "25": {
+            "ref": "Fac95",
+            "id": "66351f71b87b0000790038f7",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f7.png",
+            "backup_image": null
+        },
+        "26": {
+            "ref": "Fac120",
+            "id": "66351f71b87b000079003910",
+            "wrong_new": "PL26-JR-66351f71b87b000079003910.png",
+            "backup_image": null
+        },
+        "28": {
+            "ref": "Fac91",
+            "id": "66351f71b87b0000790038f2",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f2.png",
+            "backup_image": null
+        },
+        "29": {
+            "ref": "Fac106",
+            "id": "66351f71b87b000079003902",
+            "wrong_new": "PL26-JR-66351f71b87b000079003902.png",
+            "backup_image": null
+        },
+        "30": {
+            "ref": "Fac119",
+            "id": "66351f71b87b00007900390f",
+            "wrong_new": "PL26-JR-66351f71b87b00007900390f.png",
+            "backup_image": null
+        },
+        "31": {
+            "ref": "Fac65",
+            "id": "66351f70b87b0000790038d7",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038d7.png",
+            "backup_image": null
+        },
+        "34": {
+            "ref": "Fac309",
+            "id": "66351f74b87b0000790039ed",
+            "wrong_new": "PL26-JR-66351f74b87b0000790039ed.png",
+            "backup_image": null
+        },
+        "35": {
+            "ref": "Fac20",
+            "id": "66351f70b87b0000790038a4",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038a4.png",
+            "backup_image": null
+        },
+        "36": {
+            "ref": "Fac317",
+            "id": "66351f74b87b0000790039f6",
+            "wrong_new": "PL26-JR-66351f74b87b0000790039f6.png",
+            "backup_image": null
+        },
+        "37": {
+            "ref": "Fac4",
+            "id": "66351f70b87b000079003892",
+            "wrong_new": "PL26-JR-66351f70b87b000079003892.png",
+            "backup_image": null
+        },
+        "38": {
+            "ref": "Fac10",
+            "id": "66351f70b87b000079003899",
+            "wrong_new": "PL26-JR-66351f70b87b000079003899.png",
+            "backup_image": null
+        },
+        "39": {
+            "ref": "Fac156",
+            "id": "66351f71b87b000079003938",
+            "wrong_new": "PL26-JR-66351f71b87b000079003938.png",
+            "backup_image": null
+        },
+        "40": {
+            "ref": "Fac303",
+            "id": "66351f74b87b0000790039e6",
+            "wrong_new": "PL26-JR-66351f74b87b0000790039e6.png",
+            "backup_image": null
+        },
+        "41": {
+            "ref": "Fac306",
+            "id": "66351f74b87b0000790039ea",
+            "wrong_new": "PL26-JR-66351f74b87b0000790039ea.png",
+            "backup_image": null
+        },
+        "42": {
+            "ref": "Fac93",
+            "id": "66351f71b87b0000790038f5",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f5.png",
+            "backup_image": null
+        },
+        "43": {
+            "ref": "Fac212",
+            "id": "66351f72b87b000079003972",
+            "wrong_new": "PL26-JR-66351f72b87b000079003972.png",
+            "backup_image": null
+        },
+        "45": {
+            "ref": "Fac25",
+            "id": "66351f70b87b0000790038aa",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038aa.png",
+            "backup_image": null
+        },
+        "46": {
+            "ref": "Fac295",
+            "id": "66351f73b87b0000790039c9",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039c9.png",
+            "backup_image": null
+        },
+        "47": {
+            "ref": "Fac285",
+            "id": "66351f73b87b0000790039bf",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039bf.png",
+            "backup_image": null
+        },
+        "48": {
+            "ref": "Fac307",
+            "id": "66351f74b87b0000790039eb",
+            "wrong_new": "PL26-JR-66351f74b87b0000790039eb.png",
+            "backup_image": null
+        },
+        "49": {
+            "ref": "Fac266",
+            "id": "66351f73b87b0000790039ab",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039ab.png",
+            "backup_image": null
+        },
+        "50": {
+            "ref": "Fac319",
+            "id": "66351f74b87b0000790039f8",
+            "wrong_new": "PL26-JR-66351f74b87b0000790039f8.png",
+            "backup_image": null
+        },
+        "51": {
+            "ref": "Fac211",
+            "id": "66351f72b87b000079003971",
+            "wrong_new": "PL26-JR-66351f72b87b000079003971.png",
+            "backup_image": null
+        },
+        "52": {
+            "ref": "Fac282",
+            "id": "66351f73b87b0000790039bb",
+            "wrong_new": "PL26-JR-66351f73b87b0000790039bb.png",
+            "backup_image": null
+        },
+        "53": {
+            "ref": "Fac2",
+            "id": "66351f70b87b000079003890",
+            "wrong_new": "PL26-JR-66351f70b87b000079003890.png",
+            "backup_image": null
+        },
+        "54": {
+            "ref": "Fac352",
+            "id": "66351f74b87b000079003a1d",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a1d.png",
+            "backup_image": null
+        },
+        "55": {
+            "ref": "Fac360",
+            "id": "66351f74b87b000079003a25",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a25.png",
+            "backup_image": null
+        },
+        "56": {
+            "ref": "Fac14",
+            "id": "66351f70b87b00007900389d",
+            "wrong_new": "PL26-JR-66351f70b87b00007900389d.png",
+            "backup_image": null
+        },
+        "59": {
+            "ref": "Fac99",
+            "id": "66351f71b87b0000790038fb",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038fb.png",
+            "backup_image": null
+        },
+        "60": {
+            "ref": "Fac17",
+            "id": "66351f70b87b0000790038a1",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038a1.png",
+            "backup_image": null
+        },
+        "61": {
+            "ref": "Fac116",
+            "id": "66351f71b87b00007900390c",
+            "wrong_new": "PL26-JR-66351f71b87b00007900390c.png",
+            "backup_image": null
+        },
+        "62": {
+            "ref": "Fac240",
+            "id": "66351f72b87b000079003991",
+            "wrong_new": "PL26-JR-66351f72b87b000079003991.png",
+            "backup_image": null
+        },
+        "63": {
+            "ref": "Fac210",
+            "id": "66351f72b87b000079003970",
+            "wrong_new": "PL26-JR-66351f72b87b000079003970.png",
+            "backup_image": null
+        },
+        "64": {
+            "ref": "Fac127",
+            "id": "66351f71b87b000079003918",
+            "wrong_new": "PL26-JR-66351f71b87b000079003918.png",
+            "backup_image": null
+        },
+        "65": {
+            "ref": "Fac12",
+            "id": "66351f70b87b00007900389b",
+            "wrong_new": "PL26-JR-66351f70b87b00007900389b.png",
+            "backup_image": null
+        },
+        "67": {
+            "ref": "Fac337",
+            "id": "66351f74b87b000079003a0d",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a0d.png",
+            "backup_image": null
+        },
+        "68": {
+            "ref": "Fac355",
+            "id": "66351f74b87b000079003a20",
+            "wrong_new": "PL26-JR-66351f74b87b000079003a20.png",
+            "backup_image": null
+        },
+        "69": {
+            "ref": "Fac92",
+            "id": "66351f71b87b0000790038f4",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f4.png",
+            "backup_image": null
+        },
+        "70": {
+            "ref": "Fac23",
+            "id": "66351f70b87b0000790038a8",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038a8.png",
+            "backup_image": null
+        },
+        "71": {
+            "ref": "Fac96",
+            "id": "66351f71b87b0000790038f8",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038f8.png",
+            "backup_image": null
+        },
+        "73": {
+            "ref": "Fac63",
+            "id": "66351f70b87b0000790038d4",
+            "wrong_new": "PL26-JR-66351f70b87b0000790038d4.png",
+            "backup_image": null
+        },
+        "74": {
+            "ref": "Fac112",
+            "id": "66351f71b87b000079003908",
+            "wrong_new": "PL26-JR-66351f71b87b000079003908.png",
+            "backup_image": null
+        },
+        "75": {
+            "ref": "Fac98",
+            "id": "66351f71b87b0000790038fa",
+            "wrong_new": "PL26-JR-66351f71b87b0000790038fa.png",
+            "backup_image": null
+        }
+    },
+    "restore_old_names": [],
+    "keep9": {
+        "66351f73b87b0000790039c1": "PL26-JR-66351f73b87b0000790039c1-pneu-88.png",
+        "66351f73b87b0000790039c2": "PL26-JR-66351f73b87b0000790039c2-pneu-14.png",
+        "66351f71b87b000079003907": "PL26-JR-66351f71b87b000079003907-batterie-1200A.png",
+        "66351f71b87b00007900393a": "PL26-JR-66351f71b87b00007900393a-frein-accumulateurs.png",
+        "66351f71b87b00007900393c": "PL26-JR-66351f71b87b00007900393c-frein-valve-4voies.png",
+        "66351f71b87b00007900393b": "PL26-JR-66351f71b87b00007900393b-frein-compresseur.png",
+        "66351f70b87b0000790038c3": "PL26-JR-66351f70b87b0000790038c3-embrayage-commande.png",
+        "66351f70b87b0000790038c4": "PL26-JR-66351f70b87b0000790038c4-embrayage-amiante.png",
+        "66351f70b87b0000790038d9": "PL26-JR-66351f70b87b0000790038d9-demi-arbre-joint.png"
+    },
+    "junior_with_image_in_backup": [
+        {
+            "ref": "Fac22",
+            "id": "66351f70b87b0000790038a7",
+            "image": "EQBVJ168-169.png",
+            "label": "Quel est le sens de rotation de la roue B si le pignon menant A tourne dans Ie s"
+        },
+        {
+            "ref": "Fac28",
+            "id": "66351f70b87b0000790038ad",
+            "image": "MOTAS137.png",
+            "label": "Quel est le rôle du différentiel ?"
+        },
+        {
+            "ref": "Fac42",
+            "id": "66351f70b87b0000790038be",
+            "image": "EQBVJ188-192.png",
+            "label": "A quoi correspond le composant 1 de l'embrayage ci-dessous ?"
+        },
+        {
+            "ref": "Fac43",
+            "id": "66351f70b87b0000790038bf",
+            "image": "EQBVJ188-192.png",
+            "label": "A quoi correspond le composant 2 de l'embrayage ci-dessous ?"
+        },
+        {
+            "ref": "Fac44",
+            "id": "66351f70b87b0000790038c0",
+            "image": "EQBVJ188-192.png",
+            "label": "A quoi correspond le composant 3 de l'image décomposé d'un embrayage ci-dessous "
+        },
+        {
+            "ref": "Fac45",
+            "id": "66351f70b87b0000790038c1",
+            "image": "EQBVJ188-192.png",
+            "label": "A quoi correspond le composant 4 de l'image décomposé d'un embrayage ci-dessous "
+        },
+        {
+            "ref": "Fac46",
+            "id": "66351f70b87b0000790038c2",
+            "image": "EQBVJ188-192.png",
+            "label": "A quoi correspond le composant 5 de l'image décomposé d'un embrayage ci-dessous "
+        },
+        {
+            "ref": "Fac49",
+            "id": "66351f70b87b0000790038c5",
+            "image": "MOTRJ47.png",
+            "label": "Que représente l’élément 7 dans le mécanisme de commande hydraulique d’embrayage"
+        },
+        {
+            "ref": "Fac50",
+            "id": "66351f70b87b0000790038c6",
+            "image": "EQCLJ224.png",
+            "label": "Que représente les boutons du système de climatisation ci-dessous  ?"
+        },
+        {
+            "ref": "Fac51",
+            "id": "66351f70b87b0000790038c8",
+            "image": "EQCLJ225.png",
+            "label": "Que représente le repère 1 sur l'image d'un des composants du système de climati"
+        },
+        {
+            "ref": "Fac53",
+            "id": "66351f70b87b0000790038ca",
+            "image": "EQCLJ244-249.png",
+            "label": "Que représente le repère 1 sur le schéma de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac54",
+            "id": "66351f70b87b0000790038cb",
+            "image": "EQCLJ244-249.png",
+            "label": "Que représente le repère 2 sur le schéma de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac55",
+            "id": "66351f70b87b0000790038cc",
+            "image": "EQCLJ244-249.png",
+            "label": "Que représente le repère 3 sur le schéma de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac56",
+            "id": "66351f70b87b0000790038cd",
+            "image": "EQCLJ244 -249.png",
+            "label": "Que représente le repère 4 sur le schéma de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac57",
+            "id": "66351f70b87b0000790038ce",
+            "image": "EQCLJ244-249.png",
+            "label": "Que représente le repère 5 sur l'image du schéma de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac58",
+            "id": "66351f70b87b0000790038cf",
+            "image": "EQCLJ244-249.png",
+            "label": "Que représente le repère 6 sur le schéma de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac62",
+            "id": "66351f70b87b0000790038d3",
+            "image": "MOCLJ58.png",
+            "label": "Que représente l’élément 1 de la figure du circuit de climatisation ci-dessous ?"
+        },
+        {
+            "ref": "Fac71",
+            "id": "66351f71b87b0000790038de",
+            "image": "EQDIJ213-217.png",
+            "label": "A quoi correspond le composant 1 de la figure du système de direction ci-dessous"
+        },
+        {
+            "ref": "Fac72",
+            "id": "66351f71b87b0000790038df",
+            "image": "EQDIJ213-217.png",
+            "label": "A quoi correspond le composant 2 de la figure du système de direction ci-dessous"
+        },
+        {
+            "ref": "Fac73",
+            "id": "66351f71b87b0000790038e0",
+            "image": "EQDIJ213-217.png",
+            "label": "A quoi correspond le composant 3 de la figure du système de direction ci-dessous"
+        },
+        {
+            "ref": "Fac74",
+            "id": "66351f71b87b0000790038e1",
+            "image": "EQDIJ213-217.png",
+            "label": "A quoi correspond le composant 4 de la figure du système de direction ci-dessous"
+        },
+        {
+            "ref": "Fac76",
+            "id": "66351f71b87b0000790038e3",
+            "image": "EQDIJ298-304.png",
+            "label": "Quel est le nom de l'élément 1 sur le schéma de direction ci-dessous ?"
+        },
+        {
+            "ref": "Fac78",
+            "id": "66351f71b87b0000790038e5",
+            "image": "EQDIJ298-304.png",
+            "label": "Quel est le nom de l'élément 3 sur le schéma de direction ci-dessous ?"
+        },
+        {
+            "ref": "Fac79",
+            "id": "66351f71b87b0000790038e6",
+            "image": "EQDIJ298-304.png",
+            "label": "Quel est le nom de l'élément 4 sur le schéma de direction ci-dessous ?"
+        },
+        {
+            "ref": "Fac80",
+            "id": "66351f71b87b0000790038e7",
+            "image": "EQDIJ298-304.png",
+            "label": "Quel est le nom de l'élément 5 sur le schéma de direction ci-dessous ?"
+        },
+        {
+            "ref": "Fac81",
+            "id": "66351f71b87b0000790038e8",
+            "image": "EQDIJ298-304.png",
+            "label": "Quel est le nom de l'élément 6 sur le schéma de direction ci-dessous ?"
+        },
+        {
+            "ref": "Fac85",
+            "id": "66351f71b87b0000790038ec",
+            "image": "548-551SAC.png",
+            "label": "Quel est le nom du composant 1 du schéma de la direction ci-joint?"
+        },
+        {
+            "ref": "Fac87",
+            "id": "66351f71b87b0000790038ee",
+            "image": "548-551SAC.png",
+            "label": "Quel est le nom du composant 3 du schéma de la direction ci-joint?"
+        },
+        {
+            "ref": "Fac88",
+            "id": "66351f71b87b0000790038ef",
+            "image": "548-551SAC.png",
+            "label": "Quel est le nom du composant 4 du schéma de la direction ci-joint?"
+        },
+        {
+            "ref": "Fac102",
+            "id": "66351f71b87b0000790038fe",
+            "image": "EQELJ128.png",
+            "label": "Quel type de montage de batterie est représenté sur le schéma suivant ?"
+        },
+        {
+            "ref": "Fac117",
+            "id": "66351f71b87b00007900390d",
+            "image": "MOELS139.png",
+            "label": "Quel est le rôle de la bobine d'allumage ?"
+        },
+        {
+            "ref": "Fac118",
+            "id": "66351f71b87b00007900390e",
+            "image": "612SEE.png",
+            "label": "Que représente le boitier ci-joint ?"
+        },
+        {
+            "ref": "Fac135",
+            "id": "66351f71b87b000079003921",
+            "image": "EQFHJ259.png",
+            "label": "De quel type de disque de frein hydraulique s'agit-il sur l'image ci-dessous ?"
+        },
+        {
+            "ref": "Fac136",
+            "id": "66351f71b87b000079003923",
+            "image": "EQFHJ260.png",
+            "label": "De quel type de disque de frein hydraulique s'agit-il sur l'image ci-dessous ?"
+        },
+        {
+            "ref": "Fac137",
+            "id": "66351f71b87b000079003924",
+            "image": "EQFHJ261.png",
+            "label": "De quel type d'étrier s'agit-il sur le schéma du système de freinage hydraulique"
+        },
+        {
+            "ref": "Fac138",
+            "id": "66351f71b87b000079003925",
+            "image": "EQFHJ262.png",
+            "label": "Que répresente le composant indiqué par la flèche sur le schéma du système de fr"
+        },
+        {
+            "ref": "Fac140",
+            "id": "66351f71b87b000079003927",
+            "image": "EQFHJ264-268.png",
+            "label": "Que représente le repère 1 sur l'image de cylindre de roue du système de freinag"
+        },
+        {
+            "ref": "Fac141",
+            "id": "66351f71b87b000079003928",
+            "image": "EQFHJ264-268.png",
+            "label": "Que représente le repère 2 sur l'image de cylindre de roue du système de freinag"
+        },
+        {
+            "ref": "Fac142",
+            "id": "66351f71b87b000079003929",
+            "image": "EQFHJ264-268.png",
+            "label": "Que représente le repère 3 sur l'image de cylindre de roue du système de freinag"
+        },
+        {
+            "ref": "Fac143",
+            "id": "66351f71b87b00007900392a",
+            "image": "EQFHJ264-268.png",
+            "label": "Que représente le repère 4 sur l'image de cylindre de roue du système de freinag"
+        },
+        {
+            "ref": "Fac144",
+            "id": "66351f71b87b00007900392b",
+            "image": "EQFHJ264-268.png",
+            "label": "Que représente le repère 5 sur l'image de cylindre de roue du système de freinag"
+        },
+        {
+            "ref": "Fac145",
+            "id": "66351f71b87b00007900392c",
+            "image": "EQFHJ271.png",
+            "label": "Quel est le nom de la pièce du circuit de freinage hydraulique sur la figure ci-"
+        },
+        {
+            "ref": "Fac146",
+            "id": "66351f71b87b00007900392d",
+            "image": "EQFHJ272.png",
+            "label": "Quel est le nom de la pièce du circuit de freinage de la figure ci-dessous ?"
+        },
+        {
+            "ref": "Fac148",
+            "id": "66351f71b87b00007900392f",
+            "image": "EQFHJ274.png",
+            "label": "Parmi les propositions suivantes laquelle n'apparait pas sur l'image ci-dessous "
+        },
+        {
+            "ref": "Fac149",
+            "id": "66351f71b87b000079003930",
+            "image": "MOFHJ25.png",
+            "label": "Laquelle des illustrations suivantes s'éclaire lorsque le niveau du liquide de f"
+        },
+        {
+            "ref": "Fac151",
+            "id": "66351f71b87b000079003932",
+            "image": "MOFHJ52.png",
+            "label": "Quel type de système de freinage est représenté sur l'image ci-dessous?"
+        },
+        {
+            "ref": "Fac152",
+            "id": "66351f71b87b000079003933",
+            "image": "MOFHJ53.png",
+            "label": "Quel figures ci-dessous  n'est pas un témoin d’avertissement du système de frein"
+        },
+        {
+            "ref": "Fac153",
+            "id": "66351f71b87b000079003934",
+            "image": "MOFHJ54.png",
+            "label": "Que représente l’élément 5 de la figure du freinage hydraulique ?"
+        },
+        {
+            "ref": "Fac154",
+            "id": "66351f71b87b000079003935",
+            "image": "MOFHJ29.png",
+            "label": "Quelle surface de contact du frein à tambour doit-on graisser lors d'une mainten"
+        },
+        {
+            "ref": "Fac161",
+            "id": "66351f71b87b00007900393d",
+            "image": "EQFPJ221-222.png",
+            "label": "Que signifie le petit triangle désigné par le nombre 3 au niveau du bord gauche "
+        },
+        {
+            "ref": "Fac162",
+            "id": "66351f71b87b00007900393e",
+            "image": "EQFPJ221-222.png",
+            "label": "Que signifie la flèche sur la représentation schématisée ci-dessous ?"
+        },
+        {
+            "ref": "Fac166",
+            "id": "66351f72b87b000079003942",
+            "image": "EQFPJ278.png",
+            "label": "Quel composant du système de freinage pneumatique est représenté sur l'image ci-"
+        },
+        {
+            "ref": "Fac167",
+            "id": "66351f72b87b000079003943",
+            "image": "EQFPJ278.png",
+            "label": "Quel est la position du cylindre de frein sur l'image ci-dessous ?"
+        },
+        {
+            "ref": "Fac168",
+            "id": "66351f72b87b000079003944",
+            "image": "EQFPJ280-285.png",
+            "label": "A quoi correspond le repère 1 sur le schéma du système de freinage pneumatique c"
+        },
+        {
+            "ref": "Fac169",
+            "id": "66351f72b87b000079003945",
+            "image": "EQFPJ280-285.png",
+            "label": "A quoi correspond le repère 2 sur le schéma du système de freinage pneumatique c"
+        },
+        {
+            "ref": "Fac170",
+            "id": "66351f72b87b000079003946",
+            "image": "EQFPJ280-285.png",
+            "label": "A quoi correspond le repère 3 sur le schéma du système de freinage pneumatique c"
+        },
+        {
+            "ref": "Fac171",
+            "id": "66351f72b87b000079003947",
+            "image": "EQFPJ280-285.png",
+            "label": "A quoi correspond le repère 4 sur le schéma du système de freinage pneumatique c"
+        },
+        {
+            "ref": "Fac172",
+            "id": "66351f72b87b000079003948",
+            "image": "EQFPJ280-285.png",
+            "label": "A quoi correspond le repère 5 sur le schéma du système de freinage pneumatique c"
+        },
+        {
+            "ref": "Fac173",
+            "id": "66351f72b87b000079003949",
+            "image": "EQFPJ280-285.png",
+            "label": "A quoi correspond le repère 6 sur le schéma du système de freinage pneumatique c"
+        },
+        {
+            "ref": "Fac185",
+            "id": "66351f72b87b000079003956",
+            "image": "EQHYJ72-76.png",
+            "label": "A quoi correspond le composant 1 de la figure du système hydraulique ci-dessous "
+        },
+        {
+            "ref": "Fac186",
+            "id": "66351f72b87b000079003957",
+            "image": "EQHYJ72-76.png",
+            "label": "A quoi correspond le composant 2 de la figure du système hydraulique ci-dessous "
+        },
+        {
+            "ref": "Fac187",
+            "id": "66351f72b87b000079003958",
+            "image": "EQHYJ72-76.png",
+            "label": "A quoi correspond le composant 3 de la figure du système hydraulique ci-dessous "
+        },
+        {
+            "ref": "Fac188",
+            "id": "66351f72b87b000079003959",
+            "image": "EQHYJ72-76.png",
+            "label": "A quoi correspond le composant 4 de la figure du système hydraulique ci-dessous "
+        },
+        {
+            "ref": "Fac189",
+            "id": "66351f72b87b00007900395a",
+            "image": "EQHYJ72-76.png",
+            "label": "A quoi correspond le composant 5 de la figure du système hydraulique ci-dessous "
+        },
+        {
+            "ref": "Fac191",
+            "id": "66351f72b87b00007900395c",
+            "image": "EQHYJ84.png",
+            "label": "Quelle est la désignation du distributeur ci-dessous  ?"
+        },
+        {
+            "ref": "Fac192",
+            "id": "66351f72b87b00007900395d",
+            "image": "EQHYJ86.png",
+            "label": "Quelle type de commande est représenté ci-dessous?"
+        },
+        {
+            "ref": "Fac193",
+            "id": "66351f72b87b00007900395e",
+            "image": "EQHYJ87.png",
+            "label": "Quel est l'élément représenté ci-dessous ?"
+        },
+        {
+            "ref": "Fac194",
+            "id": "66351f72b87b00007900395f",
+            "image": "EQHYJ88.png",
+            "label": "Que représente le symbole de la figure suivante ?"
+        },
+        {
+            "ref": "Fac196",
+            "id": "66351f72b87b000079003961",
+            "image": "EQHYJ90.png",
+            "label": "Que représente le symbole sur le schéma hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac197",
+            "id": "66351f72b87b000079003962",
+            "image": "EQHYJ91.png",
+            "label": "Quelle est la signification du symbole ci-dessous ?"
+        },
+        {
+            "ref": "Fac198",
+            "id": "66351f72b87b000079003963",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 1 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac199",
+            "id": "66351f72b87b000079003964",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 2 de la figure du circuit hydraulique-dessous ?"
+        },
+        {
+            "ref": "Fac200",
+            "id": "66351f72b87b000079003965",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 3 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac201",
+            "id": "66351f72b87b000079003966",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 4 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac202",
+            "id": "66351f72b87b000079003967",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 5 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac203",
+            "id": "66351f72b87b000079003968",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 6 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac204",
+            "id": "66351f72b87b000079003969",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 7 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac205",
+            "id": "66351f72b87b00007900396a",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 8 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac206",
+            "id": "66351f72b87b00007900396b",
+            "image": "EQHYJ92-100.png",
+            "label": "A quoi correspond le repère 9 de la figure du circuit hydraulique ci-dessous ?"
+        },
+        {
+            "ref": "Fac213",
+            "id": "66351f72b87b000079003973",
+            "image": "EQMOJ52-57.png",
+            "label": "A quel élément correspond le repère 1 de I’image ci-dessous?"
+        },
+        {
+            "ref": "Fac214",
+            "id": "66351f72b87b000079003974",
+            "image": "EQMOJ52-57.png",
+            "label": "A quel élément correspond le repère 2 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac215",
+            "id": "66351f72b87b000079003975",
+            "image": "EQMOJ52-57.png",
+            "label": "A quel élément correspond le repère 3 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac216",
+            "id": "66351f72b87b000079003976",
+            "image": "EQMOJ52-57.png",
+            "label": "A quel élément correspond le repère 4 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac217",
+            "id": "66351f72b87b000079003977",
+            "image": "EQMOJ52-57.png",
+            "label": "A quel élément correspond le repère 5 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac218",
+            "id": "66351f72b87b000079003978",
+            "image": "EQMOJ52-57.png",
+            "label": "A quel élément correspond le repère 6 de I'image ci-dessous?"
+        },
+        {
+            "ref": "Fac228",
+            "id": "66351f72b87b000079003984",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 1 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac229",
+            "id": "66351f72b87b000079003985",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 2 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac230",
+            "id": "66351f72b87b000079003986",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 3 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac231",
+            "id": "66351f72b87b000079003987",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 4 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac232",
+            "id": "66351f72b87b000079003988",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 5 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac233",
+            "id": "66351f72b87b000079003989",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 6 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac234",
+            "id": "66351f72b87b00007900398a",
+            "image": "MOMOJ203-206.png",
+            "label": "A quel élément correspond le repère 7 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac235",
+            "id": "66351f72b87b00007900398b",
+            "image": "MOMOJ209.png",
+            "label": "Quel est le système d'injection représenté sur l'image suivante ?"
+        },
+        {
+            "ref": "Fac236",
+            "id": "66351f72b87b00007900398c",
+            "image": "MOMOJ210.png",
+            "label": "Quel  type de circuit d'alimentation en essence correspond à l'image ci-dessous "
+        },
+        {
+            "ref": "Fac237",
+            "id": "66351f72b87b00007900398d",
+            "image": "MOMOJ211.png",
+            "label": "Quel  type de circuit d'alimentation en carburant  correspond à l'image ci-desso"
+        },
+        {
+            "ref": "Fac253",
+            "id": "66351f72b87b00007900399e",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 1 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac254",
+            "id": "66351f72b87b00007900399f",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 2 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac255",
+            "id": "66351f72b87b0000790039a0",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 3 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac256",
+            "id": "66351f72b87b0000790039a1",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 4 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac257",
+            "id": "66351f72b87b0000790039a2",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 5 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac258",
+            "id": "66351f72b87b0000790039a3",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 6 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac259",
+            "id": "66351f72b87b0000790039a4",
+            "image": "EQMOJ33-39.png",
+            "label": "A quel élément correspond le repère 7 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac260",
+            "id": "66351f72b87b0000790039a5",
+            "image": "EQMOJ40-44.png",
+            "label": "A quel élément correspond le repère 1 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac261",
+            "id": "66351f72b87b0000790039a6",
+            "image": "EQMOJ40-44.png",
+            "label": "A quel élément correspond le repère 2 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac262",
+            "id": "66351f73b87b0000790039a7",
+            "image": "EQMOJ40-44.png",
+            "label": "A quel élément correspond le repère 3 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac263",
+            "id": "66351f73b87b0000790039a8",
+            "image": "EQMOJ40-44.png",
+            "label": "A quel élément correspond le repère 4 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac264",
+            "id": "66351f73b87b0000790039a9",
+            "image": "EQMOJ40-44.png",
+            "label": "A quel élément correspond le repère 5 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac268",
+            "id": "66351f73b87b0000790039ad",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 1 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac269",
+            "id": "66351f73b87b0000790039ae",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 2 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac270",
+            "id": "66351f73b87b0000790039af",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 3 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac271",
+            "id": "66351f73b87b0000790039b0",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 4 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac272",
+            "id": "66351f73b87b0000790039b1",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 5 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac273",
+            "id": "66351f73b87b0000790039b2",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 6 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac274",
+            "id": "66351f73b87b0000790039b3",
+            "image": "EQMOJ45-51.png",
+            "label": "A quel élément correspond le repère 7 de I 'image ci-dessous?"
+        },
+        {
+            "ref": "Fac297",
+            "id": "66351f73b87b0000790039cb",
+            "image": "EQPRJ170-173.png",
+            "label": "Quel est le nom de l'élément correspondant au numéro 1 du train planétaire du po"
+        },
+        {
+            "ref": "Fac298",
+            "id": "66351f73b87b0000790039e1",
+            "image": "EQPRJ170-173.png",
+            "label": "Quel est le nom de l'élément  correspondant au numéro 3 du train planétaire du p"
+        },
+        {
+            "ref": "Fac299",
+            "id": "66351f73b87b0000790039e2",
+            "image": "EQPRJ170-173.png",
+            "label": "Quel est le nom de l'élément correspondant au numéro 4 du train planétaire du po"
+        },
+        {
+            "ref": "Fac300",
+            "id": "66351f73b87b0000790039e3",
+            "image": "EQPRJ170-173.png",
+            "label": "Quel est le nom de l'élément correspondant au numéro  2 du train planétaire du p"
+        },
+        {
+            "ref": "Fac311",
+            "id": "66351f74b87b0000790039f0",
+            "image": "EQSUJ286.png",
+            "label": "Lequel des silentblocs suivants est utilisé avec la barre stabilisatrice?"
+        },
+        {
+            "ref": "Fac314",
+            "id": "66351f74b87b0000790039f3",
+            "image": "MOSUJ33.png",
+            "label": "Lequel des schémas suivants représentent une vérification du jeu de roulements d"
+        },
+        {
+            "ref": "Fac315",
+            "id": "66351f74b87b0000790039f4",
+            "image": "MOSUJ34.png",
+            "label": "Laquelle des figures suivantes montre comment mesurer la précharge du roulement "
+        },
+        {
+            "ref": "Fac316",
+            "id": "66351f74b87b0000790039f5",
+            "image": "MOSUJ73.png",
+            "label": "Que représente l’élément 7 sur la figure de suspension ci-dessous  ?"
+        },
+        {
+            "ref": "Fac318",
+            "id": "66351f74b87b0000790039f7",
+            "image": "MOSUJ80.png",
+            "label": "Laquelle des figures représente la procédure d’inspection du jeu de roulement de"
+        },
+        {
+            "ref": "Fac320",
+            "id": "66351f74b87b0000790039f9",
+            "image": "EQSUJ306-309.png",
+            "label": "Quel est le nom de l'élément 1 sur le schéma de suspension à lame ci-dessous ?"
+        },
+        {
+            "ref": "Fac321",
+            "id": "66351f74b87b0000790039fb",
+            "image": "EQSUJ306-309.png",
+            "label": "Quel est le nom de l'élément 2 sur le schéma de suspension à lame ci-dessous ?"
+        },
+        {
+            "ref": "Fac322",
+            "id": "66351f74b87b0000790039fc",
+            "image": "EQSUJ306-309.png",
+            "label": "Quel est le nom de l'élément 3 sur le schéma de suspension à lame ci-dessous ?"
+        },
+        {
+            "ref": "Fac323",
+            "id": "66351f74b87b0000790039fd",
+            "image": "EQSUJ306-309.png",
+            "label": "Quel est le nom de l'élément 4 sur le schéma de suspension à lame ci-dessous ?"
+        },
+        {
+            "ref": "Fac324",
+            "id": "66351f74b87b0000790039fe",
+            "image": "EQSUJ310.png",
+            "label": "Lequel des silentblocs ci-dessous est utilisé avec les lame de ressort?"
+        },
+        {
+            "ref": "Fac336",
+            "id": "66351f74b87b000079003a0c",
+            "image": "EQSUJ311.png",
+            "label": "Lequel de ces éléments ci-dessous fait partie de la suspension pneumatique?"
+        },
+        {
+            "ref": "Fac347",
+            "id": "66351f74b87b000079003a18",
+            "image": "EQSTJ330.png",
+            "label": "Sur un extincteur que veut dire la suite de lettre ABC ?"
+        },
+        {
+            "ref": "Fac351",
+            "id": "66351f74b87b000079003a1c",
+            "image": "EQSTJ334.png",
+            "label": "Quelle valeur lisez-vous sur le comparateur ci-joint?"
+        },
+        {
+            "ref": "Fac363",
+            "id": "66351f74b87b000079003a28",
+            "image": "EQSTJ346.png",
+            "label": "Quelle est la valeur observée sur le micromètre ci-dessous?"
+        },
+        {
+            "ref": "Fac364",
+            "id": "66351f74b87b000079003a29",
+            "image": "EQSTJ347.png",
+            "label": "Quelle est la valeur observée sur le pied à coulisse ci-dessous?"
+        },
+        {
+            "ref": "Fac365",
+            "id": "66351f74b87b000079003a2a",
+            "image": "MOTRJ01.png",
+            "label": "Quel groupe est considéré comme prioritaire selon la philosophie de CFAO parmi c"
+        },
+        {
+            "ref": "Fac368",
+            "id": "66351f74b87b000079003a2d",
+            "image": "MOTRJ62.png",
+            "label": "Que représente l’indication du panneau ci-dessous ?"
+        },
+        {
+            "ref": "Fac370",
+            "id": "66351f74b87b000079003a2f",
+            "image": "MOTRJ64.png",
+            "label": "Que représente l’indication du panneau ci-dessous ?"
+        },
+        {
+            "ref": "Fac372",
+            "id": "66351f74b87b000079003a31",
+            "image": "MOTRJ67.png",
+            "label": "Lequel de ces outils désigne une clé dynamométrique ?"
+        },
+        {
+            "ref": "Fac373",
+            "id": "66351f74b87b000079003a32",
+            "image": "MOTRJ68.png",
+            "label": "Lequel de ces outils désigne la pince universelle ?"
+        },
+        {
+            "ref": "Fac374",
+            "id": "66351f74b87b000079003a33",
+            "image": "MOTRJ69.png",
+            "label": "Quel est la valeur de mesure du pied à coulisse sur la figure ci-dessous ?"
+        },
+        {
+            "ref": "Fac375",
+            "id": "66351f74b87b000079003a34",
+            "image": "MOTRJ70.png",
+            "label": "Quel est la valeur de mesure du micromètre sur la figure ci-dessous ?"
+        },
+        {
+            "ref": "Fac376",
+            "id": "66351f74b87b000079003a35",
+            "image": "MOPNJ71.png",
+            "label": "Que représente les chiffres encadré en rouge sur le pneu ci-dessous ?"
+        },
+        {
+            "ref": "Fac377",
+            "id": "66351f74b87b000079003a36",
+            "image": "MOTRS105.png",
+            "label": "Quels éléments correspondent à la dépose et à l'installation des flexibles\/colli"
+        }
+    ]
+}
