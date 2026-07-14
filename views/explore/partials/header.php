@@ -12,6 +12,11 @@ include_once "../language.php";
 // Récupérer le profil de l'utilisateur
 $currentProfileName = $_SESSION['profile'] ?? '';
 
+// Route dashboard selon profil (stateAgency pour les directeurs filiale)
+$dashRoute = (($currentProfileName === 'Directeur Pièce et Service') || ($currentProfileName === 'Directeur des Opérations'))
+    ? './stateAgency'
+    : './dashboard';
+
 // if ($currentProfileName == 'Manager' && $_SESSION['test'] == true) {
 //     $profile = $profilesCollection->findOne(['name' => 'Manager - Technicien']);
 // } else {
@@ -120,6 +125,36 @@ $agencies = [
     // Add more countries and their agencies here
 ];
 
+// Première agence avec des techniciens (pour le lien menu par défaut)
+$defaultMenuAgency = isset($agencies[$country]) ? $agencies[$country][0] : '';
+if ($country && isset($agencies[$country]) && isset($_SESSION['subsidiary'])) {
+    try {
+        $matchQuery = [
+            'subsidiary' => $_SESSION['subsidiary'],
+            'active' => true,
+            '$or' => [['profile' => 'Technicien'], ['profile' => 'Manager', 'test' => true]]
+        ];
+        if (isset($_SESSION['department']) && $_SESSION['department'] !== 'Equipment & Motors') {
+            $matchQuery['department'] = $_SESSION['department'];
+        }
+        $menuAgencyCounts = [];
+        foreach ($academy->users->aggregate([
+            ['$match' => $matchQuery],
+            ['$group' => ['_id' => '$agency', 'count' => ['$sum' => 1]]]
+        ])->toArray() as $doc) {
+            $menuAgencyCounts[(string)$doc['_id']] = (int)$doc['count'];
+        }
+        foreach ($agencies[$country] as $agencyOption) {
+            if (($menuAgencyCounts[$agencyOption] ?? 0) > 0) {
+                $defaultMenuAgency = $agencyOption;
+                break;
+            }
+        }
+    } catch (Exception $e) {
+        // Garder l'agence par défaut en cas d'erreur
+    }
+}
+
 // Map countries
 $countries = [
     "Burkina Faso","Cameroun", "Congo", "Cote d'Ivoire", "Gabon", "Madagascar", "Mali", "RCA", "RDC", "Senegal", "Rwanda"
@@ -128,7 +163,7 @@ $countries = [
 // Map countries to their respective subsidiary name
 $subsidiaries = [
     "CFAO MOTORS BURKINA",
-    "CAMEROON MOTORS INDUSTRIES",
+    "CFAO MOBILITY CAMEROON",
     "CFAO MOTORS CONGO",
     "CFAO MOTORS COTE D'IVOIRE",
     "CFAO MOTORS GABON",
@@ -324,7 +359,7 @@ $subsidiaries = [
                         class="btn btn-sm btn-light align-self-center"><?php echo 'Portail MEDACAP' ?></a>
                         <!--end::Action-->
                         <!--begin::Logo-->
-                        <a href="./dashboard">
+                        <a href="<?= $dashRoute ?>">
                             <img alt="Logo" src="../../public/images/logo.png" class="h-50px logo-default" style="margin-right: 50px;" />
                             <img alt="Logo" src="../../public/images/logo.png" class="h-50px logo-minimize" />
                         </a>
@@ -398,8 +433,9 @@ $subsidiaries = [
                                 <!--begin:Menu item-->
                                <div data-kt-menu-trigger="click" class="menu-item here show menu-accordion">
                                     <!--begin:Menu link-->
+                                    <?php if ($currentProfileName !== 'Directeur Pièce et Service' && $currentProfileName !== 'Directeur des Opérations'): ?>
                                     <div class="menu-item">
-                                        <a class="menu-link" href="./dashboard"><span
+                                        <a class="menu-link" href="<?= $dashRoute ?>"><span
                                                 class="menu-icon">
                                                 <i class="ki-duotone ki-element-11 fs-2">
                                                     <span class="path1"></span>
@@ -409,6 +445,7 @@ $subsidiaries = [
                                                 </i></span><span class="menu-title"><?php echo $tableau ?></span>
                                             </a>
                                     </div>
+                                    <?php endif; ?>
                                     <!-- Dynamic Menu Items -->
                                     <?php
                                     // Récupération de l'URL actuelle
@@ -418,6 +455,7 @@ $subsidiaries = [
                                     $isDetailPage = strpos($currentUrl, 'detail.php') !== false;
                                     $isBrandResultPage = strpos($currentUrl, 'brandResult.php') !== false;
                                     $isSystemPage = strpos($currentUrl, 'system.php') !== false;
+                                    $isStateAgencyPage = strpos($currentUrl, 'stateAgency') !== false;
 
                                     // Paramètres dynamiques
                                     $list_result = "Liste des résultats";
@@ -437,11 +475,13 @@ $subsidiaries = [
                                             // Vérifiez le type d'icône
                                             $iconType = $item['icon_type'] ?? 'font_awesome';
                                             
-                                            echo '<div class="menu-item">';
+                                            $itemActive = ($key === 'state_agency' && $isStateAgencyPage);
+                                            echo '<div class="menu-item' . ($itemActive ? ' here' : '') . '">';
                                             if ($key == 'state_agency') {
-                                                echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?agency=' . ($_GET['agency'] ?? $agencies[$country][0]) . '">';
+                                                $agencyParam = isset($_GET['agency']) ? $_GET['agency'] : 'all';
+                                                echo '<a class="menu-link' . ($itemActive ? ' active' : '') . '" href="' . htmlspecialchars($item['url']) . '?agency=' . $agencyParam . '">';
                                             } else if ($key == 'state_subsidiary') {
-                                                echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?country=' . ($_GET['country'] ?? 'Cameroun') . '">';
+                                                echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?country=' . ($_GET['country'] ?? 'all') . '">';
                                             } else if ($key == 'result_by_subsidiary') {
                                                 echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?level=' . ($_GET['level'] ?? 'Junior') . '">';
                                             } else if ($key == 'result_tech_subsidiary') {
@@ -467,11 +507,13 @@ $subsidiaries = [
                                                     echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '">';
                                                 }
                                             } else if ($key == 'result_filiale') {
-                                                if (isset($_GET['level'])) {
-                                                    echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?level=' . $_GET['level'] . '">';
-                                                } else {
-                                                    echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '">';
+                                                $rfParams = [];
+                                                if (isset($_GET['level'])) $rfParams['level'] = $_GET['level'];
+                                                if ($_SESSION['profile'] === 'Directeur Général' && !empty($_SESSION['country'])) {
+                                                    $rfParams['subsidiaries'] = [strtoupper($_SESSION['country'])];
                                                 }
+                                                $rfQuery = !empty($rfParams) ? '?' . http_build_query($rfParams) : '';
+                                                echo '<a class="menu-link" href="' . htmlspecialchars($item['url'] . $rfQuery) . '">';
                                             } else {
                                                 echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '">';
                                             }
@@ -487,7 +529,7 @@ $subsidiaries = [
                                             if ($key == 'state_agency') {
                                                 echo '<span class="menu-title">' . htmlspecialchars($item['name']) . '</span>';
                                             } else if ($key == 'state_subsidiary') {
-                                                echo '<span class="menu-title">' . htmlspecialchars($item['name']) . ' ' . ($_GET['country'] ?? 'Cameroun') . '</span>';
+                                                echo '<span class="menu-title">' . htmlspecialchars($item['name']) . '</span>';
                                             } else {
                                                 echo '<span class="menu-title">' . htmlspecialchars($item['name']) . '</span>';
                                             }
@@ -554,7 +596,7 @@ $subsidiaries = [
                     <!--end::Aside menu-->
                     <!--begin::Footer-->
                     <div class="aside-footer flex-column-auto pb-5 d-none" id="kt_aside_footer">
-                        <a href="./dashboard" class="btn btn-light-primary w-100">
+                        <a href="<?= $dashRoute ?>" class="btn btn-light-primary w-100">
                             Button
                         </a>
                     </div>
@@ -580,7 +622,7 @@ $subsidiaries = [
                             </div>
                             <!--end::Aside Toggle-->
                             <!--begin::Logo-->
-                            <a href="./dashboard.php" class="d-lg-none">
+                            <a href="<?= $dashRoute ?>.php" class="d-lg-none">
                                 <img alt="Logo" src="../../public/images/logo.png" class="mh-40px" />
                             </a>
                             <!--end::Logo-->

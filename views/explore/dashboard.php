@@ -40,12 +40,10 @@ if (!isset($_SESSION["profile"])) {
         /* 1️⃣  Filtre commun */
         [
             '$match' => [
-                'active'  => true,
-                'country' => 'Madagascar',
-                '$or'     => [
-                    ['profile' => 'Technicien'],
-                    ['profile' => 'Manager', 'test' => true],
-                ],
+                'active'     => true,
+                'country'    => $userCountry,
+                'profile'    => 'Technicien',
+                'isCandidat' => ['$ne' => true],
             ],
         ],
 
@@ -207,7 +205,8 @@ if (!isset($_SESSION["profile"])) {
         function getUsersByLevel($users, $level = null, $brand = '')
         {
             $query = [
-                'active' => true,
+                'active'     => true,
+                'isCandidat' => ['$ne' => true],
                 '$or' => [
                     ['profile' => 'Technicien'],
                     ['profile' => 'Manager', 'test' => true]
@@ -261,7 +260,7 @@ if (!isset($_SESSION["profile"])) {
 
 
         $subsidiariesNames = [
-            "CAMEROON MOTORS INDUSTRIES" => "Ca",
+            "CFAO MOBILITY CAMEROON" => "Ca",
             "CFAO MOTORS GABON" => "Ga",
             "CFAO MOTORS CONGO" => "Co",
             "CFAO MOTORS BENIN" => "Be",
@@ -299,8 +298,9 @@ if (!isset($_SESSION["profile"])) {
         // Effectuer une seule requête pour récupérer tous les techniciens et managers actifs dans les filiales spécifiées
         $techniciansAndManagers = $users->find([
             '$and' => [
-                ['subsidiary' => ['$in' => array_keys($subsidiaries)]],
-                ['active' => true],
+                ['subsidiary'  => ['$in' => array_keys($subsidiaries)]],
+                ['active'      => true],
+                ['isCandidat'  => ['$ne' => true]],
                 ['$or' => [
                     ['profile' => 'Technicien'],
                     ['profile' => 'Manager', 'test' => true]
@@ -732,9 +732,10 @@ if (!isset($_SESSION["profile"])) {
             $query = [
                 'active'     => true,
                 'subsidiary' => $subsidiary,
+                'isCandidat' => ['$ne' => true],
                 '$or'        => [
                     ['profile' => 'Technicien'],
-                    ['profile' => 'Manager', 'test' => true],   // ← managers validés
+                    ['profile' => 'Manager', 'test' => true],
                 ],
             ];
 
@@ -780,6 +781,7 @@ if (!isset($_SESSION["profile"])) {
         $baseFilter = [
             'subsidiary' => $_SESSION['subsidiary'],
             'active'     => true,
+            'isCandidat' => ['$ne' => true],
             '$or'        => [
                 ['profile' => 'Technicien'],
                 ['profile' => 'Manager', 'test' => true],

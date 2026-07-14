@@ -10,7 +10,7 @@ if (!isset($_SESSION["profile"])) {
 } else {
     
     // Map countries
-    $selectedCountry = isset($_GET['country']) ? $_GET['country'] : null;
+    $selectedCountry = isset($_GET['country']) ? $_GET['country'] : 'all';
 
     require_once "../../vendor/autoload.php";
     
@@ -69,26 +69,15 @@ if (!isset($_SESSION["profile"])) {
     $countries = $users->distinct('country', ['active' => true]);
     sort($countries); // Trier les pays par ordre alphabétique
 
-    $country = $_GET['country'];
+    $country = $selectedCountry;
     
     $technicians = [];
     
     // Construire le filtre en fonction de la sélection
     if ($country === 'all') {
-        // Si "tous les pays" est sélectionné, ne pas filtrer par pays
-        $filter = [
-            "active" => true
-        ];
+        $filter = ["active" => true, "isCandidat" => ['$ne' => true]];
     } else {
-        // Sinon, filtrer par le pays spécifique
-        $filter = [
-            '$and' => [
-                [
-                    "country" => $country,
-                    "active" => true,
-                ],
-            ],
-        ];
+        $filter = ['$and' => [["country" => $country, "active" => true, "isCandidat" => ['$ne' => true]]]];
     }
     
     $techs = $users->find($filter)->toArray();
@@ -103,20 +92,9 @@ if (!isset($_SESSION["profile"])) {
     
     // Construire le filtre pour Junior
     if ($country === 'all') {
-        $filterJu = [
-            "level" => "Junior",
-            "active" => true
-        ];
+        $filterJu = ["level" => "Junior", "active" => true, "isCandidat" => ['$ne' => true]];
     } else {
-        $filterJu = [
-            '$and' => [
-                [
-                    "country" => $country,
-                    "level" => "Junior",
-                    "active" => true,
-                ],
-            ],
-        ];
+        $filterJu = ['$and' => [["country" => $country, "level" => "Junior", "active" => true, "isCandidat" => ['$ne' => true]]]];
     }
     
     $techsJu = $users->find($filterJu)->toArray();
@@ -131,20 +109,9 @@ if (!isset($_SESSION["profile"])) {
     
     // Construire le filtre pour Senior
     if ($country === 'all') {
-        $filterSe = [
-            "level" => "Senior",
-            "active" => true
-        ];
+        $filterSe = ["level" => "Senior", "active" => true, "isCandidat" => ['$ne' => true]];
     } else {
-        $filterSe = [
-            '$and' => [
-                [
-                    "country" => $country,
-                    "level" => "Senior",
-                    "active" => true,
-                ],
-            ],
-        ];
+        $filterSe = ['$and' => [["country" => $country, "level" => "Senior", "active" => true, "isCandidat" => ['$ne' => true]]]];
     }
     
     $techsSe = $users->find($filterSe)->toArray();
@@ -159,20 +126,9 @@ if (!isset($_SESSION["profile"])) {
     
     // Construire le filtre pour Expert
     if ($country === 'all') {
-        $filterEx = [
-            "level" => "Expert",
-            "active" => true
-        ];
+        $filterEx = ["level" => "Expert", "active" => true, "isCandidat" => ['$ne' => true]];
     } else {
-        $filterEx = [
-            '$and' => [
-                [
-                    "country" => $country,
-                    "level" => "Expert",
-                    "active" => true,
-                ],
-            ],
-        ];
+        $filterEx = ['$and' => [["country" => $country, "level" => "Expert", "active" => true, "isCandidat" => ['$ne' => true]]]];
     }
     
     $techsEx = $users->find($filterEx)->toArray();
@@ -1363,7 +1319,7 @@ if (!isset($_SESSION["profile"])) {
                             <span class="path2"></span>
                             <span class="path3"></span>
                         </i>
-                        <?php echo $etat_avanacement_filiale ?> <?php echo ($country === 'all' ? 'Tous les pays' : $country) ?>
+                        <?php echo $etat_avanacement_filiale ?> 
                     </h1>
 
                 </div>
@@ -1859,7 +1815,26 @@ if (!isset($_SESSION["profile"])) {
         let ctx3 = canvas3.getContext('2d');
         ctx3.fillStyle = '#6cf95e'; //Nuance de bleu
         ctx3.fillRect(50, 25, 200, 100);
-        
+
+        // Plugin : texte centré dans les doughnuts
+        Chart.register({
+            id: 'centerText',
+            afterDraw(chart) {
+                const cfg = chart.config.options.plugins.centerText;
+                if (!cfg || !cfg.text) return;
+                const { ctx, chartArea } = chart;
+                const cx = (chartArea.left + chartArea.right) / 2;
+                const cy = (chartArea.top  + chartArea.bottom) / 2;
+                ctx.save();
+                ctx.font      = 'bold 26px sans-serif';
+                ctx.fillStyle = cfg.color || '#333';
+                ctx.textAlign    = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(cfg.text, cx, cy);
+                ctx.restore();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             // Data for each chart
             const chartData = [{
@@ -1922,7 +1897,10 @@ if (!isset($_SESSION["profile"])) {
                             <div class="card-body d-flex justify-content-center text-center flex-column p-4">
                                 <h5>Total des Tests à réaliser: ${data.total}</h5>
                                 <h5><strong>${completedPercentage}%</strong> des tests réalisés</h5>
-                                <canvas id="doughnutChart${index}" width="200" height="200"></canvas>
+                                <div style="position:relative;display:inline-block;">
+                                    <canvas id="doughnutChart${index}" width="200" height="200"></canvas>
+                                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:26px;font-weight:bold;color:#333;pointer-events:none;">${completedPercentage}%</div>
+                                </div>
                                 <h5 class="mt-2">${data.title}</h5>
                             </div>
                         </div>
@@ -2094,7 +2072,10 @@ if (!isset($_SESSION["profile"])) {
                 <div class="col-md-6 col-lg-3 col-xl-2.5 mb-4">
                     <div class="card h-100 glass-effect-chart depth-effect">
                         <div class="card-body d-flex justify-content-center text-center flex-column p-4">
-                            <canvas id="doughnutChart${index}" width="200" height="200"></canvas>
+                            <div style="position:relative;display:inline-block;">
+                                <canvas id="doughnutChart${index}" width="200" height="200"></canvas>
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:26px;font-weight:bold;color:#333;pointer-events:none;">${data.completed}%</div>
+                            </div>
                             <h5 class="mt-2">${data.title}</h5>
                         </div>
                     </div>

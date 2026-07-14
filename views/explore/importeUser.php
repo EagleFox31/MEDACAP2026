@@ -4,12 +4,50 @@ include_once "../language.php";
 
 $correctBrands = ['BYD', 'CITROEN', 'FUSO', 'HINO', 'JCB', 'KING LONG', 'LOVOL', 'MERCEDES', 'MERCEDES TRUCK', 'MITSUBISHI', 'PEUGEOT', 'RENAULT', 'RENAULT TRUCK', 'SINOTRUK', 'SUZUKI', 'TOYOTA', 'TOYOTA BT', 'TOYOTA FORKLIFT', 'VOLKSWAGEN', 'YAMAHA BATEAU', 'YAMAHA MOTO'];
 
+/** false = pas de mail à l'import (RH transmet les identifiants). Remettre true après. */
+const IMPORT_SEND_REGISTRATION_MAIL = false;
+
+function importSendRegistrationMail(string $email, string $subject, string $message): bool
+{
+    if (!IMPORT_SEND_REGISTRATION_MAIL || trim($email) === '') {
+        return false;
+    }
+    return sendMailRegisterUser($email, $subject, $message);
+}
+
+function importeUserBuildRecapRow(
+    int $line,
+    string $action,
+    string $firstName,
+    string $lastName,
+    string $username,
+    string $visiblePassword,
+    string $usernameManager,
+    $managerDoc,
+    string $level,
+    string $profile
+): array {
+    $managerOk = is_object($managerDoc) || (is_array($managerDoc) && !empty($managerDoc));
+    return [
+        'line' => $line,
+        'action' => $action,
+        'name' => trim($firstName . ' ' . $lastName),
+        'username' => $username,
+        'password' => $visiblePassword,
+        'manager' => trim($usernameManager) !== '' ? trim($usernameManager) : '—',
+        'manager_ok' => $managerOk,
+        'level' => $level,
+        'profile' => $profile,
+    ];
+}
+
 if (!isset($_SESSION["id"])) {
     header("Location: ../../");
     exit();
 } else {
     require_once "../../vendor/autoload.php";
     include_once "../sendMail.php";
+    $importRecap = [];
 
     if (isset($_POST["submit"])) {
         // Create connection
@@ -111,6 +149,7 @@ if (!isset($_SESSION["id"])) {
         }
 
         $file_error_msg = null;
+        $importRecap = [];
 
         foreach ($data as $index => $row) {
             // Supprime les cellules vides ou contenant seulement des espaces
@@ -241,12 +280,24 @@ if (!isset($_SESSION["id"])) {
                     ]
                 );
                 if ($profile == "Technicien") {
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Mis à jour', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '', $manager ?? null, $level, $profile
+                    );
                     $success_msg = $success_tech;
                 }
                 if ($profile == "Manager") {
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Mis à jour', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '', $manager ?? null, $level, $profile
+                    );
                     $success_msg = $success_manager;
                 }
                 if ($profile == "Admin") {
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Mis à jour', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '', $manager ?? null, $level, $profile
+                    );
                     $success_msg = $success_admin;
                 }
             }
@@ -261,6 +312,13 @@ if (!isset($_SESSION["id"])) {
                             ],
                         ],
                     ]);
+
+                    if (!$userManager) {
+                        $file_error_msg[$index][] = 'manager:' . $usernameManager;
+                        $error_msg = ($error_msg ?? '') . "\nLigne " . ($index + 1) . " : manager introuvable « " . $usernameManager . " ».";
+                        continue;
+                    }
+                    $manager = $userManager;
 
                     $person = [
                         "users" => [],
@@ -348,7 +406,7 @@ if (!isset($_SESSION["id"])) {
                         }
                         
                         // Envoyer l'e-mail
-                        $sendMail = sendMailRegisterUser($userManager['email'], $subject, $message);
+                        $sendMail = importSendRegistrationMail($userManager['email'], $subject, $message);
                     }
 
                 } else {
@@ -572,6 +630,12 @@ if (!isset($_SESSION["id"])) {
                     ];
                     $allocations->insertOne($allocateDecla);
 
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Créé', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '',
+                        isset($manager) ? $manager : (isset($userManager) ? $userManager : null),
+                        $level, $profile
+                    );
                     $success_msg = $success_tech;
                 } elseif ($level == "Senior") {
                     $person = $users->findOne(
@@ -944,6 +1008,12 @@ if (!isset($_SESSION["id"])) {
                     ];
                     $allocations->insertOne($allocateSeDecla);
 
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Créé', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '',
+                        isset($manager) ? $manager : (isset($userManager) ? $userManager : null),
+                        $level, $profile
+                    );
                     $success_msg = $success_tech;
                 } elseif ($level == "Expert") {
                     $person = $users->findOne(
@@ -1530,6 +1600,12 @@ if (!isset($_SESSION["id"])) {
                     ];
                     $allocations->insertOne($allocateExDecla);
 
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Créé', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '',
+                        isset($manager) ? $manager : (isset($userManager) ? $userManager : null),
+                        $level, $profile
+                    );
                     $success_msg = $success_tech;
                 }
             }
@@ -1629,7 +1705,7 @@ if (!isset($_SESSION["id"])) {
                         }
                         
                         // Envoyer l'e-mail
-                        $sendMail = sendMailRegisterUser($userManager['email'], $subject, $message);
+                        $sendMail = importSendRegistrationMail($userManager['email'], $subject, $message);
                     }
                 } else {
                     $personM = [
@@ -1852,6 +1928,12 @@ if (!isset($_SESSION["id"])) {
                     ];
                     $allocations->insertOne($allocateDecla);
 
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Créé', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '',
+                        isset($manager) ? $manager : (isset($userManager) ? $userManager : null),
+                        $level, $profile
+                    );
                     $success_msg = $success_tech;
                 } elseif ($level == "Senior") {
                     $person = $users->findOne(
@@ -2224,6 +2306,12 @@ if (!isset($_SESSION["id"])) {
                     ];
                     $allocations->insertOne($allocateSeDecla);
 
+                    $importRecap[] = importeUserBuildRecapRow(
+                        $index + 1, 'Créé', $firstName, $lastName, $username,
+                        $row['18'] ?? '', $usernameManager ?? '',
+                        isset($manager) ? $manager : (isset($userManager) ? $userManager : null),
+                        $level, $profile
+                    );
                     $success_msg = $success_tech;
                 } elseif ($level == "Expert") {
                     $person = $users->findOne(
@@ -2888,7 +2976,7 @@ if (!isset($_SESSION["id"])) {
                     }
                     
                     // Envoyer l'e-mail
-                    $sendMail = sendMailRegisterUser($email, $subject, $message);
+                    $sendMail = importSendRegistrationMail($email, $subject, $message);
                 }
                 $success_msg = $success_manager;
             }
@@ -2967,7 +3055,7 @@ if (!isset($_SESSION["id"])) {
                     }
                     
                     // Envoyer l'e-mail
-                    $sendMail = sendMailRegisterUser($email, $subject, $message);
+                    $sendMail = importSendRegistrationMail($email, $subject, $message);
                 }
                 $success_msg = $success_rh;
             }
@@ -3045,7 +3133,7 @@ if (!isset($_SESSION["id"])) {
                     }
                     
                     // Envoyer l'e-mail
-                    $sendMail = sendMailRegisterUser($email, $subject, $message);
+                    $sendMail = importSendRegistrationMail($email, $subject, $message);
                 }
                 $success_msg = $success_admin;
             }
@@ -3123,7 +3211,7 @@ if (!isset($_SESSION["id"])) {
                     }
                     
                     // Envoyer l'e-mail
-                    $sendMail = sendMailRegisterUser($email, $subject, $message);
+                    $sendMail = importSendRegistrationMail($email, $subject, $message);
                 }
                 $success_msg = $success_directeur;
             }
@@ -3149,7 +3237,7 @@ input {
         <!--begin::Container-->
         <div class="container-xxl">
             <!--begin::Modal body-->
-            <div class="container mt-5 w-50 text-center">
+            <div class="container mt-5 w-100 text-center">
                 <img src="../../public/images/logo.png" alt="10" height="170" style="display: block; max-width: 75%; height: auto; margin-left: 25px;">
                 <h1 class="my-3 text-center"><?php echo $import_user ?></h1>
 
@@ -3167,6 +3255,61 @@ input {
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
+                </div>
+                <?php } ?>
+
+                <?php if (!empty($importRecap)) {
+                    $recapCreated = count(array_filter($importRecap, function ($r) { return $r['action'] === 'Créé'; }));
+                    $recapUpdated = count(array_filter($importRecap, function ($r) { return $r['action'] === 'Mis à jour'; }));
+                    $recapTech = count(array_filter($importRecap, function ($r) { return $r['profile'] === 'Technicien'; }));
+                ?>
+                <div class="card shadow-sm mb-4 text-start">
+                    <div class="card-header bg-light">
+                        <strong>Récapitulatif import</strong>
+                        <span class="text-muted ms-2">(mails désactivés — transmission RH manuelle)</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">
+                            Liste source CFAO : <strong>37</strong> techniciens —
+                            fichier généré : <strong>33</strong> à importer
+                            (4 exclus : 3 managers N+2 + 1 chef d'équipe).
+                            Traité cette session : <strong><?php echo count($importRecap); ?></strong>
+                            (<?php echo $recapCreated; ?> créé(s), <?php echo $recapUpdated; ?> mis à jour, dont <?php echo $recapTech; ?> technicien(s)).
+                        </p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ligne</th>
+                                        <th>Action</th>
+                                        <th>Nom</th>
+                                        <th>Identifiant</th>
+                                        <th>Mot de passe</th>
+                                        <th>Manager N+2</th>
+                                        <th>Niveau</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($importRecap as $rec) { ?>
+                                    <tr>
+                                        <td><?php echo (int)$rec['line']; ?></td>
+                                        <td><?php echo htmlspecialchars($rec['action']); ?></td>
+                                        <td><?php echo htmlspecialchars($rec['name']); ?></td>
+                                        <td><code><?php echo htmlspecialchars($rec['username']); ?></code></td>
+                                        <td><code><?php echo htmlspecialchars($rec['password']); ?></code></td>
+                                        <td>
+                                            <?php echo htmlspecialchars($rec['manager']); ?>
+                                            <?php if ($rec['manager'] !== '—' && empty($rec['manager_ok'])) { ?>
+                                                <span class="badge bg-danger ms-1" title="Manager introuvable en base">!</span>
+                                            <?php } ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($rec['level']); ?></td>
+                                    </tr>
+                                <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <?php } ?>
 

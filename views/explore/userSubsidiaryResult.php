@@ -5964,8 +5964,20 @@ if (!isset($_SESSION["id"])) {
 
                                         <?php } ?>
                                             <td class="text-center" id="result">
-                                                <?php if (isset($resultFac) && isset($resultTechMa)) { ?>
-                                                <?php $percentage = round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2); ?>
+                                                <?php
+                                                if (isset($resultFac)) {
+                                                    if (isset($tech["candidat"]) && $tech["candidat"] == true && $resultFac->total != 0) {
+                                                        // Cas candidat : FAC seul
+                                                        $percentage = round(($resultFac->score * 100) / $resultFac->total);
+                                                    } elseif (isset($resultTechMa) && $resultFac->total != 0 && $resultTechMa->total != 0) {
+                                                        // Cas normal : moyenne FAC + TechMa
+                                                        $percentage = round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total) / 2);
+                                                    } else {
+                                                        $percentage = null;
+                                                    }
+                                                }
+                                                if (isset($percentage) && $percentage !== null) {
+                                                ?>
                                                 <?php if($percentage < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentage ?>

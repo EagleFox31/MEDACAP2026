@@ -44,6 +44,8 @@ if (!isset($_SESSION["profile"])) {
     // =========================
     if ($profile == 'Directeur Groupe' || $profile == 'Super Admin') {
         $availableCountries = array_keys($agencies);
+    } elseif ($profile == 'Directeur Général' && $userCountry) {
+        $availableCountries = [$userCountry];
     } elseif ((($profile == 'Directeur Pièce et Service') || ($profile == 'Directeur des Opérations') || ($profile == 'Admin')) && $userCountry) {
         $availableCountries = [$userCountry];
     } else {
@@ -55,7 +57,7 @@ if (!isset($_SESSION["profile"])) {
 
     // Pays par défaut
     if (!$selectedCountry) {
-        if ((($profile == 'Directeur Pièce et Service') || ($profile == 'Directeur des Opérations') || ($profile == 'Admin')) && $userCountry) {
+        if (($profile == 'Directeur Général' || $profile == 'Directeur Pièce et Service' || $profile == 'Directeur des Opérations' || $profile == 'Admin') && $userCountry) {
             $selectedCountry = $userCountry;
         } else {
             $selectedCountry = 'all';
@@ -63,7 +65,7 @@ if (!isset($_SESSION["profile"])) {
     }
 
     // Agences accessibles si "directeur filiale"
-    if ((($profile == 'Directeur Pièce et Service') || ($profile == 'Directeur des Opérations') || ($profile == 'Admin')) && $userCountry) {
+    if (($profile == 'Directeur Général' || $profile == 'Directeur Pièce et Service' || $profile == 'Directeur des Opérations' || $profile == 'Admin') && $userCountry) {
         $availableAgencies = isset($agencies[$userCountry]) ? $agencies[$userCountry] : [];
     } else {
         $availableAgencies = [];
@@ -861,18 +863,21 @@ if ($countryContext) {
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                            <?php } elseif ((($profile == 'Directeur Pièce et Service') || ($profile == 'Directeur des Opérations') || ($profile == 'Admin')) && $userCountry) { ?>
+                            <?php } elseif ((($profile == 'Directeur Général') || ($profile == 'Directeur Pièce et Service') || ($profile == 'Directeur des Opérations') || ($profile == 'Admin')) && $userCountry) { ?>
                                 <!-- Filtre Agences -->
                                 <div class="col-md-6">
                                     <label for="agency-select" class="form-label d-flex align-items-center justify-content-center">
                                         <i class="bi bi-building fs-2 me-2 text-warning"></i> Agence
                                     </label>
-                                    <select id="agency-select" onchange="applyFilters()" name="agency" class="form-select" data-control="select2" data-placeholder="Toutes les agences" data-allow-clear="true">
+                                    <?php $singleAgency = (count($availableAgencies) === 1); ?>
+                                    <select id="agency-select" onchange="applyFilters()" name="agency" class="form-select<?php if ($singleAgency) echo ' opacity-50'; ?>" data-control="select2" data-placeholder="Toutes les agences" data-allow-clear="true" <?php if ($singleAgency) echo 'disabled title="Une seule agence disponible"'; ?>>
+                                        <?php if (!$singleAgency): ?>
                                         <option value="all" <?php if ($selectedAgency === 'all' || $selectedAgency == null) echo 'selected'; ?>>Toutes les agences</option>
+                                        <?php endif; ?>
                                         <?php if (isset($agencies[$userCountry])) {
                                             foreach ($availableAgencies as $agencyOption) { ?>
                                                 <option value="<?php echo htmlspecialchars($agencyOption); ?>" data-icon="bi bi-building"
-                                                    <?php if ($selectedAgency === $agencyOption) echo 'selected'; ?>>
+                                                    <?php if ($singleAgency || $selectedAgency === $agencyOption) echo 'selected'; ?>>
                                                     <?php echo htmlspecialchars($agencyOption); ?>
                                                 </option>
                                         <?php }
@@ -897,7 +902,7 @@ if ($countryContext) {
                             <div class="card chart-glass-effect depth-effect chart-box p-3">
                                 <h5 class="mb-4"><?php echo $junior_tp; ?></h5>
                                 <div class="chart-rel">
-                                    <canvas id="chartJunior" height="200"></canvas>
+                                    <canvas id="chartJunior" height="300"></canvas>
                                     <div class="no-data-overlay">Aucune donnée</div>
                                 </div>
                                 <div class="stats-frame">
@@ -917,7 +922,7 @@ if ($countryContext) {
                             <div class="card chart-glass-effect depth-effect chart-box p-3">
                                 <h5 class="mb-4"><?php echo $senior_tp; ?></h5>
                                 <div class="chart-rel">
-                                    <canvas id="chartSenior" height="200"></canvas>
+                                    <canvas id="chartSenior" height="300"></canvas>
                                     <div class="no-data-overlay">Aucune donnée</div>
                                 </div>
                                 <div class="stats-frame">
@@ -937,7 +942,7 @@ if ($countryContext) {
                             <div class="card chart-glass-effect depth-effect chart-box p-3">
                                 <h5 class="mb-4"><?php echo $expert_tp; ?></h5>
                                 <div class="chart-rel">
-                                    <canvas id="chartExpert" height="200"></canvas>
+                                    <canvas id="chartExpert" height="300"></canvas>
                                     <div class="no-data-overlay">Aucune donnée</div>
                                 </div>
                                 <div class="stats-frame">
@@ -957,7 +962,7 @@ if ($countryContext) {
                             <div class="card chart-glass-effect depth-effect chart-box p-3">
                                 <h5 class="mb-4"><?php echo $total_tp; ?></h5>
                                 <div class="chart-rel">
-                                    <canvas id="chartTotal" height="200"></canvas>
+                                    <canvas id="chartTotal" height="300"></canvas>
                                     <div class="no-data-overlay">Aucune donnée</div>
                                 </div>
                                 <div class="stats-frame">
@@ -976,9 +981,7 @@ if ($countryContext) {
                 </div>
                 <!-- Fin graphiques -->
             </div>
-            <br>
-            <br>
-            <!-- Filtre Niveaux -->
+   <!-- Filtre Niveaux -->
             <div style="margin-top: 55px; margin-bottom: 25px">
                 <div class="card glass-effect depth-effect">
                     <div class="card-body p-4">
@@ -1569,7 +1572,7 @@ if ($countryContext) {
                 els.forEach(el => io.observe(el));
             }
 
-            document.addEventListener('DOMContentLoaded', initCountUps);
+            document.addEventListener('DOMContentLoaded', function() { initCountUps(); });
 
             // Adaptateur optionnel pour data-kt-countup-value (si existant dans la page)
             document.addEventListener('DOMContentLoaded', function() {

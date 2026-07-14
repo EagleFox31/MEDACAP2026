@@ -91,7 +91,7 @@ if (!isset($_SESSION["id"])) {
 
     $subsidiaries = [
         "CFAO MOTORS BURKINA",
-        "CAMEROON MOTORS INDUSTRIES",
+        "CFAO MOBILITY CAMEROON",
         "CFAO MOTORS COTE D'IVOIRE",
         "CFAO MOTORS CONGO",
         "CFAO MOTORS GABON",
@@ -104,7 +104,7 @@ if (!isset($_SESSION["id"])) {
 
     $subCountries = [
         "CFAO MOTORS BURKINA" => "Burkina Faso",
-        "CAMEROON MOTORS INDUSTRIES" => "Cameroon",
+        "CFAO MOBILITY CAMEROON" => "Cameroon",
         "CFAO MOTORS COTE D'IVOIRE" => "Côte d'Ivoire",
         "CFAO MOTORS CONGO" => "Congo",
         "CFAO MOTORS GABON" => "Gabon",

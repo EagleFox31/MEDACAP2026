@@ -120,9 +120,12 @@ if (!isset($_SESSION["id"])) {
     }
     
 // Helper function to determine cell content for individual scores
-    function getCellContent($percentage, $allocation, $isManagerPart = false) {
+    function getCellContent($percentage, $allocation, $isManagerPart = false, $isCandidate = false) {
         if ($percentage !== null) {
             return $percentage;
+        }
+        if ($isManagerPart && $isCandidate) {
+            return '-';
         }
     
         if (isset($allocation)) {
@@ -151,20 +154,23 @@ if (!isset($_SESSION["id"])) {
     }
     
     // Modified helper function to determine cell content for final notes
-    function getNoteStatus($score, $alloc_fac, $alloc_decla) {
+    function getNoteStatus($score, $alloc_fac, $alloc_decla, $isCandidate = false) {
         if ($score !== null) {
             return 'Complété';
         }
 
         // Si au moins une allocation existe (active ou inactive), on affiche "À compléter"
-        if (isset($alloc_fac) || isset($alloc_decla)) {
+        if (isset($alloc_fac) || (!$isCandidate && isset($alloc_decla))) {
+            return 'À compléter';
+        }
+        if ($isCandidate && isset($alloc_fac) && isset($alloc_fac['active']) && $alloc_fac['active'] == true) {
             return 'À compléter';
         }
 
         return 'Non applicable';
     }
     // Check if a specific level has incomplete evaluations
-    function checkLevelIncomplete($userId, $level, $tests, $allocations, $exams, $results, $managerId = null) {
+    function checkLevelIncomplete($userId, $level, $tests, $allocations, $exams, $results, $managerId = null, $isCandidate = false) {
         // Check factual test
         $testFac = findTest($tests, $userId, $level, "Factuel");
         $allocateFac = findAllocation($allocations, $userId, $level, "Factuel");
@@ -207,7 +213,7 @@ if (!isset($_SESSION["id"])) {
         }
         
         // Case 3: Declarative test (manager part) is allocated but no result or exam in progress
-        if (isset($allocateDecla) && isset($allocateDecla['activeManager']) && $allocateDecla['activeManager'] == true) {
+        if (!$isCandidate && isset($allocateDecla) && isset($allocateDecla['activeManager']) && $allocateDecla['activeManager'] == true) {
             $examDeclaMa = isset($testDecla) && isset($userId) ?
                 findExam($exams, $userId, $testDecla['_id'], "Manager", $managerId) : null;
             
@@ -226,26 +232,26 @@ if (!isset($_SESSION["id"])) {
     }
     
     // Check if a technician has any incomplete evaluations
-    function hasIncompleteTests($userId, $tests, $allocations, $exams, $results, $managerId = null) {
+    function hasIncompleteTests($userId, $tests, $allocations, $exams, $results, $managerId = null, $isCandidate = false) {
         // Check Junior level
-        $hasIncomplete = checkLevelIncomplete($userId, "Junior", $tests, $allocations, $exams, $results, $managerId);
+        $hasIncomplete = checkLevelIncomplete($userId, "Junior", $tests, $allocations, $exams, $results, $managerId, $isCandidate);
         if ($hasIncomplete) return true;
         
         // Check Senior level
-        $hasIncomplete = checkLevelIncomplete($userId, "Senior", $tests, $allocations, $exams, $results, $managerId);
+        $hasIncomplete = checkLevelIncomplete($userId, "Senior", $tests, $allocations, $exams, $results, $managerId, $isCandidate);
         if ($hasIncomplete) return true;
         
         // Check Expert level
-        $hasIncomplete = checkLevelIncomplete($userId, "Expert", $tests, $allocations, $exams, $results, $managerId);
+        $hasIncomplete = checkLevelIncomplete($userId, "Expert", $tests, $allocations, $exams, $results, $managerId, $isCandidate);
         if ($hasIncomplete) return true;
         
         return false;
     }
     
     // Check if a technician has all evaluations completed
-    function hasCompleteTests($userId, $tests, $allocations, $exams, $results, $managerId = null) {
+    function hasCompleteTests($userId, $tests, $allocations, $exams, $results, $managerId = null, $isCandidate = false) {
         // If any test is incomplete, then not all tests are complete
-        return !hasIncompleteTests($userId, $tests, $allocations, $exams, $results, $managerId);
+        return !hasIncompleteTests($userId, $tests, $allocations, $exams, $results, $managerId, $isCandidate);
     }
 
     // Prepare the query based on user permissions
@@ -320,26 +326,65 @@ if (!isset($_SESSION["id"])) {
         $percentageDeclaExMa   = calculatePercentage($resultDeclaExMa);
 
         
+        $isCandidate = isset($tech['candidat']) && ($tech['candidat'] == true || $tech['candidat'] == 1);
+
         // Calculate percentages
         $percentageFacJu = calculatePercentage($resultFacJu);
         $percentageDeclaJu = calculatePercentage($resultDeclaJu);
         $juniorScore = null;
-        if (isset($percentageFacJu) && isset($percentageDeclaJu)) {
-            $juniorScore = ceil(($percentageFacJu + $percentageDeclaJu) / 2);
-        }
         
         $percentageFacSe = calculatePercentage($resultFacSe);
         $percentageDeclaSe = calculatePercentage($resultDeclaSe);
         $seniorScore = null;
-        if (isset($percentageFacSe) && isset($percentageDeclaSe)) {
-            $seniorScore = ceil(($percentageFacSe + $percentageDeclaSe) / 2);
-        }
         
         $percentageFacEx = calculatePercentage($resultFacEx);
         $percentageDeclaEx = calculatePercentage($resultDeclaEx);
         $expertScore = null;
-        if (isset($percentageFacEx) && isset($percentageDeclaEx)) {
-            $expertScore = ceil(($percentageFacEx + $percentageDeclaEx) / 2);
+
+        if ($isCandidate) {
+            // Junior overall score for candidate
+            if (isset($percentageFacJu)) {
+                if (isset($allocateDeclaJu) && $allocateDeclaJu['active'] == true) {
+                    if (isset($percentageDeclaJuTech)) {
+                        $juniorScore = ceil(($percentageFacJu + $percentageDeclaJuTech) / 2);
+                    }
+                } else {
+                    $juniorScore = $percentageFacJu;
+                }
+            }
+            
+            // Senior overall score for candidate
+            if (isset($percentageFacSe)) {
+                if (isset($allocateDeclaSe) && $allocateDeclaSe['active'] == true) {
+                    if (isset($percentageDeclaSeTech)) {
+                        $seniorScore = ceil(($percentageFacSe + $percentageDeclaSeTech) / 2);
+                    }
+                } else {
+                    $seniorScore = $percentageFacSe;
+                }
+            }
+            
+            // Expert overall score for candidate
+            if (isset($percentageFacEx)) {
+                if (isset($allocateDeclaEx) && $allocateDeclaEx['active'] == true) {
+                    if (isset($percentageDeclaExTech)) {
+                        $expertScore = ceil(($percentageFacEx + $percentageDeclaExTech) / 2);
+                    }
+                } else {
+                    $expertScore = $percentageFacEx;
+                }
+            }
+        } else {
+            // Standard technician
+            if (isset($percentageFacJu) && isset($percentageDeclaJu)) {
+                $juniorScore = ceil(($percentageFacJu + $percentageDeclaJu) / 2);
+            }
+            if (isset($percentageFacSe) && isset($percentageDeclaSe)) {
+                $seniorScore = ceil(($percentageFacSe + $percentageDeclaSe) / 2);
+            }
+            if (isset($percentageFacEx) && isset($percentageDeclaEx)) {
+                $expertScore = ceil(($percentageFacEx + $percentageDeclaEx) / 2);
+            }
         }
         
         // Get allocations for all levels to check for "À compléter" cells
@@ -356,17 +401,17 @@ if (!isset($_SESSION["id"])) {
         $hasACompleterCell = false;
         
         // Vérifier si des allocations à "À compléter" existent
-        $cellJuniorFac = getCellContent($percentageFacJu, $allocateFacJu);
-        $cellJuniorTprotech = getCellContent($percentageDeclaJuTech, $allocateDeclaJu);
-        $cellJuniorTproman = getCellContent($percentageDeclaJuMa, $allocateDeclaJu, true);
+        $cellJuniorFac = getCellContent($percentageFacJu, $allocateFacJu, false, $isCandidate);
+        $cellJuniorTprotech = getCellContent($percentageDeclaJuTech, $allocateDeclaJu, false, $isCandidate);
+        $cellJuniorTproman = getCellContent($percentageDeclaJuMa, $allocateDeclaJu, true, $isCandidate);
         
-        $cellSeniorFac = getCellContent($percentageFacSe, $allocateFacSe);
-        $cellSeniorTprotech = getCellContent($percentageDeclaSeTech, $allocateDeclaSe);
-        $cellSeniorTproman = getCellContent($percentageDeclaSeMa, $allocateDeclaSe, true);
+        $cellSeniorFac = getCellContent($percentageFacSe, $allocateFacSe, false, $isCandidate);
+        $cellSeniorTprotech = getCellContent($percentageDeclaSeTech, $allocateDeclaSe, false, $isCandidate);
+        $cellSeniorTproman = getCellContent($percentageDeclaSeMa, $allocateDeclaSe, true, $isCandidate);
         
-        $cellExpertFac = getCellContent($percentageFacEx, $allocateFacEx);
-        $cellExpertTprotech = getCellContent($percentageDeclaExTech, $allocateDeclaEx);
-        $cellExpertTproman = getCellContent($percentageDeclaExMa, $allocateDeclaEx, true);
+        $cellExpertFac = getCellContent($percentageFacEx, $allocateFacEx, false, $isCandidate);
+        $cellExpertTprotech = getCellContent($percentageDeclaExTech, $allocateDeclaEx, false, $isCandidate);
+        $cellExpertTproman = getCellContent($percentageDeclaExMa, $allocateDeclaEx, true, $isCandidate);
         
         // Si un des scores est "À compléter", alors hasACompleterCell = true
         if ($cellJuniorFac === 'À compléter' || $cellJuniorTprotech === 'À compléter' || $cellJuniorTproman === 'À compléter' ||
@@ -375,7 +420,7 @@ if (!isset($_SESSION["id"])) {
             $hasACompleterCell = true;
         }
         
-        $isIncomplete = $hasACompleterCell || hasIncompleteTests($userId, $tests, $allocations, $exams, $results, $managerId);
+        $isIncomplete = $hasACompleterCell || hasIncompleteTests($userId, $tests, $allocations, $exams, $results, $managerId, $isCandidate);
         $isComplete = !$isIncomplete;
         
         $includeInExport = false;
@@ -415,20 +460,20 @@ if (!isset($_SESSION["id"])) {
                 'agency' => isset($tech['agency']) ? $tech['agency'] : '',
                 'manager_name' => $manager ? $manager['firstName'] . ' ' . $manager['lastName'] : '',
                 // --- JUNIOR ---
-                'junior_fac'       => getCellContent($percentageFacJu, $allocateFacJu),
-                'junior_tprotech'  => getCellContent($percentageDeclaJuTech, $allocateDeclaJu),
-                'junior_tproman'   => getCellContent($percentageDeclaJuMa, $allocateDeclaJu, true),
-                'junior_note'      => getNoteStatus($juniorScore, $allocateFacJu, $allocateDeclaJu),
+                'junior_fac'       => getCellContent($percentageFacJu, $allocateFacJu, false, $isCandidate),
+                'junior_tprotech'  => getCellContent($percentageDeclaJuTech, $allocateDeclaJu, false, $isCandidate),
+                'junior_tproman'   => getCellContent($percentageDeclaJuMa, $allocateDeclaJu, true, $isCandidate),
+                'junior_note'      => getNoteStatus($juniorScore, $allocateFacJu, $allocateDeclaJu, $isCandidate),
                 // --- SENIOR ---
-                'senior_fac'       => getCellContent($percentageFacSe, $allocateFacSe),
-                'senior_tprotech'  => getCellContent($percentageDeclaSeTech, $allocateDeclaSe),
-                'senior_tproman'   => getCellContent($percentageDeclaSeMa, $allocateDeclaSe, true),
-                'senior_note'      => getNoteStatus($seniorScore, $allocateFacSe, $allocateDeclaSe),
+                'senior_fac'       => getCellContent($percentageFacSe, $allocateFacSe, false, $isCandidate),
+                'senior_tprotech'  => getCellContent($percentageDeclaSeTech, $allocateDeclaSe, false, $isCandidate),
+                'senior_tproman'   => getCellContent($percentageDeclaSeMa, $allocateDeclaSe, true, $isCandidate),
+                'senior_note'      => getNoteStatus($seniorScore, $allocateFacSe, $allocateDeclaSe, $isCandidate),
                 // --- EXPERT ---
-                'expert_fac'       => getCellContent($percentageFacEx, $allocateFacEx),
-                'expert_tprotech'  => getCellContent($percentageDeclaExTech, $allocateDeclaEx),
-                'expert_tproman'   => getCellContent($percentageDeclaExMa, $allocateDeclaEx, true),
-                'expert_note'      => getNoteStatus($expertScore, $allocateFacEx, $allocateDeclaEx),
+                'expert_fac'       => getCellContent($percentageFacEx, $allocateFacEx, false, $isCandidate),
+                'expert_tprotech'  => getCellContent($percentageDeclaExTech, $allocateDeclaEx, false, $isCandidate),
+                'expert_tproman'   => getCellContent($percentageDeclaExMa, $allocateDeclaEx, true, $isCandidate),
+                'expert_note'      => getNoteStatus($expertScore, $allocateFacEx, $allocateDeclaEx, $isCandidate),
                 'status' => $status,
             ];
             

@@ -155,9 +155,10 @@ $results     = $db->results;
 $connections = $db->connections;
 
 $baseTechMgr = [
-    'profile' => ['$in' => TECH_PROFILES],
-    'active'  => true,
-    '$or'     => [
+    'profile'    => ['$in' => TECH_PROFILES],
+    'active'     => true,
+    'isCandidat' => ['$ne' => true],
+    '$or'        => [
         ['profile' => 'Technicien'],
         ['profile' => 'Manager', 'test' => true]
     ]

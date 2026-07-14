@@ -2388,7 +2388,7 @@ if (isset($_POST["retire-technician-manager"])) {
                                                                         class="form-select form-select-solid fw-bold">
                                                                         <option value="<?php echo $user->subsidiary ?>">
                                                                             <?php echo $user->subsidiary ?></option>
-                                                                        <option value="CAMEROON MOTORS INDUSTRIES">
+                                                                        <option value="CFAO MOBILITY CAMEROON">
                                                                             <?php echo $cami ?>
                                                                         </option>
                                                                         <option value="CFAO MOTORS BENIN">

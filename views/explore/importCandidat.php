@@ -25,7 +25,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 /* ----------------------------------------------------------
  * Constantes métier
  * -------------------------------------------------------- */
-const FIXED_SUBSIDIARY = "CAMEROON MOTORS INDUSTRIES";
+const FIXED_SUBSIDIARY = "CFAO MOBILITY CAMEROON";
 const FIXED_DEPARTMENT = "Equipment & Motors";
 const FIXED_COUNTRY    = "Cameroun";
 const CAMPAIGN_ROLE    = "Recrutement Technicien Campagne FNE-CFAO 2025";
@@ -203,41 +203,15 @@ if (isset($_POST["submit"])) {
         }
 
         // Envoi d'un email récap au RH
-        if ($created > 0) {
-            $rowsHtml = '';
-            foreach ($createdRows as $r) {
-                $rowsHtml .= '<tr>'
-                    . '<td style="padding:6px;border:1px solid #ccc;">'.htmlspecialchars($r['lastName']).'</td>'
-                    . '<td style="padding:6px;border:1px solid #ccc;">'.htmlspecialchars($r['firstName']).'</td>'
-                    . '<td style="padding:6px;border:1px solid #ccc;">'.htmlspecialchars($r['username']).'</td>'
-                    . '<td style="padding:6px;border:1px solid #ccc;">'.htmlspecialchars($r['password']).'</td>'
-                    . '</tr>';
-            }
-            $link = medacap_link_for_country(FIXED_COUNTRY);
-            $subject = "MEDACAP — Création de {$created} compte(s) candidat(s)";
-            $message = '
-                <p>Bonjour '.htmlspecialchars($rh['firstName']??'').' '.htmlspecialchars($rh['lastName']??'').',</p>
-                <p>Les comptes ci-dessous ont été créés pour la <strong>campagne de recrutement technicien 2025</strong> (stage) et sont rattachés à vous.</p>
-                <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #ccc;">
-                  <thead>
-                    <tr>
-                      <th style="padding:6px;border:1px solid #ccc;background:#f7f7f7;">Nom</th>
-                      <th style="padding:6px;border:1px solid #ccc;background:#f7f7f7;">Prénom</th>
-                      <th style="padding:6px;border:1px solid #ccc;background:#f7f7f7;">Identifiant</th>
-                      <th style="padding:6px;border:1px solid #ccc;background:#f7f7f7;">Mot de passe</th>
-                    </tr>
-                  </thead>
-                  <tbody>'.$rowsHtml.'</tbody>
-                </table>
-                <p style="margin-top:12px">Accès plateforme : <a href="'.$link.'">'.$link.'</a></p>
-                <p style="font-size:12px;color:#555">NB : Ces identifiants sont destinés aux candidats pour leurs tests. Merci de les transmettre selon votre process interne.</p>
-                <p>Cordialement,</p>
-                <p><strong>MEDACAP | CFAO Mobility Academy</strong></p>
-            ';
-            // envoi
-            if (!empty($rh['email'])) {
-                sendMailRegisterUser((string)$rh['email'], $subject, $message);
-            }
+        if ($created > 0 && !empty($rh['email'])) {
+            sendCandidateImportSummaryMail(
+                (string)$rh['email'],
+                (string)($rh['firstName'] ?? ''),
+                'campagne de recrutement technicien 2025 (stage)',
+                $created,
+                $createdRows,
+                FIXED_COUNTRY
+            );
         }
 
         $result = [

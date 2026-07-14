@@ -197,16 +197,54 @@ if (!isset($_SESSION["profile"])) {
             }
         }
     } else {
-        if ($_GET['agency']) {
-            $agency = $_GET['agency'];
+        // Déterminer le pays depuis l'agence en session
+        $country = null;
+        if (isset($_SESSION['agency'])) {
+            foreach ($agencies as $countryKey => $agencyList) {
+                if (in_array($_SESSION['agency'], $agencyList)) {
+                    $country = $countryKey;
+                    break;
+                }
+            }
         }
-        
+
+        // Compter les techniciens par agence et trier
+        $agencyTechCounts = [];
+        if ($country && isset($agencies[$country])) {
+            foreach ($agencies[$country] as $agencyOption) {
+                $query = ["subsidiary" => $_SESSION["subsidiary"], "agency" => $agencyOption, "active" => true];
+                if ($_SESSION["department"] != 'Equipment & Motors') {
+                    $query['department'] = $_SESSION["department"];
+                }
+                $techs = $users->find($query)->toArray();
+                $count = 0;
+                foreach ($techs as $t) {
+                    if ($t["profile"] == "Technicien" || ($t["profile"] == "Manager" && $t["test"] == true)) {
+                        $count++;
+                    }
+                }
+                $agencyTechCounts[$agencyOption] = $count;
+            }
+        }
+        $agenciesWithTechs    = array_filter($agencies[$country] ?? [], function($a) use ($agencyTechCounts) { return ($agencyTechCounts[$a] ?? 0) > 0; });
+        $agenciesWithoutTechs = array_filter($agencies[$country] ?? [], function($a) use ($agencyTechCounts) { return ($agencyTechCounts[$a] ?? 0) === 0; });
+        $sortedAgencies = array_merge(array_values($agenciesWithTechs), array_values($agenciesWithoutTechs));
+
+        // Agence sélectionnée : GET param sinon "Toutes les agences" par défaut
+        if (isset($_GET['agency']) && $_GET['agency'] !== '') {
+            $agency = $_GET['agency']; // peut être 'all'
+        } else {
+            $agency = 'all';
+        }
+
         function getTechnicians($users, $agency, $level = null) {
             $query = [
                 "subsidiary" => $_SESSION["subsidiary"],
-                "agency" => $agency,
                 "active" => true,
             ];
+            if ($agency !== 'all' && $agency !== '') {
+                $query["agency"] = $agency;
+            }
 
             if ($_SESSION["department"] != 'Equipment & Motors') {
                 $query['department'] = $_SESSION["department"];
@@ -428,9 +466,10 @@ if (!isset($_SESSION["profile"])) {
             $countSavFaiEx = array_merge($countSavFaiEx, $resultEx['countSavFai']);
             $testsUserEx = array_merge($testsUserEx, $resultEx['testsUser ']);
             $testsTotalEx = array_merge($testsTotalEx, $resultEx['testsTotal']);
-        }  
+        }
+
     }
-    $selectedAgency = $_GET["agency"] ?? ''; // Set this session variable based on your logic
+    $selectedAgency = $agency ?? '';
     ?>
 
 <style>
@@ -893,11 +932,15 @@ openBackgroundContainer('', 'id="kt_content"');
                         </div>
                     </div>
                 <?php } else { ?>
-                    <div class="container-fluid mt-5 w-100">
-                        <div class="card shadow-sm mb-5 w-100">
+                    <div class="container-fluid mt-2 w-100">
+                        <div class="card shadow-sm mb-2 w-100">
                             <div class="card-body p-4">
                                 <h1 class="text-dark fw-bold text-center fs-1">
-                                    <?php echo $etat_avanacement_agence ?> : <?php echo $_GET['agency'] ?>
+                                    <?php if ($selectedAgency && $selectedAgency !== 'all'): ?>
+                                        <?php echo $etat_avanacement_agence ?> : <?php echo htmlspecialchars($selectedAgency) ?>
+                                    <?php else: ?>
+                                        Etat d'Avancement de Toutes les Agences
+                                    <?php endif; ?>
                                 </h1>
                             </div>
                         </div>
@@ -921,13 +964,17 @@ openBackgroundContainer('', 'id="kt_content"');
                         <i class="bi bi-building me-2 text-warning"></i> Sélectionnez une agence : 
                     </label>
                     <select id="agency-filter" onchange="agency()" name="agency" class="form-select glassmorphism-select">
-                        <?php foreach ($agencies[$country] as $agencyOption) { ?>
+                        <option value="all" <?php if ($selectedAgency === 'all') echo 'selected'; ?>>— Toutes les agences —</option>
+                        <?php foreach ($sortedAgencies as $agencyOption):
+                            $hasNoTechs = ($agencyTechCounts[$agencyOption] === 0);
+                        ?>
                             <option value="<?php echo htmlspecialchars($agencyOption); ?>"
-                                     <?php if ($selectedAgency === $agencyOption) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($agencyOption); ?>
-                            <i class="fas fa-chevron-down"></i>
+                                <?php if ($selectedAgency === $agencyOption) echo 'selected'; ?>
+                                <?php if ($hasNoTechs) echo 'disabled'; ?>
+                                style="<?php echo $hasNoTechs ? 'color:#aaa;font-style:italic;' : ''; ?>">
+                                <?php echo htmlspecialchars($agencyOption); ?><?php echo $hasNoTechs ? ' (0 techniciens)' : ''; ?>
                             </option>
-                        <?php } ?>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -1153,10 +1200,10 @@ openBackgroundContainer('', 'id="kt_content"');
     </button>
     <!-- Dropdown Content (Initially hidden) -->
     <div class="dropdown-content2" style="display: none;">
-        <div class="row">
+        <div class="row g-6">
             <!-- Card 1 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             Résultats Niveau Junior</h5>
@@ -1168,7 +1215,7 @@ openBackgroundContainer('', 'id="kt_content"');
 
             <!-- Card 2 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             Résultats Niveau Senior</h5>
@@ -1180,7 +1227,7 @@ openBackgroundContainer('', 'id="kt_content"');
 
             <!-- Card 3 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             Résultats Niveau Expert</h5>
@@ -1192,7 +1239,7 @@ openBackgroundContainer('', 'id="kt_content"');
 
             <!-- Card 4 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">Total
                             : 03 niveaux</h5>
@@ -1216,10 +1263,10 @@ openBackgroundContainer('', 'id="kt_content"');
 </div>
 
 <!--end::Title-->
-<div class="row">
+<div class="row g-6">
     <!-- Card 1 -->
     <div class="col-xl-3">
-        <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 410px; margin-bottom: 25px;">
+        <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
             <center>
                 <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                     Résultats Niveau Junior</h5>
@@ -1231,7 +1278,7 @@ openBackgroundContainer('', 'id="kt_content"');
 
     <!-- Card 2 -->
     <div class="col-xl-3">
-        <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 410px; margin-bottom: 25px;">
+        <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
             <center>
                 <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                     Résultats Niveau Senior</h5>
@@ -1243,7 +1290,7 @@ openBackgroundContainer('', 'id="kt_content"');
 
     <!-- Card 3 -->
     <div class="col-xl-3">
-        <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 410px; margin-bottom: 25px;">
+        <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
             <center>
                 <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                     Résultats Niveau Expert</h5>
@@ -1255,7 +1302,7 @@ openBackgroundContainer('', 'id="kt_content"');
 
     <!-- Card 4 -->
     <div class="col-xl-3">
-        <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 410px; margin-bottom: 25px;">
+        <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
             <center>
                 <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                     Total : 03 Niveaux</h5>
@@ -1291,10 +1338,10 @@ openBackgroundContainer('', 'id="kt_content"');
     <!-- Hidden Content -->
     <div class="dropdown-content">
         <!-- Begin::Row -->
-        <div class="row">
+        <div class="row g-6">
             <!-- Card 1 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             QCM Niveau Junior</h5>
@@ -1305,7 +1352,7 @@ openBackgroundContainer('', 'id="kt_content"');
             </div>
             <!-- Card 2 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             QCM Niveau Senior</h5>
@@ -1316,7 +1363,7 @@ openBackgroundContainer('', 'id="kt_content"');
             </div>
             <!-- Card 3 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             QCM Niveau Expert</h5>
@@ -1327,7 +1374,7 @@ openBackgroundContainer('', 'id="kt_content"');
             </div>
             <!-- Card 4 -->
             <div class="col-xl-3">
-                <div class="card chart-glass-effect depth-effect" style="height: 430px; width: 300px; margin-bottom: 25px;">
+                <div class="card chart-glass-effect depth-effect" style="height: 430px; margin-bottom: 25px;">
                     <center>
                         <h5 class="mt-2" style="align-text: center; margin-top: 18px !important;">
                             Total : 03 Niveaux</h5>
@@ -1995,7 +2042,7 @@ openBackgroundContainer('', 'id="kt_content"');
                     chart: {
                         type: 'bar',
                         height: 350,
-                        width: 300
+                        width: '100%'
                     },
                     series: [{
                         name: "Taux d'acquisition des compétences",
@@ -2077,7 +2124,7 @@ openBackgroundContainer('', 'id="kt_content"');
                     chart: {
                         type: 'bar',
                         height: 350,
-                        width: 300
+                        width: '100%'
                     },
                     series: [{
                         name: "Taux d'acquisition des compétences",
@@ -2189,7 +2236,7 @@ openBackgroundContainer('', 'id="kt_content"');
                     chart: {
                         type: 'bar',
                         height: 350,
-                        width: 300
+                        width: '100%'
                     },
                     series: [{
                         name: "Taux d'acquisition des compétences",

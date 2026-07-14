@@ -91,14 +91,6 @@
     ?>
         <!DOCTYPE html>
         <html lang="fr">
-        <head>
-            <title>Résultats Filiales | CFAO Mobility Academy</title>
-            <meta charset="utf-8" />
-
-    ?>
-        <!DOCTYPE html>
-
-        <html lang="fr">
 
         <head>
             <?php if ($levelFilter && $levelFilter !== 'all_levels') { ?>
@@ -447,7 +439,7 @@
             <?php openBackgroundContainer(); ?>
             <!--begin::Content-->
 
-            <?php if ($_SESSION["profile"] == "Super Admin" || $_SESSION["profile"] == "Directeur Groupe") { ?>
+            <?php if ($_SESSION["profile"] == "Super Admin" || $_SESSION["profile"] == "Directeur Groupe" || $_SESSION["profile"] == "Directeur Général") { ?>
 
 
                 <!-- Layout -->

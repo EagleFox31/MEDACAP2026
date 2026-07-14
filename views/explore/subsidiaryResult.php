@@ -50,7 +50,7 @@ if (!isset($_SESSION["id"])) {
 
     // Définir la liste des filiales
     $subsidiaries = [
-        "CAMEROON MOTORS INDUSTRIES" => &$techniciansCami,
+        "CFAO MOBILITY CAMEROON" => &$techniciansCami,
         "CFAO MOTORS GABON" => &$techniciansGabon,
         "CFAO MOTORS CONGO" => &$techniciansCongo,
         "CFAO MOTORS BENIN" => &$techniciansBenin,

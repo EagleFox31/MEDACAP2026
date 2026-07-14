@@ -549,16 +549,54 @@ if (!isset($_SESSION["id"])) {
                                         $senior = null;
                                         $expert = null;
                                         
-                                        if (isset($percentageFacJu) && isset($percentageDeclaJu)) {
-                                            $junior = ceil(($percentageFacJu + $percentageDeclaJu) / 2);
-                                        }
+                                        $isCandidate = isset($user['candidat']) && ($user['candidat'] == true || $user['candidat'] == 1);
                                         
-                                        if (isset($percentageFacSe) && isset($percentageDeclaSe)) {
-                                            $senior = ceil(($percentageFacSe + $percentageDeclaSe) / 2);
-                                        }
-                                        
-                                        if (isset($percentageFacEx) && isset($percentageDeclaEx)) {
-                                            $expert = ceil(($percentageFacEx + $percentageDeclaEx) / 2);
+                                        if ($isCandidate) {
+                                            // Junior overall score for candidate
+                                            if (isset($percentageFacJu)) {
+                                                if (isset($allocateDeclaJu) && $allocateDeclaJu['active'] == true) {
+                                                    if (isset($percentageDeclaJuTech)) {
+                                                        $junior = ceil(($percentageFacJu + $percentageDeclaJuTech) / 2);
+                                                    }
+                                                } else {
+                                                    $junior = $percentageFacJu;
+                                                }
+                                            }
+                                            
+                                            // Senior overall score for candidate
+                                            if (isset($percentageFacSe)) {
+                                                if (isset($allocateDeclaSe) && $allocateDeclaSe['active'] == true) {
+                                                    if (isset($percentageDeclaSeTech)) {
+                                                        $senior = ceil(($percentageFacSe + $percentageDeclaSeTech) / 2);
+                                                    }
+                                                } else {
+                                                    $senior = $percentageFacSe;
+                                                }
+                                            }
+                                            
+                                            // Expert overall score for candidate
+                                            if (isset($percentageFacEx)) {
+                                                if (isset($allocateDeclaEx) && $allocateDeclaEx['active'] == true) {
+                                                    if (isset($percentageDeclaExTech)) {
+                                                        $expert = ceil(($percentageFacEx + $percentageDeclaExTech) / 2);
+                                                    }
+                                                } else {
+                                                    $expert = $percentageFacEx;
+                                                }
+                                            }
+                                        } else {
+                                            // Standard technician overall score calculation
+                                            if (isset($percentageFacJu) && isset($percentageDeclaJu)) {
+                                                $junior = ceil(($percentageFacJu + $percentageDeclaJu) / 2);
+                                            }
+                                            
+                                            if (isset($percentageFacSe) && isset($percentageDeclaSe)) {
+                                                $senior = ceil(($percentageFacSe + $percentageDeclaSe) / 2);
+                                            }
+                                            
+                                            if (isset($percentageFacEx) && isset($percentageDeclaEx)) {
+                                                $expert = ceil(($percentageFacEx + $percentageDeclaEx) / 2);
+                                            }
                                         }
                                         ?>
                                         <tr class="odd">
@@ -592,12 +630,30 @@ if (!isset($_SESSION["id"])) {
                                             echo renderScoreCell($percentageDeclaJuMa, isset($examDeclaMaJu) ? $examDeclaMaJu : null, isset($allocateDeclaJu) && isset($allocateDeclaJu['activeManager']) ? ['active' => $allocateDeclaJu['activeManager']] : null);
                                             
                                             // Render Junior overall score
-                                            if (isset($allocateDeclaJu) && isset($allocateDeclaJu['activeManager']) && $allocateDeclaJu['activeManager'] == true && 
-                                                isset($allocateDeclaJu) && $allocateDeclaJu['active'] == true && 
-                                                isset($allocateFacJu) && $allocateFacJu['active'] == true) {
-                                                echo renderResultButton($junior, $resultFacJu, 'Junior', $user->_id);
+                                            if ($isCandidate) {
+                                                $showJu = false;
+                                                if (isset($allocateFacJu) && $allocateFacJu['active'] == true && isset($percentageFacJu)) {
+                                                    if (isset($allocateDeclaJu) && $allocateDeclaJu['active'] == true) {
+                                                        if (isset($percentageDeclaJuTech)) {
+                                                            $showJu = true;
+                                                        }
+                                                    } else {
+                                                        $showJu = true;
+                                                    }
+                                                }
+                                                if ($showJu) {
+                                                    echo renderResultButton($junior, $resultFacJu, 'Junior', $user->_id);
+                                                } else {
+                                                    echo '<td class="text-center">' . $completer . '</td>';
+                                                }
                                             } else {
-                                                echo '<td class="text-center">' . $completer . '</td>';
+                                                if (isset($allocateDeclaJu) && isset($allocateDeclaJu['activeManager']) && $allocateDeclaJu['activeManager'] == true && 
+                                                    isset($allocateDeclaJu) && $allocateDeclaJu['active'] == true && 
+                                                    isset($allocateFacJu) && $allocateFacJu['active'] == true) {
+                                                    echo renderResultButton($junior, $resultFacJu, 'Junior', $user->_id);
+                                                } else {
+                                                    echo '<td class="text-center">' . $completer . '</td>';
+                                                }
                                             }
                                             
                                             // Render Senior level cells
@@ -607,12 +663,30 @@ if (!isset($_SESSION["id"])) {
                                                 echo renderScoreCell($percentageDeclaSeMa, isset($examDeclaMaSe) ? $examDeclaMaSe : null, isset($allocateDeclaSe) && isset($allocateDeclaSe['activeManager']) ? ['active' => $allocateDeclaSe['activeManager']] : null);
                                                 
                                                 // Render Senior overall score
-                                                if (isset($allocateDeclaSe) && isset($allocateDeclaSe['activeManager']) && $allocateDeclaSe['activeManager'] == true && 
-                                                    isset($allocateDeclaSe) && $allocateDeclaSe['active'] == true && 
-                                                    isset($allocateFacSe) && $allocateFacSe['active'] == true) {
-                                                    echo renderResultButton($senior, $resultFacSe, 'Senior', $user->_id);
+                                                if ($isCandidate) {
+                                                    $showSe = false;
+                                                    if (isset($allocateFacSe) && $allocateFacSe['active'] == true && isset($percentageFacSe)) {
+                                                        if (isset($allocateDeclaSe) && $allocateDeclaSe['active'] == true) {
+                                                            if (isset($percentageDeclaSeTech)) {
+                                                                $showSe = true;
+                                                            }
+                                                        } else {
+                                                            $showSe = true;
+                                                        }
+                                                    }
+                                                    if ($showSe) {
+                                                        echo renderResultButton($senior, $resultFacSe, 'Senior', $user->_id);
+                                                    } else {
+                                                        echo '<td class="text-center">' . $completer . '</td>';
+                                                    }
                                                 } else {
-                                                    echo '<td class="text-center">' . $completer . '</td>';
+                                                    if (isset($allocateDeclaSe) && isset($allocateDeclaSe['activeManager']) && $allocateDeclaSe['activeManager'] == true && 
+                                                        isset($allocateDeclaSe) && $allocateDeclaSe['active'] == true && 
+                                                        isset($allocateFacSe) && $allocateFacSe['active'] == true) {
+                                                        echo renderResultButton($senior, $resultFacSe, 'Senior', $user->_id);
+                                                    } else {
+                                                        echo '<td class="text-center">' . $completer . '</td>';
+                                                    }
                                                 }
                                             } else {
                                                 echo '<td class="text-center" style="background-color: #f9f9f9;"></td>';
@@ -628,12 +702,30 @@ if (!isset($_SESSION["id"])) {
                                                 echo renderScoreCell($percentageDeclaExMa, isset($examDeclaMaEx) ? $examDeclaMaEx : null, isset($allocateDeclaEx) && isset($allocateDeclaEx['activeManager']) ? ['active' => $allocateDeclaEx['activeManager']] : null);
                                                 
                                                 // Render Expert overall score
-                                                if (isset($allocateDeclaEx) && isset($allocateDeclaEx['activeManager']) && $allocateDeclaEx['activeManager'] == true && 
-                                                    isset($allocateDeclaEx) && $allocateDeclaEx['active'] == true && 
-                                                    isset($allocateFacEx) && $allocateFacEx['active'] == true) {
-                                                    echo renderResultButton($expert, $resultFacJu, 'Expert', $user->_id);
+                                                if ($isCandidate) {
+                                                    $showEx = false;
+                                                    if (isset($allocateFacEx) && $allocateFacEx['active'] == true && isset($percentageFacEx)) {
+                                                        if (isset($allocateDeclaEx) && $allocateDeclaEx['active'] == true) {
+                                                            if (isset($percentageDeclaExTech)) {
+                                                                $showEx = true;
+                                                            }
+                                                        } else {
+                                                            $showEx = true;
+                                                        }
+                                                    }
+                                                    if ($showEx) {
+                                                        echo renderResultButton($expert, $resultFacEx, 'Expert', $user->_id);
+                                                    } else {
+                                                        echo '<td class="text-center">' . $completer . '</td>';
+                                                    }
                                                 } else {
-                                                    echo '<td class="text-center">' . $completer . '</td>';
+                                                    if (isset($allocateDeclaEx) && isset($allocateDeclaEx['activeManager']) && $allocateDeclaEx['activeManager'] == true && 
+                                                        isset($allocateDeclaEx) && $allocateDeclaEx['active'] == true && 
+                                                        isset($allocateFacEx) && $allocateFacEx['active'] == true) {
+                                                        echo renderResultButton($expert, $resultFacEx, 'Expert', $user->_id);
+                                                    } else {
+                                                        echo '<td class="text-center">' . $completer . '</td>';
+                                                    }
                                                 }
                                             } else {
                                                 echo '<td class="text-center" style="background-color: #f9f9f9;"></td>';
