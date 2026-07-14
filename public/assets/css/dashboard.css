@@ -916,6 +916,38 @@ h2 .ki-duotone {
     padding: 0.5rem !important;
 }
 
+/* Rangées KPI niveaux + histogrammes PIF */
+.define-level-row,
+.define-histogram-row {
+    width: 100%;
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.define-level-row > .flex-grow-1,
+.define-histogram-row > .flex-grow-1 {
+    flex: 1 1 220px;
+    max-width: 320px;
+}
+
+.define-level-sep {
+    align-self: center;
+    min-height: 32px;
+}
+
+@media (max-width: 991px) {
+    .define-level-row > .flex-grow-1,
+    .define-histogram-row > .flex-grow-1 {
+        flex: 1 1 calc(50% - 2rem);
+        max-width: none;
+    }
+
+    .define-level-sep {
+        display: none !important;
+    }
+}
+
 
 
 

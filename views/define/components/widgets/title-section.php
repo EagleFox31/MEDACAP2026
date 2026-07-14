@@ -9,14 +9,16 @@ function renderTitleSection(
     string $iconClasses,
     $paths,
     string $text,
-    string $padding = 'py-3'
+    string $padding = 'py-3',
+    string $maxWidth = '1550px',
+    string $htmlSuffix = ''
 ): void { ?>
-  <div class="row mb-5">
-    <div class="col-12">
+  <div class="row mb-5 justify-content-center">
+    <div class="col-12" style="max-width: <?= htmlspecialchars($maxWidth) ?>; margin: 0 auto;">
       <div class="card glass-effect depth-effect">
         <div class="card-body text-center <?= htmlspecialchars($padding, ENT_QUOTES, 'UTF-8'); ?>">
           <h1 class="text-contrast mb-0">
-            <?= kiIcon($iconClasses, $paths) . $text ?>
+            <?= kiIcon($iconClasses, $paths) . $text . $htmlSuffix ?>
           </h1>
         </div>
       </div>
@@ -32,10 +34,11 @@ function renderTitleSectionLink(
     $paths,
     string $text,
     string $url,
-    string $padding = 'py-3'
+    string $padding = 'py-3',
+    string $maxWidth = '1550px'
 ): void { ?>
-  <div class="row mb-5">
-    <div class="col-12">
+  <div class="row mb-5 justify-content-center">
+    <div class="col-12" style="max-width: <?= htmlspecialchars($maxWidth) ?>; margin: 0 auto;">
       <div class="card glass-effect depth-effect">
         <div class="card-body text-center <?= htmlspecialchars($padding, ENT_QUOTES, 'UTF-8'); ?>">
           <h1 class="text-contrast mb-0">

@@ -44,9 +44,8 @@ class RefactoredFilterController
         } elseif ($mongoOrDb instanceof \MongoDB\Client) {
             $this->database = $mongoOrDb->selectDatabase($dbName);
         } else {
-            // Fallback local : adapte l’URI si besoin
-            $client = new \MongoDB\Client('mongodb://localhost:27017');
-            $this->database = $client->selectDatabase($dbName);
+            require_once __DIR__ . '/../core/portal-mongo.php';
+            $this->database = definePortalMongoDatabase();
         }
 
         // 2) Session (permissions décorateur)

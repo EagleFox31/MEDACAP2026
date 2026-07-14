@@ -1,6 +1,40 @@
 <?php
 // components/filterAgency.php
 
+require_once __DIR__ . '/subsidiaryFilter.php';
+
+/**
+ * Liste complète des agences pour une filiale (config statique + alias filiale).
+ */
+function getSupervisorAgencyOptions(string $subsidiary, array $dbAgencies = []): array
+{
+    $agencyMap = include __DIR__ . '/agencyData.php';
+    $subsidiaries = expandSubsidiaryFilter($subsidiary);
+    if (empty($subsidiaries) && $subsidiary !== '' && $subsidiary !== 'all') {
+        $subsidiaries = [$subsidiary];
+    }
+
+    $agencies = [];
+    foreach ($subsidiaries as $sub) {
+        if (!isset($agencyMap[$sub])) {
+            continue;
+        }
+        foreach ($agencyMap[$sub] as $agencyName) {
+            $agencyName = trim((string) $agencyName);
+            if ($agencyName !== '' && !in_array($agencyName, $agencies, true)) {
+                $agencies[] = $agencyName;
+            }
+        }
+    }
+
+    if (!empty($agencies)) {
+        sort($agencies);
+        return $agencies;
+    }
+
+    return $dbAgencies;
+}
+
 /**
  * Retourne la liste des agences pour un pays donné.
  * Les mappings proviennent du header (views/define/partials/header.php).

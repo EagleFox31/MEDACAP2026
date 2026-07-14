@@ -42,9 +42,11 @@ if (!isset($_SESSION["id"])) {
         </div>
         <!--end::Toolbar-->
         <br>
+        <div class="container-xxl">
         <?php
         renderTitleMain('ki-duotone ki-calendar fs-2 me-5', 3, $calendarTraining);
         ?>
+        </div>
         <br>
         <!--begin::Post-->
         <div class="post fs-6 d-flex flex-column-fluid" id="kt_post">

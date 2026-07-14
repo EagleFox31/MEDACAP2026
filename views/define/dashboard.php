@@ -51,11 +51,13 @@ foreach ($controllerFiles as $controllerFile) {
     require_once $fullPath;
 }
 
-// Connexion à MongoDB avec gestion d'erreur robuste
+// Connexion à MongoDB — même résolution que l'API portail (127.0.0.1 → 10.68.0.7 en dev).
+require_once __DIR__ . '/core/portal-mongo.php';
+
 try {
-    $mongodb = new MongoDB\Client("mongodb://localhost:27017");
-    $academy = $mongodb->academy;
-    
+    $academy = definePortalMongoDatabase();
+    $GLOBALS['defineAcademy'] = $academy;
+
     // Test de connexion
     $academy->command(['ping' => 1]);
 } catch (Exception $e) {
@@ -99,6 +101,21 @@ $directorProfiles = [
     'Directeur Pièce et Service',
     'Directeur des Opérations'
 ];
+
+// Portail CFAO — DPS connecté, vue dashboard technicien (?viewAs=technician)
+$viewAs = isset($_GET['viewAs']) ? strtolower(trim((string) $_GET['viewAs'])) : '';
+$viewerProfilesForTechnicianView = array_merge($directorProfiles, ['Manager']);
+
+if (!empty($technicianId) && $viewAs === 'technician' && in_array($profile, $viewerProfilesForTechnicianView, true)) {
+    try {
+        $techController = new TechnicianDashboardController($academy, $technicianId);
+        $techController->renderDashboard($filters);
+    } catch (Exception $e) {
+        error_log('Erreur TechnicianDashboard (viewAs): ' . $e->getMessage());
+        echo "<div class='alert alert-danger'>Erreur lors du chargement du tableau de bord du technicien.</div>";
+    }
+    exit();
+}
 
 // Gestion du technicien spécifique ou de la vue "all" pour les directeurs
 if (!empty($technicianId)) {

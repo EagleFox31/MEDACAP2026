@@ -176,6 +176,33 @@ if (!isset($_SESSION["id"])) {
 <!--end::Title-->
 
 <!--begin::Body-->
+<style>
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.7) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+        border-radius: 15px !important;
+        transition: all 0.3s ease !important;
+    }
+</style>
+
+<!-- Titre principal dans une card glassmorphisme -->
+<div class="container-xxl pt-5">
+    <div class="card mb-3" style="background-color: #FFFFFF !important; border-radius: 25px !important; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); border: 1px solid rgba(255, 255, 255, 0.18);">
+        <div class="card-body text-center py-4">
+            <h1 class="card-title mb-0">
+                <i class="ki-duotone ki-document fs-2 me-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i><?php echo $list_techs_apply_training ?>
+            </h1>
+        </div>
+    </div>
+</div>
+
 <div class="content fs-6 d-flex flex-column flex-column-fluid" id="kt_content"
     data-select2-id="select2-data-kt_content">
     <!--begin::Toolbar-->
@@ -183,10 +210,6 @@ if (!isset($_SESSION["id"])) {
         <div class=" container-fluid  d-flex flex-stack flex-wrap flex-sm-nowrap">
             <!--begin::Info-->
             <div class="d-flex flex-column align-items-start justify-content-center flex-wrap me-2">
-                <!--begin::Title-->
-                <h1 class="text-dark fw-bolder my-1 fs-1">
-                    <?php echo $list_techs_apply_training ?> </h1>
-                <!--end::Title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">

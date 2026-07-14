@@ -52,7 +52,7 @@ $countries = array_keys($agencies);
 // Optionnel : Filiales
 $subsidiaries = [
     "CFAO MOTORS BURKINA",
-    "CAMEROON MOTORS INDUSTRIES",
+    "CFAO MOBILITY CAMEROON",
     "CFAO MOTORS COTE D'IVOIRE",
     "CFAO MOTORS GABON",
     "CFAO MOTORS MALI",

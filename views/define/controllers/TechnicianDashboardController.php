@@ -14,6 +14,8 @@ class TechnicianDashboardController extends BaseController {
     private $resultsCollection;
     private $allocationsCollection;
     private $applicationsCollection;
+    private $yearScope = 'pluri';
+    public $viewPath;
     
     public function __construct($academy, $technicianId = null) {
         parent::__construct($academy);
@@ -28,12 +30,23 @@ class TechnicianDashboardController extends BaseController {
         // Récupération de l'ID du technicien
         // Force le cast en string pour éviter les erreurs "Illegal offset type" si l'ID est un ObjectId
         $this->technicianId = (string)($technicianId ?? $_GET['technicianId'] ?? $_SESSION["id"]);
+        $this->viewPath = __DIR__ . "/../views/technician/dashboard.php";
     }
     
     /**
      * Rendu du dashboard technicien
+     *
+     * @param array $filters
+     * @param array $supervisorOptions supervisorView, supervisorPage, technicianChoices, agencyOptions, selectedAgency, selectedTechnicianId
      */
-    public function renderDashboard($filters) {
+    public function renderDashboard($filters, array $supervisorOptions = []) {
+        $supervisorView = !empty($supervisorOptions['supervisorView']);
+        $supervisorPage = $supervisorOptions['supervisorPage'] ?? './collaboratorDashboard';
+        $technicianChoices = $supervisorOptions['technicianChoices'] ?? [];
+        $agencyOptions = $supervisorOptions['agencyOptions'] ?? [];
+        $selectedAgency = $supervisorOptions['selectedAgency'] ?? ($filters['agency'] ?? 'all');
+        $selectedTechnicianId = $supervisorOptions['selectedTechnicianId'] ?? $this->technicianId;
+
         // Récupération des informations du technicien
         $this->loadTechnicianData();
         
@@ -49,32 +62,19 @@ class TechnicianDashboardController extends BaseController {
         // Filtrage selon les paramètres
         $filterBrand = $filters['brand'] ?? 'all';
         $levelFilter = $filters['level'] ?? 'all';
+        $this->yearScope = isset($filters['scope']) ? trim((string) $filters['scope']) : 'pluri';
+        if ($this->yearScope === '' || $this->yearScope === 'all') {
+            $this->yearScope = 'pluri';
+        }
         $levels = $this->getLevelsToInclude($levelFilter);
         $brandsToShow = $this->getBrandsToInclude($filterBrand, $levels, $this->technicianDoc);
         
-        // Chargement des configurations
-        $config = require __DIR__ . "/../../configGF.php";
-        require_once __DIR__ . "/../scoreFunctions.php";
-        
-        // Récupération des scores
-        $technicianManagerMap = [$this->technicianId => $this->technicianDoc['manager'] ?? null];
-        $allSpecialities = $this->getSpecialitiesFromConfig();
-        
-        $scoreCalc = new ScoreCalculator($this->academy);
-        $optionalParam = null; // Paramètre optionnel pour getAllScoresForTechnicians
-        $allScores = $scoreCalc->getAllScoresForTechnicians(
-            $this->academy,
-            $technicianManagerMap,
-            $levels,
-            $allSpecialities,
-            $optionalParam
-        );
-        
         // Préparation des données pour les graphiques
-        $brandScores = $this->prepareBrandScores($allScores, $brandsToShow, $config);
+        // Lecture depuis technicianBrandScores (pré-calculés, même source que le dashboard manager)
+        $brandScores = $this->prepareBrandScoresFromPrecomputed($brandsToShow, $levelFilter, $filterBrand);
         
         // Statistiques de formation
-        $brandFormationsMap = $this->getBrandFormationsMap($brandsToShow);
+        $brandFormationsMap = $this->getBrandFormationsMap($brandsToShow, $levelFilter);
         $numRecommended = $this->countRecommendedTrainings($brandsToShow, $levels);
         $numCompleted = $this->countCompletedTrainings($brandsToShow, $levels);
         $brandHoursMap = $this->getTrainingHoursByBrand($brandsToShow, $levels);
@@ -89,11 +89,37 @@ class TechnicianDashboardController extends BaseController {
         $tableau = "Tableau de Bord";
         $brandLogos = $GLOBALS['brandLogos'] ?? [];
         
-        // Définir la page courante avant d'inclure la vue pour éviter les boucles infinies dans le header
-        $GLOBALS['currentPage'] = 'dashboard';
+        $GLOBALS['currentPage'] = $supervisorView ? 'collaboratorDashboard' : 'dashboard';
+
+        $selectedTechnicianName = '';
+        if ($supervisorView && isset($technicianChoices[$selectedTechnicianId])) {
+            $selectedTechnicianName = $technicianChoices[$selectedTechnicianId];
+        } elseif ($supervisorView && $this->technicianDoc) {
+            $selectedTechnicianName = trim(
+                ($this->technicianDoc['firstName'] ?? '') . ' ' . ($this->technicianDoc['lastName'] ?? '')
+            );
+        }
+
+        if (!empty($supervisorOptions['contentOnly'])) {
+            require_once __DIR__ . '/../components/helpers/helpers.php';
+            require_once __DIR__ . '/../components/widgets/card-level.php';
+            require_once __DIR__ . '/../components/widgets/title-main.php';
+            require_once __DIR__ . '/../components/widgets/title-section.php';
+            require_once __DIR__ . '/../components/widgets/histogram-row.php';
+            include __DIR__ . '/../views/technician/dashboard_content.php';
+            return;
+        }
         
-        // Inclure la vue technicien - les redirections des directeurs sont maintenant gérées dans dashboard.php
-        include __DIR__ . "/../views/technician/dashboard.php";
+        // Inclure la vue spécifiée
+        include $this->viewPath;
+    }
+
+    /**
+     * Fragment HTML du dashboard (sans header / footer / filtres).
+     */
+    public function renderDashboardContent($filters, array $supervisorOptions = []) {
+        $supervisorOptions['contentOnly'] = true;
+        $this->renderDashboard($filters, $supervisorOptions);
     }
     
     /**
@@ -239,6 +265,67 @@ class TechnicianDashboardController extends BaseController {
     }
     
     /**
+     * Lit les scores depuis technicianBrandScores (pré-calculés par cronjob).
+     * Même source de données que le dashboard manager.
+     */
+    private function prepareBrandScoresFromPrecomputed($brandsToShow, $levelFilter, $filterBrand) {
+        try {
+            $scoreDoc = $this->academy->technicianBrandScores->findOne(
+                ['userId' => new ObjectId($this->technicianId)]
+            );
+        } catch (\Exception $e) {
+            error_log('technicianBrandScores lookup error: ' . $e->getMessage());
+            return [];
+        }
+
+        if (!$scoreDoc || !isset($scoreDoc['scores'])) return [];
+
+        $brandAggregator = [];
+        foreach ($scoreDoc['scores'] as $level => $brandData) {
+            if ($levelFilter !== 'all' && $level !== $levelFilter) continue;
+            foreach ($brandData as $brand => $scoreDetails) {
+                $brand = (string)$brand;
+                if (!empty($brandsToShow) && !in_array($brand, $brandsToShow)) continue;
+                if ($filterBrand !== 'all' && $filterBrand !== $brand) continue;
+                $avg = isset($scoreDetails['averageTotalWithPenalty'])
+                    ? (float)$scoreDetails['averageTotalWithPenalty']
+                    : (float)($scoreDetails['averageTotal'] ?? 0);
+                if (!isset($brandAggregator[$brand])) {
+                    $brandAggregator[$brand] = ['sum' => 0, 'count' => 0];
+                }
+                $brandAggregator[$brand]['sum']   += $avg;
+                $brandAggregator[$brand]['count'] += 1;
+            }
+        }
+
+        if (empty($brandAggregator)) return [];
+
+        $allBrandsForMap = !empty($brandsToShow) ? $brandsToShow : array_keys($brandAggregator);
+        $brandFormationsMap = $this->getBrandFormationsMap($allBrandsForMap, $levelFilter);
+        $getLevel = $_GET['level'] ?? 'all';
+        $brandScores = [];
+
+        foreach ($brandAggregator as $brand => $vals) {
+            $finalScore = (int)round($vals['sum'] / max(1, $vals['count']));
+            if ($finalScore >= 80) {
+                $labelText = [$brandFormationsMap[$brand] ?? 0, 'Modules de Formations'];
+            } elseif ($finalScore > 0) {
+                $labelText = ['Accès', 'Formations'];
+            } else {
+                $labelText = ['Accès', 'Tests'];
+            }
+            $brandScores[] = [
+                'x'         => $brand,
+                'y'         => $finalScore > 0 ? $finalScore : null,
+                'fillColor' => $finalScore >= 80 ? '#198754' : ($finalScore > 0 ? '#ffc107' : '#6c757d'),
+                'labelText' => $labelText,
+                'url'       => './personalTraining?brand=' . urlencode($brand) . '&level=' . $getLevel,
+            ];
+        }
+        return $brandScores;
+    }
+
+    /**
      * Prépare les données de scores par marque pour le graphique
      */
     private function prepareBrandScores($allScores, $brandsToShow, $config) {
@@ -341,36 +428,56 @@ class TechnicianDashboardController extends BaseController {
     }
     
     /**
-     * Compte les formations recommandées
+     * Restreint les formations à une année (applications.year) ; pluri = pas de filtre.
+     */
+    private function filterTrainingsByYearScope(array $trainings) {
+        if ($this->yearScope === 'pluri' || !is_numeric($this->yearScope)) {
+            return $trainings;
+        }
+
+        if ($this->technicianId === 'all' || empty($trainings)) {
+            return $trainings;
+        }
+
+        $year = (int) $this->yearScope;
+        $technicianObjId = new ObjectId($this->technicianId);
+        $trainingIds = [];
+        foreach ($trainings as $training) {
+            $trainingIds[] = $training['_id'];
+        }
+
+        $allowed = [];
+        $appQuery = [
+            'user' => $technicianObjId,
+            'training' => ['$in' => $trainingIds],
+            'active' => true,
+            '$or' => [
+                ['year' => $year],
+                ['year' => (string) $year],
+            ],
+        ];
+        foreach ($this->applicationsCollection->find($appQuery, ['projection' => ['training' => 1]]) as $app) {
+            $allowed[(string) $app['training']] = true;
+        }
+
+        return array_values(array_filter($trainings, function ($training) use ($allowed) {
+            return isset($allowed[(string) $training['_id']]);
+        }));
+    }
+
+    /**
+     * Compte les formations recommandées (requête directe sur trainings).
      */
     private function countRecommendedTrainings($brands, $levels) {
+        if (empty($brands)) return [];
         $technicianObjId = new ObjectId($this->technicianId);
-        $recommendedTrainings = [];
-        
         $query = [
-            'user' => $technicianObjId,
+            'users'  => $technicianObjId,
             'active' => true,
+            'brand'  => ['$in' => $brands],
+            'level'  => ['$in' => $levels],
         ];
-        
-        $results = $this->applicationsCollection->find($query)->toArray();
-        
-        foreach ($results as $result) {
-            $filter = [
-                '_id' => new ObjectId($result['training']),
-                'users' => $technicianObjId,
-                'brand' => ['$in' => $brands],
-                'level' => ['$in' => $levels],
-                'active' => true,
-            ];
-            
-            $trainingData = $this->trainingCollection->findOne($filter);
-            
-            if (isset($trainingData)) {
-                $recommendedTrainings[] = $trainingData;
-            }
-        }
-        
-        return $recommendedTrainings;
+        return $this->filterTrainingsByYearScope($this->trainingCollection->find($query)->toArray());
     }
     
     /**
@@ -389,6 +496,7 @@ class TechnicianDashboardController extends BaseController {
         ];
         
         $trainings = $this->trainingCollection->find($filter)->toArray();
+        $trainings = $this->filterTrainingsByYearScope($trainings);
         $trainingIds = [];
         foreach ($trainings as $t) {
             $trainingIds[] = new ObjectId($t['_id']);
@@ -409,94 +517,64 @@ class TechnicianDashboardController extends BaseController {
     }
     
     /**
-     * Obtient une map des formations par marque
+     * Obtient une map des formations par marque (filtrée par niveau).
+     * Requête directe sur trainings (même source que selectTraining.php).
      */
-    private function getBrandFormationsMap($brands) {
+    private function getBrandFormationsMap($brands, $levelFilter = 'all') {
+        if (empty($brands)) return [];
         $technicianObjId = new ObjectId($this->technicianId);
-        
-        $pipeline = [
-            [
-                '$match' => [
-                    'user' => $technicianObjId,
-                    'active' => true
-                ],
-            ],
-            [
-                '$lookup' => [
-                    'from' => 'trainings',
-                    'localField' => 'training',
-                    'foreignField' => '_id',
-                    'as' => 'trainingDetails',
-                ],
-            ],
-            [
-                '$unwind' => [
-                    'path' => '$trainingDetails',
-                    'preserveNullAndEmptyArrays' => true,
-                ]
-            ],
-            [
-                '$match' => [
-                    'trainingDetails.brand' => ['$in' => $brands],
-                    'trainingDetails.active' => true,
-                ],
-            ],
-            [
-                '$group' => [
-                    '_id' => '$trainingDetails.brand',
-                    'count' => ['$sum' => 1],
-                ],
-            ],
-            [
-                '$project' => [
-                    'brand' => '$_id',
-                    'count' => 1,
-                    '_id' => 0,
-                ],
-            ],
+        $query = [
+            'users'  => $technicianObjId,
+            'active' => true,
+            'brand'  => ['$in' => $brands],
         ];
-        
-        $results = $this->applicationsCollection->aggregate($pipeline)->toArray();
-        
-        $brandFormationsMap = [];
-        foreach ($results as $doc) {
-            $brandFormationsMap[(string)$doc->brand] = (int)$doc->count;
+        if ($levelFilter !== 'all') {
+            $query['level'] = $levelFilter;
         }
-        
-        return $brandFormationsMap;
+        $counts = [];
+        foreach ($this->filterTrainingsByYearScope($this->trainingCollection->find($query)->toArray()) as $t) {
+            $brand = (string)($t['brand'] ?? '');
+            if ($brand !== '') {
+                if (!isset($counts[$brand])) $counts[$brand] = 0;
+                $counts[$brand]++;
+            }
+        }
+        return $counts;
     }
     
     /**
-     * Calcule les heures de formation par marque
+     * Calcule les heures de formation par marque (requête directe sur trainings).
+     * On convertit les jours en heures (1 jour = 8h).
      */
     private function getTrainingHoursByBrand($brands, $levels) {
+        if (empty($brands)) return 0;
         $technicianObjId = new ObjectId($this->technicianId);
-        
         $query = [
-            'user' => $technicianObjId,
+            'users'  => $technicianObjId,
             'active' => true,
+            'brand'  => ['$in' => $brands],
+            'level'  => ['$in' => $levels],
         ];
-        
-        $brandHoursMap = 0; // Initialiser avec 0 pour faire une somme
-        $results = $this->applicationsCollection->find($query)->toArray();
-        
-        foreach ($results as $result) {
-            $filter = [
-                '_id' => new ObjectId($result['training']),
-                'users' => $technicianObjId,
-                'brand' => ['$in' => $brands],
-                'level' => ['$in' => $levels],
-                'active' => true,
-            ];
+        $totalHours = 0;
+        foreach ($this->filterTrainingsByYearScope($this->trainingCollection->find($query)->toArray()) as $t) {
+            // On privilégie 'duree_jours', sinon 'duration'
+            $val = (float)($t['duree_jours'] ?? $t['duration'] ?? 0);
+            $type = $t['type'] ?? 'p'; // 'p' pour présentiel par défaut
             
-            $trainingData = $this->trainingCollection->findOne($filter);
+            // Si la valeur est 0, on applique les règles par défaut (en jours)
+            if ($val <= 0) {
+                // p = présentiel (5j), d = distanciel/e-learning (2j)
+                $val = (strtolower($type) === 'd') ? 2 : 5;
+            }
             
-            if (isset($trainingData) && isset($trainingData['duration'])) {
-                $brandHoursMap += (int)$trainingData['duration'];
+            // Si la valeur est typiquement un nombre de jours (ex: < 15), on multiplie par 8h
+            if ($val < 15) {
+                $totalHours += ($val * 8);
+            } else {
+                $totalHours += $val;
             }
         }
-        
-        return $brandHoursMap;
+        return round($totalHours);
     }
     
     /**

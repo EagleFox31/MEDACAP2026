@@ -1,13 +1,13 @@
 <?php
-// Connexion à MongoDB
-require_once "../../vendor/autoload.php";
-$client = new MongoDB\Client("mongodb://localhost:27017");
-$academy = $client->academy;
+// Connexion à MongoDB — même résolution que dashboard.php (10.68.0.7 en dev WAMP).
+require_once __DIR__ . "/../../../vendor/autoload.php";
+require_once __DIR__ . '/../core/portal-mongo.php';
+$academy = definePortalMongoDatabase();
 $profilesCollection = $academy->profiles;
 $functionalitiesCollection = $academy->functionalities;
 
 // Inclure le fichier de langue (si nécessaire)
-include_once "../language.php";
+include_once __DIR__ . "/../../language.php";
 
 // Récupérer le profil de l'utilisateur
 $currentProfileName = $_SESSION['profile'] ?? '';
@@ -50,6 +50,16 @@ $currentModule = getCurrentModule();
 $displayModule = isset($moduleLabels[$currentModule])
 ? $moduleLabels[$currentModule]
 : '';
+
+// Personnalisation pour le profil Technicien
+if ($currentProfileName === 'Technicien' && $currentModule === 'define') {
+    $currentPage = basename($_SERVER['PHP_SELF']);
+    if ($currentPage === 'dashboard2026.php') {
+        $displayModule = '3 - Mon Planning Individuel de Formation 2026 (PIF 2026)';
+    } else {
+        $displayModule = '3 - Mon Plan Individuel de Formation Pluri-annuel (PIF)';
+    }
+}
 
 // Supprimer les doublons après la conversion
 $assignedFunctionalities = array_unique($assignedFunctionalities);
@@ -127,7 +137,7 @@ $countries = [
 // Map countries to their respective subsidiary name
 $subsidiaries = [
     "CFAO MOTORS BURKINA",
-    "CAMEROON MOTORS INDUSTRIES",
+    "CFAO MOBILITY CAMEROON",
     "CFAO MOTORS CONGO",
     "CFAO MOTORS COTE D'IVOIRE",
     "CFAO MOTORS GABON",
@@ -178,6 +188,23 @@ $subsidiaries = [
     <meta name="keywords"
         content="Craft, bootstrap, bootstrap 5, admin themes, dark mode, free admin themes, bootstrap admin, bootstrap dashboard" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <?php
+    $documentTitle = $GLOBALS['pageTitle'] ?? null;
+    if ($documentTitle === null) {
+        $pageKey = $GLOBALS['currentPage'] ?? pathinfo($_SERVER['PHP_SELF'] ?? '', PATHINFO_FILENAME);
+        $pageTitles = [
+            'dashboard' => $tableau ?? 'Tableau de bord',
+            'collaboratorDashboard' => 'Plans de formation de mes collaborateurs',
+            'selectTraining' => 'Validation des Plans de Formations',
+            'recommandationTraining' => $train_collab ?? 'Formations recommandées',
+            'planning' => 'Planning des formations',
+            'trainings' => $list_training ?? 'Liste des formations',
+            'results' => $list_result ?? 'Résultats',
+        ];
+        $documentTitle = $pageTitles[$pageKey] ?? ($displayModule ?: 'CFAO Mobility Academy');
+    }
+    ?>
+    <title><?= htmlspecialchars($documentTitle) ?> | CFAO Mobility Academy</title>
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Craft - Bootstrap 5 HTML Admin Dashboard Theme" />
@@ -283,7 +310,7 @@ $subsidiaries = [
             <!--begin::Aside-->
             <?php if (
                 $_SESSION["profile"] == "Super Admin" ||
-                $_SESSION["profile"] == "Admin" || $_SESSION["profile"] == "Ressource Humaine" || $_SESSION["profile"] == "Directeur Pièce et Service"  || $_SESSION["profile"] == "Directeur des Opérations" || $_SESSION["profile"] == "Directeur Groupe" || $_SESSION["profile"] == "Manager" || $_SESSION["profile"] == "Technicien"
+                $_SESSION["profile"] == "Admin" || $_SESSION["profile"] == "Ressource Humaine" || $_SESSION["profile"] == "Directeur Pièce et Service"  || $_SESSION["profile"] == "Directeur des Opérations" || $_SESSION["profile"] == "Directeur Groupe" || $_SESSION["profile"] == "Directeur Général" || $_SESSION["profile"] == "Manager" || $_SESSION["profile"] == "Technicien"
             ) { ?>
                 <div id="kt_aside" class="aside aside-default  aside-hoverable " data-kt-drawer="true"
                     data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}"
@@ -366,38 +393,36 @@ $subsidiaries = [
                                 <!--begin:Menu item-->
                                <div data-kt-menu-trigger="click" class="menu-item here show menu-accordion">
                                     <!--begin:Menu link-->
-                                    <div class="menu-item">
+                                    <?php
+                                        $currentPageFile = pathinfo(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), PATHINFO_FILENAME);
+                                        $isDashboardPage = ($currentPageFile === 'dashboard');
+                                        $dashLinkClass = 'menu-link' . ($isDashboardPage ? ' active' : '');
+                                    ?>
+                                    <div class="menu-item <?php echo $isDashboardPage ? 'here' : ''; ?>">
                                         <?php
                                             if ($_SESSION["profile"] == 'Technicien') {
                                                 if (isset($_GET['brand']) && isset($_GET['level'])) {
-                                                    echo '<a class="menu-link" href="./dashboard?brand=' . $_GET['brand'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard?brand=' . $_GET['brand'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
                                                 } else {
-                                                    echo '<a class="menu-link" href="./dashboard"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard"><span class="menu-icon">';
                                                 }
                                             } else if ($_SESSION["profile"] == 'Manager') {
                                                 if (isset($_GET['brand'], $_GET['level'], $_GET['technicianId'])) {
-                                                    echo '<a class="menu-link" href="./dashboard?brand=' . $_GET['brand'] . '&technicianId=' . $_GET['technicianId'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard?brand=' . $_GET['brand'] . '&technicianId=' . $_GET['technicianId'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
                                                 } else {
-                                                    echo '<a class="menu-link" href="./dashboard"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard"><span class="menu-icon">';
                                                 }
                                             } else if (in_array($_SESSION['profile'], ["Admin", "Directeur Pièce et Service", "Directeur des Opérations", "Directeur Général"])) {
                                                 if (isset($_SESSION['subsidiary'], $_GET['agency'], $_GET['brand'], $_GET['level'], $_GET['managerId'], $_GET['technicianId'])) {
-                                                    echo '<a class="menu-link" href="./dashboard?filiale=' . $_SESSION['subsidiary'] . '&agence=' . $_GET['agency'] . '&managerId=' . $_GET['managerId'] . '&brand=' . $_GET['brand'] . '&technicianId=' . $_GET['technicianId'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard?filiale=' . $_SESSION['subsidiary'] . '&agence=' . $_GET['agency'] . '&managerId=' . $_GET['managerId'] . '&brand=' . $_GET['brand'] . '&technicianId=' . $_GET['technicianId'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
                                                 } else {
-                                                    // Vérifier si nous sommes déjà sur la page dashboard pour éviter une boucle infinie
-                                                    // Utiliser l'identifiant de page défini par le contrôleur au lieu de $_SERVER['SCRIPT_NAME']
-                                                    // pour éviter les boucles infinies dans les applications MVC
-                                                    if (isset($GLOBALS['currentPage']) && $GLOBALS['currentPage'] === 'dashboard') {
-                                                        echo '<a class="menu-link" href="#"><span class="menu-icon">';
-                                                    } else {
-                                                        echo '<a class="menu-link" href="./dashboard"><span class="menu-icon">';
-                                                    }
+                                                    echo '<a class="' . $dashLinkClass . '" href="' . ($isDashboardPage ? '#' : './dashboard') . '"><span class="menu-icon">';
                                                 }
                                             } else {
                                                 if (isset($_GET['filiale'], $_GET['agency'], $_GET['brand'], $_GET['level'], $_GET['managerId'], $_GET['technicianId'])) {
-                                                    echo '<a class="menu-link" href="./dashboard?filiale=' . $_GET['filiale'] . '&agence=' . $_GET['agency'] . '&managerId=' . $_GET['managerId'] . '&brand=' . $_GET['brand'] . '&technicianId=' . $_GET['technicianId'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard?filiale=' . $_GET['filiale'] . '&agence=' . $_GET['agency'] . '&managerId=' . $_GET['managerId'] . '&brand=' . $_GET['brand'] . '&technicianId=' . $_GET['technicianId'] . '&level=' . $_GET['level'] . '"><span class="menu-icon">';
                                                 } else {
-                                                    echo '<a class="menu-link" href="./dashboard"><span class="menu-icon">';
+                                                    echo '<a class="' . $dashLinkClass . '" href="./dashboard"><span class="menu-icon">';
                                                 }
                                             }
                                          ?>
@@ -439,6 +464,8 @@ $subsidiaries = [
                                                 echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?user=' . ($_GET['user'] ?? 'all') . '&training=' . ($_GET['training'] ?? 'all') . '">';
                                             } else if ($key == 'select_training') {
                                                 echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?user=' . ($_GET['user'] ?? 'all') . '&training=' . ($_GET['training'] ?? 'all') . '&brand=' . ($_GET['brand'] ?? 'all') . '&level=' . ($_GET['level'] ?? 'all') . '">';
+                                            } else if ($key === 'collaborator_dashboard') {
+                                                echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '?agency=' . urlencode($_GET['agency'] ?? 'all') . '&technicianId=' . urlencode($_GET['technicianId'] ?? 'all') . '">';
                                             } else {
                                                 echo '<a class="menu-link" href="' . htmlspecialchars($item['url']) . '">';
                                             }
@@ -525,21 +552,16 @@ $subsidiaries = [
                         </div>
                         <!--end::Logo bar-->
                         <!--begin::Topbar-->
-                        <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
-                            <!--begin::Search-->
-                            <div class="d-flex align-items-stretch me-1">
-                                <!-- ICI on affiche le module s’il existe -->
-                                <div class="d-flex align-items-center justify-content-center me-1" style="padding-left: 255px;">
-                                    <section
-                                        class="title-banner w-100 text-center p-4 mb-4 position-relative overflow-hidden mx-auto">
-                                        <div class="container">
-                                            <h1 class="text-uppercase fw-bold mb-0">
-                                                <?php echo $displayModule; ?>
-                                            </h1>
-                                        </div>
-                                    </section>
-                                </div>
+                        <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1 position-relative">
+                            <!--begin::Search (Centered Module Title)-->
+                            <div class="position-absolute start-50 translate-middle-x d-flex align-items-center h-100">
+                                <h1 class="text-uppercase fw-bolder mb-0 fs-1 text-dark text-center" style="letter-spacing: 0.5px;">
+                                    <?php echo $displayModule; ?>
+                                </h1>
                             </div>
+                            
+                            <!-- Spacing to keep layouts balanced if needed -->
+                            <div class="d-flex align-items-stretch me-1"></div>
                             <!--end::Search-->
                             <!--begin::Toolbar wrapper-->
                             <div class="d-flex align-items-stretch flex-shrink-0">

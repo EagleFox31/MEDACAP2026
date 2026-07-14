@@ -33,7 +33,7 @@ function renderCardLevel(string $id, int $count, string $label, array $attrs = [
     }
 
     ?>
-    <div class="flex-grow-1" style="min-width:240px; max-width:100%;">
+    <div class="flex-grow-1" style="min-width:180px; max-width:340px; flex: 1 1 0;">
         <div class="card stats-card glass-effect depth-effect h-100 shadow-sm border-0">
             <div class="card-body text-center p-6 p-md-8 d-flex flex-column justify-content-center">
                 <div class="big-number mb-3 fs-2hx fw-bolder text-dark"
@@ -62,7 +62,7 @@ function renderCardLevel(string $id, int $count, string $label, array $attrs = [
  */
 function renderLevelRow(array $cards): void
 {
-    echo '<div class="d-flex flex-wrap align-items-center justify-content-center mb-3" style="gap:10px;margin-left:10px;margin-right:10px;">';
+    echo '<div class="define-level-row d-flex flex-wrap flex-lg-nowrap align-items-stretch justify-content-center mb-8 gap-3 gap-lg-4 p-2 w-100">';
 
     foreach ($cards as $item) {
         // 1) la carte elle‑même
@@ -72,7 +72,7 @@ function renderLevelRow(array $cards): void
         if (!empty($item['sep'])) {
             $sym = htmlspecialchars($item['sep']);
             echo <<<HTML
-            <div class="d-flex align-items-center justify-content-center mx-1">
+            <div class="d-flex align-items-center justify-content-center mx-1 flex-shrink-0 define-level-sep">
                 <div class="card shadow-sm border-0 d-flex align-items-center justify-content-center" 
                      style="width:32px; height:32px; border-radius:10px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);">
                     <div style="color:#1a1a2e; font-size:18px; font-weight:800; line-height:1;">{$sym}</div>

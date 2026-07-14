@@ -6,10 +6,10 @@ require_once dirname(__DIR__) . '/helpers/ki-icon.php';
 /**
  * Grand titre principal (fond blanc)
  */
-function renderTitleMain(string $iconClasses, $paths, string $text): void
+function renderTitleMain(string $iconClasses, $paths, string $text, string $maxWidth = '1550px'): void
 { ?>
-  <div class="row mb-5">
-    <div class="col-12">
+  <div class="row mb-5 justify-content-center">
+    <div class="col-12" style="max-width: <?= htmlspecialchars($maxWidth) ?>; margin: 0 auto;">
       <div class="card depth-effect" style="background-color:#fff;">
         <div class="card-body text-center py-4">
           <h1 class="card-title mb-0">
@@ -28,10 +28,11 @@ function renderTitleMainWithSubtitle(
     string $iconClasses,
     $paths,
     string $text,
-    string $subtitle
+    string $subtitle,
+    string $maxWidth = '1550px'
 ): void { ?>
-  <div class="row mb-5">
-    <div class="col-12">
+  <div class="row mb-5 justify-content-center">
+    <div class="col-12" style="max-width: <?= htmlspecialchars($maxWidth) ?>; margin: 0 auto;">
       <div class="card depth-effect" style="background-color:#fff;">
         <div class="card-body text-center py-4">
           <h1 class="card-title mb-0">

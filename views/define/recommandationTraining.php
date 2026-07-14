@@ -655,13 +655,14 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 
-                                                foreach ($filteredTechsArray as $technician):
-                                                    $technicianId = (string)$technician['_id'];
-                                                    $technicianLevel = $technician['level'];
-                                                    $technicianLevelOrder = $levelOrder[$technicianLevel] ?? 1; // Par défaut à 1 si niveau inconnu
-                                                    $technicianMissingGroups = $missingGroups[$technicianId] ?? [];
-                                                    // Déterminer si c'est le technicien sélectionné
-                                                    $isSelected = ($techFilter != 'all' && $techFilter === $technicianId);
+                                                if (!empty($filteredTechsArray)):
+                                                    foreach ($filteredTechsArray as $technician):
+                                                        $technicianId = (string)$technician['_id'];
+                                                        $technicianLevel = $technician['level'];
+                                                        $technicianLevelOrder = $levelOrder[$technicianLevel] ?? 1; // Par défaut à 1 si niveau inconnu
+                                                        $technicianMissingGroups = $missingGroups[$technicianId] ?? [];
+                                                        // Déterminer si c'est le technicien sélectionné
+                                                        $isSelected = ($techFilter != 'all' && $techFilter === $technicianId);
                                                 ?>
                                                     <tr data-tech-id="<?php echo htmlspecialchars($technicianId); ?>" class="<?php echo $isSelected ? 'table-primary' : ''; ?>">
                                                         <!-- Nom et Prénom -->
@@ -715,13 +716,13 @@ if (!isset($_SESSION["id"])) {
                                                             </td>
                                                         <?php endforeach; ?>
                                                         
-                                                        <?php if (empty($filteredTechsArray)): ?>
-                                                        <tr>
-                                                            <td colspan="4" class="text-center">Aucun technicien ne correspond aux critères de filtrage.</td>
                                                         </tr>
-                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">Aucun technicien ne correspond aux critères de filtrage.</td>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </tbody>
                                         </table>
                                     </div>

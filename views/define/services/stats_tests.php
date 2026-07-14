@@ -49,22 +49,24 @@ if (!class_exists('MongoDB\BSON\ObjectId')) {
     ];
 }
 
+$emptyStats = [
+    'Junior' => ['done' => 0, 'total' => 0],
+    'Senior' => ['done' => 0, 'total' => 0],
+    'Expert' => ['done' => 0, 'total' => 0],
+    'Total'  => ['done' => 0, 'total' => 0],
+];
+
 /* ════════════════════ 1. Connexion DB ═════════════════════════════════════ */
 try {
-    $client   = new Client('mongodb://localhost:27017');
-    $academy  = $client->academy;
+    require_once __DIR__ . '/../core/portal-mongo.php';
+    $academy  = definePortalMongoDatabase();
     $usersCol = $academy->users;
     $allocCol = $academy->allocations;
-    
+
     error_log("MongoDB connection successful");
-} catch (\Exception $e) {
+} catch (\Throwable $e) {
     error_log("MongoDB connection error: " . $e->getMessage());
-    return [
-        'Junior' => ['done' => 0, 'total' => 0],
-        'Senior' => ['done' => 0, 'total' => 0],
-        'Expert' => ['done' => 0, 'total' => 0],
-        'Total'  => ['done' => 0, 'total' => 0],
-    ];
+    return $emptyStats;
 }
 
 /* ════════════════════ 2. Filtres venant du contrôleur ═════════════════════ */
@@ -117,14 +119,21 @@ if (!function_exists('getTechnicians')) {
             }
         }
     
-        /* Marque */
+        /* Marque — $and pour conserver la clause profil $or */
         if (($f['brand'] ?? 'all') !== 'all') {
-            $brand    = $f['brand'];
-            $q['$or'] = [
-                ['brandJunior' => $brand],
-                ['brandSenior' => $brand],
-                ['brandExpert' => $brand],
+            $brand = $f['brand'];
+            $brandClause = [
+                '$or' => [
+                    ['brandJunior' => $brand],
+                    ['brandSenior' => $brand],
+                    ['brandExpert' => $brand],
+                ],
             ];
+            if (isset($q['$and'])) {
+                $q['$and'][] = $brandClause;
+            } else {
+                $q['$and'] = [$brandClause];
+            }
         }
     
         /* On récupère aussi le niveau pour éviter une requête plus loin */
@@ -178,6 +187,7 @@ if (!function_exists('hasBothActive')) {
     }
 }
 
+try {
 /* ════════════════════ 4. Population concernée ═════════════════════════════ */
 $techLevels = getTechnicians($usersCol, $filters); // id => level
 
@@ -235,6 +245,11 @@ $statsTests['Total'] = [
     'done'  => count($doneSet),
     'total' => count($totalSet),
 ];
+
+} catch (\Throwable $e) {
+    error_log("stats_tests query error: " . $e->getMessage());
+    return $emptyStats;
+}
 
 /* ════════════════════ 6. Retour ═══════════════════════════════════════════ */
 error_log("Stats calculation complete. Returning data for all levels.");

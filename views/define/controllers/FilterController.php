@@ -11,6 +11,8 @@ error_reporting(E_ALL);
 
 use MongoDB\Model\BSONDocument;
 
+require_once __DIR__ . '/../components/subsidiaryFilter.php';
+
 class FilterController
 {
     private $academy;
@@ -119,7 +121,9 @@ class FilterController
     {
         
         $q = [];
-        if ($filters['subsidiary']   !== 'all') $q['subsidiary'] = $filters['subsidiary'];
+        if ($filters['subsidiary']   !== 'all') {
+            $q['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
+        }
         if ($filters['agency']       !== 'all') $q['agency']     = $filters['agency'];
         if ($filters['managerId']    !== 'all') $q['manager']    = new MongoDB\BSON\ObjectId($filters['managerId']);
 
@@ -281,7 +285,7 @@ class FilterController
             * 2) Filtres complémentaires (filiale, agence, manager)
             * ----------------------------------------------------------------- */
             if ($filters['subsidiary'] !== 'all') {
-                $query['subsidiary'] = $filters['subsidiary'];
+                $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
             }
             if ($filters['agency'] !== 'all') {
                 $query['agency'] = $filters['agency'];
@@ -359,7 +363,7 @@ class FilterController
             * 3) Filtres complémentaires (filiale, agence, manager)
             * ----------------------------------------------------------------- */
             if ($filters['subsidiary'] !== 'all') {
-                $query['subsidiary'] = $filters['subsidiary'];
+                $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
             }
             if ($filters['agency'] !== 'all') {
                 $query['agency'] = $filters['agency'];
@@ -590,10 +594,8 @@ class FilterController
         if ($this->academy && $subsidiary !== 'all') {
             try {
                 error_log('[FilterController] Fetching agencies for ' . $subsidiary);
-                // Requête insensible à la casse pour éviter les problèmes de
-                // variations d'écriture dans la base
                 $query = [
-                    'subsidiary' => trim($subsidiary), // Use exact match instead of regex
+                    'subsidiary' => resolveSubsidiaryMongoFilter($subsidiary),
                     'active'     => true
                 ];
 
@@ -637,7 +639,7 @@ class FilterController
             try {
                 // Construire la requête
                 $query = [
-                    'subsidiary' => $subsidiary,
+                    'subsidiary' => resolveSubsidiaryMongoFilter($subsidiary),
                     'profile' => 'Manager',
                     'active' => true
                 ];
@@ -706,7 +708,7 @@ class FilterController
 
                 // Ajouter des filtres supplémentaires si nécessaire
                 if (isset($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-                    $query['subsidiary'] = $filters['subsidiary'];
+                    $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
                 }
                 if (isset($filters['agency']) && $filters['agency'] !== 'all') {
                     $query['agency'] = $filters['agency'];
@@ -779,7 +781,7 @@ class FilterController
 
                 // Ajouter des filtres supplémentaires
                 if (isset($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-                    $query['subsidiary'] = $filters['subsidiary'];
+                    $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
                 }
                 if (isset($filters['agency']) && $filters['agency'] !== 'all') {
                     $query['agency'] = $filters['agency'];
@@ -865,7 +867,7 @@ class FilterController
 
                 // Ajouter des filtres supplémentaires
                 if (isset($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-                    $query['subsidiary'] = $filters['subsidiary'];
+                    $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
                 }
                 if (isset($filters['agency']) && $filters['agency'] !== 'all') {
                     $query['agency'] = $filters['agency'];
@@ -933,7 +935,7 @@ class FilterController
 
                 // Ajouter des filtres supplémentaires
                 if (isset($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-                    $query['subsidiary'] = $filters['subsidiary'];
+                    $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
                 }
                 if (isset($filters['agency']) && $filters['agency'] !== 'all') {
                     $query['agency'] = $filters['agency'];
@@ -1024,7 +1026,7 @@ class FilterController
 
                 // Ajouter les filtres supplémentaires
                 if (isset($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-                    $baseQuery['subsidiary'] = $filters['subsidiary'];
+                    $baseQuery['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
                 }
                 if (isset($filters['agency']) && $filters['agency'] !== 'all') {
                     $baseQuery['agency'] = $filters['agency'];
@@ -1142,7 +1144,7 @@ class FilterController
 
                     // Ajouter les filtres supplémentaires
                     if (isset($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-                        $query['subsidiary'] = $filters['subsidiary'];
+                        $query['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
                     }
                     if (isset($filters['agency']) && $filters['agency'] !== 'all') {
                         $query['agency'] = $filters['agency'];
@@ -1298,7 +1300,7 @@ class FilterController
 
         // filtres hiérarchiques
         if (!empty($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
-            $userQuery['subsidiary'] = $filters['subsidiary'];
+            $userQuery['subsidiary'] = resolveSubsidiaryMongoFilter($filters['subsidiary']);
         }
         if (!empty($filters['agency']) && $filters['agency'] !== 'all') {
             $userQuery['agency']     = $filters['agency'];

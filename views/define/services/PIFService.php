@@ -5,6 +5,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Client as MongoClient;
 
 require_once __DIR__ . '../../../../vendor/autoload.php';
+require_once __DIR__ . '/../core/portal-mongo.php';
 
 class PIFService
 {
@@ -16,8 +17,7 @@ class PIFService
 
     public function __construct()
     {
-        $client            = new MongoClient("mongodb://localhost:27017");
-        $this->academy     = $client->academy;
+        $this->academy     = definePortalMongoDatabase();
         $this->users       = $this->academy->users;
         $this->allocations = $this->academy->allocations;
         $this->results     = $this->academy->results;
@@ -227,34 +227,37 @@ class PIFService
     private function buildUserQuery(array $filters, string $level)
     {
         $query = [
-            'active'  => true,
-            'level'   => $level,
-            'profile' => ['$in' => ['Technicien', 'Manager']],
-            '$or'     => [
-                ['profile' => 'Technicien'],
-                ['profile' => 'Manager', 'test' => true],
-            ],
+            'active'     => true,
+            'level'      => $level,
+            'profile'    => 'Technicien',
+            'isCandidat' => ['$ne' => true],
         ];
 
-        // PRIORITÉ : Si on a une liste d'IDs explicite (scope déjà filtré par le contrôleur)
+        // PRIORITÉ : liste d'IDs déjà filtrée (FilterSystem)
         if (!empty($filters['userIds']) && is_array($filters['userIds'])) {
             $query['_id'] = ['$in' => $filters['userIds']];
-            return $query; // On court-circuite les autres filtres car ils ont déjà été appliqués pour obtenir ces IDs
+            return $query;
         }
 
         if (!empty($filters['subsidiary']) && $filters['subsidiary'] !== 'all') {
             $query['subsidiary'] = $filters['subsidiary'];
         }
         if (!empty($filters['agency']) && $filters['agency'] !== 'all') {
-            $query['agency']      = $filters['agency'];
+            $query['agency'] = $filters['agency'];
         }
         if (!empty($filters['managerId']) && $filters['managerId'] !== 'all') {
-            $query['manager']     = $filters['managerId'];
+            $query['manager'] = $filters['managerId'];
         }
+
         if (!empty($filters['brand']) && $filters['brand'] !== 'all') {
-            $query['$or'][] = ['brandJunior' => $filters['brand']];
-            $query['$or'][] = ['brandSenior' => $filters['brand']];
-            $query['$or'][] = ['brandExpert' => $filters['brand']];
+            $brand = $filters['brand'];
+            $query['$and'] = [[
+                '$or' => [
+                    ['brandJunior' => $brand],
+                    ['brandSenior' => $brand],
+                    ['brandExpert' => $brand],
+                ],
+            ]];
         }
 
         return $query;

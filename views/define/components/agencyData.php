@@ -4,7 +4,8 @@
     // Mapping of subsidiaries to their agencies
     return [
         'CFAO MOTORS BURKINA' => ['Ouaga'],
-        'CAMEROON MOTORS INDUSTRIES' => ['Bafoussam', 'Bertoua', 'Douala', 'Garoua', 'Ngaoundere', 'Yaoundé'],
+        'CFAO MOBILITY CAMEROON' => ['Bafoussam', 'Bertoua', 'Douala', 'Garoua', 'Ngaoundere', 'Yaoundé'],
+        'CAMEROON MOTORS INDUSTRIES' => ['Douala', 'Yaoundé', 'Bafoussam', 'Bertoua', 'Garoua', 'Ngaoundere'],
         'CFAO MOTORS CONGO' => ['Brazzaville', 'Pointe-Noire'],
         "CFAO MOTORS COTE D'IVOIRE" => ['Vridi - Equip'],
         'CFAO MOTORS GABON' => ['Libreville'],

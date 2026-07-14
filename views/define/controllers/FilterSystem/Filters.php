@@ -13,6 +13,8 @@
  * Aucune dépendance à FilterSystem. À inclure avant FilterSystem.php.
  */
 
+require_once __DIR__ . '/../../components/subsidiaryFilter.php';
+
 /**
  * Helper compat Mongo (fallback si countDocuments indisponible).
  */
@@ -239,7 +241,7 @@ class SubsidiaryFilter extends AbstractFilter
     public function apply(array $query, $value): array
     {
         if ($value !== 'all' && !empty($value)) {
-            $query['subsidiary'] = $value;
+            $query['subsidiary'] = resolveSubsidiaryMongoFilter((string) $value);
         }
         return $query;
     }
@@ -311,7 +313,7 @@ class AgencyFilter extends AbstractFilter
         if (!isset($constraints['subsidiary']) || $constraints['subsidiary'] === 'all') {
             return [];
         }
-        $query['subsidiary'] = $constraints['subsidiary'];
+        $query['subsidiary'] = resolveSubsidiaryMongoFilter((string) $constraints['subsidiary']);
 
         foreach ($constraints as $filterName => $filterValue) {
             if (in_array($filterName, ['subsidiary', $this->name], true) || $filterValue === 'all') continue;
@@ -412,7 +414,7 @@ class TechnicianFilter extends AbstractFilter
     {
         switch ($filterName) {
             case 'subsidiary':
-                $query['subsidiary'] = $filterValue;
+                $query['subsidiary'] = resolveSubsidiaryMongoFilter((string) $filterValue);
                 break;
             case 'agency':
                 $query['agency'] = $filterValue;
@@ -480,7 +482,7 @@ class LevelFilter extends AbstractFilter
     {
         switch ($filterName) {
             case 'subsidiary':
-                $query['subsidiary'] = $filterValue;
+                $query['subsidiary'] = resolveSubsidiaryMongoFilter((string) $filterValue);
                 break;
             case 'agency':
                 $query['agency'] = $filterValue;
@@ -619,7 +621,7 @@ class BrandFilter extends AbstractFilter
     {
         switch ($filterName) {
             case 'subsidiary':
-                $query['subsidiary'] = $filterValue;
+                $query['subsidiary'] = resolveSubsidiaryMongoFilter((string) $filterValue);
                 break;
             case 'agency':
                 $query['agency'] = $filterValue;

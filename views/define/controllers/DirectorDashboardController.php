@@ -147,6 +147,16 @@ class DirectorDashboardController extends BaseController
     }
 
     /**
+     * Affiche une erreur utilisateur puis tente un rendu de secours.
+     */
+    private function displayUserFriendlyError($errorType, $detailMessage, $filters)
+    {
+        error_log("displayUserFriendlyError [$errorType]: $detailMessage");
+        $recoveryType = ($errorType === 'invalid_argument') ? 'invalid_filter_error' : 'general_data_error';
+        $this->loadWithDefaultFilters($filters, $recoveryType);
+    }
+
+    /**
      * Mode récupération : charge le dashboard avec des filtres par défaut
      * @param array $originalFilters
      * @param string $errorType

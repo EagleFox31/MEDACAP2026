@@ -64,6 +64,26 @@ $levelStats = [
     'expertCount' => (int)($globalStats['expertCount'] ?? 0),
 ];
 
+// Effectifs filtrés (marque / agence…) — source de vérité FilterSystem
+if ($filterController && method_exists($filterController, 'getLevelStats')) {
+    $filteredLevelStats = $filterController->getLevelStats($filters);
+    $levelStats = [
+        'juniorCount' => (int)($filteredLevelStats['juniorCount'] ?? 0),
+        'seniorCount' => (int)($filteredLevelStats['seniorCount'] ?? 0),
+        'expertCount' => (int)($filteredLevelStats['expertCount'] ?? 0),
+    ];
+}
+
+$filteredTechnicianTotal = $levelStats['juniorCount'] + $levelStats['seniorCount'] + $levelStats['expertCount'];
+$brandScopeLabel = (!empty($filters['brand']) && $filters['brand'] !== 'all')
+    ? ' · ' . (string)$filters['brand']
+    : '';
+
+$pifFilters = $filters;
+if ($filterController && method_exists($filterController, 'getTechnicianIds')) {
+    $pifFilters['userIds'] = $filterController->getTechnicianIds($filters);
+}
+
 // Si un technicien est ciblé, on invalide une liste pré-hydratée potentielle
 if (($filters['technicianId'] ?? 'all') !== 'all') {
     unset($filters['availableBrands']);
@@ -111,12 +131,12 @@ if ($technicianSelected) {
 }
 
 /* ----------  PIF  ---------- */
-$nbPifJunior   = $pifService->countPIFByExactLevel('Junior', $filters);
-$nbPifSenior   = $pifService->countPIFByExactLevel('Senior', $filters);
-$nbPifExpert   = $pifService->countPIFByExactLevel('Expert', $filters);
-$nbValidJunior = $pifService->countUsersWithValidation('Junior', $filters);
-$nbValidSenior = $pifService->countUsersWithValidation('Senior', $filters);
-$nbValidExpert = $pifService->countUsersWithValidation('Expert', $filters);
+$nbPifJunior   = $pifService->countPIFByExactLevel('Junior', $pifFilters);
+$nbPifSenior   = $pifService->countPIFByExactLevel('Senior', $pifFilters);
+$nbPifExpert   = $pifService->countPIFByExactLevel('Expert', $pifFilters);
+$nbValidJunior = $pifService->countUsersWithValidation('Junior', $pifFilters);
+$nbValidSenior = $pifService->countUsersWithValidation('Senior', $pifFilters);
+$nbValidExpert = $pifService->countUsersWithValidation('Expert', $pifFilters);
 
 /* ----------  Histogramme Formations proposées/validées par marque  ---------- */
 $trainingsCountsForGraph2    = isset($trainingValidationStats['trainingsCounts'])   && is_array($trainingValidationStats['trainingsCounts'])   ? $trainingValidationStats['trainingsCounts']   : [];
@@ -153,13 +173,28 @@ if (!function_exists('getProgressClass')) {
         return 'bg-danger';
     }
 }
+if (!function_exists('dashboardHistogramBars')) {
+    /** Barres empilées : done + todo = référence, jamais > 100 %. */
+    function dashboardHistogramBars(int $done, int $referenceTotal): array
+    {
+        $referenceTotal = max(0, $referenceTotal);
+        $done = max(0, $done);
+        if ($referenceTotal > 0 && $done > $referenceTotal) {
+            $done = $referenceTotal;
+        }
+        return [
+            'done' => $done,
+            'todo' => max(0, $referenceTotal - $done),
+        ];
+    }
+}
 
 /* ----------  KPI cartes niveaux  ---------- */
 $levelCards = [
-    ['id'=>'juniorTechnicians','count'=>(int)($globalStats['juniorCount'] ?? 0),'label'=>'Techniciens Junior','sep'=>'+'],
-    ['id'=>'seniorTechnicians','count'=>(int)($globalStats['seniorCount'] ?? 0),'label'=>'Techniciens Senior','sep'=>'+'],
-    ['id'=>'expertTechnicians','count'=>(int)($globalStats['expertCount'] ?? 0),'label'=>'Techniciens Expert','sep'=>'='],
-    ['id'=>'allLevelsTechnicians','count'=>(int)($globalStats['totalTechnicians'] ?? 0),'label'=>'Techniciens Tous Niveaux Filiales','sep'=>null],
+    ['id'=>'juniorTechnicians','count'=>$levelStats['juniorCount'],'label'=>'Techniciens Junior'.$brandScopeLabel,'sep'=>'+'],
+    ['id'=>'seniorTechnicians','count'=>$levelStats['seniorCount'],'label'=>'Techniciens Senior'.$brandScopeLabel,'sep'=>'+'],
+    ['id'=>'expertTechnicians','count'=>$levelStats['expertCount'],'label'=>'Techniciens Expert'.$brandScopeLabel,'sep'=>'='],
+    ['id'=>'allLevelsTechnicians','count'=>$filteredTechnicianTotal,'label'=> (in_array($_SESSION['profile'] ?? '', ['Super Admin', 'Directeur Groupe']) ? 'Techniciens Tous Niveaux Filiales' : 'Techniciens Tous Niveaux') . $brandScopeLabel,'sep'=>null],
 ];
 
 // % d’avancement (utilisé plus bas si besoin)
@@ -208,8 +243,15 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
         <div class="row">
             <div class="col-12">
                 <!-- Titres -->
-                <?php renderTitleMain('ki-duotone ki-document fs-2 me-5', 3,
-                    'PLAN INDIVIDUEL DE FORMATION (PIF) VALIDÉS PAR LES FILIALE'); ?>
+                <?php 
+                $pifTitle = 'PLAN INDIVIDUEL DE FORMATION (PIF) VALIDÉS PAR ';
+                if (in_array($_SESSION['profile'] ?? '', ['Super Admin', 'Directeur Groupe'])) {
+                    $pifTitle .= 'LES FILIALES';
+                } else {
+                    $pifTitle .= 'LA FILIALE';
+                }
+                renderTitleMain('ki-duotone ki-document fs-2 me-5', 3, $pifTitle); 
+                ?>
                 <?php renderTitleSection('ki-duotone ki-people fs-2 me-3', 4, 'Effectifs par Niveau'); ?>
                 <br>
 
@@ -228,61 +270,43 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
                 <?php renderTitleSection('ki-duotone ki-check-circle fs-2 me-3', 2,
                     'PIFs proposés par l\'Academy par Niveau'); ?>
 
-                <div class="d-flex flex-nowrap align-items-center justify-content-center mb-3 mt-3 fade-in overflow-auto"
-                     style="animation-delay:.2s; gap:5px; padding:5px 0;margin-left:10px;margin-right:10px;">
-                    <?php
-                    $totalTechnicians = (int)($globalStats['totalTechnicians'] ?? 0);
+                <?php
+                    $testsJunior = dashboardHistogramBars((int)$statsTests['Junior']['done'], (int)$statsTests['Junior']['total']);
+                    $testsSenior = dashboardHistogramBars((int)$statsTests['Senior']['done'], (int)$statsTests['Senior']['total']);
+                    $testsExpert = dashboardHistogramBars((int)$statsTests['Expert']['done'], (int)$statsTests['Expert']['total']);
+                    $testsTotal  = dashboardHistogramBars((int)$statsTests['Total']['done'], (int)$statsTests['Total']['total']);
+
+                    $pifJunior = dashboardHistogramBars($nbPifJunior, $levelStats['juniorCount']);
+                    $pifSenior = dashboardHistogramBars($nbPifSenior, $levelStats['seniorCount']);
+                    $pifExpert = dashboardHistogramBars($nbPifExpert, $levelStats['expertCount']);
+                    $totalProposed = $nbPifJunior + $nbPifSenior + $nbPifExpert;
+                    $totalValidatedUsers = $nbValidJunior + $nbValidSenior + $nbValidExpert;
+                    $pifTotal = dashboardHistogramBars($totalProposed, $filteredTechnicianTotal);
+                    $validTotal = dashboardHistogramBars($totalValidatedUsers, $filteredTechnicianTotal);
+
                     $histograms = [
                         [
-                            'id'=>'levelChart0','label'=>'JUNIOR','done'=>[
-                                $statsTests['Junior']['done'],
-                                $nbPifJunior,
-                                $nbValidJunior
-                            ],
-                            'todo'=>[
-                                (int)($globalStats['juniorCount'] ?? 0) - $statsTests['Junior']['done'],
-                                (int)($globalStats['juniorCount'] ?? 0) - $nbPifJunior,
-                                (int)($globalStats['juniorCount'] ?? 0) - $nbValidJunior
-                            ],
+                            'id'=>'levelChart0','label'=>'JUNIOR',
+                            'done'=>[$testsJunior['done'], $pifJunior['done'], dashboardHistogramBars($nbValidJunior, $levelStats['juniorCount'])['done']],
+                            'todo'=>[$testsJunior['todo'], $pifJunior['todo'], dashboardHistogramBars($nbValidJunior, $levelStats['juniorCount'])['todo']],
                             'badge'=>'#8b5cf6',
                         ],
                         [
-                            'id'=>'levelChart1','label'=>'SENIOR','done'=>[
-                                $statsTests['Senior']['done'],
-                                $nbPifSenior,
-                                $nbValidSenior
-                            ],
-                            'todo'=>[
-                                (int)($globalStats['seniorCount'] ?? 0) - $statsTests['Senior']['done'],
-                                (int)($globalStats['seniorCount'] ?? 0) - $nbPifSenior,
-                                (int)($globalStats['seniorCount'] ?? 0) - $nbValidSenior
-                            ],
+                            'id'=>'levelChart1','label'=>'SENIOR',
+                            'done'=>[$testsSenior['done'], $pifSenior['done'], dashboardHistogramBars($nbValidSenior, $levelStats['seniorCount'])['done']],
+                            'todo'=>[$testsSenior['todo'], $pifSenior['todo'], dashboardHistogramBars($nbValidSenior, $levelStats['seniorCount'])['todo']],
                             'badge'=>'#8b5cf6',
                         ],
                         [
-                            'id'=>'levelChart2','label'=>'EXPERT','done'=>[
-                                $statsTests['Expert']['done'],
-                                $nbPifExpert,
-                                $nbValidExpert
-                            ],
-                            'todo'=>[
-                                (int)($globalStats['expertCount'] ?? 0) - $statsTests['Expert']['done'],
-                                (int)($globalStats['expertCount'] ?? 0) - $nbPifExpert,
-                                (int)($globalStats['expertCount'] ?? 0) - $nbValidExpert
-                            ],
+                            'id'=>'levelChart2','label'=>'EXPERT',
+                            'done'=>[$testsExpert['done'], $pifExpert['done'], dashboardHistogramBars($nbValidExpert, $levelStats['expertCount'])['done']],
+                            'todo'=>[$testsExpert['todo'], $pifExpert['todo'], dashboardHistogramBars($nbValidExpert, $levelStats['expertCount'])['todo']],
                             'badge'=>'#8b5cf6',
                         ],
                         [
-                            'id'=>'levelChart3','label'=>'TOUS LES NIVEAUX','done'=>[
-                                $statsTests['Total']['done'],
-                                $totalProposed  = $nbPifJunior + $nbPifSenior + $nbPifExpert,
-                                $totalValidatedUsers = $nbValidJunior + $nbValidSenior + $nbValidExpert
-                            ],
-                            'todo'=>[
-                                $statsTests['Total']['total'] - $statsTests['Total']['done'],
-                                $totalTechnicians - $totalProposed,
-                                $totalTechnicians - $totalValidatedUsers
-                            ],
+                            'id'=>'levelChart3','label'=>'TOUS LES NIVEAUX',
+                            'done'=>[$testsTotal['done'], $pifTotal['done'], $validTotal['done']],
+                            'todo'=>[$testsTotal['todo'], $pifTotal['todo'], $validTotal['todo']],
                             'badge'=>'#6366f1',
                         ],
                     ];
@@ -293,7 +317,7 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
                     // Données sérialisées pour le JS existant (on n'écrase pas $brandStatsMap)
                     $dashboardData = [
                         'brandScores'                => $brandScores,
-                        'brandStats'                 => $brandNamesForDashboard, // <— liste de marques
+                        'brandStats'                 => $brandNamesForDashboard,
                         'trainingStats'              => $trainingStats,
                         'trainingsCountsForGraph2'   => $trainingsCountsForGraph2,
                         'validationsCountsForGraph2' => $validationsCountsForGraph2,
@@ -303,14 +327,8 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
                         'agencyOptions'              => $agencyOptions,
                         'filtersInitial'             => $filters,
                     ];
-                    ?>
-                </div>
-                <?php
-                echo '<div class="d-flex flex-nowrap align-items-center justify-content-center mb-3 mt-3 fade-in overflow-auto"
-                           style="animation-delay:.2s; gap:5px; padding:5px 0;">';
-                renderHistogramRow($histograms);
-                echo '</div>';
                 ?>
+                <?php renderHistogramRow($histograms); ?>
 
                 <script>
                     // JS existant inchangé (ApexCharts histogrammes)
@@ -328,9 +346,12 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
                             const todoRaw = [todoArr[0] || 0, todoArr[1] || 0, todoArr[2] || 0];
                             const totals = [doneRaw[0] + todoRaw[0], doneRaw[1] + todoRaw[1], doneRaw[2] + todoRaw[2]];
                             
-                            // Convertir en pourcentages pour l'affichage
-                            const d = totals.map((total, i) => total > 0 ? (doneRaw[i] / total) * 100 : 0);
-                            const t = totals.map((total, i) => total > 0 ? (todoRaw[i] / total) * 100 : 0);
+                            // Convertir en pourcentages pour l'affichage (plafond 100 %)
+                            const d = totals.map((total, i) => {
+                                if (total <= 0) return 0;
+                                return Math.min(100, (doneRaw[i] / total) * 100);
+                            });
+                            const t = totals.map((total, i) => Math.max(0, 100 - d[i]));
 
                             Object.assign(target.style, {
                                 background:'#ffffff', borderRadius:'10px', padding:'8px 8px 4px 8px',
@@ -362,7 +383,7 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
                                       row:{colors:['#f8f8f8','transparent'],opacity:0.5},
                                       padding:{top:10,right:10,bottom:10,left:10}},
                                 stroke:{width:0},
-                                xaxis:{categories:categories,labels:{rotate:0,hideOverlappingLabels:false,trim:false,
+                                xaxis:{categories:categories,labels:{rotate:-25,hideOverlappingLabels:true,trim:true,
                                        style:{fontSize:'10px',fontWeight:600},offsetY:5},
                                        axisBorder:{show:true,color:'#e0e0e0'},
                                        axisTicks:{show:true,color:'#e0e0e0'},

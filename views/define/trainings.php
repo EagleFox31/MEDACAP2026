@@ -25,18 +25,26 @@ if (!isset($_SESSION["id"])) {
 <title><?php echo $list_training ?> | CFAO Mobility Academy</title>
 <!--end::Title-->
 
-<!--begin::Body-->
-<div class="content fs-6 d-flex flex-column flex-column-fluid" id="kt_content"
-    data-select2-id="select2-data-kt_content">
-    <!--begin::Toolbar-->
+<!--begin::Title card-->
+<div class="container-xxl pt-5">
+    <div class="card mb-3" style="background-color: #FFFFFF !important; border-radius: 25px !important; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); border: 1px solid rgba(255, 255, 255, 0.18);">
+        <div class="card-body text-center py-4">
+            <h1 class="card-title mb-0">
+                <i class="ki-duotone ki-book fs-2 me-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i><?php echo $list_training ?>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<!--begin::Toolbar-->
     <div class="toolbar" id="kt_toolbar">
         <div class=" container-fluid  d-flex flex-stack flex-wrap flex-sm-nowrap">
             <!--begin::Info-->
             <div class="d-flex flex-column align-items-start justify-content-center flex-wrap me-2">
-                <!--begin::Title-->
-                <h1 class="text-dark fw-bolder my-1 fs-1">
-                    <?php echo $list_training ?> </h1>
-                <!--end::Title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
@@ -57,7 +65,7 @@ if (!isset($_SESSION["id"])) {
         <!--begin::Container-->
         <div class=" container-xxl " data-select2-id="select2-data-194-27hh">
             <!--begin::Card-->
-            <div class="card">
+            <div class="card glassmorphism">
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
                     <!--begin::Table-->
@@ -327,8 +335,6 @@ if (!isset($_SESSION["id"])) {
         <!--end::Container-->
     </div>
     <!--end::Post-->
-</div>
-<!--end::Body-->
 <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
     crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">

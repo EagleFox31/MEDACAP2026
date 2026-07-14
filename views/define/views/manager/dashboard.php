@@ -283,64 +283,68 @@ require_once __DIR__ . '/../../components/widgets/histogram-row.php';
                 
                 <?php if ($isManager): ?>
                 <!-- Filtres spécifiques Manager pour Analyse Détaillée -->
-                <div class="card glass-effect depth-effect mb-8">
-                    <div class="card-body p-4">
-                        <form method="GET" action="" class="d-flex flex-wrap gap-4 align-items-end justify-content-center">
-                            <div class="col-auto">
-                                <label class="form-label fw-bold">Niveau</label>
-                                <select class="form-select" name="level">
-                                    <?php foreach ($levelsToShow as $lvl): ?>
-                                        <option value="<?php echo htmlspecialchars($lvl); ?>" <?php echo $filterLevel === $lvl ? 'selected' : ''; ?>>
-                                            <?php echo $lvl === 'all' ? 'Tous les niveaux' : htmlspecialchars($lvl); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-auto">
-                                <label class="form-label fw-bold">Marque</label>
-                                <select class="form-select" name="brand">
-                                    <option value="all" <?php echo $filterBrand === 'all' ? 'selected' : ''; ?>>Toutes les marques</option>
-                                    <?php foreach ($teamBrands as $brand): ?>
-                                        <option value="<?php echo htmlspecialchars($brand); ?>" <?php echo $filterBrand === $brand ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($brand); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-sm btn-primary px-6">Appliquer</button>
-                            </div>
-                        </form>
+                <div class="d-flex justify-content-center mb-8">
+                    <div class="card glass-effect depth-effect w-100" style="max-width: 1550px;">
+                        <div class="card-body p-4">
+                            <form method="GET" action="" class="d-flex flex-wrap gap-4 align-items-end justify-content-center">
+                                <div class="col-auto">
+                                    <label class="form-label fw-bold">Niveau</label>
+                                    <select class="form-select" name="level">
+                                        <?php foreach ($levelsToShow as $lvl): ?>
+                                            <option value="<?php echo htmlspecialchars($lvl); ?>" <?php echo $filterLevel === $lvl ? 'selected' : ''; ?>>
+                                                <?php echo $lvl === 'all' ? 'Tous les niveaux' : htmlspecialchars($lvl); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="form-label fw-bold">Marque</label>
+                                    <select class="form-select" name="brand">
+                                        <option value="all" <?php echo $filterBrand === 'all' ? 'selected' : ''; ?>>Toutes les marques</option>
+                                        <?php foreach ($teamBrands as $brand): ?>
+                                            <option value="<?php echo htmlspecialchars($brand); ?>" <?php echo $filterBrand === $brand ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($brand); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-sm btn-primary px-6">Appliquer</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <?php endif; ?>
 
-                <div class="row g-7 mb-8 mt-1">
-                    <div class="col-lg-6">
-                        <div class="card h-100 glass-effect">
-                            <div class="card-header border-0 pt-6 d-flex justify-content-center text-center bg-transparent position-relative" style="border-radius: 20px 20px 0 0; min-height: 80px;">
-                                <div style="position:absolute; left:0; top:20%; bottom:20%; width:4px; background:#4e73df; border-radius:0 4px 4px 0;"></div>
-                                <h3 class="card-title text-center d-flex flex-column align-items-center">
-                                    <span class="card-label fw-bold text-dark fs-5 text-uppercase ls-1">Scores par marque</span>
-                                    <span class="text-muted mt-2 fw-semibold fs-7 d-block">Avancement moyen par technologie</span>
-                                </h3>
-                            </div>
-                            <div class="card-body pb-2">
-                                <div id="brandScoresChart" style="min-height: 350px;"></div>
+                <div class="d-flex justify-content-center mb-1">
+                    <div class="row g-7 mb-8 mt-1 w-100" style="max-width: 1550px;">
+                        <div class="col-lg-6">
+                            <div class="card h-100 glass-effect">
+                                <div class="card-header border-0 pt-6 d-flex justify-content-center text-center bg-transparent position-relative" style="border-radius: 20px 20px 0 0; min-height: 80px;">
+                                    <div style="position:absolute; left:0; top:20%; bottom:20%; width:4px; background:#4e73df; border-radius:0 4px 4px 0;"></div>
+                                    <h3 class="card-title text-center d-flex flex-column align-items-center">
+                                        <span class="card-label fw-bold text-dark fs-5 text-uppercase ls-1">Scores par marque</span>
+                                        <span class="text-muted mt-2 fw-semibold fs-7 d-block">Avancement moyen par technologie</span>
+                                    </h3>
+                                </div>
+                                <div class="card-body pb-2">
+                                    <div id="brandScoresChart" style="min-height: 350px;"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card h-100 glass-effect">
-                            <div class="card-header border-0 pt-6 d-flex justify-content-center text-center bg-transparent position-relative" style="border-radius: 20px 20px 0 0; min-height: 80px;">
-                                <div style="position:absolute; left:0; top:20%; bottom:20%; width:4px; background:#1cc88a; border-radius:0 4px 4px 0;"></div>
-                                <h3 class="card-title text-center d-flex flex-column align-items-center">
-                                    <span class="card-label fw-bold text-dark fs-5 text-uppercase ls-1"><?= $recommaded_training; ?></span>
-                                    <span class="text-muted mt-2 fw-semibold fs-7 d-block">Volume de modules recommandés</span>
-                                </h3>
-                            </div>
-                            <div class="card-body pb-2">
-                                <div id="trainingChart" style="min-height: 350px;"></div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 glass-effect">
+                                <div class="card-header border-0 pt-6 d-flex justify-content-center text-center bg-transparent position-relative" style="border-radius: 20px 20px 0 0; min-height: 80px;">
+                                    <div style="position:absolute; left:0; top:20%; bottom:20%; width:4px; background:#1cc88a; border-radius:0 4px 4px 0;"></div>
+                                    <h3 class="card-title text-center d-flex flex-column align-items-center">
+                                        <span class="card-label fw-bold text-dark fs-5 text-uppercase ls-1"><?= $recommaded_training; ?></span>
+                                        <span class="text-muted mt-2 fw-semibold fs-7 d-block">Volume de modules recommandés</span>
+                                    </h3>
+                                </div>
+                                <div class="card-body pb-2">
+                                    <div id="trainingChart" style="min-height: 350px;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -348,110 +352,114 @@ require_once __DIR__ . '/../../components/widgets/histogram-row.php';
 
                 <?php renderTitleSection('ki-duotone ki-briefcase fs-2 me-3', 2, 'Répartition par Marque'); ?>
 
-                <div class="card glass-effect depth-effect mt-3 mb-8">
-                    <div class="card-header border-0 pt-5 d-flex justify-content-center text-center bg-transparent" style="border-radius: 20px 20px 0 0;">
-                        <h3 class="card-title text-center">
-                            <span class="card-label fw-bold text-dark">Avancement par Marque</span>
-                            <span class="text-muted mt-1 fw-semibold fs-7 d-block">Moyenne de l'équipe</span>
-                        </h3>
-                    </div>
-                    <div class="card-body p-6">
-                        <div class="brand-carousel-wrapper">
-                            <button class="brand-arrow-btn left" id="brandScrollLeft">
-                                <i class="ki-duotone ki-left fs-2"><span class="path1"></span><span class="path2"></span></i>
-                            </button>
+                <div class="d-flex justify-content-center mb-8">
+                    <div class="card glass-effect depth-effect mt-3 w-100" style="max-width: 1550px;">
+                        <div class="card-header border-0 pt-5 d-flex justify-content-center text-center bg-transparent" style="border-radius: 20px 20px 0 0;">
+                            <h3 class="card-title text-center">
+                                <span class="card-label fw-bold text-dark">Avancement par Marque</span>
+                                <span class="text-muted mt-1 fw-semibold fs-7 d-block">Moyenne de l'équipe</span>
+                            </h3>
+                        </div>
+                        <div class="card-body p-6">
+                            <div class="brand-carousel-wrapper">
+                                <button class="brand-arrow-btn left" id="brandScrollLeft">
+                                    <i class="ki-duotone ki-left fs-2"><span class="path1"></span><span class="path2"></span></i>
+                                </button>
 
-                            <div id="brandScrollContainer" class="horizontal-scroll-container">
-                                <?php foreach ($teamBrands as $brand): ?>
-                                    <div class="brand-card-item">
-                                        <div class="card-brand p-5 text-center h-100 shadow-sm border border-white border-opacity-25 d-flex flex-column justify-content-between">
-                                            <div>
-                                                <div class="mb-4 d-flex align-items-center justify-content-center" style="height: 60px;">
-                                                    <img src="<?= htmlspecialchars($brandLogos[strtoupper($brand)] ?? '/MEDACAP/public/assets/brands/placeholder.png'); ?>" 
-                                                         alt="<?= $brand; ?>" 
-                                                         class="brand-logo" 
-                                                         style="max-height: 50px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                                <div id="brandScrollContainer" class="horizontal-scroll-container">
+                                    <?php foreach ($teamBrands as $brand): ?>
+                                        <div class="brand-card-item">
+                                            <div class="card-brand p-5 text-center h-100 shadow-sm border border-white border-opacity-25 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="mb-4 d-flex align-items-center justify-content-center" style="height: 60px;">
+                                                        <img src="<?= htmlspecialchars($brandLogos[strtoupper($brand)] ?? '/MEDACAP/public/assets/brands/placeholder.png'); ?>" 
+                                                             alt="<?= $brand; ?>" 
+                                                             class="brand-logo" 
+                                                             style="max-height: 50px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                                                    </div>
+                                                    <h6 class="mb-3 fw-bold text-dark text-uppercase fs-7 ls-1"><?= htmlspecialchars($brand); ?></h6>
                                                 </div>
-                                                <h6 class="mb-3 fw-bold text-dark text-uppercase fs-7 ls-1"><?= htmlspecialchars($brand); ?></h6>
-                                            </div>
-                                            
-                                            <div>
-                                                <?php 
-                                                $avgScore = 0;
-                                                foreach ($brandScores as $score) { if ($score['x'] === $brand) { $avgScore = $score['y']; break; } }
-                                                $pColor = $avgScore >= 80 ? 'bg-success' : ($avgScore >= 60 ? 'bg-warning' : 'bg-danger');
-                                                ?>
-                                                <div class="progress brand-progress mb-3 bg-light bg-opacity-50" style="height: 10px;">
-                                                    <div class="progress-bar <?= $pColor; ?> rounded" style="width: <?= $avgScore; ?>%"></div>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="fs-9 text-muted fw-bold text-uppercase opacity-75">Avancement</span>
-                                                    <span class="fs-7 fw-bolder text-dark"><?= number_format($avgScore, 1); ?>%</span>
+                                                
+                                                <div>
+                                                    <?php 
+                                                    $avgScore = 0;
+                                                    foreach ($brandScores as $score) { if ($score['x'] === $brand) { $avgScore = $score['y']; break; } }
+                                                    $pColor = $avgScore >= 80 ? 'bg-success' : ($avgScore >= 60 ? 'bg-warning' : 'bg-danger');
+                                                    ?>
+                                                    <div class="progress brand-progress mb-3 bg-light bg-opacity-50" style="height: 10px;">
+                                                        <div class="progress-bar <?= $pColor; ?> rounded" style="width: <?= $avgScore; ?>%"></div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="fs-9 text-muted fw-bold text-uppercase opacity-75">Avancement</span>
+                                                        <span class="fs-7 fw-bolder text-dark"><?= number_format($avgScore, 1); ?>%</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
+                                    <?php endforeach; ?>
+                                </div>
 
-                            <button class="brand-arrow-btn right" id="brandScrollRight">
-                                <i class="ki-duotone ki-right fs-2"><span class="path1"></span><span class="path2"></span></i>
-                            </button>
+                                <button class="brand-arrow-btn right" id="brandScrollRight">
+                                    <i class="ki-duotone ki-right fs-2"><span class="path1"></span><span class="path2"></span></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <?php renderTitleSection('ki-duotone ki-address-book fs-2 me-3', 2, 'Liste des Collaborateurs'); ?>
-                <div class="card glass-effect depth-effect mt-3 mb-8">
-                    <div class="card-header border-0 pt-5 d-flex flex-column align-items-center bg-transparent" style="border-radius: 20px 20px 0 0;">
-                        <h3 class="card-title text-center mb-4">
-                            <span class="card-label fw-bold text-dark">Détail des Techniciens</span>
-                            <span class="text-muted mt-1 fw-semibold fs-7 d-block"><?= count($technicians); ?> au total</span>
-                        </h3>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-light-primary px-4" id="expandAllBtn">Tout développer</button>
-                            <button class="btn btn-sm btn-light-secondary px-4" id="collapseAllBtn">Tout réduire</button>
+                <div class="d-flex justify-content-center mb-8">
+                    <div class="card glass-effect depth-effect mt-3 w-100" style="max-width: 1550px;">
+                        <div class="card-header border-0 pt-5 d-flex flex-column align-items-center bg-transparent" style="border-radius: 20px 20px 0 0;">
+                            <h3 class="card-title text-center mb-4">
+                                <span class="card-label fw-bold text-dark">Détail des Techniciens</span>
+                                <span class="text-muted mt-1 fw-semibold fs-7 d-block"><?= count($technicians); ?> au total</span>
+                            </h3>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-light-primary px-4" id="expandAllBtn">Tout développer</button>
+                                <button class="btn btn-sm btn-light-secondary px-4" id="collapseAllBtn">Tout réduire</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body p-6">
-                        <div class="row g-4" id="techniciansList">
-                            <?php foreach ($technicians as $index => $tech): ?>
-                                <div class="col-xl-4 col-md-6">
-                                    <div class="card technician-card bg-white bg-opacity-60 border border-white border-opacity-25 shadow-sm h-100">
-                                        <div class="card-header border-0 py-5 d-flex justify-content-between align-items-center bg-white bg-opacity-25" 
-                                             style="cursor: pointer; border-radius: 15px 15px 0 0;" 
-                                             data-bs-toggle="collapse" 
-                                             href="#collapseTech<?= $index; ?>">
-                                            <div class="d-flex align-items-center">
-                                                <div class="symbol symbol-45px symbol-circle me-4 shadow-sm">
-                                                    <span class="symbol-label bg-primary bg-opacity-10 text-primary fw-bolder fs-5"><?= substr($tech['name'],0,1); ?></span>
-                                                </div>
-                                                <div class="d-flex flex-column">
-                                                    <span class="fw-bolder text-dark fs-6"><?= htmlspecialchars($tech['name']); ?></span>
-                                                    <span class="text-muted fs-8 fw-semibold">Technicien</span>
-                                                </div>
-                                            </div>
-                                            <span class="badge badge-light-<?= $tech['level']==='Expert'?'success':($tech['level']==='Senior'?'primary':'info'); ?> fw-bold px-3 py-2 rounded-pill"><?= $tech['level']; ?></span>
-                                        </div>
-                                        <div class="collapse" id="collapseTech<?= $index; ?>">
-                                            <div class="card-body pt-0 pb-4">
-                                                <div class="separator separator-dashed mb-4"></div>
-                                                <div class="mb-4">
-                                                    <span class="d-block text-muted fs-8 fw-bold mb-2">MARQUES</span>
-                                                    <div class="d-flex flex-wrap">
-                                                        <?php foreach ($tech['brands'] as $b): ?><span class="brand-pill"><?= htmlspecialchars($b); ?></span><?php endforeach; ?>
+                        <div class="card-body p-6">
+                            <div class="row g-4" id="techniciansList">
+                                <?php foreach ($technicians as $index => $tech): ?>
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="card technician-card bg-white bg-opacity-60 border border-white border-opacity-25 shadow-sm h-100">
+                                            <div class="card-header border-0 py-5 d-flex justify-content-between align-items-center bg-white bg-opacity-25" 
+                                                 style="cursor: pointer; border-radius: 15px 15px 0 0;" 
+                                                 data-bs-toggle="collapse" 
+                                                 href="#collapseTech<?= $index; ?>">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="symbol symbol-45px symbol-circle me-4 shadow-sm">
+                                                        <span class="symbol-label bg-primary bg-opacity-10 text-primary fw-bolder fs-5"><?= substr($tech['name'],0,1); ?></span>
+                                                    </div>
+                                                    <div class="d-flex flex-column">
+                                                        <span class="fw-bolder text-dark fs-6"><?= htmlspecialchars($tech['name']); ?></span>
+                                                        <span class="text-muted fs-8 fw-semibold">Technicien</span>
                                                     </div>
                                                 </div>
-                                                <?php foreach ($tech['scoresLevels'] as $lvl => $bScores): ?>
-                                                    <div class="mb-3">
-                                                        <span class="d-block text-muted fs-8 fw-bold mb-2"><?= strtoupper($lvl); ?></span>
+                                                <span class="badge badge-light-<?= $tech['level']==='Expert'?'success':($tech['level']==='Senior'?'primary':'info'); ?> fw-bold px-3 py-2 rounded-pill"><?= $tech['level']; ?></span>
+                                            </div>
+                                            <div class="collapse" id="collapseTech<?= $index; ?>">
+                                                <div class="card-body pt-0 pb-4">
+                                                    <div class="separator separator-dashed mb-4"></div>
+                                                    <div class="mb-4">
+                                                        <span class="d-block text-muted fs-8 fw-bold mb-2">MARQUES</span>
                                                         <div class="d-flex flex-wrap">
-                                                            <?php foreach ($bScores as $bn => $sc): 
-                                                                $scCol = $sc >= 80 ? 'success' : ($sc >= 60 ? 'warning' : 'danger'); ?>
-                                                                <span class="badge badge-light-<?= $scCol; ?> me-2 mb-2"><?= htmlspecialchars($bn); ?>: <?= number_format($sc,1); ?>%</span>
-                                                            <?php endforeach; ?>
+                                                            <?php foreach ($tech['brands'] as $b): ?><span class="brand-pill"><?= htmlspecialchars($b); ?></span><?php endforeach; ?>
                                                         </div>
                                                     </div>
+                                                    <?php foreach ($tech['scoresLevels'] as $lvl => $bScores): ?>
+                                                        <div class="mb-3">
+                                                            <span class="d-block text-muted fs-8 fw-bold mb-2"><?= strtoupper($lvl); ?></span>
+                                                            <div class="d-flex flex-wrap">
+                                                                <?php foreach ($bScores as $bn => $sc): 
+                                                                    $scCol = $sc >= 80 ? 'success' : ($sc >= 60 ? 'warning' : 'danger'); ?>
+                                                                    <span class="badge badge-light-<?= $scCol; ?> me-2 mb-2"><?= htmlspecialchars($bn); ?>: <?= number_format($sc,1); ?>%</span>
+                                                                <?php endforeach; ?>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -551,14 +559,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }).render();
 
     // Chart Formations
-    new ApexCharts(document.getElementById('trainingChart'), {
-        series: [{ name: 'Recommandées', data: Object.values(dashData.trainingsCountsForGraph2) }, 
-                 { name: 'Validées', data: Object.values(dashData.validationsCountsForGraph2) }],
-        chart: { type: 'bar', height: 350, toolbar: { show: false } },
-        colors: ['#0dcaf0', '#198754'],
-        xaxis: { categories: Object.keys(dashData.trainingsCountsForGraph2) },
-        legend: { position: 'top' }
-    }).render();
+    (function() {
+        var brands   = Object.keys(dashData.trainingsCountsForGraph2);
+        var recData  = brands.map(function(b) { return dashData.trainingsCountsForGraph2[b] || 0; });
+        var valData  = brands.map(function(b) { return (dashData.validationsCountsForGraph2 || {})[b] || 0; });
+        var recTechs = dashData.trainingsTechsByBrand  || {};
+        var valTechs = dashData.validationsTechsByBrand || {};
+
+        new ApexCharts(document.getElementById('trainingChart'), {
+            series: [
+                { name: 'Recommandées', data: recData },
+                { name: 'Validées',     data: valData }
+            ],
+            chart: { type: 'bar', height: 350, toolbar: { show: false } },
+            colors: ['#FFC107', '#0275D8'],
+            plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
+            dataLabels: {
+                enabled: true,
+                style: { fontSize: '13px', fontWeight: 'bold', colors: ['#fff'] }
+            },
+            stroke: { width: 1, colors: ['#fff'] },
+            xaxis: { categories: brands },
+            legend: { position: 'top' },
+            tooltip: {
+                custom: function(opts) {
+                    var si  = opts.seriesIndex;
+                    var di  = opts.dataPointIndex;
+                    var brand = brands[di];
+                    var count = opts.series[si][di];
+                    var isRec = si === 0;
+                    var label = isRec ? 'Formations proposées' : 'Formations validées';
+                    var techList = isRec ? (recTechs[brand] || []) : (valTechs[brand] || []);
+                    var techHtml = techList.length
+                        ? '<ul style="margin:4px 0 0;padding-left:16px;font-size:12px;">'
+                          + techList.map(function(n) { return '<li>' + n + '</li>'; }).join('')
+                          + '</ul>'
+                        : '';
+                    return '<div style="padding:10px 14px;font-size:13px;max-width:250px;">'
+                        + '<strong>' + brand + '</strong><br>'
+                        + label + '\u00a0: <strong>' + count + '</strong>'
+                        + techHtml
+                        + '</div>';
+                }
+            }
+        }).render();
+    })();
 
     // Accordions
     document.getElementById('expandAllBtn').onclick = () => document.querySelectorAll('.collapse').forEach(el => new bootstrap.Collapse(el, {toggle: false}).show());

@@ -210,9 +210,16 @@ class ManagerDashboardController extends BaseController {
         // Comptage des formations et scores par marque
         $trainingsCountsForGraph2 = $this->getTrainingsCountsByBrand($technicians, $filterBrand);
         $validationsCountsForGraph2 = $this->getValidationsCountsByBrand($technicians, $filterBrand);
+        $trainingsTechsByBrand = $this->getTrainingsNamesByBrand($technicians, $filterBrand);
+        $validationsTechsByBrand = $this->getValidationsNamesByBrand($technicians, $filterBrand);
         
-        // Scores par marque
-        $scoresArr = $this->getScoresByBrand($fullData, $selectedFiliale, $filterLevel);
+        // Scores par marque — pour le Manager, on calcule depuis les techniciens
+        // (filterController met subsidiary='all' pour le Manager, donc fullData['all'] n'existe pas)
+        if ($this->profile === 'Manager') {
+            $scoresArr = $this->getScoresByBrandFromTechnicians($technicians, $filterLevel);
+        } else {
+            $scoresArr = $this->getScoresByBrand($fullData, $selectedFiliale, $filterLevel);
+        }
         $brandScores = $this->prepareBrandScores($scoresArr, $filterBrand);
         
         // Récupération des marques
@@ -290,6 +297,8 @@ class ManagerDashboardController extends BaseController {
             'brandStats'                 => $teamBrands,
             'trainingsCountsForGraph2'   => $trainingsCountsForGraph2,
             'validationsCountsForGraph2' => $validationsCountsForGraph2,
+            'trainingsTechsByBrand'      => $trainingsTechsByBrand,
+            'validationsTechsByBrand'    => $validationsTechsByBrand,
             'brandLogos'                 => $brandLogos,
             'numTechniciens'             => $numTechniciens,
             'numTrainings'               => $numTrainings,
@@ -535,53 +544,144 @@ class ManagerDashboardController extends BaseController {
     }
     
     /**
-     * Récupère les formations par marque
+     * Compte les modules de formation (trainings.brand) par marque,
+     * pour les techniciens du manager — identique à selectTraining.php.
      */
     private function getTrainingsCountsByBrand($technicians, $filterBrand) {
+        $allTechIds = array_map(function($t) { return new ObjectId($t['id']); }, $technicians);
+        if (empty($allTechIds)) return [];
+
+        $query = ['users' => ['$in' => $allTechIds], 'active' => true];
+        if ($filterBrand !== 'all') $query['brand'] = $filterBrand;
+
         $counts = [];
-        foreach ($technicians as $tech) {
-            foreach ($tech['brands'] as $brand) {
-                if ($filterBrand !== 'all' && $filterBrand !== $brand) continue;
-                if (!isset($counts[$brand])) $counts[$brand] = 0;
-                
-                // On compte combien de Trainings (PIF) a ce technicien pour cette marque
-                // Dans cet environnement, on simplifie par un compte d'allocations de type 'Training'
-                // qui correspondent à ses marques.
-                $pifCount = $this->allocationCollection->count([
-                    'user' => new ObjectId($tech['id']),
-                    'type' => 'Training',
-                    'brand' => $brand,
-                    'active' => true
-                ]);
-                $counts[$brand] += $pifCount;
-            }
+        foreach ($this->trainingCollection->find($query, ['projection' => ['brand' => 1]]) as $training) {
+            $brand = (string)($training['brand'] ?? '');
+            if ($brand === '') continue;
+            if (!isset($counts[$brand])) $counts[$brand] = 0;
+            $counts[$brand]++;
         }
         arsort($counts);
         return $counts;
     }
-    
+
     /**
-     * Récupère les validations par marque
+     * Compte les modules de formation validés (status='Validé') par marque.
      */
     private function getValidationsCountsByBrand($technicians, $filterBrand) {
-        $counts = [];
-        foreach ($technicians as $tech) {
-            foreach ($tech['brands'] as $brand) {
-                if ($filterBrand !== 'all' && $filterBrand !== $brand) continue;
-                if (!isset($counts[$brand])) $counts[$brand] = 0;
+        $allTechIds = array_map(function($t) { return new ObjectId($t['id']); }, $technicians);
+        if (empty($allTechIds)) return [];
 
-                $validCount = $this->validationCollection->count([
-                    'user' => new ObjectId($tech['id']),
-                    'status' => 'Validé',
-                    'brand' => $brand,
-                    'active' => true
-                ]);
-                $counts[$brand] += $validCount;
+        // Récupère les IDs de formation distincts validés
+        $validTrainingIds = [];
+        foreach ($this->validationCollection->find([
+            'user'   => ['$in' => $allTechIds],
+            'status' => 'Validé',
+            'active' => true
+        ], ['projection' => ['training' => 1]]) as $val) {
+            if (isset($val['training'])) {
+                $validTrainingIds[(string)$val['training']] = true;
             }
+        }
+        if (empty($validTrainingIds)) return [];
+
+        $trainingOids = array_map(function($id) { return new ObjectId($id); }, array_keys($validTrainingIds));
+        $query = ['_id' => ['$in' => $trainingOids]];
+        if ($filterBrand !== 'all') $query['brand'] = $filterBrand;
+
+        $counts = [];
+        foreach ($this->trainingCollection->find($query, ['projection' => ['brand' => 1]]) as $training) {
+            $brand = (string)($training['brand'] ?? '');
+            if ($brand === '') continue;
+            if (!isset($counts[$brand])) $counts[$brand] = 0;
+            $counts[$brand]++;
         }
         return $counts;
     }
-    
+
+    /**
+     * Retourne les noms des techniciens ayant des formations par marque (pour le tooltip).
+     */
+    private function getTrainingsNamesByBrand($technicians, $filterBrand) {
+        $names = [];
+        foreach ($technicians as $tech) {
+            $techId = new ObjectId($tech['id']);
+            $query  = ['users' => $techId, 'active' => true];
+            if ($filterBrand !== 'all') $query['brand'] = $filterBrand;
+
+            foreach ($this->trainingCollection->find($query, ['projection' => ['brand' => 1]]) as $training) {
+                $brand = (string)($training['brand'] ?? '');
+                if ($brand === '') continue;
+                if (!isset($names[$brand])) $names[$brand] = [];
+                if (!in_array($tech['name'], $names[$brand])) {
+                    $names[$brand][] = $tech['name'];
+                }
+            }
+        }
+        return $names;
+    }
+
+    /**
+     * Retourne les noms des techniciens ayant des validations par marque (pour le tooltip).
+     */
+    private function getValidationsNamesByBrand($technicians, $filterBrand) {
+        $names = [];
+        foreach ($technicians as $tech) {
+            $techId = new ObjectId($tech['id']);
+            $validTrainingIds = [];
+            foreach ($this->validationCollection->find([
+                'user'   => $techId,
+                'status' => 'Validé',
+                'active' => true
+            ], ['projection' => ['training' => 1]]) as $val) {
+                if (isset($val['training'])) {
+                    $validTrainingIds[(string)$val['training']] = true;
+                }
+            }
+            if (empty($validTrainingIds)) continue;
+
+            $trainingOids = array_map(function($id) { return new ObjectId($id); }, array_keys($validTrainingIds));
+            $query = ['_id' => ['$in' => $trainingOids]];
+            if ($filterBrand !== 'all') $query['brand'] = $filterBrand;
+
+            foreach ($this->trainingCollection->find($query, ['projection' => ['brand' => 1]]) as $training) {
+                $brand = (string)($training['brand'] ?? '');
+                if ($brand === '') continue;
+                if (!isset($names[$brand])) $names[$brand] = [];
+                if (!in_array($tech['name'], $names[$brand])) {
+                    $names[$brand][] = $tech['name'];
+                }
+            }
+        }
+        return $names;
+    }
+
+    /**
+     * Calcule les scores par marque directement depuis les données des techniciens.
+     * Utilisé pour le Manager car filterController fixe subsidiary='all'.
+     */
+    private function getScoresByBrandFromTechnicians($technicians, $filterLevel) {
+        $brandAggregator = [];
+        foreach ($technicians as $tech) {
+            foreach ($tech['scoresLevels'] as $level => $bScores) {
+                if ($filterLevel !== 'all' && $level !== $filterLevel) continue;
+                foreach ($bScores as $brand => $score) {
+                    if (!isset($brandAggregator[$brand])) {
+                        $brandAggregator[$brand] = ['sum' => 0, 'count' => 0];
+                    }
+                    $brandAggregator[$brand]['sum'] += (float)$score;
+                    $brandAggregator[$brand]['count'] += 1;
+                }
+            }
+        }
+        $result = [];
+        foreach ($brandAggregator as $brand => $vals) {
+            $count = $vals['count'] > 0 ? $vals['count'] : 1;
+            $result[$brand] = round($vals['sum'] / $count, 2);
+        }
+        return $result;
+    }
+
     /**
      * Récupère les scores par marque
      */
@@ -749,8 +849,8 @@ class DataCollection {
 
     public function __construct() {
         try {
-            $client = new MongoDB\Client("mongodb://localhost:27017");
-            $database = $client->academy;
+            require_once __DIR__ . '/../core/portal-mongo.php';
+            $database = definePortalMongoDatabase();
             $this->collectionManagers = $database->managersBySubsidiaryAgency;
             $this->collectionScores = $database->technicianBrandScores;
         } catch (MongoDB\Exception\Exception $e) {

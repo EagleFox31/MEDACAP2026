@@ -151,7 +151,7 @@ class AnalyticsService
         $users = $this->db->users;
 
         $query = array_merge(
-            array('profile' => 'Technicien', 'active' => true),
+            array('profile' => 'Technicien', 'active' => true, 'isCandidat' => array('$ne' => true)),
             $this->buildHierarchyFilters($filters)
         );
 
@@ -160,29 +160,24 @@ class AnalyticsService
             $query['level'] = array('$in' => $this->niveauxMin($filters['level']));
         }
 
-        // Filtre "brand" (sur les 3 champs)
+        // Filtre "brand" (sur les 3 champs) — via $and pour ne pas écraser d'autres $or
         if (!empty($filters['brand']) && $filters['brand'] !== 'all') {
-            if (is_array($filters['brand'])) {
-                $in = array();
-                foreach ($filters['brand'] as $b) {
-                    $t = trim((string)$b);
-                    if ($t !== '') $in[] = $t;
-                }
-                if (!empty($in)) {
-                    $query['$or'] = array(
-                        array('brandJunior' => array('$in' => $in)),
-                        array('brandSenior' => array('$in' => $in)),
-                        array('brandExpert' => array('$in' => $in)),
-                    );
-                }
-            } else {
-                $b = trim((string)$filters['brand']);
-                if ($b !== '') {
-                    $query['$or'] = array(
-                        array('brandJunior' => $b),
-                        array('brandSenior' => $b),
-                        array('brandExpert' => $b),
-                    );
+            $brandValues = is_array($filters['brand']) ? $filters['brand'] : array($filters['brand']);
+            $brandAnd = array();
+            foreach ($brandValues as $b) {
+                $t = trim((string)$b);
+                if ($t === '') continue;
+                $brandAnd[] = array('$or' => array(
+                    array('brandJunior' => $t),
+                    array('brandSenior' => $t),
+                    array('brandExpert' => $t),
+                ));
+            }
+            if (!empty($brandAnd)) {
+                if (isset($query['$and'])) {
+                    $query['$and'] = array_merge($query['$and'], $brandAnd);
+                } else {
+                    $query['$and'] = $brandAnd;
                 }
             }
         }
@@ -242,7 +237,7 @@ class AnalyticsService
 
         $query = array_merge(
             $this->getTechOrTestManagerClause(),
-            array('active' => true)
+            array('active' => true, 'isCandidat' => array('$ne' => true))
         );
 
         // Hiérarchie
@@ -254,29 +249,24 @@ class AnalyticsService
             $query['level'] = array('$in' => $this->niveauxMin($filters['level']));
         }
 
-        // Brand
+        // Brand — ne pas écraser la clause profil ($or Technicien/Manager test)
         if (!empty($filters['brand']) && $filters['brand'] !== 'all') {
-            if (is_array($filters['brand'])) {
-                $in = array();
-                foreach ($filters['brand'] as $b) {
-                    $t = trim((string)$b);
-                    if ($t !== '') $in[] = $t;
-                }
-                if (!empty($in)) {
-                    $query['$or'] = array(
-                        array('brandJunior' => array('$in' => $in)),
-                        array('brandSenior' => array('$in' => $in)),
-                        array('brandExpert' => array('$in' => $in)),
-                    );
-                }
-            } else {
-                $b = trim((string)$filters['brand']);
-                if ($b !== '') {
-                    $query['$or'] = array(
-                        array('brandJunior' => $b),
-                        array('brandSenior' => $b),
-                        array('brandExpert' => $b),
-                    );
+            $brandValues = is_array($filters['brand']) ? $filters['brand'] : array($filters['brand']);
+            $brandAnd = array();
+            foreach ($brandValues as $b) {
+                $t = trim((string)$b);
+                if ($t === '') continue;
+                $brandAnd[] = array('$or' => array(
+                    array('brandJunior' => $t),
+                    array('brandSenior' => $t),
+                    array('brandExpert' => $t),
+                ));
+            }
+            if (!empty($brandAnd)) {
+                if (isset($query['$and'])) {
+                    $query['$and'] = array_merge($query['$and'], $brandAnd);
+                } else {
+                    $query['$and'] = $brandAnd;
                 }
             }
         }
@@ -557,7 +547,7 @@ class AnalyticsService
             // Query pour les users de cette brand + évaluations
             $q = array_merge(
                 $this->getTechOrTestManagerClause(),
-                array('active' => true),
+                array('active' => true, 'isCandidat' => array('$ne' => true)),
                 $this->buildHierarchyFilters($filters)
             );
 
@@ -632,8 +622,9 @@ class AnalyticsService
         foreach ($subsList as $subs) {
             // base query : techniciens actifs, + hiérarchie
             $base = array(
-                'profile' => 'Technicien',
-                'active'  => true,
+                'profile'    => 'Technicien',
+                'active'     => true,
+                'isCandidat' => array('$ne' => true),
                 'subsidiary' => $subs
             );
 

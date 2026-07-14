@@ -24,7 +24,7 @@ function renderHistogramCard(array $opts): void
     $pct    = $total0 > 0 ? round($done[0] / $total0 * 100) : 0;
     $iconHtml = $o['iconHtml'] ?? kiIcon($o['icon'], $o['paths']);
 ?>
-<div class="flex-grow-1" style="min-width:280px; max-width:340px; flex: 1 1 0;">
+<div class="flex-grow-1" style="min-width:180px; max-width:340px; flex: 1 1 0;">
   <div class="card glass-effect depth-effect h-100 histogram-card shadow-lg border-0"
        style="border-radius: 30px !important;"
        data-done='<?= json_encode($done) ?>'
@@ -48,8 +48,8 @@ function renderHistogramCard(array $opts): void
     </div>
 
     <div class="card-body" style="padding: 1rem; padding-top: 0;">
-      <div style="background:#fff; border-radius:25px; padding:10px; border: 1px solid rgba(0,0,0,0.03);">
-        <div id="<?= $id ?>" class="histogram" style="height:320px; width:100%;"></div>
+      <div style="background:#fff; border-radius:25px; padding:10px; border: 1px solid rgba(0,0,0,0.03); overflow: hidden; position: relative;">
+        <div id="<?= $id ?>" class="histogram" style="height:320px; width:100%; min-width: 0;"></div>
       </div>
     </div>
   </div>

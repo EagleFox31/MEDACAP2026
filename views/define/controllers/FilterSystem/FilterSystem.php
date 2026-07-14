@@ -214,8 +214,8 @@ class FilterSystem
     /** Construit la requête Mongo finale (array $match-like) */
     public function buildQuery(): array
     {
-        // Base : uniquement techniciens actifs
-        $query = array('profile' => 'Technicien', 'active' => true);
+        // Base : uniquement techniciens actifs (hors candidats)
+        $query = array('profile' => 'Technicien', 'active' => true, 'isCandidat' => array('$ne' => true));
 
         // 1) Applique chaque filtre avec sa valeur actuelle
         foreach ($this->filters as $name => $filter) {

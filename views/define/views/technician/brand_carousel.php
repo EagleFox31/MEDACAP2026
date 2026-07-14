@@ -24,17 +24,32 @@ $localBrandLogos = [
                 $logoSrc = "/MEDACAP/public/images/" . $logoFile;
             ?>
             <div class="brand-card-wrapper">
-                <div class="card glass-effect depth-effect border-0 brand-card h-100">
-                    <div class="card-body d-flex justify-content-center align-items-center p-4">
-                        <div class="brand-logo-container d-flex justify-content-center align-items-center w-100 h-100">
-                            <img src="<?php echo htmlspecialchars($logoSrc); ?>"
-                                 alt="<?php echo htmlspecialchars($brand); ?> Logo"
-                                 class="img-fluid brand-logo-img"
-                                 title="<?php echo htmlspecialchars($brand); ?>"
-                                 onerror="this.src='/MEDACAP/public/images/default.png'">
+                <?php
+                $_tidParam = isset($_GET['technicianId']) ? '&technicianId=' . urlencode($_GET['technicianId']) : '';
+                $_agencyParam = !empty($_GET['agency']) ? '&agency=' . urlencode((string) $_GET['agency']) : '';
+                $_embedParam = !empty($_GET['embed']) ? '&embed=' . urlencode((string) $_GET['embed']) : '';
+                $_returnParam = !empty($_GET['returnUrl']) ? '&returnUrl=' . urlencode((string) $_GET['returnUrl']) : '';
+                $_scopeParam = '';
+                $_scope = $_GET['scope'] ?? $_GET['year'] ?? 'pluri';
+                if ($_scope !== '' && $_scope !== 'all' && $_scope !== 'pluri') {
+                    $_scopeParam = '&scope=' . urlencode((string) $_scope);
+                }
+                $_levelFilter = $levelFilter ?? 'all';
+                $brandLink = '?brand=' . urlencode($brand) . '&level=' . urlencode($_levelFilter) . $_tidParam . $_agencyParam . $_embedParam . $_returnParam . $_scopeParam;
+                ?>
+                <a href="<?= $brandLink ?>" class="text-decoration-none">
+                    <div class="card glass-effect depth-effect border-0 brand-card h-100">
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="brand-logo-container d-flex justify-content-center align-items-center w-100">
+                                <img src="<?php echo htmlspecialchars($logoSrc); ?>"
+                                     alt="<?php echo htmlspecialchars($brand); ?> Logo"
+                                     class="brand-logo-img"
+                                     title="<?php echo htmlspecialchars($brand); ?>"
+                                     onerror="this.src='/MEDACAP/public/images/default.png'">
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <?php endforeach; ?>
         </div>
@@ -89,7 +104,7 @@ $localBrandLogos = [
     .brand-card-wrapper {
         flex: 0 0 auto;
         width: 220px; /* Wider, more blog-like card */
-        height: 160px;
+        height: 130px; /* Réduit de 160px */
     }
 
     .brand-card {
@@ -97,6 +112,7 @@ $localBrandLogos = [
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         cursor: pointer;
         background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)) !important;
+        overflow: hidden;
     }
 
     .brand-card:hover {
@@ -104,14 +120,22 @@ $localBrandLogos = [
         box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
     }
 
-    .brand-logo-container {
+    .brand-card .card-body {
         height: 100%;
+    }
+
+    .brand-logo-container {
+        height: 88px;
         width: 100%;
+        overflow: hidden;
     }
 
     .brand-logo-img {
-        max-height: 90%;
-        max-width: 90%;
+        display: block;
+        max-height: 88px;
+        max-width: 100%;
+        width: auto;
+        height: auto;
         object-fit: contain;
         filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.05));
     }

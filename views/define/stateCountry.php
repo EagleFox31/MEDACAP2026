@@ -200,7 +200,7 @@ if (!isset($_SESSION["id"])) {
     $techsCa = $users->find([
         '$and' => [
             [
-                "subsidiary" => "CAMEROON MOTORS INDUSTRIES",
+                "subsidiary" => "CFAO MOBILITY CAMEROON",
                 "active" => true,
             ],
         ],
@@ -216,7 +216,7 @@ if (!isset($_SESSION["id"])) {
     $techsJuCa = $users->find([
         '$and' => [
             [
-                "subsidiary" => "CAMEROON MOTORS INDUSTRIES",
+                "subsidiary" => "CFAO MOBILITY CAMEROON",
                 "level" => "Junior",
                 "active" => true,
             ],
@@ -233,7 +233,7 @@ if (!isset($_SESSION["id"])) {
     $techsSeCa = $users->find([
         '$and' => [
             [
-                "subsidiary" => "CAMEROON MOTORS INDUSTRIES",
+                "subsidiary" => "CFAO MOBILITY CAMEROON",
                 "level" => "Senior",
                 "active" => true,
             ],
@@ -250,7 +250,7 @@ if (!isset($_SESSION["id"])) {
     $techsExCa = $users->find([
         '$and' => [
             [
-                "subsidiary" => "CAMEROON MOTORS INDUSTRIES",
+                "subsidiary" => "CFAO MOBILITY CAMEROON",
                 "level" => "Expert",
                 "active" => true,
             ],
