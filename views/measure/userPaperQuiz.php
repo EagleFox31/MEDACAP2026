@@ -1168,15 +1168,15 @@ if ($isTimeUp) {
             
             // Vérifier si cette question est incorrecte
             if ($min > 0 && $count < $min) {
-                $error_details[] = "• <strong>" . htmlspecialchars($title) . "</strong> : vous avez sélectionné {$count} option(s), mais le minimum requis est {$min}";
+                $error_details[] = "« {$title} » : {$count} option(s) sélectionnée(s), minimum requis {$min}";
             }
             if ($max > 0 && $count > $max) {
-                $error_details[] = "• <strong>" . htmlspecialchars($title) . "</strong> : vous avez sélectionné {$count} option(s), mais le maximum autorisé est {$max}";
+                $error_details[] = "« {$title} » : {$count} option(s) sélectionnée(s), maximum autorisé {$max}";
             }
         }
         
         if (!empty($error_details)) {
-            $error_msg = "<strong>Veuillez corriger les questions d'orientation suivantes :</strong><br><br>" . implode("<br>", $error_details);
+            $error_msg = "Veuillez compléter correctement les questions d'orientation suivantes — " . implode(" ; ", $error_details) . ".";
         } else {
             $error_msg = "Merci de compléter correctement toutes les questions d'orientation.";
         }
@@ -1426,7 +1426,7 @@ body.candidate-portal .container-xxl{
   box-shadow:0 8px 32px rgba(15,23,42,.08), 0 1px 0 rgba(255,255,255,.6) inset;
 }
 .q-card{padding:20px 22px;display:flex;flex-direction:column;height:auto;max-height:none;overflow:hidden}
-#qHost{flex:1;min-height:0;overflow:hidden;padding-right:0}
+#qHost{flex:1;min-height:0;overflow-y:auto;padding-right:2px}
 .glass .text-muted{color:#64748b !important}
 
 /* ── Top bar ── */
@@ -1562,7 +1562,7 @@ body.candidate-portal .container-xxl{
 
 /* ── Question card ── */
 .q-label{font-size:1.32rem;font-weight:700;line-height:1.45;margin:4px 0 14px;color:#0f172a}
-.q-layout{display:grid;grid-template-columns:46% 54%;gap:20px;align-items:stretch;flex:1;min-height:0;overflow:hidden}
+.q-layout{display:grid;grid-template-columns:46% 54%;gap:20px;align-items:stretch;flex:1;min-height:0;overflow:visible}
 .quiz-form__ans{
   display:flex;align-items:flex-start;gap:.65rem;
   margin:8px 0;border:1.5px solid #e2e8f0;border-radius:14px;
@@ -1598,8 +1598,8 @@ body.candidate-portal .container-xxl{
 
 .ref-badge{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-weight:600;font-size:.8rem;margin-left:.4rem;border-radius:8px;padding:.2rem .5rem}
 #qHost .q-item{display:none}
-#qHost .q-item.is-visible{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
-.q-left{min-width:0;overflow:hidden}
+#qHost .q-item.is-visible{display:flex;flex-direction:column;min-height:100%;overflow:visible}
+.q-left{min-width:0;overflow:visible}
 .q-right{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:visible;gap:8px}
 .q-right .contImage{flex:1 1 auto;min-height:0}
 .exit-modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:9999}
@@ -1865,9 +1865,10 @@ body.candidate-portal .container-xxl{
                 <button type="submit" class="btn btn-secondary" name="save">Sauvegarder</button>
                 <?php if($catchupMode): ?>
                   <button type="submit" class="btn btn-primary" name="valid_catchup">Terminer le rattrapage ›</button>
-                <?php elseif($modeOrientationOnly): ?>
-                  <button type="submit" class="btn btn-primary" name="valid_orientation">Valider mes préférences ›</button>
                 <?php else: ?>
+                  <?php /* #btnNext est piloté par le JS : navigation Suivant, puis "Valider mes préférences" sur la dernière étape
+                           (finishSubmitName() soumet valid_orientation en mode orientation-only). Toujours rendu pour garder
+                           une navigation Précédent/Suivant cohérente, y compris pendant le temps supplémentaire d'orientation. */ ?>
                   <button type="button" class="btn btn-primary" id="btnNext">Suivant ›</button>
                 <?php endif; ?>
               <?php else: ?>
