@@ -1,5 +1,10 @@
 <?php
 session_start();
+// Réponses AJAX (POST) : JSON strict — aucune sortie parasite (warnings/deprecated) ne doit corrompre le corps.
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    @ini_set('display_errors', '0');
+    ob_start();
+}
 require "../sendMail.php";
 include_once "./includes/language.php";
 require_once "../../vendor/autoload.php";
@@ -36,6 +41,7 @@ class MongoDBConnection {
     public function jsonResponse($success, $message, $redirect = null) {
         $response = ['success' => $success, 'message' => $message];
         if ($redirect) $response['redirect'] = $redirect;
+        while (ob_get_level() > 0) { @ob_end_clean(); } // purge toute sortie parasite (warnings) avant le JSON
         header('Content-Type: application/json');
         echo json_encode($response);
         exit();
@@ -109,6 +115,7 @@ class QuizValidator {
         }
     }
     private static function jsonError($message) {
+        while (ob_get_level() > 0) { @ob_end_clean(); } // purge toute sortie parasite avant le JSON
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => $message]);
         exit();
