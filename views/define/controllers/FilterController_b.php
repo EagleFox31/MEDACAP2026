@@ -3,6 +3,8 @@
 
 use MongoDB\Model\BSONDocument;
 
+require_once __DIR__ . '/../../../core/mongo_compat.php';
+
 /**
  * Interface pour les filtres
  * Définit le contrat de base pour tous les filtres
@@ -1006,9 +1008,9 @@ class FilterSystem
         );
 
         try {
-            $stats['juniorCount'] = $this->database->users->countDocuments(array_merge($baseQuery, array('level' => 'Junior')));
-            $stats['seniorCount'] = $this->database->users->countDocuments(array_merge($baseQuery, array('level' => 'Senior')));
-            $stats['expertCount'] = $this->database->users->countDocuments(array_merge($baseQuery, array('level' => 'Expert')));
+            $stats['juniorCount'] = medacapCountDocuments($this->database->users, array_merge($baseQuery, array('level' => 'Junior')));
+            $stats['seniorCount'] = medacapCountDocuments($this->database->users, array_merge($baseQuery, array('level' => 'Senior')));
+            $stats['expertCount'] = medacapCountDocuments($this->database->users, array_merge($baseQuery, array('level' => 'Expert')));
         } catch (\Exception $e) {
             error_log("Erreur FilterSystem::getLevelStats: " . $e->getMessage());
         }

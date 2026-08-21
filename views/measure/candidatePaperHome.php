@@ -20,6 +20,7 @@ setPageBackground("bg-dashboard");
 if (!isset($_SESSION["id"])) { header("Location: ../../"); exit(); }
 
 require_once "../../vendor/autoload.php";
+require_once __DIR__ . '/../../core/mongo_compat.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
@@ -297,7 +298,7 @@ foreach ($paperList as $paper) {
       $oid = ($x instanceof ObjectId) ? $x : (is_array($x) && isset($x['$oid']) ? to_oid((string)$x['$oid']) : (is_string($x) ? to_oid($x) : null));
       if ($oid) $ids[] = $oid;
     }
-    $qTotal = $ids ? $questions->countDocuments(['_id'=>['$in'=>$ids],'active'=>true]) : 0;
+    $qTotal = $ids ? medacapCountDocuments($questions, ['_id'=>['$in'=>$ids],'active'=>true]) : 0;
   }
 
   $examActive  = $exams->findOne(['user'=>$userOid,'paper'=>$pOid,'active'=>true]);
@@ -453,26 +454,15 @@ include_once "partials/header.php";
 <title>Évaluations Connaissances — Candidat | CFAO Mobility Academy</title>
 
 <style>
-/* ── Base ── */
+/* ── Base (fond géré par .cand-viewport-bg dans candidateHeader) ── */
 .eval-candidate-home.page-background-container {
-  min-height: calc(100vh - 175px);
-  height: auto;
-  max-height: none;
+  background: transparent !important;
   overflow: visible;
-}
-.eval-candidate-home .page-background-overlay {
-  filter: blur(4px);
-  -webkit-filter: blur(4px);
-  transform: scale(1.02);
-}
-.eval-candidate-home .page-background-overlay.with-gradient {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.04)), var(--bg-image-url);
+  border-radius: 0;
 }
 .eval-candidate-home .page-content-container {
-  height: auto;
-  max-height: none;
   overflow: visible;
-  padding: 1.75rem 1.25rem 1.5rem;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -531,7 +521,7 @@ body, .eval-page {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 /* ── Eval card ── */
@@ -575,7 +565,7 @@ body, .eval-page {
 .sp-success { background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; }
 
 /* ── Card body ── */
-.card-body-inner { padding: 14px 18px 14px; }
+.card-body-inner { padding: 14px 18px 18px; }
 
 /* Stats row */
 .stats-row {

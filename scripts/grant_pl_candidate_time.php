@@ -11,6 +11,7 @@
  *   --max-bonus-minutes=105       (défaut: plafond 1 h 45)
  */
 require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../core/mongo_compat.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
@@ -125,7 +126,7 @@ function resolve_q_total($paper, $questions): int
     if (empty($ids)) {
         return 0;
     }
-    return (int)$questions->countDocuments(['_id' => ['$in' => $ids], 'active' => true]);
+    return (int)medacapCountDocuments($questions, ['_id' => ['$in' => $ids], 'active' => true]);
 }
 
 function pick_exam($db, $userOid, $paperOid)

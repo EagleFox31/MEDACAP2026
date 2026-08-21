@@ -1,6 +1,7 @@
 <?php
 require_once "../../vendor/autoload.php";
 require_once __DIR__ . "/ScoreFunctions.php"; // Assurez-vous que ce chemin est correct
+require_once __DIR__ . '/../../core/mongo_compat.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
@@ -231,7 +232,7 @@ class TechnicianService {
             'users'    => $technicianObjId,
             'brand'    => ['$ne' => '']
         ];
-        return $this->trainingsColl->countDocuments($query);
+        return medacapCountDocuments($this->trainingsColl, $query);
     }
 
     /**
@@ -249,7 +250,7 @@ class TechnicianService {
             'users'  => $technicianObjId,
             'brand'  => ['$ne' => '']
         ];
-        return $this->trainingsColl->countDocuments($query);
+        return medacapCountDocuments($this->trainingsColl, $query);
     }
 
     /**
