@@ -7,6 +7,8 @@
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 
+require_once __DIR__ . '/../../../core/mongo_compat.php';
+
 function allocationProgression_isTechnicianLevelComplete(Collection $allocations, ObjectId $userId, string $level): bool
 {
     $factuel = $allocations->findOne([
@@ -53,7 +55,7 @@ function allocationProgression_tryUnlockNextLevel(Collection $allocations, Objec
         return null;
     }
 
-    $hasNext = $allocations->countDocuments([
+    $hasNext = medacapCountDocuments($allocations, [
         'user' => $userId,
         'level' => $nextLevel,
     ]);

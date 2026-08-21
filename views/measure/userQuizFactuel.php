@@ -1,9 +1,45 @@
 <?php
 session_start();
+// Réponses AJAX (POST) : JSON strict — aucune sortie parasite (warnings/deprecated) ne doit corrompre le corps.
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    @ini_set('display_errors', '0');
+    ob_start();
+    register_shutdown_function(function () {
+        $error = error_get_last();
+        if (!$error || !in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+            return;
+        }
+        $detail = sprintf(
+            'FATAL type=%d %s @ %s:%d',
+            $error['type'],
+            $error['message'],
+            $error['file'],
+            $error['line']
+        );
+        error_log('[quizFactuel] action=' . ($_POST['action'] ?? '?')
+            . ' user=' . ($_GET['id'] ?? '?')
+            . ' test=' . ($_GET['test'] ?? '?')
+            . ' level=' . ($_GET['level'] ?? '?')
+            . ' | ' . $detail);
+        while (ob_get_level() > 0) {
+            @ob_end_clean();
+        }
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+        }
+        $message = 'Server error during submission';
+        if (filter_var($_GET['debug'] ?? '0', FILTER_VALIDATE_BOOLEAN)) {
+            $message .= ' — ' . $detail;
+        }
+        echo json_encode(['success' => false, 'message' => $message]);
+    });
+}
 require "../sendMail.php";
 include_once "./includes/language.php";
 require_once "../../vendor/autoload.php";
 require_once "./components/ui/quiz.php";
+require_once __DIR__ . '/../../core/mongo_compat.php';
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 class MongoDBConnection {
@@ -32,11 +68,19 @@ class MongoDBConnection {
     public function getClient() {
         return $this->client;
     }
-    public function jsonResponse($success, $message) {
+    public function jsonResponse($success, $message, $redirect = null) {
+        $response = ['success' => $success, 'message' => $message];
+        if ($redirect) {
+            $response['redirect'] = $redirect;
+        }
+        while (ob_get_level() > 0) { @ob_end_clean(); }
         header('Content-Type: application/json');
-        echo json_encode(['success' => $success, 'message' => $message]);
+        echo json_encode($response);
         exit();
     }
+}
+function quizFactuelDescribeThrowable(Throwable $e) {
+    return get_class($e) . ': ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine();
 }
 class QuizConstants {
     public static $SPECIALTIES = [
@@ -109,6 +153,7 @@ class QuizValidator {
         }
     }
     private static function jsonError($message) {
+        while (ob_get_level() > 0) { @ob_end_clean(); }
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => $message]);
         exit();
@@ -215,7 +260,7 @@ class QuizQuestionGenerator {
     public function generate() {
         $exam = $this->userData['exam'] ?? null;
         $allQuestions = $exam ? $this->fromExam($exam) : $this->generateNew($this->userData['test']);
-        if (!$exam && !empty($allQuestions)) {
+        if (!$exam && !empty($allQuestions) && (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET')) {
             $this->insertExam($allQuestions, $this->userData['test']);
         }
         return $allQuestions;
@@ -455,34 +500,42 @@ class QuizResultProcessor {
         return $totalScore;
     }
     private function processSpecialtyResult($specName, $questionsTag, $userAnswers) {
-        $questionsColl = $this->db->getCollection('questions');
         $quizzesColl = $this->db->getCollection('quizzes');
+        $resultsColl = $this->db->getCollection('results');
         $specQs = [];
         $specAns = [];
         $score = 0;
-        foreach ($questionsTag as $idx => $qId) {
-            $question = $questionsColl->findOne(['_id' => new ObjectId($qId), 'active' => true]);
-            if ($question && $question['speciality'] === $specName) {
-                $correct = strtolower(trim($userAnswers[$idx])) === strtolower(trim($question['answer']));
-                $score += $correct ? 1 : 0;
-                $specQs[] = new ObjectId($question['_id']);
-                $specAns[] = $correct ? 'Maitrisé' : 'Non maitrisé';
+        foreach ($this->allQuestions as $idx => $item) {
+            if (($item['specialty'] ?? '') !== $specName) {
+                continue;
             }
+            $question = $item['question'];
+            $userVal = isset($userAnswers[$idx]) ? $userAnswers[$idx] : 'null';
+            $expected = isset($question['answer']) ? (string) $question['answer'] : '';
+            $correct = ($userVal !== 'null')
+                && (strtolower(trim((string) $userVal)) === strtolower(trim($expected)));
+            $score += $correct ? 1 : 0;
+            $specQs[] = new ObjectId($question['_id']);
+            $specAns[] = $correct ? 'Maitrisé' : 'Non maitrisé';
         }
-        if (empty($specQs)) return null;
+        if (empty($specQs)) {
+            return null;
+        }
         $quiz = $quizzesColl->findOne([
             'speciality' => $specName,
             'type' => 'Factuel',
             'level' => $this->level,
             'active' => true
         ]);
-        if (!$quiz) return null;
-        $existing = $this->db->getCollection('results')->find([
+        if (!$quiz) {
+            return null;
+        }
+        $numberTest = medacapCountDocuments($resultsColl, [
             'user' => new ObjectId($this->userId),
             'speciality' => $specName,
             'type' => 'Factuel',
             'level' => $this->level
-        ])->toArray();
+        ]) + 1;
         return [
             'questions' => $specQs,
             'answers' => $specAns,
@@ -493,19 +546,19 @@ class QuizResultProcessor {
             'level' => $this->level,
             'type' => 'Factuel',
             'total' => count($specQs),
-            'numberTest' => count($existing) + 1,
+            'numberTest' => $numberTest,
             'time' => $_POST['timer'] ?? '00:00:00',
             'active' => true,
             'created' => date('d-m-Y H:i:s')
         ];
     }
     private function buildGlobalResult($questionsTag, $userAnswers, $totalScore) {
-        $existing = $this->db->getCollection('results')->find([
+        $numberTest = medacapCountDocuments($this->db->getCollection('results'), [
             'user' => new ObjectId($this->userId),
             'test' => new ObjectId($this->testId),
             'type' => 'Factuel',
             'level' => $this->level
-        ])->toArray();
+        ]) + 1;
         $user = $this->userData['user'];
         $mastered = $totalScore === count($questionsTag);
         return [
@@ -520,7 +573,7 @@ class QuizResultProcessor {
             'subsidiary' => $user['subsidiary'],
             'typeR' => 'Technicien',
             'total' => count($questionsTag),
-            'numberTest' => count($existing) + 1,
+            'numberTest' => $numberTest,
             'time' => $_POST['timer'] ?? '00:00:00',
             'active' => true,
             'created' => date('d-m-Y H:i:s')
@@ -586,44 +639,84 @@ class QuizPostHandler {
                 $exams->insertOne($examData);
             }
             $this->jsonResponse(true, 'Saved successfully');
-        } catch (Exception $e) {
-            error_log("Save error: " . $e->getMessage());
-            $this->jsonResponse(true, 'Saved successfully');
+        } catch (Throwable $e) {
+            $detail = quizFactuelDescribeThrowable($e);
+            error_log('[quizFactuel] Save error: user=' . $this->userId
+                . ' test=' . $this->testId
+                . ' level=' . $this->level
+                . ' | ' . $detail);
+            $message = 'Enregistrement impossible';
+            if (filter_var($_GET['debug'] ?? '0', FILTER_VALIDATE_BOOLEAN)) {
+                $message .= ' — ' . $detail;
+            }
+            $this->jsonResponse(false, $message);
         }
     }
     private function submit($totalQs) {
+        @set_time_limit(180);
+        $answeredCount = 0;
         try {
             $answers = json_decode($_POST['answers'] ?? '{}', true);
-            if (!is_array($answers)) throw new Exception('Invalid answers');
+            if (!is_array($answers)) {
+                throw new Exception('Invalid answers');
+            }
             $userAns = [];
             for ($i = 1; $i <= $totalQs; $i++) {
                 $userAns[] = $answers[$i] ?? 'null';
             }
-            
+
             $answeredCount = count(array_filter($userAns, function($a) { return $a !== 'null'; }));
-            
+
             if ($answeredCount <= 1) {
-                 throw new Exception('Vous devez répondre à au moins 2 questions pour pouvoir finaliser.');
+                $this->jsonResponse(false, 'Vous devez répondre à au moins 2 questions pour pouvoir finaliser.');
             }
 
             $this->resultProcessor->process($userAns);
-            $alloc = $this->db->getCollection('allocations');
-            $allocData = $alloc->findOne(['user' => new ObjectId($this->userId), 'test' => new ObjectId($this->testId)]);
-            if ($allocData) {
-                $alloc->updateOne(['_id' => $allocData['_id']], ['$set' => ['active' => true]]);
-                require_once __DIR__ . '/includes/allocation_progression.php';
-                allocationProgression_tryUnlockNextLevel($alloc, new ObjectId($this->userId), $this->level);
+
+            try {
+                $alloc = $this->db->getCollection('allocations');
+                $allocData = $alloc->findOne(['user' => new ObjectId($this->userId), 'test' => new ObjectId($this->testId)]);
+                if ($allocData) {
+                    $alloc->updateOne(['_id' => $allocData['_id']], ['$set' => ['active' => true]]);
+                    require_once __DIR__ . '/includes/allocation_progression.php';
+                    allocationProgression_tryUnlockNextLevel($alloc, new ObjectId($this->userId), $this->level);
+                }
+            } catch (Throwable $e) {
+                error_log('[quizFactuel] Allocation update error: ' . quizFactuelDescribeThrowable($e));
             }
+
             $exam = $this->userData['exam'] ?? null;
-            if ($exam) {
-                $this->db->getCollection('exams')->updateOne(['_id' => $exam['_id']], ['$set' => ['active' => false]]);
+            $examsColl = $this->db->getCollection('exams');
+            if ($exam && isset($exam['_id'])) {
+                $examsColl->updateOne(['_id' => $exam['_id']], ['$set' => ['active' => false]]);
             }
-            $this->sendNotification();
-        } catch (Exception $e) {
-//            error_log("Submit error: " . $e->getMessage());
+            $examsColl->updateMany(
+                ['user' => new ObjectId($this->userId), 'test' => new ObjectId($this->testId), 'active' => true],
+                ['$set' => ['active' => false]]
+            );
+
+            try {
+                $this->sendNotification();
+            } catch (Throwable $e) {
+                error_log('[quizFactuel] Notification error: ' . quizFactuelDescribeThrowable($e));
+            }
+
+            $percent = $totalQs > 0 ? round(($answeredCount / $totalQs) * 100) : 0;
+            $this->jsonResponse(true, 'Evaluation completed', './congrat?p=' . $percent);
+        } catch (Throwable $e) {
+            $detail = quizFactuelDescribeThrowable($e);
+            error_log('[quizFactuel] Submit error: user=' . $this->userId
+                . ' test=' . $this->testId
+                . ' level=' . $this->level
+                . ' answered=' . $answeredCount . '/' . $totalQs
+                . ' | ' . $detail);
+            error_log('[quizFactuel] Submit trace: ' . $e->getTraceAsString());
+            $message = 'Server error during submission';
+            if (filter_var($_GET['debug'] ?? '0', FILTER_VALIDATE_BOOLEAN)) {
+                $message .= ' — ' . $detail;
+            }
+            $this->jsonResponse(false, $message);
         }
-        $percent = $totalQs > 0 ? round(($answeredCount / $totalQs) * 100) : 0;
-        $this->jsonResponse(true, 'Evaluation completed', './congrat?p=' . $percent);
     }
     private function buildQuizIds() {
         $quizIds = [];
@@ -652,9 +745,13 @@ class QuizPostHandler {
         $admins = getAdminsDocs($tech, $client);
         if (!$admins) return;
         $mgrEmail = $manager['email'] ?? '';
-        $rhEmails = getRhAndDpsEmails($tech['subsidiary'], $client);
+        $subsidiary = isset($tech['subsidiary']) ? (string) $tech['subsidiary'] : '';
+        if ($subsidiary === '') {
+            error_log('[quizFactuel] Notification skipped: user=' . ($this->userId ?? '?') . ' sans subsidiary');
+        }
+        $rhEmails = getRhAndDpsEmails($subsidiary, $client);
         $salut = buildAdminSalutation($admins);
-        $isRwanda = $tech['subsidiary'] === 'CFAO MOTORS RWANDA';
+        $isRwanda = $subsidiary === 'CFAO MOTORS RWANDA';
         if ($isRwanda) {
             $subject = sprintf('Knowledge MCQ completed by Technician %s %s for Level %s', $tech['firstName'], $tech['lastName'], $this->level);
             $body = sprintf('<p>%s</p><p>The Knowledge MCQ has been completed by technician <strong>%s %s</strong> for level <strong>%s</strong>. You can view their result in the <em>Technician Results by Level</em> section of the MEDACAP platform.</p>', $salut, htmlspecialchars($tech['firstName']), htmlspecialchars($tech['lastName']), htmlspecialchars($this->level));
@@ -666,7 +763,10 @@ class QuizPostHandler {
     }
     private function jsonResponse($success, $message, $redirect = null) {
         $resp = ['success' => $success, 'message' => $message];
-        if ($redirect) $resp['redirect'] = $redirect;
+        if ($redirect) {
+            $resp['redirect'] = $redirect;
+        }
+        while (ob_get_level() > 0) { @ob_end_clean(); }
         header('Content-Type: application/json');
         echo json_encode($resp);
         exit();
@@ -675,7 +775,7 @@ class QuizPostHandler {
 // Bootstrap
 QuizValidator::validateSession();
 $params = [
-    'id' => $_GET['id'] ?? '',
+    'id' => $_GET['id'] ?? ($_SESSION['id'] ?? ''),
     'level' => $_GET['level'] ?? '',
     'test' => $_GET['test'] ?? '',
     'guide' => $_GET['guide'] ?? false,
