@@ -3,7 +3,11 @@
 Copie de travail pour faire tourner MEDACAP en PHP 8.4 et MongoDB 8.0, dans Docker. Les parcours utilisateurs n'ont pas été réécrits.
 
 Branche : `fix/quiz-factuel-countdocuments`  
-Dépôt : https://github.com/EagleFox31/MEDACAP2026
+Dépôt : https://github.com/EagleFox31/MEDACAP2026/tree/fix/quiz-factuel-countdocuments
+
+`MEDACAP-8.4` est un nom de dossier sur ce poste. Ce n'est pas un dépôt GitHub à part. Le code envoyé est cette branche du dépôt déjà existant.
+
+Ne sont pas sur GitHub : les caches, `scratch/`, les scripts jetables, le `.htaccess` local, et `scripts/fix_segolene_password.php` (mot de passe en clair).
 
 | Dossier | Rôle |
 |---|---|
