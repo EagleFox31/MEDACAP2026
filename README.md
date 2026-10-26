@@ -49,25 +49,64 @@ L'image ajoute `gd` et `zip`, exigés par PhpSpreadsheet 1.30. `error_reporting`
 
 Un classeur déjà mis en forme ne se rouvre pas avec PhpSpreadsheet. Le fichier `exports/suivi_qcm_techniciens_cm_2026-09-11-send.xlsx` se patche dans le zip.
 
-## Lancer
+## Démarrer sur une machine neuve (copie de travail uniquement)
 
-Depuis ce dossier, avec Docker en mode Linux :
+Prérequis : Docker Desktop (conteneurs **Linux**), Docker Compose V2, accès au dépôt privé, suffisamment d'espace disque et **une archive MongoDB 8.0 de test autorisée et préalablement validée**. Cette branche n'embarque aucune donnée utilisateur. Ne jamais diriger ce Compose vers le MongoDB WAMP / serveur de production.
 
 ```powershell
-docker compose up -d
+git clone https://github.com/EagleFox31/MEDACAP2026.git
+cd MEDACAP2026
+git switch --track origin/fix/quiz-factuel-countdocuments
+docker compose config --quiet
+docker compose up -d --build
+docker compose ps
+docker compose exec -T web php -r "require 'vendor/autoload.php'; echo 'Composer OK', PHP_EOL;"
 ```
+
+Le Dockerfile installe PHP 8.4, les extensions MongoDB, GD, ZIP et MBString, puis les **versions fixées par `composer.lock`** avec Composer 2 au moment de la construction. `vendor` est copié au démarrage dans le volume dédié `medacap84-vendor`; inutile d'installer Composer sous le PHP du WAMP. La création du site est possible sans données, **mais les parcours métier ne sont pas opérationnels tant que la copie `academy` n'est pas restaurée**.
+
+### Restaurer uniquement la copie de test
+
+Le fichier `C:\\chemin\\autorise\\academy-8.0.archive.gz` ci-dessous est **un exemple de chemin** : obtenir une archive validée de la base `academy` **au format `mongodump --archive --gzip`, compatible avec MongoDB 8.0**, depuis un stockage autorisé. Ne pas la verser dans Git ni inclure de données réelles non autorisées. La montée 4.2 → 8.0 s'effectue **sur une copie** selon `PLAN.md`, jamais directement sur la production.
+
+Avant toute restauration, vérifier que la base du conteneur est vide :
+
+```powershell
+docker compose exec -T mongo mongosh academy --quiet --eval "db.getCollectionNames().length"
+```
+
+**N'effectuer les commandes suivantes que si le résultat est `0`** et si l'archive est autorisée :
+
+```powershell
+docker compose cp "C:\\chemin\\autorise\\academy-8.0.archive.gz" mongo:/tmp/academy-8.0.archive.gz
+docker compose exec -T mongo mongorestore --gzip --archive=/tmp/academy-8.0.archive.gz --nsInclude="academy.*"
+docker compose exec -T mongo mongosh academy --quiet --eval "db.users.countDocuments({})"
+```
+
+Comparer les comptes de collections attendus à ceux du dump source. **Ne pas utiliser `--drop` sur une base existante**, ni toucher au port `27017` de l'hôte. Le stockage de la copie est le volume Docker `medacap84`, pas la base WAMP.
+
+### Accès et limites
 
 | Quoi | Où |
 |---|---|
-| Site | http://127.0.0.1:8084/ |
-| Mongo vu depuis le poste | `mongodb://127.0.0.1:27018`, base `academy` |
-| Mongo vu par PHP dans le conteneur | `mongodb://127.0.0.1:27017` |
+| Site de test | http://127.0.0.1:8084/ |
+| Mongo de la copie depuis le poste | `mongodb://127.0.0.1:27018`, base `academy` |
+| Mongo vu depuis PHP dans le conteneur | `mongodb://127.0.0.1:27017` |
+| Dépendances Composer | Volume `medacap84-vendor` |
+| État des tests de migration | `PLAN.md`, phase 5, vérifications locales rapportées le 23/10/2026 |
 
-Le conteneur web partage la pile réseau du conteneur mongo. Le port 27017 de l'hôte WAMP n'est pas publié par Compose. Ne pas faire pointer le conteneur vers `localhost:27017` de l'hôte.
+Le conteneur web partage la pile réseau de Mongo. Le `27017` de WAMP n'est pas publié. Les variables `MEDACAP_MONGO_URI` et `MEDACAP_PUBLIC_URL` sont configurées dans `docker-compose.yml`.
 
-Les variables du service web sont déjà dans `docker-compose.yml` : `MEDACAP_MONGO_URI=mongodb://127.0.0.1:27017` et `MEDACAP_PUBLIC_URL=http://127.0.0.1:8084`.
+La sauvegarde quotidienne cible `C:\\wamp64\\medacap-backups` sur le poste de référence. **Adapter explicitement ce chemin sur toute autre machine et vérifier la restauration d'essai** avant exploitation. Les quotas CPU/mémoire sont dans le Compose.
 
-Mongo et le conteneur de sauvegarde sont en `mongo:8.0`. Le contrôle de vie utilise `mongosh`. La sauvegarde quotidienne écrit dans `C:\wamp64\medacap-backups`. Les plafonds mémoire et CPU sont dans `docker-compose.yml`. Ne pas les monter sans noter pourquoi.
+### Tests à effectuer avant de proposer une fusion dans `main`
+
+1. Sur un clone neuf, vérifier la construction de l'image et la présence de `vendor/autoload.php`.
+2. Exécuter `php -l` sur `views/measure/userQuizFactuel.php` et ses deux fichiers `includes/quiz_validator.php` et `includes/quiz_factuel_engine.php`.
+3. Sur **la copie MongoDB uniquement**, tester l'ouverture, la sauvegarde et la finalisation d'un QCM factuel, puis comparer `exams`, `results` et `allocations` avant et après.
+4. Rejouer la liste de contrôle complète de `PLAN.md`. Tester SMTP et sauvegardes sur le serveur cible **avant** toute bascule.
+
+La présence des fichiers manquants dans Git ne constitue pas une preuve de réussite des tests métier. `main`, WAMP et le serveur de production sont inchangés tant que la PR reste en brouillon.
 
 ## Preuve déjà rejouée
 
