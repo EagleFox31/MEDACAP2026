@@ -22,6 +22,7 @@ if ($source -notmatch '\.archive\.gz$') {
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $remoteArchive = '/tmp/medacap84-' + [guid]::NewGuid().ToString('N') + '.archive.gz'
 
+$serviceId = ""
 Push-Location -LiteralPath $repoRoot
 try {
     # Refuser toute operation si la cible n'est pas le service Mongo local attendu.
@@ -51,7 +52,7 @@ try {
     }
 
     Write-Host "Restauration sur le service Docker local mongo uniquement..."
-    docker compose cp $source "mongo:$remote"
+    docker compose cp $source "mongo:$remoteArchive"
     if ($LASTEXITCODE -ne 0) { throw "Copie de l'archive vers le conteneur echouee." }
 
     # Ne jamais ajouter --drop ici. Une erreur laisse la copie a examiner.
