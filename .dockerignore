@@ -1,0 +1,7 @@
+# L'image n'a besoin que des manifests Composer et de l'entrypoint.
+# Le code de l'application reste monté explicitement par Docker Compose.
+**
+!composer.json
+!composer.lock
+!docker/
+!docker/entrypoint.sh
