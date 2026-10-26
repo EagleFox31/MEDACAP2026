@@ -69,6 +69,16 @@ Le Dockerfile installe PHP 8.4, les extensions MongoDB, GD, ZIP et MBString, pui
 
 Le fichier `C:\\chemin\\autorise\\academy-8.0.archive.gz` ci-dessous est **un exemple de chemin** : obtenir une archive validée de la base `academy` **au format `mongodump --archive --gzip`, compatible avec MongoDB 8.0**, depuis un stockage autorisé. Ne pas la verser dans Git ni inclure de données réelles non autorisées. La montée 4.2 → 8.0 s'effectue **sur une copie** selon `PLAN.md`, jamais directement sur la production.
 
+**Méthode recommandée sur Windows (vérifications et restauration contrôlées) :**
+
+```powershell
+.\scripts\init-medacap84-copy.ps1 -Archive "C:\chemin\autorise\academy-8.0.archive.gz"
+```
+
+Ce script vérifie que le service Docker `mongo` publie seulement `127.0.0.1:27018`, contrôle que `academy` n'a aucune collection, importe l'archive dans le conteneur isolé et affiche un premier comptage. Il refuse de remplacer une base déjà remplie. **Ne pas exécuter ensuite la méthode manuelle ci-dessous pour la même archive.**
+
+**Méthode manuelle alternative (sans le script) :**
+
 Avant toute restauration, vérifier que la base du conteneur est vide :
 
 ```powershell
