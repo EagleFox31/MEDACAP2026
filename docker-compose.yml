@@ -34,7 +34,9 @@ services:
       - medacap84:/data/db
 
   web:
-    build: ./docker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     network_mode: "service:mongo"
     restart: on-failure:5
     environment:
@@ -58,6 +60,7 @@ services:
     volumes:
       - .:/var/www/html
       - medacap84-sessions:/var/lib/medacap/sessions
+      - medacap84-vendor:/var/www/html/vendor
 
   backup:
     image: mongo:8.0
@@ -85,3 +88,4 @@ services:
 volumes:
   medacap84:
   medacap84-sessions:
+  medacap84-vendor:
