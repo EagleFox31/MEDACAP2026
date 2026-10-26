@@ -1,149 +1,102 @@
-# MEDACAP 8.4 — plan de refonte
+# MEDACAP 8.4
 
-Dossier de travail de la refonte. La copie gelée du 23 octobre 2026 est `C:\wamp64\www\MEDACAP-sauvegarde-20261023` (version **2.9.4**). Le site WAMP actuel reste `C:\wamp64\www\MEDACAP` et continue d'être déployé tel quel vers le disque `Y:` jusqu'à la bascule.
+Copie de travail pour faire tourner MEDACAP en PHP 8.4 et MongoDB 8.0, dans Docker. Les parcours utilisateurs n'ont pas été réécrits.
 
-Standard de conception : **RAIDER**. Chaque phase lit l'état courant, calcule l'état voulu, et n'écrit que l'écart. Un second passage sur un état déjà conforme ne réécrit rien.
+Branche : `fix/quiz-factuel-countdocuments`  
+Dépôt : https://github.com/EagleFox31/MEDACAP2026
 
-## État de départ
-
-| Élément | Aujourd'hui |
+| Dossier | Rôle |
 |---|---|
-| PHP visé en production | 7.3 |
-| PHP du WAMP local | 7.4.33 |
-| MongoDB | 4.2, base `academy` |
-| Bibliothèque `mongodb/mongodb` | 1.0.0 |
-| PhpSpreadsheet | 1.25.2 |
-| Hébergement | fichiers PHP sur Windows, Apache du WAMP |
-| Code | environ 670 fichiers PHP, 380 000 lignes, hors `vendor` et `scratch` |
+| `C:\wamp64\www\MEDACAP-8.4` | Cette copie. C'est ici qu'on modifie. |
+| `C:\wamp64\www\MEDACAP` | Arborescence WAMP d'origine. PHP 7.3 visé, lib MongoDB 1.0.0. |
+| `C:\wamp64\www\MEDACAP-sauvegarde-20261023` | Copie gelée du 23 octobre 2026, version 2.9.4. Ne pas modifier. |
 
-`php -l` ne voit pas les incompatibilités 7.3 vers 8.4. Une page ne compte comme vérifiée que si elle a été ouverte et parcourue.
+Le détail des phases est dans `PLAN.md`.
 
-## État voulu
+## Ce qui a changé
 
-Deux conteneurs Linux, le même Compose sur la machine de travail et sur le serveur Windows Server 2022. Les deux moteurs Docker sont déjà Linux via WSL.
+| | Avant | Cible | Fait dans ce dossier |
+|---|---|---|---|
+| Application | PHP 7.3, Apache du WAMP, fichiers copiés | PHP 8.4 | PHP 8.4.27, image `php:8.4-apache` |
+| Base | MongoDB 4.2, base `academy` | MongoDB 8.0, montée un cran à la fois | MongoDB 8.0.34, compatibilité 8.0, volume `medacap84` |
+| Bibliothèque MongoDB | `mongodb/mongodb` 1.0.0 | 1.21, pas la 2.x | 1.21.5, extension 1.21.0 |
+| Excel | PhpSpreadsheet 1.25.2 | 1.30.x, pas la 2.x | 1.30.7 |
+| Adresse de la base et URL publique | Écrites dans les pages | Une seule lecture | `core/medacap_config.php` |
+| Hébergement | Copie de fichiers | Le même Compose sur Windows Server 2022 | Compose prêt sur ce poste. Le serveur 2022 n'est pas ouvert. |
+| Courrier | Relais `smtp.cfao.corp:25` | Joignable depuis le conteneur du serveur | Corps en quoted-printable. Relais pas encore vérifié. |
 
-| Service | Image |
-|---|---|
-| Application | `php:8.4-apache` |
-| Base | `mongo:8.0` |
+La base du conteneur est une copie. L'hôte `mongodb://localhost:27017` et `mongodb://10.68.0.7:27017` n'ont pas été montés de version.
 
-Apache conserve les `.htaccess`. Les variables portent le contexte :
+## Code
 
-- `MEDACAP_MONGO_URI`
-- `MEDACAP_PUBLIC_URL`
-- relais SMTP (`smtp.cfao.corp`, port 25, expéditeur `helpdeskcm@cfao.com`)
+`core/medacap_config.php` est le seul `getenv`.
 
-Sans ces variables, l'application continue de parler à `mongodb://localhost:27017`. Le WAMP local ne doit pas casser pendant la refonte.
+- `medacapMongoUri()` lit `MEDACAP_MONGO_URI`. Sans variable, le défaut reste `mongodb://localhost:27017`. Les scripts qui pointaient la prod gardent `mongodb://10.68.0.7:27017` quand la variable est vide.
+- `medacapPublicUrl()` lit `MEDACAP_PUBLIC_URL`.
+- `medacapAppBaseUrl($country)` renvoie cette URL si elle est posée. Sinon, Cameroun reste `http://10.68.0.7/medacap/`, le reste `http://129.0.64.34/medacap`.
 
-## Décisions
+Les pages, Commercial, cronjobs, `core/`, concours et `scripts/` passent par là. `scratch/` et les PHP à la racine du dépôt gardent une adresse en dur.
 
-| Besoin | Choix | Décision |
-|---|---|---|
-| PHP 8.4 et Apache | image officielle `php:8.4-apache` | Adopt |
-| MongoDB 8.0 | image officielle `mongo:8.0` | Adopt |
-| Montée 4.2 vers 8.0 | paliers officiels, un cran à la fois | Adopt |
-| Câblage MEDACAP | Compose, variables, `.htaccess` | Adapt |
-| Image PHP Windows ou orchestrateur maison | — | Build écarté |
-| Bibliothèque MongoDB 2.x | — | hors de ce chantier |
-| PhpSpreadsheet 2.x | — | hors de ce chantier |
+`core/mongo_compat.php` et `medacapCountDocuments()` restent le seul chemin de comptage. Ne pas appeler `countDocuments()` directement dans une page. Autour du driver : `catch (Throwable)`, pas seulement `Exception`.
 
-La bibliothèque PHP MongoDB passe en **1.21**, avec l'extension **1.21**. Cette branche parle à MongoDB 4.2 et à MongoDB 8.0, et `Collection::count()` y existe encore. PhpSpreadsheet passe en **1.29.2** ou **1.30.x**, le premier niveau qui accepte PHP 8.4.
+`composer.json` fixe `mongodb/mongodb` 1.21.5 et `phpoffice/phpspreadsheet` 1.30.7. Composer se lance dans le conteneur web. Le PHP 7.4 du WAMP ne charge plus ce `vendor`.
 
-Le processeur du serveur doit exposer AVX. MongoDB 5.0 et les suivantes refusent de démarrer sans.
+L'image ajoute `gd` et `zip`, exigés par PhpSpreadsheet 1.30. `error_reporting` est `E_ALL`. Le tampon de sortie est à 4096, parce que `index.php` envoie du HTML avant la redirection de connexion. Les liens `./quiz?...` sans `.php` sont réécrits vers le fichier PHP.
 
-## Ordre des travaux
+Un classeur déjà mis en forme ne se rouvre pas avec PhpSpreadsheet. Le fichier `exports/suivi_qcm_techniciens_cm_2026-09-11-send.xlsx` se patche dans le zip.
 
-### 1. Compose
+## Lancer
 
-Créer le Compose dans ce dossier. L'application monte le code de `MEDACAP-8.4`. La base monte un volume neuf, alimenté plus tard par une copie de `academy`, jamais par l'instance de production.
+Depuis ce dossier, avec Docker en mode Linux :
 
-Vérifier `docker info --format "{{.OSType}}"`. La valeur attendue est `linux`.
-
-Extensions PHP à prévoir dans l'image : `mongodb` 1.21, `gd`, `zip`, `mbstring`, `xml`.
-
-### 2. Une seule lecture de la configuration
-
-Les pages ouvrent aujourd'hui `new MongoDB\Client("mongodb://localhost:27017")`, et plusieurs scripts pointent en dur vers `mongodb://10.68.0.7:27017`. Les adresses `10.68.0.7` et `129.0.64.34` sont aussi écrites dans les liens de mail.
-
-Remplacer ces ouvertures par un point unique qui lit `MEDACAP_MONGO_URI` et `MEDACAP_PUBLIC_URL`, avec les valeurs actuelles comme défaut. Un fichier déjà migré ne change plus au second passage.
-
-### 3. Dépendances
-
-Dans ce dossier seulement :
-
-- `mongodb/mongodb` 1.21
-- `phpoffice/phpspreadsheet` 1.29.2 ou 1.30.x
-- image PHP avec l'extension MongoDB 1.21
-
-Garder `core/mongo_compat.php` et `medacapCountDocuments()`. Ne pas introduire d'appel direct à `countDocuments()` dispersé dans les pages.
-
-### 4. Faire tourner le PHP 8.4
-
-Ouvrir les parcours et corriger ce qui casse à l'exécution. Les causes attendues sont un `null` passé à une fonction interne (`htmlspecialchars`, `strlen`, et équivalents) et un paramètre obligatoire placé après un paramètre optionnel.
-
-Ne pas réécrire le style des 670 fichiers. Ne pas introduire de syntaxe réservée à PHP 8 si le même fichier doit encore être lisible pendant la transition ; une fois ce dossier seul sur 8.4, la syntaxe 8.4 y est permise.
-
-### 5. Monter la base, sur une copie
-
-La production MongoDB 4.2 ne se met pas à jour sur place. La copie passe par chaque version, et `featureCompatibilityVersion` est aligné avant le cran suivant :
-
-`4.2 → 4.4 → 5.0 → 6.0 → 7.0 → 8.0`
-
-À chaque cran : lire la version, ne rien faire si elle est déjà la bonne, sinon remplacer le binaire, poser la compatibilité, puis rejouer la connexion, un QCM, un export Excel et un envoi de mail.
-
-Les index encore absents de `login_links` se créent sur la copie, puis sur la base définitive :
-
-```javascript
-db.login_links.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
-db.login_links.createIndex({ tokenHash: 1 })
+```powershell
+docker compose up -d
 ```
 
-### 6. Contrôles avant bascule
+| Quoi | Où |
+|---|---|
+| Site | http://127.0.0.1:8084/ |
+| Mongo vu depuis le poste | `mongodb://127.0.0.1:27018`, base `academy` |
+| Mongo vu par PHP dans le conteneur | `mongodb://127.0.0.1:27017` |
 
-- connexion par mot de passe ;
-- lien sans mot de passe : le GET affiche le bouton et ne consomme pas le jeton, le POST le consomme une fois, `session_regenerate_id(true)` ouvre la session ;
-- QCM factuel et déclaratif, déverrouillage Junior → Senior → Expert ;
-- mail en quoted-printable, sujet UTF-8, accents intacts ;
-- classeur d'envoi des techniciens patché dans le zip, sans repasser par PhpSpreadsheet ;
-- tableaux de bord Measure.
+Le conteneur web partage la pile réseau du conteneur mongo. Le port 27017 de l'hôte WAMP n'est pas publié par Compose. Ne pas faire pointer le conteneur vers `localhost:27017` de l'hôte.
 
-### 7. Bascule
+Les variables du service web sont déjà dans `docker-compose.yml` : `MEDACAP_MONGO_URI=mongodb://127.0.0.1:27017` et `MEDACAP_PUBLIC_URL=http://127.0.0.1:8084`.
 
-Le même Compose démarre sur le serveur 2022. Le conteneur doit joindre `smtp.cfao.corp:25`. L'URL publique suit le nouveau nom ou la nouvelle adresse, via `MEDACAP_PUBLIC_URL`.
+Mongo et le conteneur de sauvegarde sont en `mongo:8.0`. Le contrôle de vie utilise `mongosh`. La sauvegarde quotidienne écrit dans `C:\wamp64\medacap-backups`. Les plafonds mémoire et CPU sont dans `docker-compose.yml`. Ne pas les monter sans noter pourquoi.
 
-`deploy.ps1` reste le déploiement de l'ancienne arborescence tant que la bascule n'est pas faite. Après la bascule, le déploiement devient le Compose, pas une copie de fichiers PHP vers `Y:`.
+## Preuve déjà rejouée
 
-## Contrats à préserver
+Sur http://127.0.0.1:8084/ , sans envoyer de réponse de QCM. `exams` est resté à 1 562.
 
-- Comptes `demo` et `loadtestTag` exclus des statistiques de recrutement.
-- Alias `CAMEROON MOTORS INDUSTRIES` vers le nom stocké `CFAO MOBILITY CAMEROON`.
-- Mails : `views/sendMail.php`, expéditeur `helpdeskcm@cfao.com`. Les copies fixes actuelles restent un paramètre, pas une adresse en dur ajoutée dans un nouveau fichier.
-- Seuil d'alerte recrutement : 60 % de composés par épreuve, au franchissement seulement.
+Technicien Junior (question, case vide), Définir, évaluation manager, manager avec `test` vrai, candidat (chrono, QCM, questions de préférence), rapport RH (maîtrise et complétude), Exploiter, lien sans mot de passe, classeur d'envoi ouvert dans Excel. Déverrouillage : 73 conformes, 0 écart, sur 80 techniciens actifs.
+
+## Pas encore fait
+
+Poser ce Compose sur le Windows Server 2022, puis vérifier `smtp.cfao.corp` port 25 depuis le conteneur. L'adresse du serveur n'est pas dans le dépôt.
+
+## Volet client — mesure des compétences
+
+À ajouter. La mesure des compétences doit pouvoir être vue par client, pas seulement avec le vocabulaire CFAO.
+
+Kinross est le premier client. Il n'a que Toyota. Sur son interface, les termes parlent de Toyota, pas des autres marques.
+
+Les niveaux affichés chez lui sont G1, G2, G3 et G4. Le niveau Expert MEDACAP se coupe en deux :
+
+| Niveau client | Correspondance MEDACAP |
+|---|---|
+| G1 | Expert, sans outils de diagnostic |
+| G2 | Expert, avec outils de diagnostic |
+| G3 | Pas encore fixé |
+| G4 | Pas encore fixé |
+
+G3 et G4 ne sont pas encore rattachés à Junior ou à Senior. Ne pas inventer ce lien.
+
+## À ne pas casser
+
+- `"null"` dans `answers` n'est pas une réponse. Un examen manager incomplet ne se ferme pas.
 - Maîtrise /20 = bonnes réponses ÷ questions répondues × 20. Complétude /20 = bonnes réponses ÷ banque × 20.
-- Un examen manager incomplet ne se ferme pas. Le champ `total` est le nombre de réponses ; la chaîne `"null"` dans `answers` n'est pas une réponse.
-- Lien de connexion : jeton 32 octets, stocké en SHA-256, 30 minutes, usage unique, le GET de l'antivirus ne le consomme pas.
-
-## Leçons à ne pas réouvrir
-
-Il n'existe pas encore de `docs/engineering/lessons-learned.md`. L'ajouter dans ce dossier au premier correctif significatif de la refonte, avec la cause, pas seulement le symptôme.
-
-- `countDocuments()` n'existe pas sur `mongodb/mongodb` 1.0.0. L'appel a déjà cassé la soumission des QCM en production. Rester sur l'API 1.21 et sur le helper existant.
-- Un classeur Excel déjà mis en forme se corrompt s'il est rouvert par PhpSpreadsheet. Le correctif est le patch du zip. Monter la bibliothèque en 1.30 ne change pas cette règle.
-- Envoyer un script PHP à `php.exe` par un pipe PowerShell ré-encode le corps en Windows-1252. Les accents deviennent `?`. Le mail part d'un fichier PHP, en quoted-printable.
-- `catch (Exception)` laisse passer les `Error` de PHP 7. Autour du driver et des bibliothèques : `catch (Throwable)`, avec `error_log()` du détail. Un handler AJAX ne répond pas `success: true` depuis un `catch`.
-- Inclure `views/measure/includes/language.php` écrase la variable `$stats`.
-
-## Hors de ce chantier
-
-- Bibliothèque MongoDB 2.x et PhpSpreadsheet 2.x.
-- Réécriture des pages, du menu ou des droits.
-- Modification de la base de production actuelle.
-- Fermeture d'examens managers déjà ouverts.
-
-## Terminé quand
-
-- le Compose démarre sur la machine de travail et sur le serveur, avec `OSType` linux ;
-- une seconde mise en route ne réécrit ni les conteneurs convergents, ni un palier Mongo déjà atteint ;
-- les parcours de la section 6 passent sur PHP 8.4 et sur la copie MongoDB 8.0 ;
-- l'ancienne arborescence et la sauvegarde du 23 octobre 2026 sont encore là, non écrasées ;
-- les leçons ci-dessus sont dans `docs/engineering/lessons-learned.md`.
+- Alias `CAMEROON MOTORS INDUSTRIES`, nom stocké `CFAO MOBILITY CAMEROON`.
+- `views/measure/includes/language.php` écrase `$stats`. L'inclure en premier.
+- `background-manager.php` est dans `views/partials/`.
+- Comptes `demo` et `loadtestTag` hors des stats de recrutement.
