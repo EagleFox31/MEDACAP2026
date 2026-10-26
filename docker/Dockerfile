@@ -1,36 +1,40 @@
 FROM php:8.4-apache
 
+# PHP 8.4 + extensions utilisées par MEDACAP et PhpSpreadsheet 1.30.
 RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/debian.sources \
     && apt-get update \
-    && apt-get install -y --no-install-recommends libssl-dev pkg-config \
+    && apt-get install -y --no-install-recommends \
+       libssl-dev pkg-config libonig-dev \
+       libpng-dev libjpeg62-turbo-dev libfreetype6-dev libzip-dev \
     && pecl install mongodb-1.21.0 \
     && docker-php-ext-enable mongodb \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd zip mbstring \
     && a2enmod rewrite \
     && sed -ri 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
     && rm -rf /var/lib/apt/lists/*
 
-# PhpSpreadsheet 1.30 exige gd et zip. L'image officielle ne les active pas.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libpng-dev libjpeg62-turbo-dev libfreetype6-dev libzip-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip \
-    && rm -rf /var/lib/apt/lists/*
+# Les dépendances sont construites avec LE PHP qui exécute réellement MEDACAP.
+# Le volume vendor est initialisé depuis cette copie au premier démarrage.
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+WORKDIR /opt/medacap-deps
+COPY composer.json composer.lock ./
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install \
+        --no-dev --prefer-dist --no-interaction --no-progress \
+        --no-scripts --optimize-autoloader \
+    && sha256sum composer.lock | cut -d ' ' -f1 > vendor/.medacap-lock-sha
 
-# Le site envoie du HTML avant la redirection de connexion. Le WAMP tamponne
-# cette sortie. La bibliothèque MongoDB est en 1.21 : les dépréciations
-# de la 1.0.0 ne sont plus masquées.
+# Afficher les erreurs dans les logs, pas dans les réponses HTTP.
 RUN printf '%s\n' \
     'output_buffering=4096' \
-    'display_errors=On' \
+    'display_errors=Off' \
     'log_errors=On' \
     'error_reporting=E_ALL' \
     'date.timezone=Africa/Douala' \
     'session.save_path=/var/lib/medacap/sessions' \
     > /usr/local/etc/php/conf.d/medacap.ini
 
-# Le lien « Continuer » appelle /quiz sans .php. MultiViews échoue avec le
-# handler PHP de l'image officielle, donc on ajoute l'extension quand le fichier existe.
+# Les liens sans extension .php sont conservés.
 RUN printf '%s\n' \
     '<Directory /var/www/html>' \
     'AllowOverride All' \
@@ -42,6 +46,7 @@ RUN printf '%s\n' \
     > /etc/apache2/conf-available/medacap.conf \
     && a2enconf medacap
 
-COPY entrypoint.sh /usr/local/bin/medacap-entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/medacap-entrypoint.sh
 RUN chmod +x /usr/local/bin/medacap-entrypoint.sh
+WORKDIR /var/www/html
 ENTRYPOINT ["medacap-entrypoint.sh"]
