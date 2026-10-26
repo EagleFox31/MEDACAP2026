@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Corrige le compte "- MICHEL" (ligne Excel "MICHEL -" = prénom seul).
  * Usage: php scripts/fix_michel_incomplete_cm.php [--dry-run]
@@ -7,7 +8,7 @@ require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/includes/cfao_name_helpers.php';
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
-$client = new MongoDB\Client('mongodb://10.68.0.7:27017');
+$client = new MongoDB\Client(medacapMongoUri('mongodb://10.68.0.7:27017'));
 $users = $client->academy->users;
 
 $rawExcel = 'MICHEL -';

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require "../../vendor/autoload.php"; // Assurez-vous que le MongoDB PHP Driver est installé via Composer
 
 use MongoDB\Client;
@@ -31,7 +32,7 @@ function getTrainingStatistics() {
         // ------------------------------------------------------------------
         // 1) Connexion aux collections
         // ------------------------------------------------------------------
-        $client = new Client("mongodb://localhost:27017");
+        $client = new Client(medacapMongoUri());
         $database = $client->academy;
 
         $collectionManagers = $database->managersBySubsidiaryAgency;

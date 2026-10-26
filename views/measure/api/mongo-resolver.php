@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../../core/medacap_config.php';
+
 /**
  * Résolution MongoDB pour l’API portail.
  *
@@ -184,6 +186,16 @@ function portalApiWriteMongoUriCache(string $cacheKey, string $uri, int $ttlSeco
  */
 function portalApiResolveMongoUri(array $local = []): array
 {
+    $fromEnv = medacapEnvString('MEDACAP_MONGO_URI');
+    if ($fromEnv !== '') {
+        return [
+            'uri' => $fromEnv,
+            'source' => 'MEDACAP_MONGO_URI',
+            'env' => portalApiDetectEnv($local),
+            'probed' => false,
+        ];
+    }
+
     $explicit = trim((string) ($local['mongoUri'] ?? ''));
     if ($explicit !== '') {
         return [

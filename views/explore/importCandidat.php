@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Import candidats (stage) — minimal .xlsx (firstName,lastName)
  * - Rattache chaque candidat à un RH (obligatoire)
@@ -43,7 +44,9 @@ function only_alnum($s) {
 function build_username_base($first, $last) {
     $fn = strtolower(only_alnum(ascii_clean($first)));
     $ln = strtolower(only_alnum(ascii_clean($last)));
-    return $last;
+    if ($ln !== '') return $ln;
+    if ($fn !== '') return $fn;
+    return 'candidat';
 }
 function ensure_unique_username($usersCol, $base) {
     // on ajoute un suffixe numérique pour garantir l'unicité
@@ -63,17 +66,13 @@ function build_visible_password($lastName) {
     return '0000';
 }
 function medacap_link_for_country($country) {
-    // logique existante de tes pages (Cameroun vs autres) 
-    if ($country === 'Cameroun') {
-        return 'http://10.68.0.7/medacap/';
-    }
-    return 'http://129.0.64.34/medacap';
+    return medacapAppBaseUrl($country);
 }
 
 /* ----------------------------------------------------------
  * DB
  * -------------------------------------------------------- */
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 $users  = $db->users;
 
@@ -121,34 +120,41 @@ if (isset($_POST["submit"])) {
         // Vérif en-têtes
         $header = array_map('trim', array_map('strtolower', $data[0]));
         $idx = array_flip($header);
-        foreach (['firstname','lastname'] as $need) {
-            if (!isset($idx[$need])) throw new RuntimeException("Colonne requise absente : {$need}");
+        if (!isset($idx['firstname']) && !isset($idx['lastname'])) {
+            throw new RuntimeException("Au moins une colonne firstName ou lastName requise.");
         }
         unset($data[0]); // remove header
 
         $created = 0; $skipped = 0;
 
         foreach ($data as $rowNum => $row) {
-            $firstName = trim((string)($row[$idx['firstname']] ?? ''));
-            $lastName  = trim((string)($row[$idx['lastname']]  ?? ''));
+            $firstName = isset($idx['firstname']) ? trim((string)($row[$idx['firstname']] ?? '')) : '';
+            $lastName  = isset($idx['lastname']) ? trim((string)($row[$idx['lastname']] ?? '')) : '';
 
-            if ($firstName === '' || $lastName === '') {
-                $errors[] = "Ligne ".($rowNum+1).": prénom/nom manquant — ignorée.";
-                $skipped++; continue;
+            if ($firstName === '' && $lastName === '') {
+                continue;
+            }
+
+            if ($lastName === '' && $firstName !== '') {
+                $lastName = $firstName;
+                $firstName = '';
             }
 
             // Unicité "douce" : même prénom+nom+profil+subsidiary => on ignore
-            $exists = $users->findOne([
-                'firstName'  => ucfirst($firstName),
+            $match = [
                 'lastName'   => strtoupper($lastName),
                 'profile'    => 'Candidat',
                 'subsidiary' => FIXED_SUBSIDIARY,
                 'active'     => true
-            ]);
+            ];
+            if ($firstName !== '') {
+                $match['firstName'] = ucfirst($firstName);
+            }
+            $exists = $users->findOne($match);
 
             if ($exists) {
                 $skipped++; 
-                $errors[] = "Ligne ".($rowNum+1).": {$firstName} {$lastName} existe déjà — ignorée.";
+                $errors[] = "Ligne ".($rowNum+1).": " . trim($firstName . ' ' . $lastName) . " existe déjà — ignorée.";
                 continue;
             }
 

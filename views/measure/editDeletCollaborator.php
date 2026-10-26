@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -93,7 +94,7 @@ $brands = [
      ?>
 <?php
 require_once "../../vendor/autoload.php"; // Create connection
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 // Connecting in database
 $academy = $conn->academy; 
 // Connecting in collections

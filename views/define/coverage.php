@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // coverage.php
 
 // Activer l'affichage des erreurs (à désactiver en production)
@@ -22,7 +23,7 @@ if (!isset($_SESSION["profile"])) {
 
     // Connexion à MongoDB
     try {
-        $mongoClient = new MongoDB\Client("mongodb://localhost:27017");
+        $mongoClient = new MongoDB\Client(medacapMongoUri());
         $academy = $mongoClient->selectDatabase('academy'); // Assurez-vous que le nom de la base de données est correct
     } catch (MongoDB\Driver\Exception\Exception $e) {
         die("Erreur de connexion à MongoDB : " . $e->getMessage());

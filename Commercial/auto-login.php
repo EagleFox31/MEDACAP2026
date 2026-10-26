@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -14,7 +15,7 @@ if (empty($token)) {
     exit();
 }
 
-$mongoClient = new MongoClient("mongodb://localhost:27017");
+$mongoClient = new MongoClient(medacapMongoUri());
 $db = $mongoClient->academy;
 
 $tokenDoc = $db->admin_tokens->findOne([

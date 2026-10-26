@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 
 use MongoDB\Client as MongoClient;
@@ -38,7 +39,7 @@ if (!isset($_SESSION["profile"])) {
         require_once "../../vendor/autoload.php";
 
         // Create connection
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
 
         // Connecting in database
         $academy = $conn->academy;
@@ -590,7 +591,7 @@ if (!isset($_SESSION["profile"])) {
 
         // Connexion
         try {
-            $mongo = new MongoDB\Client("mongodb://localhost:27017");
+            $mongo = new MongoDB\Client(medacapMongoUri());
             $academy = $mongo->academy;  // base "academy"
 
             // Collections
@@ -768,7 +769,7 @@ if (!isset($_SESSION["profile"])) {
             public function __construct()
             {
                 try {
-                    $client = new MongoClient("mongodb://localhost:27017");
+                    $client = new MongoClient(medacapMongoUri());
                     $database = $client->academy;
                     $this->collectionManagers = $database->managersBySubsidiaryAgency;
                     $this->collectionScores   = $database->technicianBrandScores;

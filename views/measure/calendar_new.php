@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 include_once "../partials/background-manager.php"; // Système de gestion de fond d'écran
@@ -63,7 +64,7 @@ $calendarJsonFile = __DIR__ . '/calendar_events.json';
 if ($mongoAvailable) {
     try {
         // We already verified MongoDB availability, now attempt connection
-        $conn = new \MongoDB\Client("mongodb://localhost:27017");
+        $conn = new \MongoDB\Client(medacapMongoUri());
         
         // Connecting to database
         $academy = $conn->academy;

@@ -15,11 +15,14 @@
  |--------------------------------------------------------------------------*/
  session_start();
  require_once __DIR__ . '/../../vendor/autoload.php';
+ require_once __DIR__ . '/../../core/medacap_config.php';
  
  /* ------------------------------------------------------------------
-  *  Connexion MongoDB (URI + nom de base) – adapter via .env si besoin
+  *  Connexion MongoDB (URI + nom de base)
   * -----------------------------------------------------------------*/
- const MONGO_URI = 'mongodb://localhost:27017';
+ if (!defined('MONGO_URI')) {
+     define('MONGO_URI', medacapMongoUri());
+ }
  const DB_NAME   = 'academy';
  
  /* ------------------------------------------------------------------

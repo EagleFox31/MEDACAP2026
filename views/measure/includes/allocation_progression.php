@@ -75,3 +75,21 @@ function allocationProgression_tryUnlockNextLevel(Collection $allocations, Objec
 
     return $nextLevel;
 }
+
+/**
+ * Tente de deverrouiller Senior puis Expert si les niveaux precedents sont termines.
+ * A appeler a la soumission QCM et a l affichage de la liste (filet de securite).
+ *
+ * @return string[] Niveaux nouvellement deverrouilles (ex. ['Senior', 'Expert'])
+ */
+function allocationProgression_syncUnlockedLevels(Collection $allocations, ObjectId $userId)
+{
+    $unlocked = array();
+    foreach (array('Junior', 'Senior') as $level) {
+        $next = allocationProgression_tryUnlockNextLevel($allocations, $userId, $level);
+        if ($next !== null) {
+            $unlocked[] = $next;
+        }
+    }
+    return $unlocked;
+}

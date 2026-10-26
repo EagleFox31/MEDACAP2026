@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Import candidats (stage) — Version Design Premium
  */
@@ -22,7 +23,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 /* ----------------------------------------------------------
  * DB & Config
  * -------------------------------------------------------- */
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 $users  = $db->users;
 $papers = $db->papers;
@@ -145,8 +146,8 @@ function loadCandidateRowsFromExcel(string $path): array
 
     $header = array_map('trim', array_map('strtolower', $data[0]));
     $idx = array_flip($header);
-    if (!isset($idx['firstname'], $idx['lastname'])) {
-        throw new RuntimeException('Colonnes firstName et lastName requises dans le fichier Excel.');
+    if (!isset($idx['firstname']) && !isset($idx['lastname'])) {
+        throw new RuntimeException('Au moins une colonne firstName ou lastName est requise dans le fichier Excel.');
     }
     unset($data[0]);
 
@@ -182,18 +183,27 @@ function normalizeCandidateNameRow(array $row): ?array
     }
     $fNameInput = trim((string)($map['firstname'] ?? $map['prenom'] ?? ''));
     $lNameInput = trim((string)($map['lastname'] ?? $map['nom'] ?? ''));
-    if ($fNameInput === '' || $lNameInput === '') {
+
+    // Au moins un nom doit être présent
+    if ($fNameInput === '' && $lNameInput === '') {
         return null;
     }
+
+    // Si seulement firstName est rempli (ex: mononyme "HAMIDOU" sous firstName)
+    if ($lNameInput === '' && $fNameInput !== '') {
+        $lNameInput = $fNameInput;
+        $fNameInput = '';
+    }
+
     return [
-        'firstName' => ucfirst(strtolower($fNameInput)),
+        'firstName' => $fNameInput !== '' ? ucfirst(strtolower($fNameInput)) : '',
         'lastName'  => strtoupper($lNameInput),
     ];
 }
 
 function buildCandidateUsername(string $firstName, string $lastName): string
 {
-    $firstWord = static function (string $value): string {
+    $firstWord = function (string $value): string {
         $value = trim(preg_replace('/\s+/u', ' ', $value));
         if ($value === '') {
             return '';
@@ -203,7 +213,13 @@ function buildCandidateUsername(string $firstName, string $lastName): string
         return $word === '' ? '' : mb_convert_case($word, MB_CASE_TITLE, 'UTF-8');
     };
 
-    return trim($firstWord($firstName) . ' ' . $firstWord($lastName));
+    $fn = $firstWord($firstName);
+    $ln = $firstWord($lastName);
+
+    if ($fn !== '' && $ln !== '') {
+        return trim($fn . ' ' . $ln);
+    }
+    return trim($fn . $ln);
 }
 
 /** @return array{label:string,raw:string,dialCode:string,national:string,display:string,e164:string}|null */
@@ -489,11 +505,15 @@ if (isset($_POST["submit"])) {
             $lNameInput = $lName;
 
             // 1. Recherche Exacte
-            $exact = $users->findOne(['firstName'=>$fName, 'lastName'=>$lName, 'active'=>true]);
+            $exactCriteria = ['lastName' => $lName, 'active' => true];
+            if ($fName !== '') {
+                $exactCriteria['firstName'] = $fName;
+            }
+            $exact = $users->findOne($exactCriteria);
 
-            // 2. Recherche Floue (Prénom/Nom inversés)
+            // 2. Recherche Floue (Prénom/Nom inversés, si prénom présent)
             $fuzzy = null;
-            if (!$exact) {
+            if (!$exact && $fNameInput !== '' && $lNameInput !== '') {
                 // On cherche si un candidat existe avec Nom = InputPrénom et Prénom = InputNom
                 $fuzzy = $users->findOne(['firstName'=>ucfirst(strtolower($lNameInput)), 'lastName'=>strtoupper($fNameInput), 'active'=>true]);
             }
@@ -506,6 +526,9 @@ if (isset($_POST["submit"])) {
                         $updateSet['phones'] = $phoneFields['phones'];
                         $updateSet['phone'] = $phoneFields['phone'];
                     }
+                    if (stripos($campaignRole, 'Garoua') !== false && empty($exact['agency'])) {
+                        $updateSet['agency'] = 'Garoua';
+                    }
                     $users->updateOne(['_id' => $exact['_id']], [
                         '$set' => $updateSet,
                         '$addToSet' => ['roles' => $campaignRole]
@@ -514,7 +537,7 @@ if (isset($_POST["submit"])) {
                     $createdRows[] = ['firstName'=>$exact['firstName'], 'lastName'=>$exact['lastName'], 'username'=>$exact['username'], 'password'=>$exact['visiblePassword']??'0000'];
                 } else {
                     $skipped++;
-                    $errors[] = "Ligne ".($rowNum+1).": {$fNameInput} {$lNameInput} est déjà inscrit.";
+                    $errors[] = "Ligne ".($rowNum+1).": " . trim($fNameInput . ' ' . $lNameInput) . " est déjà inscrit.";
                 }
             } elseif ($fuzzy) {
                 // CONFLIT : On demande à l'utilisateur
@@ -529,10 +552,15 @@ if (isset($_POST["submit"])) {
                 // Création Nouvelle
                 $base = buildCandidateUsername($fName, $lName);
                 $visible = "0000";
+                $agency = null;
+                if (stripos($campaignRole, 'Garoua') !== false) {
+                    $agency = 'Garoua';
+                }
                 $doc = [
                     "matricule" => '999999', "username" => $base, "firstName" => $fName, "lastName" => $lName,
                     "phone" => $phoneFields['phone'], "phones" => $phoneFields['phones'],
                     "profile" => "Candidat", "country" => FIXED_COUNTRY, "subsidiary" => FIXED_SUBSIDIARY, "department" => FIXED_DEPARTMENT,
+                    "agency" => $agency,
                     "role" => $campaignRole, "roles" => [$campaignRole], "password" => sha1($visible), "visiblePassword" => $visible,
                     "hr" => new ObjectId($rhId), "active" => true, "status" => "New", "created" => date("d-m-Y H:i:s")
                 ];
@@ -546,6 +574,26 @@ if (isset($_POST["submit"])) {
         if (($created + $updated) > 0 && !empty($createdRows)) {
             $existingPending = getPendingImport();
             $demoAccounts = $existingPending['demo_accounts'] ?? getAssignedDemoAccountsForImport();
+            if (empty($demoAccounts)) {
+                $defaultDemo = $users->findOne(['username' => 'Test DEMO', 'active' => true]);
+                if ($defaultDemo) {
+                    $demoAccounts = [['username' => 'Test DEMO', 'password' => (string)($defaultDemo['visiblePassword'] ?? '0000')]];
+                }
+            }
+            if (!empty($demoAccounts)) {
+                foreach ($demoAccounts as $demo) {
+                    $dUn = trim((string)($demo['username'] ?? ''));
+                    if ($dUn === '') continue;
+                    $dSet = ['role' => $campaignRole, 'status' => 'New', 'active' => true];
+                    if ($paperId && preg_match('/^[a-f0-9]{24}$/i', $paperId)) {
+                        $dSet['papers'] = [new ObjectId($paperId)];
+                    }
+                    $users->updateOne(
+                        ['username' => $dUn, 'active' => true],
+                        ['$set' => $dSet, '$addToSet' => ['roles' => $campaignRole]]
+                    );
+                }
+            }
             savePendingImport([
                 'rh_id' => $rhId,
                 'campaign' => $campaignRole,

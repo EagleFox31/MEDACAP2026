@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * 4 exclus CFAO : migrer identifiants (3 existants) + créer DZOGNOU Manager testable.
  * Usage: php scripts/setup_exclus_managers_cm.php [--dry-run] [--mongo=mongodb://10.68.0.7:27017]
@@ -13,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 const SOURCE = __DIR__ . '/../Copie de Copie de Liste_techniciens_marques_CFAO (1) - Copie.xlsx';
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
-$mongoUri = 'mongodb://10.68.0.7:27017';
+$mongoUri = medacapMongoUri('mongodb://10.68.0.7:27017');
 foreach ($argv ?? [] as $a) {
     if (strpos($a, '--mongo=') === 0) $mongoUri = substr($a, 8);
 }
@@ -279,7 +280,7 @@ foreach ($people as $p) {
         'birthdate' => '01-01-1990',
         'recrutmentDate' => date('d-m-Y'),
         'certificate' => '',
-        'subsidiary' => 'CAMEROON MOTORS INDUSTRIES',
+        'subsidiary' => 'CFAO MOBILITY CAMEROON',
         'agency' => 'Douala',
         'department' => 'Equipment',
         'brandJunior' => $brands['brandJunior'],

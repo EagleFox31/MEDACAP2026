@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // declare(strict_types=1);
 
 /* Debug (désactive en prod) */
@@ -18,7 +19,9 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /* ===================== CONFIG & HELPERS ===================== */
-const MONGO_DSN = 'mongodb://localhost:27017';
+if (!defined('MONGO_DSN')) {
+    define('MONGO_DSN', medacapMongoUri());
+}
 const DB_NAME   = 'academy';
 
 function now_str(): string { return date('d-m-y H:i:s'); }

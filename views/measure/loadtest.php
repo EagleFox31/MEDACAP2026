@@ -8,6 +8,7 @@ if (!in_array($_SESSION["profile"] ?? "", ["Super Admin","Admin"], true)) {
 }
 
 require_once "../../vendor/autoload.php";
+require_once __DIR__ . "/../../core/medacap_config.php";
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
@@ -30,10 +31,10 @@ function connect_mongo_with_fallback(array $uris): array {
     throw new \RuntimeException("Impossible de se connecter à MongoDB (localhost et 10.68.0.7).");
 }
 
-[$client, $mongoUriUsed] = connect_mongo_with_fallback([
-    "mongodb://localhost:27017",
-    "mongodb://10.68.0.7:27017",
-]);
+$mongoCandidates = medacapEnvString('MEDACAP_MONGO_URI') !== ''
+    ? array(medacapMongoUri())
+    : array("mongodb://localhost:27017", "mongodb://10.68.0.7:27017");
+[$client, $mongoUriUsed] = connect_mongo_with_fallback($mongoCandidates);
 $db = $client->academy;
 $papers = $db->papers;
 $users = $db->users;
@@ -197,8 +198,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
         $workerLog = $k6OutDir . DIRECTORY_SEPARATOR . $tag . "-worker.log";
         $workerScript = $k6Dir . DIRECTORY_SEPARATOR . "run_worker.php";
         $k6Script = $k6Dir . DIRECTORY_SEPARATOR . "medacap-quiz-load.js";
-        $scheme = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
-        $baseUrl = $scheme . "://" . ($_SERVER["HTTP_HOST"] ?? "10.68.0.7") . "/medacap";
+        $configuredBase = medacapPublicUrl();
+        if ($configuredBase !== '') {
+            $baseUrl = rtrim($configuredBase, '/');
+        } else {
+            $scheme = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ? "https" : "http";
+            $baseUrl = $scheme . "://" . ($_SERVER["HTTP_HOST"] ?? "10.68.0.7") . "/medacap";
+        }
         $steady = $durationMin . "m";
 
         $cmd = 'cmd /c start "" /B php '

@@ -28,6 +28,8 @@ if ($candInitials === '') {
 }
 $candLogoutLabel = isset($deconnexion) ? (string)$deconnexion : 'Se déconnecter';
 $reqUri = htmlspecialchars($_SERVER['REQUEST_URI'] ?? '', ENT_QUOTES, 'UTF-8');
+$candBgClass = isset($bgClass) ? (string)$bgClass : 'bg-dashboard';
+$candBgGradient = (!isset($bgGradient) || $bgGradient) ? 'with-gradient' : 'without-gradient';
 $pageTitle = isset($title)
     ? htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8')
     : htmlspecialchars($candSection, ENT_QUOTES, 'UTF-8');
@@ -50,12 +52,32 @@ $pageTitle = isset($title)
             min-height: 100%;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: #0f172a;
-            background: #eef2f7;
+            background: transparent;
         }
         body.candidate-portal {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            min-height: 100dvh;
+        }
+        /* Fond photo plein écran, derrière tout le contenu */
+        .cand-viewport-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: blur(4px);
+            -webkit-filter: blur(4px);
+            transform: scale(1.06);
+        }
+        .cand-viewport-bg.with-gradient {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.04)), var(--bg-image-url);
+        }
+        .cand-viewport-bg.without-gradient {
+            background-image: var(--bg-image-url);
         }
         .cand-topbar {
             position: fixed;
@@ -225,24 +247,51 @@ $pageTitle = isset($title)
             border-color: #D70006;
         }
         .cand-main {
-            flex: 1;
+            flex: 1 0 auto;
             display: flex;
             flex-direction: column;
             padding-top: 82px;
             min-height: 100vh;
+            min-height: 100dvh;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
         .cand-main .page-background-container {
-            flex: 1;
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
             width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
             border-radius: 0 !important;
+            overflow: visible !important;
+            background: transparent !important;
+        }
+        /* Le fond est géré par .cand-viewport-bg (fixe plein écran) */
+        .cand-main .page-background-overlay {
+            display: none !important;
         }
         .cand-main .page-content-container {
+            flex: 1 0 auto;
             width: 100%;
             max-width: 100%;
-            padding: 1.5rem 1.25rem 1.75rem;
+            padding: 1.5rem 1.25rem 1rem;
+            box-sizing: border-box;
+        }
+        .cand-footer {
+            flex-shrink: 0;
+            width: 100%;
+            margin-top: auto;
+            padding: 0.75rem 1.25rem 1rem;
+            text-align: center;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+            background: rgba(15, 23, 42, 0.32);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
             box-sizing: border-box;
         }
         @media (max-width: 992px) {
@@ -263,6 +312,7 @@ $pageTitle = isset($title)
     </style>
 </head>
 <body class="candidate-portal">
+<div class="cand-viewport-bg <?php echo htmlspecialchars($candBgGradient, ENT_QUOTES, 'UTF-8') . ' ' . htmlspecialchars($candBgClass, ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true"></div>
 <header class="cand-topbar" role="banner">
     <div class="cand-topbar-brand">
         <a href="./candidatePaperHome.php" class="cand-topbar-logo" title="CFAO Mobility Academy">

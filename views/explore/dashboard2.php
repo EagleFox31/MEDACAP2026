@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /* -----------------------------------------------------------------
  *  INITIALISATION (session, Mongo, helpers)
  * -----------------------------------------------------------------*/
@@ -15,7 +16,7 @@ if (!isset($_SESSION['profile'])) {
     exit();
 }
 require_once "../../vendor/autoload.php";
-$mongo = new MongoDB\Client("mongodb://localhost:27017");
+$mongo = new MongoDB\Client(medacapMongoUri());
 $db    = $mongo->academy;
 
 /* -----------------------------------------------------------------

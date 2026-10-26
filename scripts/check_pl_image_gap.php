@@ -1,10 +1,11 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 require __DIR__ . '/../vendor/autoload.php';
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\Client;
 
-$db = (new Client(getenv('MEDACAP_MONGO_URI') ?: 'mongodb://localhost:27017'))->academy;
+$db = (new Client(medacapMongoUri()))->academy;
 $filesDir = realpath(__DIR__ . '/../public/files');
 
 $paper = $db->papers->findOne([

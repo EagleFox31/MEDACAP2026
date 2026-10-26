@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /* =========================================================
  * LISTE DES UTILISATEURS — logique partagée (PHP 7.3)
  * Inclus par measure/users.php ET explore/users.php
@@ -32,7 +33,7 @@ if (!isset($_SESSION['profile'])) {
 }
 
 /* 2. Connexion MongoDB */
-$mongo   = new Client("mongodb://localhost:27017");
+$mongo   = new Client(medacapMongoUri());
 $db      = $mongo->academy;
 $colUser = $db->users;
 $colConn = $db->connections;
@@ -51,10 +52,10 @@ if (!function_exists('userVisible')) {
         switch ($p) {
             case 'Admin':
                 return !in_array($u->profile, ['Admin','Directeur Pièce et Service','Directeur des Opérations','Directeur Groupe','Super Admin'], true)
-                       && $u->subsidiary === $sub;
+                       && medacapSubsidiariesMatch($u->subsidiary ?? '', $sub);
             case 'Ressource Humaine':
                 return !in_array($u->profile, ['Ressource Humaine','Directeur Pièce et Service','Directeur des Opérations','Directeur Groupe','Super Admin','Admin'], true)
-                       && $u->subsidiary === $sub;
+                       && medacapSubsidiariesMatch($u->subsidiary ?? '', $sub);
             case 'Super Admin':
                 return $u->profile !== 'Super Admin';
             case 'Directeur Groupe':
@@ -62,7 +63,7 @@ if (!function_exists('userVisible')) {
             case 'Directeur Pièce et Service':
             case 'Directeur des Opérations':
                 return !in_array($u->profile, ['Directeur Pièce et Service','Directeur des Opérations','Directeur Groupe','Super Admin'], true)
-                       && $u->subsidiary === $sub;
+                       && medacapSubsidiariesMatch($u->subsidiary ?? '', $sub);
             default:
                 return false;
         }
@@ -85,9 +86,13 @@ if (!class_exists('UserManager')) {
 
             foreach ($additionalFilters as $key => $value) {
                 if (!empty($value) && $value !== 'all') {
-                    $query[$key] = ($key === 'level')
-                        ? new MongoDB\BSON\Regex('^' . preg_quote($value, '/') . '$', 'i')
-                        : $value;
+                    if ($key === 'subsidiary') {
+                        medacapApplySubsidiaryToQuery($query, $value);
+                    } elseif ($key === 'level') {
+                        $query[$key] = new MongoDB\BSON\Regex('^' . preg_quote($value, '/') . '$', 'i');
+                    } else {
+                        $query[$key] = $value;
+                    }
                 }
             }
 
@@ -126,7 +131,7 @@ if (!class_exists('UserManager')) {
         private function applySubsidiaryFilter(&$query, $userProfile, $userSession) {
             $restricted = ['Admin','Ressource Humaine','Directeur Pièce et Service','Directeur des Opérations'];
             if (!in_array($userProfile, ['Super Admin','Directeur Groupe']) && in_array($userProfile, $restricted)) {
-                $query['subsidiary'] = $userSession['subsidiary'] ?? null;
+                medacapApplySubsidiaryToQuery($query, isset($userSession['subsidiary']) ? $userSession['subsidiary'] : null);
             }
         }
 

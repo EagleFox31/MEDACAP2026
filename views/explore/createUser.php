@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Fichier unique — Briques 1→5 refactor + nouvelles règles + Strategy/Factory/AJAX (PHP 7.3 / MongoDB 4.2)
  * - SRP/POO, render(), username/password auto (2 premières lettres du prénom + nom + matricule ; pwd = nom + 4 derniers matricule + "!")
@@ -129,7 +130,7 @@ final class Db
   public static function init(): void
   {
     // Compatible MongoDB 4.2
-    $client = new Client("mongodb://localhost:27017");
+    $client = new Client(medacapMongoUri());
     $db = $client->academy;
 
     self::$users = $db->users;
@@ -195,12 +196,24 @@ final class StringUtil
 {
   public static function ascii(string $s): string
   {
-    $out = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
-    return $out !== false ? $out : $s;
+    static $map = [
+      'À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Ä'=>'A','Å'=>'A','Æ'=>'AE','Ç'=>'C',
+      'È'=>'E','É'=>'E','Ê'=>'E','Ë'=>'E','Ì'=>'I','Í'=>'I','Î'=>'I','Ï'=>'I',
+      'Ð'=>'D','Ñ'=>'N','Ò'=>'O','Ó'=>'O','Ô'=>'O','Õ'=>'O','Ö'=>'O','Ø'=>'O',
+      'Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U','Ý'=>'Y','Þ'=>'B','ß'=>'ss',
+      'à'=>'a','á'=>'a','â'=>'a','ã'=>'a','ä'=>'a','å'=>'a','æ'=>'ae','ç'=>'c',
+      'è'=>'e','é'=>'e','ê'=>'e','ë'=>'e','ì'=>'i','í'=>'i','î'=>'i','ï'=>'i',
+      'ð'=>'o','ñ'=>'n','ò'=>'o','ó'=>'o','ô'=>'o','õ'=>'o','ö'=>'o','ø'=>'o',
+      'ù'=>'u','ú'=>'u','û'=>'u','ü'=>'u','ý'=>'y','þ'=>'b','ÿ'=>'y'
+    ];
+    $clean = strtr($s, $map);
+    $out = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $clean);
+    $res = ($out !== false) ? $out : $clean;
+    return preg_replace('/[\'`^~"\']/', '', $res);
   }
   public static function onlyAlnum(string $s): string
   {
-    return preg_replace('/[^A-Za-z0-9]/', '', $s);
+    return preg_replace('/[^A-Za-z0-9]/', '', self::ascii($s));
   }
 }
 
@@ -227,7 +240,10 @@ final class PasswordFactory
 {
   public static function buildVisible(string $firstName): string
   {
-    $fn = ucfirst(strtolower(trim(StringUtil::ascii($firstName))));
+    $fn = ucfirst(strtolower(trim(StringUtil::onlyAlnum($firstName))));
+    if ($fn === '') {
+      $fn = 'User';
+    }
     $year = date("Y");
     return "Academy." . $fn . "@" . $year;
   }
@@ -380,8 +396,8 @@ final class Mailer
       'RH' => [
         'subject' => 'MEDACAP — Votre accès Ressources Humaines est activé',
         'title' => 'Accès Ressources Humaines',
-        'message' => "Votre compte <strong>Ressources Humaines</strong> a été créé sur MEDACAP.<br><br>Vous pouvez suivre les niveaux de compétences et les résultats d'évaluation pour alimenter vos plans de développement et de recrutement.",
-        'additionalInfo' => "Exploitez les données d'évaluation pour optimiser vos processus RH."
+        'message' => "Votre profil <strong>Ressources Humaines</strong> a été créé sur MEDACAP.<br><br>Cet espace vous permet d'organiser et suivre les sessions d'évaluation des candidats au recrutement, de consulter les rapports en temps réel et d'exploiter les résultats pour vos décisions de sélection.",
+        'additionalInfo' => "Vous recevrez également par email le récapitulatif des identifiants des candidats rattachés à vos campagnes de recrutement."
       ]
     ];
 

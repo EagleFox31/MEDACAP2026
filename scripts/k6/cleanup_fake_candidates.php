@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require __DIR__ . "/../../vendor/autoload.php";
 
 use MongoDB\Client;
@@ -15,7 +16,7 @@ function argValue(array $argv, string $name, ?string $default = null): ?string {
 }
 
 $tag = (string)(argValue($argv, "tag", ""));
-$mongoUri = (string)(argValue($argv, "mongo-uri", "mongodb://10.68.0.7:27017"));
+$mongoUri = (string)(argValue($argv, "mongo-uri", medacapMongoUri('mongodb://10.68.0.7:27017')));
 
 if ($tag === "") {
     fwrite(STDERR, "ERROR: missing --tag\n");

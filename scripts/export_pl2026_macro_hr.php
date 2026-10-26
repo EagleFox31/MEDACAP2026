@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Export Excel PL 2026 — synthèse + feuille/candidat avec macro-domaines HR.
  * Usage: php scripts/export_pl2026_macro_hr.php
@@ -98,7 +99,7 @@ function writeStatsRow($sheet, int $row, string $label, array $block, bool $bold
 }
 
 $paperIdStr = '6a452db87ae27d2cc30d8592';
-$mongoUri = 'mongodb://10.68.0.7:27017';
+$mongoUri = medacapMongoUri('mongodb://10.68.0.7:27017');
 $client = new Client($mongoUri);
 $db = $client->academy;
 $paperId = new ObjectId($paperIdStr);
@@ -194,7 +195,7 @@ $headers = [
     'Global répondues', 'Couverture %', 'Maîtrise /20',
     'J répondues', 'J couverture %', 'J maîtrise /20',
     'S répondues', 'S couverture %', 'S maîtrise /20',
-    'Note recrutement /20',
+    'Complétude glob. /20',
 ];
 foreach ($headers as $i => $h) {
     $summary->setCellValueByColumnAndRow($i + 1, $row, $h);
@@ -211,7 +212,7 @@ foreach ($candidates as $c) {
         $g['answered'] . '/' . $g['total'], $g['pct_completion'] . '%', fmtNote($g['note_maitrise']),
         $j['answered'] . '/' . $j['total'], $j['pct_completion'] . '%', fmtNote($j['note_maitrise']),
         $s['answered'] . '/' . $s['total'], $s['pct_completion'] . '%', fmtNote($s['note_maitrise']),
-        fmtNote($c['note_recrutement']),
+        fmtNote($g['note_completude']),
     ];
     foreach ($vals as $i => $v) {
         $summary->setCellValueByColumnAndRow($i + 1, $row, $v);

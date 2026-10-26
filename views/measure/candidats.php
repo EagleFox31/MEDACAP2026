@@ -9,6 +9,7 @@ include_once "../partials/background-manager.php";
 if (!isset($_SESSION["id"])) { header("Location: ../../"); exit(); }
 
 require_once "../../vendor/autoload.php";
+require_once __DIR__ . '/../../core/medacap_config.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
@@ -19,7 +20,7 @@ use MongoDB\BSON\Regex;
 |  Config
 |============================================================ */
 final class AppConfig {
-    public $mongoDsn = "mongodb://localhost:27017";
+    public $mongoDsn = "";
     public $dbName   = "academy";
     public $qidLoc  = "68a8ba9939846c0f8fe86262"; // Lieu
     public $qidWork = "68a8ba9939846c0f8fe86261"; // Atelier
@@ -105,7 +106,8 @@ final class MongoFactory {
     private $db;
 
     public function __construct(AppConfig $cfg) {
-        $this->client = new Client($cfg->mongoDsn);
+        $dsn = $cfg->mongoDsn !== '' ? $cfg->mongoDsn : medacapMongoUri();
+        $this->client = new Client($dsn);
         $this->db     = $this->client->{$cfg->dbName};
     }
     public function col($name) { return $this->db->{$name}; }
@@ -548,14 +550,39 @@ final class CampaignRepository {
                 ]],
                 ['$unwind' => '$allRoles'],
                 ['$match'  => ['allRoles' => ['$ne' => '']]],
-                ['$group'  => ['_id' => '$allRoles']],
-                ['$sort'   => ['_id' => 1]],
+                ['$group'  => [
+                    '_id'    => '$allRoles',
+                    'maxOid' => ['$max' => '$_id']
+                ]],
             ];
             $rows = $this->usersCol->aggregate($pipeline)->toArray();
+            $meta = [];
             foreach ($rows as $r) {
                 $v = trim((string)($r['_id'] ?? ''));
-                if ($v !== '') $campaigns[] = $v;
+                if ($v === '') continue;
+
+                // Masquer les campagnes de test
+                $lower = mb_strtolower($v, 'UTF-8');
+                if (strpos($lower, 'ibrahim') !== false) continue;
+                if (strpos($lower, 'test') !== false) continue;
+                if (strpos($lower, 'demo') !== false) continue;
+
+                $ts = 0;
+                if (isset($r['maxOid']) && method_exists($r['maxOid'], 'getTimestamp')) {
+                    $ts = $r['maxOid']->getTimestamp();
+                }
+                if ($ts === 0 && preg_match('/202[4-9]/', $v, $m)) {
+                    $ts = strtotime('01-01-' . $m[0]);
+                }
+                $meta[] = ['label' => $v, 'ts' => $ts];
             }
+            usort($meta, function ($a, $b) {
+                if ($b['ts'] === $a['ts']) {
+                    return strcasecmp($a['label'], $b['label']);
+                }
+                return $b['ts'] <=> $a['ts'];
+            });
+            $campaigns = array_column($meta, 'label');
         } catch (Throwable $e) { /* retourne tableau vide en cas d'erreur */ }
 
         return $campaigns;
@@ -742,6 +769,7 @@ final class CandidatePresenter {
     public function name(){ $n = (string)($this->c['fullname'] ?? '—'); return $n===''?'—':$n; }
     public function country(){ return (string)($this->c['country'] ?? ''); }
     public function flag(){ return (string)($this->c['flagPath'] ?? ''); }
+    public function isDemo(){ return !empty($this->c['isDemo']); }
     public function statusKey(){ return (string)($this->c['statusKey'] ?? 'invited'); }
     public function statusLabel(){ $k=$this->statusKey(); return $this->cfg->statusLabels[$k] ?? '—'; }
     public function pct(){ return (float)($this->c['pct'] ?? 0); }
@@ -867,6 +895,21 @@ try {
     $repo = new CandidateRepository($usersCol, $qb);
     $candidates = $repo->fetchAll();
 
+    // Détection des comptes test / démo pour ne pas fausser la compta (présence & participation)
+    $isDemoCandidate = function($c) {
+        if (!empty($c['loadtestTag'])) return true;
+        $u = strtolower((string)($c['nameFallback'] ?? $c['username'] ?? ''));
+        if (strpos($u, 'demo') !== false || preg_match('/\btest\b/i', $u)) return true;
+        $fn = strtolower((string)($c['fullname'] ?? ''));
+        if (strpos($fn, 'demo') !== false || preg_match('/\btest\b/i', $fn)) return true;
+        return false;
+    };
+
+    foreach ($candidates as &$cItem) {
+        $cItem['isDemo'] = $isDemoCandidate($cItem);
+    }
+    unset($cItem);
+
     $svc = new CandidateService($cfg);
     $candidatesFiltered = $svc->filterByStatus($candidates, $req->status);
 
@@ -877,11 +920,19 @@ try {
         $candidatesFiltered = $svc->filterByOrientation($candidatesFiltered, $req->oloc, $req->owork);
     }
 
-    list($attempted, $notAttempted) = $svc->splitAttempted($candidatesFiltered);
+    // Répartition pour les calculs de statistiques officielles de la campagne (compta)
+    $realCandidates = array_values(array_filter($candidates, function($c) { return empty($c['isDemo']); }));
+    $demoCandidates = array_values(array_filter($candidates, function($c) { return !empty($c['isDemo']); }));
+
+    $realFiltered = array_values(array_filter($candidatesFiltered, function($c) { return empty($c['isDemo']); }));
+    $demoFiltered = array_values(array_filter($candidatesFiltered, function($c) { return !empty($c['isDemo']); }));
+
+    // Les classements, le leaderboard et les compteurs ne prennent QUE les vrais candidats
+    list($attempted, $notAttempted) = $svc->splitAttempted($realFiltered);
     $svc->sortByPctDescThenName($attempted);
     $leaderboard     = array_slice($attempted, 0, 3);
     $othersAttempted = array_slice($attempted, 3);
-    $statusCounts    = $svc->statusCounts($candidates);
+    $statusCounts    = $svc->statusCounts($realCandidates);
 
     // Carte paperId -> label (pour la modal)
     $paperLabelMap = [];
@@ -1095,8 +1146,11 @@ body,.campaign-wrap{font-size:1.1rem}
              data-bs-toggle="collapse" data-bs-target="#cardsCollapse"
              aria-expanded="true" aria-controls="cardsCollapse" style="cursor:pointer;">
           <div>
-            <i class="fa-solid fa-users me-2"></i>Vue cartes (tous les candidats filtrés)
-            <span class="badge bg-primary ms-2" id="cardCount"><?= count($candidatesFiltered) ?></span>
+            <i class="fa-solid fa-users me-2"></i>Vue cartes (candidats filtrés)
+            <span class="badge bg-primary ms-2" id="cardCount"><?= count($realFiltered) ?></span>
+            <?php if (!empty($demoFiltered)): ?>
+              <span class="badge bg-secondary ms-1" title="Comptes tests exclus des statistiques"><?= count($demoFiltered) ?> test</span>
+            <?php endif; ?>
           </div>
           <div class="d-flex align-items-center gap-2">
             <small class="text-muted collapse-status">Cliquer pour replier</small>
@@ -1107,7 +1161,12 @@ body,.campaign-wrap{font-size:1.1rem}
         <div class="collapse" id="cardsCollapse">
           <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-              <small class="text-muted"><i class="fa-solid fa-info-circle me-1"></i><?= count($candidatesFiltered) ?> candidat(s) affiché(s)</small>
+              <small class="text-muted">
+                <i class="fa-solid fa-info-circle me-1"></i><?= count($realFiltered) ?> candidat(s)
+                <?php if (!empty($demoFiltered)): ?>
+                  <span class="text-secondary">(+ <?= count($demoFiltered) ?> compte test hors compta)</span>
+                <?php endif; ?>
+              </small>
               <div class="btn-group btn-group-sm" role="group">
                 <input type="radio" class="btn-check" name="viewMode" id="viewGrid" checked>
                 <label class="btn btn-outline-secondary" for="viewGrid" title="Vue grille"><i class="fa-solid fa-grip"></i></label>
@@ -1125,7 +1184,9 @@ body,.campaign-wrap{font-size:1.1rem}
                   </div>
                   <div class="text-end"><span class="badge-status badge-started">—</span><div class="mt-2"><span class="badge-score score-neutral">—</span></div></div>
                 </div></div>
-              <?php else: foreach ($candidatesFiltered as $row):
+              <?php else: 
+                $displayCandidates = array_merge($realFiltered, $demoFiltered);
+                foreach ($displayCandidates as $row):
                 $p = new CandidatePresenter($row,$cfg);
                 $locStr = h(Arrays::strJoin($p->locs())); $wrkStr = h(Arrays::strJoin($p->works()));
               ?>
@@ -1143,7 +1204,12 @@ body,.campaign-wrap{font-size:1.1rem}
                     <div class="candidate-left">
                       <div class="candidate-avatar"><img src="<?= h($p->avatarImg()) ?>" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:12px"></div>
                       <div>
-                        <div class="candidate-name"><?= h($p->name()) ?></div>
+                        <div class="candidate-name">
+                          <?= h($p->name()) ?>
+                          <?php if ($p->isDemo()): ?>
+                            <span class="badge bg-secondary text-white ms-1" style="font-size:0.65rem;vertical-align:middle;">Compte Test</span>
+                          <?php endif; ?>
+                        </div>
                         <div class="candidate-sub">
                           <?php if ($p->flag()): ?><img src="<?= h($p->flag()) ?>" class="flag-img" alt="flag"><?php endif; ?>
                           <span><?= h($p->country() ?: '—') ?></span>
@@ -1152,7 +1218,13 @@ body,.campaign-wrap{font-size:1.1rem}
                     </div>
                     <div class="text-end">
                       <span class="badge-status <?= $p->statusBadgeClass() ?>"><i class="fa-solid fa-circle-dot"></i> <?= h($p->statusLabel()) ?></span>
-                      <div class="mt-2"><span class="badge-score <?= $p->scoreClass() ?>"><?= $p->attempted() ? number1($p->pct()).'%' : '—' ?></span></div>
+                      <div class="mt-2">
+                        <?php if ($p->isDemo()): ?>
+                          <span class="badge-score score-neutral" title="Compte test exclu des statistiques">Test</span>
+                        <?php else: ?>
+                          <span class="badge-score <?= $p->scoreClass() ?>"><?= $p->attempted() ? number1($p->pct()).'%' : '—' ?></span>
+                        <?php endif; ?>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1161,10 +1233,25 @@ body,.campaign-wrap{font-size:1.1rem}
 
             <div class="border-top pt-3 mt-3">
               <div class="row text-center">
-                <div class="col-6 col-md-3"><div class="small text-muted">Total</div><div class="fw-bold"><?= count($candidatesFiltered) ?></div></div>
-                <div class="col-6 col-md-3"><div class="small text-muted">Ont tenté</div><div class="fw-bold text-success"><?= count($attempted) ?></div></div>
-                <div class="col-6 col-md-3"><div class="small text-muted">N'ont pas tenté</div><div class="fw-bold text-warning"><?= count($notAttempted) ?></div></div>
-                <div class="col-6 col-md-3"><div class="small text-muted">Taux de participation</div><div class="fw-bold text-info"><?= count($candidatesFiltered)>0 ? round((count($attempted)/count($candidatesFiltered))*100) : 0 ?>%</div></div>
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">Total Candidats</div>
+                  <div class="fw-bold"><?= count($realFiltered) ?></div>
+                  <?php if (!empty($demoFiltered)): ?>
+                    <div class="text-muted" style="font-size: 0.75rem;">(+<?= count($demoFiltered) ?> test exclu)</div>
+                  <?php endif; ?>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">Ont tenté</div>
+                  <div class="fw-bold text-success"><?= count($attempted) ?></div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">N'ont pas tenté</div>
+                  <div class="fw-bold text-warning"><?= count($notAttempted) ?></div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">Taux de participation</div>
+                  <div class="fw-bold text-info"><?= count($realFiltered)>0 ? round((count($attempted)/count($realFiltered))*100) : 0 ?>%</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1352,7 +1439,7 @@ body,.campaign-wrap{font-size:1.1rem}
                 <?php
                   $allUrl    = h(UrlBuilder::build($req->baseParams, ['status'=>null]));
                   $activeAll = $req->status ? '' : 'active';
-                  echo "<a class='filter-pill $activeAll' href='$allUrl'><i class='fa-solid fa-layer-group'></i> Tous <span class=\"count\">".count($candidates)."</span></a>";
+                  echo "<a class='filter-pill $activeAll' href='$allUrl'><i class='fa-solid fa-layer-group'></i> Tous <span class=\"count\">".count($realCandidates)."</span></a>";
                   foreach ($cfg->statusOrder as $sk) {
                     $url = h(UrlBuilder::build($req->baseParams, ['status'=>$sk]));
                     $active = ($req->status === $sk) ? 'active' : '';

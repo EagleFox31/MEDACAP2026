@@ -1,0 +1,87 @@
+# Phase 4 — PHP 8.4, MongoDB monté cran par cran. Image courante : 8.0.
+# Le PHP du conteneur partage la pile réseau du conteneur mongo.
+# MEDACAP_MONGO_URI=mongodb://127.0.0.1:27017 (port interne, pas 27018).
+# Le port 27017 de l'hôte (WAMP, base academy) n'est pas publié.
+# La copie du conteneur est sur 127.0.0.1:27018. Le site est sur http://127.0.0.1:8084/
+#
+# Plafonds. Le moteur Docker de cette machine a 3,8 Go et 2 processeurs.
+# Sans ces lignes, un conteneur peut prendre toute la mémoire (CIS Docker
+# Benchmark 5.10), toute la priorité processeur (5.11) et un nombre illimité
+# de processus (5.28). NIST SP 800-190 demande le même type de quota pour
+# qu'un conteneur ne puisse pas affamer l'hôte.
+services:
+  mongo:
+    image: mongo:8.0
+    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.5"]
+    restart: on-failure:5
+    environment:
+      TZ: Africa/Douala
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    cpus: "1.0"
+    cpu_shares: 512
+    pids_limit: 128
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    ports:
+      - "127.0.0.1:8084:80"
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - medacap84:/data/db
+
+  web:
+    build: ./docker
+    network_mode: "service:mongo"
+    restart: on-failure:5
+    environment:
+      TZ: Africa/Douala
+      MEDACAP_MONGO_URI: mongodb://127.0.0.1:27017
+      MEDACAP_PUBLIC_URL: http://127.0.0.1:8084
+    depends_on:
+      mongo:
+        condition: service_healthy
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    cpus: "1.0"
+    cpu_shares: 512
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 80) ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - .:/var/www/html
+      - medacap84-sessions:/var/lib/medacap/sessions
+
+  backup:
+    image: mongo:8.0
+    restart: on-failure:5
+    environment:
+      TZ: Africa/Douala
+    depends_on:
+      mongo:
+        condition: service_healthy
+    mem_limit: 384m
+    memswap_limit: 384m
+    cpus: "0.5"
+    cpu_shares: 256
+    pids_limit: 64
+    entrypoint: ["sh", "/backup-loop.sh"]
+    volumes:
+      - type: bind
+        source: C:\wamp64\medacap-backups
+        target: /backups
+      - type: bind
+        source: ./docker/backup-loop.sh
+        target: /backup-loop.sh
+        read_only: true
+
+volumes:
+  medacap84:
+  medacap84-sessions:

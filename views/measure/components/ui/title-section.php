@@ -11,7 +11,7 @@ function renderTitleSection(
     string $text,
     string $padding = 'py-3'
 ): void { ?>
-  <div class="row mb-5">
+  <div class="row dashboard-section-title my-4">
     <div class="col-12">
       <div class="card glass-effect depth-effect">
         <div class="card-body text-center <?= htmlspecialchars($padding, ENT_QUOTES, 'UTF-8'); ?>">
@@ -34,7 +34,7 @@ function renderTitleSectionLink(
     string $url,
     string $padding = 'py-3'
 ): void { ?>
-  <div class="row mb-5">
+  <div class="row dashboard-section-title my-4">
     <div class="col-12">
       <div class="card glass-effect depth-effect">
         <div class="card-body text-center <?= htmlspecialchars($padding, ENT_QUOTES, 'UTF-8'); ?>">

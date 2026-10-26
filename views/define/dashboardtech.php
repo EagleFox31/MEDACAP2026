@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 //dashboardtech.php
 // ----------------------------------------------------------
@@ -30,7 +31,7 @@ if (!isset($_SESSION["profile"])) {
 
     // Connexion
     try {
-        $mongo   = new MongoDB\Client("mongodb://localhost:27017");
+        $mongo   = new MongoDB\Client(medacapMongoUri());
         $academy = $mongo->academy;  // base "academy"
 
         // Collections

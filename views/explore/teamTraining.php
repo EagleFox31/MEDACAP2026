@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -63,7 +64,7 @@
 
         // Connexion
         try {
-            $mongo = new MongoDB\Client("mongodb://localhost:27017");
+            $mongo = new MongoDB\Client(medacapMongoUri());
             $academy = $mongo->academy;  // base "academy"
 
             // Collections
@@ -95,7 +96,7 @@
             public function __construct()
             {
                 try {
-                    $client = new MongoClient("mongodb://localhost:27017");
+                    $client = new MongoClient(medacapMongoUri());
                     $database = $client->academy;
                     $this->collectionManagers = $database->managersBySubsidiaryAgency;
                     $this->collectionScores   = $database->technicianBrandScores;

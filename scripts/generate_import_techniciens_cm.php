@@ -231,7 +231,7 @@ for ($r = 5; $r <= $ws->getHighestRow(); $r++) {
         'country' => 'Cameroun',
         'profile' => 'Technicien',
         'certificate' => '',
-        'subsidiary' => 'CAMEROON MOTORS INDUSTRIES',
+        'subsidiary' => 'CFAO MOBILITY CAMEROON',
         'agency' => $agency,
         'department' => 'Equipment',
         'role' => $fonction,

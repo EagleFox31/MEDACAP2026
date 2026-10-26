@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require_once "../../vendor/autoload.php";
 
 use MongoDB\Client;
@@ -13,7 +14,7 @@ if (!isset($_SESSION["id"])) {
 }
 
 // Connexion à MongoDB
-$mongoClient = new Client("mongodb://localhost:27017");
+$mongoClient = new Client(medacapMongoUri());
 $academy = $mongoClient->selectDatabase('academy');
 
 // Récupérer les paramètres GET

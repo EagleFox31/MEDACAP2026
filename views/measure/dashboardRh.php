@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 include_once "../partials/background-manager.php";
@@ -13,7 +14,7 @@ use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 
 /* ---------- Mongo ---------- */
-$client     = new Client("mongodb://localhost:27017");
+$client     = new Client(medacapMongoUri());
 $academy    = $client->academy;
 $usersCol   = $academy->users;
 $resultsCol = $academy->results;
@@ -26,11 +27,35 @@ $AVATAR_FEMME  = '../../public/images/femme.png';
 $AVATAR_ENFANT = '../../public/images/enfant.png';
 
 /* ============================================================
-|  NOUVEAU — Récupération des campagnes disponibles
-|  (valeurs distinctes du champ `role` pour profile=Candidat)
+|  Récupération des campagnes disponibles
+|  - Triées par date de création décroissante (plus récentes en premier)
+|  - Campagnes de test masquées
 |============================================================ */
 $availableCampaigns = [];
 try {
+  // 1. Récupération des dates de création des papers
+  $paperTimestamps = [];
+  try {
+    $papersCol = $academy->papers;
+    foreach ($papersCol->find([], ['projection' => ['label' => 1, 'created' => 1]]) as $p) {
+      $lbl = trim((string)($p['label'] ?? ''));
+      if ($lbl !== '') {
+        $ts = 0;
+        if (!empty($p['created'])) {
+          $parsed = strtotime((string)$p['created']);
+          if ($parsed !== false) {
+            $ts = $parsed;
+          }
+        }
+        if ($ts === 0 && isset($p['_id']) && method_exists($p['_id'], 'getTimestamp')) {
+          $ts = $p['_id']->getTimestamp();
+        }
+        $paperTimestamps[$lbl] = max($paperTimestamps[$lbl] ?? 0, $ts);
+      }
+    }
+  } catch (Throwable $pe) {}
+
+  // 2. Agrégation des rôles / campagnes assignés aux candidats
   $campPipe = [
     ['$match' => ['profile' => 'Candidat', 'active' => true]],
     ['$project' => [
@@ -47,25 +72,72 @@ try {
     ]],
     ['$unwind' => '$allRoles'],
     ['$match'  => ['allRoles' => ['$ne' => '']]],
-    ['$group'  => ['_id' => '$allRoles']],
-    ['$sort'   => ['_id' => 1]],
+    ['$group'  => [
+      '_id' => '$allRoles',
+      'maxOid' => ['$max' => '$_id']
+    ]],
   ];
+
+  $campaignMeta = [];
   foreach ($usersCol->aggregate($campPipe)->toArray() as $r) {
     $v = trim((string)($r['_id'] ?? ''));
-    if ($v !== '') $availableCampaigns[] = $v;
+    if ($v === '') continue;
+
+    // Filtrage strict des campagnes de test (ex: Ibrahim, test campagne, test pour recrutement...)
+    $lower = mb_strtolower($v, 'UTF-8');
+    if (strpos($lower, 'ibrahim') !== false) continue;
+    if (strpos($lower, 'test') !== false) continue;
+    if (strpos($lower, 'demo') !== false) continue;
+
+    $candTs = 0;
+    if (isset($r['maxOid']) && method_exists($r['maxOid'], 'getTimestamp')) {
+      $candTs = $r['maxOid']->getTimestamp();
+    }
+    $paperTs = $paperTimestamps[$v] ?? 0;
+    $ts = max($paperTs, $candTs);
+
+    if ($ts === 0) {
+      if (preg_match('/202[4-9]/', $v, $mYear)) {
+        $ts = strtotime('01-01-' . $mYear[0]);
+      }
+    }
+
+    $campaignMeta[] = [
+      'label' => $v,
+      'ts'    => $ts,
+    ];
   }
+
+  // Tri par ordre décroissant de création (les plus récentes en tête)
+  usort($campaignMeta, function ($a, $b) {
+    if ($b['ts'] === $a['ts']) {
+      return strcasecmp($a['label'], $b['label']);
+    }
+    return $b['ts'] <=> $a['ts'];
+  });
+
+  $availableCampaigns = array_column($campaignMeta, 'label');
 } catch (Throwable $e) { /* tableau vide */ }
 
 /* ---------- Campagne active ---------- */
-// Si ?campaign= est fourni ET qu'il existe, on l'utilise ; sinon première campagne dispo
 $selectedCampaign = isset($_GET['campaign']) ? trim($_GET['campaign']) : null;
-if ($selectedCampaign && !in_array($selectedCampaign, $availableCampaigns, true)) {
-  $selectedCampaign = null; // valeur invalide -> ignore
+if ($selectedCampaign === 'all') {
+  $selectedCampaign = 'all';
+  $CAMPAIGN_ROLE = '';
+} elseif ($selectedCampaign && in_array($selectedCampaign, $availableCampaigns, true)) {
+  $CAMPAIGN_ROLE = $selectedCampaign;
+} elseif (!$selectedCampaign && !empty($availableCampaigns)) {
+  $selectedCampaign = $availableCampaigns[0];
+  $CAMPAIGN_ROLE = $selectedCampaign;
+} else {
+  // Campagne invalide ou filtrée (ex: campagne de test Ibrahim) -> fallback sur la plus récente
+  if (!empty($availableCampaigns)) {
+    $selectedCampaign = $availableCampaigns[0];
+    $CAMPAIGN_ROLE = $selectedCampaign;
+  } else {
+    $CAMPAIGN_ROLE = '';
+  }
 }
-if (!$selectedCampaign && !empty($availableCampaigns)) {
-  $selectedCampaign = $availableCampaigns[0]; // défaut = première
-}
-$CAMPAIGN_ROLE = $selectedCampaign ?? '';
 
 /* ---------- Filtres ---------- */
 $selectedCountry   = isset($_GET['country'])   ? trim($_GET['country'])   : null;
@@ -83,10 +155,31 @@ $specOffset  = ($specPage - 1) * $specPerPage;
 $paperId  = isset($_GET['paper']) ? trim($_GET['paper']) : null;
 $paperOid = ($paperId && preg_match('/^[0-9a-f]{24}$/i', $paperId)) ? new ObjectId($paperId) : null;
 
+// Résolution automatique du paper lié à la campagne si non spécifié dans l'URL
+if (!$paperOid && $CAMPAIGN_ROLE !== '') {
+  try {
+    $campPaper = $academy->papers->findOne(
+      ['label' => $CAMPAIGN_ROLE, 'active' => true],
+      ['sort' => ['created' => -1], 'projection' => ['_id' => 1]]
+    );
+    if (!$campPaper) {
+      $campPaper = $academy->papers->findOne(
+        ['label' => $CAMPAIGN_ROLE],
+        ['sort' => ['created' => -1], 'projection' => ['_id' => 1]]
+      );
+    }
+    if ($campPaper) {
+      $paperOid = $campPaper['_id'];
+    }
+  } catch (Throwable $pe) {}
+}
+
 /* ---------- Base match candidats ---------- */
 $baseMatch = [
-  'active'  => true,
-  'profile' => 'Candidat',
+  'active'      => true,
+  'profile'     => 'Candidat',
+  'username'    => ['$not' => new MongoDB\BSON\Regex('demo|^test', 'i')],
+  'loadtestTag' => ['$in' => [null, '']],
 ];
 if ($CAMPAIGN_ROLE !== '') {
   $baseMatch['$or'] = [
@@ -203,49 +296,89 @@ try {
   exit();
 }
 
-/* ------------ Pire spécialité ------------ */
+/* ------------ Récupération des candidats filtrés ------------ */
+$candidateIds = [];
 try {
-  $wsMatch = array_filter([
-    'type'=>'Factuel','level'=>'Mixed','total'=>['$gt'=>0],
-    $paperOid ? 'paper' : '' => $paperOid
-  ], function($v){ return $v !== '' && $v !== null; });
+  $candDocs = $usersCol->find($baseMatch, ['projection' => ['_id' => 1]])->toArray();
+  foreach ($candDocs as $cd) {
+    $candidateIds[] = $cd['_id'];
+  }
+} catch (Throwable $ce) {}
 
-  $worstSpecDoc = $resultsCol->aggregate([
-    ['$match'=>$wsMatch],
-    ['$group'=>['_id'=>'$speciality','avg'=>['$avg'=>['$multiply'=>[['$divide'=>['$score','$total']],100]]],'n'=>['$sum'=>1]]],
-    ['$match'=>['_id'=>['$ne'=>null]]],
-    ['$sort'=>['avg'=>1]],['$limit'=>1],
-    ['$project'=>['_id'=>0,'spec'=>'$_id','avg'=>['$round'=>['$avg',1]],'n'=>1]]
-  ])->toArray();
-  $worstSpec = $worstSpecDoc[0] ?? ['spec'=>'—','avg'=>0,'n'=>0];
-} catch (Throwable $e) { $worstSpec = ['spec'=>'—','avg'=>0,'n'=>0]; }
+/* ------------ Pire spécialité & Tableau Spécialités (filtrés par campagne) ------------ */
+$worstSpec = ['spec'=>'—','avg'=>0,'n'=>0];
+$rows = [];
+$totalSpecs = 0;
+$totalSpecPages = 0;
 
-/* ------------ Tableau Spécialités ------------ */
 $currentParams = $_GET;
 unset($currentParams['spec_page'], $currentParams['partial']);
 $specBaseHref = $_SERVER['PHP_SELF'].'?'.http_build_query($currentParams);
 
-try {
-  $specMatch = array_filter([
-    'type'=>'Factuel','level'=>'Mixed','total'=>['$gt'=>0],
-    $paperOid ? 'paper' : '' => $paperOid
-  ], function($v){ return $v !== '' && $v !== null; });
+if (!empty($candidateIds)) {
+  try {
+    $specMatch = [
+      'type'       => 'Factuel',
+      'level'      => 'Mixed',
+      'total'      => ['$gt' => 0],
+      'speciality' => ['$exists' => true, '$ne' => null, '$ne' => ''],
+      'user'       => ['$in' => $candidateIds],
+    ];
+    if ($paperOid) {
+      $specMatch['paper'] = $paperOid;
+    }
 
-  $totalSpecs     = ($resultsCol->aggregate([['$match'=>$specMatch],['$group'=>['_id'=>'$speciality']],['$match'=>['_id'=>['$ne'=>null]]],['$count'=>'total']])->toArray()[0]['total'] ?? 0);
-  $totalSpecPages = (int)ceil($totalSpecs / $specPerPage);
+    // Pire spécialité
+    $worstSpecDoc = $resultsCol->aggregate([
+      ['$match' => $specMatch],
+      ['$group' => [
+        '_id' => '$speciality',
+        'avg' => ['$avg' => ['$multiply' => [['$divide' => ['$score', '$total']], 100]]],
+        'n'   => ['$sum' => 1]
+      ]],
+      ['$match' => ['_id' => ['$ne' => null]]],
+      ['$sort'  => ['avg' => 1]],
+      ['$limit' => 1],
+      ['$project' => ['_id' => 0, 'spec' => '$_id', 'avg' => ['$round' => ['$avg', 1]], 'n' => 1]]
+    ])->toArray();
+    $worstSpec = $worstSpecDoc[0] ?? ['spec' => '—', 'avg' => 0, 'n' => 0];
 
-  $specResults = $resultsCol->aggregate([
-    ['$match'=>$specMatch],
-    ['$group'=>['_id'=>'$speciality','avg'=>['$avg'=>['$multiply'=>[['$divide'=>['$score','$total']],100]]],'n'=>['$sum'=>1]]],
-    ['$match'=>['_id'=>['$ne'=>null]]],
-    ['$sort'=>['avg'=>-1]],
-    ['$skip'=>$specOffset],['$limit'=>$specPerPage],
-    ['$project'=>['_id'=>0,'spec'=>'$_id','avg'=>['$round'=>['$avg',1]],'n'=>1]]
-  ])->toArray();
+    // Tableau Spécialités
+    $totalSpecs = ($resultsCol->aggregate([
+      ['$match' => $specMatch],
+      ['$group' => ['_id' => '$speciality']],
+      ['$match' => ['_id' => ['$ne' => null]]],
+      ['$count' => 'total']
+    ])->toArray()[0]['total'] ?? 0);
+    $totalSpecPages = (int)ceil($totalSpecs / $specPerPage);
 
-  $rows = [];
-  foreach ($specResults as $r) $rows[] = ['spec'=>(string)($r['spec']??''),'avg'=>(float)($r['avg']??0),'n'=>(int)($r['n']??0)];
-} catch (Throwable $e) { $rows=[]; $totalSpecs=0; $totalSpecPages=0; }
+    $specResults = $resultsCol->aggregate([
+      ['$match' => $specMatch],
+      ['$group' => [
+        '_id' => '$speciality',
+        'avg' => ['$avg' => ['$multiply' => [['$divide' => ['$score', '$total']], 100]]],
+        'n'   => ['$sum' => 1]
+      ]],
+      ['$match' => ['_id' => ['$ne' => null]]],
+      ['$sort'  => ['avg' => -1]],
+      ['$skip'  => $specOffset],
+      ['$limit' => $specPerPage],
+      ['$project' => ['_id' => 0, 'spec' => '$_id', 'avg' => ['$round' => ['$avg', 1]], 'n' => 1]]
+    ])->toArray();
+
+    foreach ($specResults as $r) {
+      $rows[] = [
+        'spec' => (string)($r['spec'] ?? ''),
+        'avg'  => (float)($r['avg'] ?? 0),
+        'n'    => (int)($r['n'] ?? 0)
+      ];
+    }
+  } catch (Throwable $e) {
+    $rows = [];
+    $totalSpecs = 0;
+    $totalSpecPages = 0;
+  }
+}
 
 /* ------------ Fonctions de rendu partiel ------------ */
 function renderSpecTablePartial(array $rows, int $specPage, int $totalSpecPages, string $specBaseHref){
@@ -408,47 +541,249 @@ include "./partials/header.php";
   --score-green:#6CF95D; --score-yellow:#FAF75A; --score-orange:#FB9258;
 }
 
-/* ── Campaign selector dans le titre ── */
-.campaign-select-wrap {
+/* ── Custom Dropdown Campagne Premium ── */
+.header-campaign-card {
+  position: relative !important;
+  z-index: 1050 !important;
+  overflow: visible !important;
+}
+.header-campaign-card .card-body {
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 1050 !important;
+}
+.custom-campaign-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+  z-index: 1100;
+}
+.campaign-trigger-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(99,102,241,.08);
-  border: 1.5px solid rgba(99,102,241,.22);
+  justify-content: space-between;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(99, 102, 241, 0.28);
   border-radius: 999px;
-  padding: 6px 10px 6px 14px;
-  margin-top: 14px;
+  padding: 6px 14px 6px 10px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.10), 0 1px 3px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  outline: none;
 }
-.campaign-select-wrap .csl-icon {
-  color: #6366f1;
-  font-size: 15px;
+.campaign-trigger-btn:hover {
+  background: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.18);
+  transform: translateY(-1px);
+}
+.custom-campaign-dropdown.is-open .campaign-trigger-btn {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.20);
+}
+.trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.campaign-badge-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
+}
+.campaign-current-label {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: #1e1b4b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 380px;
+}
+.trigger-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
 }
-.campaign-select-wrap select {
-  border: none;
-  background: transparent;
-  font-weight: 700;
-  font-size: 15px;
-  color: #3730a3;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 22px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0 center;
-  max-width: 420px;
-}
-.campaign-select-wrap select:focus { box-shadow: none; }
-.campaign-select-wrap .csl-count {
+.campaign-trigger-btn .csl-count {
   font-size: 12px;
-  background: #6366f1;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
   color: #fff;
   border-radius: 999px;
-  padding: 2px 9px;
+  padding: 3px 10px;
   font-weight: 800;
   white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(99, 102, 241, 0.25);
+}
+.trigger-arrow {
+  color: #6366f1;
+  font-size: 12px;
+  transition: transform 0.25s ease;
+}
+.custom-campaign-dropdown.is-open .trigger-arrow {
+  transform: rotate(180deg);
+}
+
+/* Popover list */
+.campaign-menu-popover {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 480px;
+  max-width: 540px;
+  width: max-content;
+  background: #ffffff;
+  border: 1.5px solid rgba(99, 102, 241, 0.25);
+  border-radius: 18px;
+  box-shadow: 0 25px 60px -10px rgba(30, 27, 75, 0.35), 0 10px 25px -4px rgba(0, 0, 0, 0.15);
+  z-index: 99999;
+  padding: 12px;
+  text-align: left;
+}
+.custom-campaign-dropdown.is-open .campaign-menu-popover {
+  display: block;
+  animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes popoverFadeIn {
+  from { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+.campaign-search-box {
+  position: relative;
+  margin-bottom: 8px;
+  padding: 2px;
+}
+.campaign-search-box .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 13px;
+}
+.campaign-search-box input {
+  width: 100%;
+  padding: 9px 12px 9px 36px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s;
+}
+.campaign-search-box input:focus {
+  background: #fff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+.campaign-items-list {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.campaign-items-list::-webkit-scrollbar {
+  width: 5px;
+}
+.campaign-items-list::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 999px;
+}
+.campaign-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 6px 0;
+}
+.campaign-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+.campaign-item:hover {
+  background: #f1f5f9;
+  transform: translateX(2px);
+}
+.campaign-item.is-selected {
+  background: rgba(99, 102, 241, 0.08);
+}
+.item-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #6366f1;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+.campaign-item.is-selected .item-icon-wrap {
+  background: #6366f1;
+  color: #fff;
+  border-color: #6366f1;
+}
+.item-text-wrap {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+.item-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.campaign-item.is-selected .item-title {
+  color: #4338ca;
+  font-weight: 700;
+}
+.item-sub {
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 1px;
+}
+.item-badge-latest {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  padding: 1px 7px;
+  width: fit-content;
+  margin-top: 2px;
+}
+.item-check {
+  color: #6366f1;
+  font-size: 13px;
+  margin-left: auto;
   flex-shrink: 0;
 }
 
@@ -530,34 +865,78 @@ body,.card,.table,.kpi-title,.kpi-sub{font-family:Inter,system-ui,-apple-system,
   <!-- ══════════════════════════════════════════════════
        TITRE + SÉLECTEUR DE CAMPAGNE (intégré dans la card)
   ══════════════════════════════════════════════════ -->
-  <div class="card shadow-sm mb-5 glass-effect-card">
-    <div class="card-body p-4 text-center" style="background-color:white;">
+  <div class="card shadow-sm mb-5 glass-effect-card header-campaign-card" style="position: relative !important; z-index: 1050 !important; overflow: visible !important;">
+    <div class="card-body p-4 text-center" style="background-color:white; overflow: visible !important; border-radius: var(--radius); position: relative !important; z-index: 1050 !important;">
       <h1 class="text-dark fw-bold fs-1 mb-1">
         <i class="fa-solid fa-gauge-high me-2"></i>Tableau de bord RH
       </h1>
-      <div class="text-muted mb-2" style="font-size:15px">Résultats QCM factuel — par campagne de recrutement</div>
+      <div class="text-muted mb-2" style="font-size:15px">Résultats QCM théorique — par campagne de recrutement</div>
 
-      <!-- Dropdown campagne -->
+      <!-- Dropdown campagne stylisé -->
       <?php if (!empty($availableCampaigns)): ?>
-      <form method="get" id="campaignForm" style="display:inline-block">
+      <form method="get" id="campaignForm" style="display:inline-block; position:relative;">
         <?php
           // Préserver les autres filtres actifs
           foreach (['country','agency','specialty','paper','page','spec_page'] as $k) {
             if (!empty($_GET[$k])) echo '<input type="hidden" name="'.htmlspecialchars($k,ENT_QUOTES,'UTF-8').'" value="'.htmlspecialchars($_GET[$k],ENT_QUOTES,'UTF-8').'">';
           }
         ?>
-        <div class="campaign-select-wrap">
-          <i class="fa-solid fa-flag csl-icon"></i>
-          <select name="campaign" onchange="document.getElementById('campaignForm').submit()">
-            <option value="">— Toutes les campagnes —</option>
-            <?php foreach ($availableCampaigns as $camp): ?>
-              <option value="<?= htmlspecialchars($camp,ENT_QUOTES,'UTF-8') ?>"
-                <?= ($selectedCampaign === $camp) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($camp,ENT_QUOTES,'UTF-8') ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-          <span class="csl-count"><?= (int)($kpis['total']??0) ?> candidat<?= ((int)($kpis['total']??0))>1?'s':'' ?></span>
+        <input type="hidden" name="campaign" id="campaignInput" value="<?= htmlspecialchars($selectedCampaign ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        
+        <div class="custom-campaign-dropdown" id="customCampaignDropdown">
+          <button type="button" class="campaign-trigger-btn" id="campaignTriggerBtn" aria-expanded="false">
+            <div class="trigger-left">
+              <span class="campaign-badge-icon"><i class="fa-solid fa-flag"></i></span>
+              <span class="campaign-current-label" id="currentCampaignLabel">
+                <?= htmlspecialchars(($selectedCampaign === 'all' || empty($selectedCampaign)) ? '— Toutes les campagnes —' : $selectedCampaign, ENT_QUOTES, 'UTF-8') ?>
+              </span>
+            </div>
+            <div class="trigger-right">
+              <span class="csl-count"><?= (int)($kpis['total']??0) ?> candidat<?= ((int)($kpis['total']??0))>1?'s':'' ?></span>
+              <i class="fa-solid fa-chevron-down trigger-arrow"></i>
+            </div>
+          </button>
+          
+          <div class="campaign-menu-popover" id="campaignMenuPopover">
+            <div class="campaign-search-box">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="campaignSearchInput" placeholder="Rechercher une campagne..." autocomplete="off">
+            </div>
+            
+            <div class="campaign-items-list" id="campaignItemsList">
+              <div class="campaign-item <?= ($selectedCampaign === 'all' || empty($selectedCampaign)) ? 'is-selected' : '' ?>" data-value="all">
+                <div class="item-icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="item-text-wrap">
+                  <span class="item-title">Toutes les campagnes</span>
+                  <span class="item-sub">Vue consolidée globale</span>
+                </div>
+                <?php if ($selectedCampaign === 'all' || empty($selectedCampaign)): ?>
+                  <i class="fa-solid fa-check item-check"></i>
+                <?php endif; ?>
+              </div>
+              <div class="campaign-divider"></div>
+              
+              <?php foreach ($availableCampaigns as $idx => $camp): 
+                $isSelected = ($selectedCampaign === $camp);
+              ?>
+                <div class="campaign-item <?= $isSelected ? 'is-selected' : '' ?>" data-value="<?= htmlspecialchars($camp, ENT_QUOTES, 'UTF-8') ?>">
+                  <div class="item-icon-wrap"><i class="fa-solid fa-briefcase"></i></div>
+                  <div class="item-text-wrap">
+                    <span class="item-title"><?= htmlspecialchars($camp, ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php if ($idx === 0): ?>
+                      <span class="item-badge-latest"><i class="fa-solid fa-clock-rotate-left"></i> Plus récente</span>
+                    <?php endif; ?>
+                  </div>
+                  <?php if ($isSelected): ?>
+                    <i class="fa-solid fa-check item-check"></i>
+                  <?php endif; ?>
+                </div>
+              <?php endforeach; ?>
+              <div id="campaignNoResults" style="display:none; padding:16px; text-align:center; color:#94a3b8; font-size:13px;">
+                <i class="fa-solid fa-circle-question me-1"></i> Aucune campagne trouvée
+              </div>
+            </div>
+          </div>
         </div>
       </form>
       <?php else: ?>
@@ -574,7 +953,7 @@ body,.card,.table,.kpi-title,.kpi-sub{font-family:Inter,system-ui,-apple-system,
     $completionCls = scoreClass($completion, true);
     $avgPctCls     = scoreClass($avgPctVal,  true);
   ?>
-  <div class="row g-4 mb-5">
+  <div class="row g-4 mb-5" style="position: relative; z-index: 1;">
     <div class="col-md-6 col-lg-3">
       <div class="card h-100 glass-effect-card depth-effect kpi-card">
         <div class="card-body text-center">
@@ -589,7 +968,7 @@ body,.card,.table,.kpi-title,.kpi-sub{font-family:Inter,system-ui,-apple-system,
         <div class="card-body text-center">
           <div class="kpi-title"><i class="fa-solid fa-list-check me-2"></i>Candidats testés</div>
           <div class="kpi-value"><?= (int)$kpis['tested'] ?></div>
-          <div class="kpi-sub">Au moins un QCM factuel</div>
+          <div class="kpi-sub">Au moins un QCM théorique</div>
         </div>
       </div>
     </div>
@@ -607,7 +986,7 @@ body,.card,.table,.kpi-title,.kpi-sub{font-family:Inter,system-ui,-apple-system,
         <div class="card-body text-center">
           <div class="kpi-title"><i class="fa-solid fa-percent me-2"></i>Moyenne de performance</div>
           <div class="kpi-value kpi-perc <?= $avgPctCls ?>"><?= number_format($avgPctVal,1) ?>%</div>
-          <div class="kpi-sub">Score moyen QCM factuel</div>
+          <div class="kpi-sub">Score moyen QCM théorique</div>
         </div>
       </div>
     </div>
@@ -819,6 +1198,103 @@ body,.card,.table,.kpi-title,.kpi-sub{font-family:Inter,system-ui,-apple-system,
       np?fu.searchParams.set('page',np):fu.searchParams.delete('page');
       history.replaceState(null,'',fu);
     }).catch(console.error);
+  });
+})();
+</script>
+
+<!-- JS Dropdown Campagne Personnalisé -->
+<script>
+(function() {
+  var dropdown = document.getElementById('customCampaignDropdown');
+  if (!dropdown) return;
+  
+  var trigger = document.getElementById('campaignTriggerBtn');
+  var popover = document.getElementById('campaignMenuPopover');
+  var searchInput = document.getElementById('campaignSearchInput');
+  var form = document.getElementById('campaignForm');
+  var input = document.getElementById('campaignInput');
+  var items = dropdown.querySelectorAll('.campaign-item');
+  
+  function openDropdown() {
+    dropdown.classList.add('is-open');
+    trigger.setAttribute('aria-expanded', 'true');
+    if (searchInput) {
+      setTimeout(function() { searchInput.focus(); }, 60);
+    }
+  }
+  
+  function closeDropdown() {
+    dropdown.classList.remove('is-open');
+    trigger.setAttribute('aria-expanded', 'false');
+    if (searchInput) {
+      searchInput.value = '';
+      filterItems('');
+    }
+  }
+  
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (dropdown.classList.contains('is-open')) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  });
+  
+  var noResults = document.getElementById('campaignNoResults');
+  function filterItems(query) {
+    var q = query.toLowerCase().trim();
+    var matchCount = 0;
+    items.forEach(function(item) {
+      var title = (item.querySelector('.item-title') ? item.querySelector('.item-title').textContent : '').toLowerCase();
+      if (!q || title.indexOf(q) !== -1) {
+        item.style.display = 'flex';
+        matchCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+    if (noResults) {
+      noResults.style.display = (matchCount === 0) ? 'block' : 'none';
+    }
+  }
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      filterItems(e.target.value);
+    });
+    searchInput.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeDropdown();
+    });
+  }
+  
+  items.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var val = item.getAttribute('data-value');
+      if (input) {
+        input.value = val;
+      }
+      closeDropdown();
+      if (form) {
+        form.submit();
+      }
+    });
+  });
+  
+  document.addEventListener('click', function(e) {
+    if (!dropdown.contains(e.target)) {
+      closeDropdown();
+    }
+  });
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && dropdown.classList.contains('is-open')) {
+      closeDropdown();
+    }
   });
 })();
 </script>

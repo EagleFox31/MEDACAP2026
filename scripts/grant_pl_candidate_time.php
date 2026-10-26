@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Accorde du temps supplémentaire aux candidats PL (prorata / question QCM restante, plafonné).
  *
@@ -142,7 +143,7 @@ function pick_exam($db, $userOid, $paperOid)
 }
 
 $dryRun = hasFlag($argv, 'dry-run') || !hasFlag($argv, 'apply');
-$mongoUri = (string)(argValue($argv, 'mongo-uri', 'mongodb://10.68.0.7:27017') ?? 'mongodb://10.68.0.7:27017');
+$mongoUri = (string)(argValue($argv, 'mongo-uri', medacapMongoUri('mongodb://10.68.0.7:27017')) ?? medacapMongoUri('mongodb://10.68.0.7:27017'));
 $paperId = (string)(argValue($argv, 'paper-id', '6a452db87ae27d2cc30d8592') ?? '6a452db87ae27d2cc30d8592');
 $secondsPerQuestion = max(1, (int)(argValue($argv, 'seconds-per-question', '60') ?? 60));
 $maxBonusMinutes = max(1, (int)(argValue($argv, 'max-bonus-minutes', '105') ?? 105));

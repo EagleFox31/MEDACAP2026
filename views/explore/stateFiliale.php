@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 include_once "../partials/background-manager.php";
@@ -50,7 +51,7 @@ if (!isset($_SESSION["profile"])) {
     }
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;

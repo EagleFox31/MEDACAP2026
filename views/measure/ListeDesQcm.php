@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // Add this function at the top, after includes
 function highlightKeywords($text, $keywords) {
     foreach ($keywords as $keyword) {
@@ -7,9 +8,73 @@ function highlightKeywords($text, $keywords) {
     }
     return $text;
 }
-// Define keywords for intro and guide
-$introKeywords = ['QCM', 'Question à Choix Multiples', 'connaissances', 'tâches professionnelles', 'compétences', 'Junior', 'Senior', 'Expert', 'maîtrise', 'tâches professionnelles'];
-$guideKeywords = ['QCM', 'Continuer', 'Navigation', 'Précédent/Suivant', 'questions', 'Réponse', 'option de réponse', 'réponses', 'progrès', 'questions répondues', 'question actuelle', 'Finalisation', 'questionnaire', 'Finaliser', 'évaluation', 'Évaluer', 'Notation', 'réponse appropriée', 'répondues'];
+
+function qcmProgressFillClass(int $progress, bool $silent = false): string {
+    $classes = ['custom-progress-fill'];
+    if ($progress >= 100) {
+        $classes[] = 'progress-complete';
+    } elseif ($progress > 0) {
+        $classes[] = 'progress-active';
+    }
+    if ($silent || $progress >= 100) {
+        $classes[] = 'silent-progress';
+    }
+    return implode(' ', $classes);
+}
+
+function qcmStatusBlock(int $progress, string $footerHtml, bool $compact = false): string {
+    $labelClass = $compact
+        ? 'text-center w-100 fw-semibold small progress-label'
+        : 'text-center w-100 fw-semibold progress-label';
+    $fillClass = qcmProgressFillClass($progress, $compact);
+    return '<div class="d-flex flex-column align-items-center w-100 gap-1">'
+        . '<span class="' . $labelClass . '">Progression (' . (int) $progress . '%)</span>'
+        . '<div class="custom-progress mt-1 w-100"><div class="' . $fillClass . '" style="width: ' . (int) $progress . '%;"></div></div>'
+        . $footerHtml
+        . '</div>';
+}
+
+function qcmCompletedBadge(string $label): string {
+    return '<span class="status-completed" role="status">'
+        . '<i class="bi bi-check-circle-fill" aria-hidden="true"></i>'
+        . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
+        . '</span>';
+}
+
+/**
+ * Cellule tableau : progression + action (compact façon Apple).
+ */
+function qcmRenderMatrixCell($cell, string $effectueLabel): string {
+    if (!$cell || !is_array($cell)) {
+        return '<span class="qcm-cell-empty" aria-hidden="true">—</span>';
+    }
+    if (empty($cell['isAvailable'])) {
+        return '<span class="qcm-badge-muted"><i class="bi bi-lock-fill me-1" style="font-size: 0.72rem;"></i>' . htmlspecialchars($cell['unavailableLabel'], ENT_QUOTES, 'UTF-8') . '</span>';
+    }
+    $progress = (int) ($cell['progress'] ?? 0);
+    $fillClass = qcmProgressFillClass($progress, true);
+    $out = '<div class="qcm-cell-inner">';
+    $out .= '<div class="qcm-cell-progress-stack">';
+    $out .= '<div class="custom-progress qcm-cell-bar" role="progressbar" aria-valuenow="' . $progress . '" aria-valuemin="0" aria-valuemax="100">';
+    $out .= '<div class="' . $fillClass . '" style="width:' . $progress . '%;"></div></div>';
+    $out .= '<span class="qcm-cell-pct">' . $progress . '%</span>';
+    $out .= '</div>';
+    if ($progress >= 100) {
+        $out .= qcmCompletedBadge($effectueLabel);
+    } elseif (!empty($cell['actionHtml'])) {
+        $out .= $cell['actionHtml'];
+    }
+    $out .= '</div>';
+    return $out;
+}
+
+function qcmRenderCollabMatrixCell($cell, string $effectueLabel): string {
+    return qcmRenderMatrixCell($cell, $effectueLabel);
+}
+
+// Mots-clés mis en avant (2–3 max) — le reste reste en texte normal
+$introKeywords = ['QCM', 'compétences', 'tâches professionnelles'];
+$guideKeywords = ['Commencer le QCM', 'Continuer'];
 session_start();
 include_once "./includes/language.php";
 require_once "../../vendor/autoload.php";
@@ -18,22 +83,26 @@ require_once "./components/ui/title-section.php";
 include_once "./includes/background-manager.php";
 require_once "./components/ui/filterHelpers.php";
 require_once "./components/ui/render-level-badge.php";
+require_once __DIR__ . '/includes/allocation_progression.php';
 setPageBackground("bg-dashboard");
 if (!isset($_SESSION["id"])) {
     header("Location: ../../");
     exit();
 }
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 $academy = $conn->academy;
 $users = $academy->users;
 $allocations = $academy->allocations;
 $exams = $academy->exams;
+$results = $academy->results;
 $filter = $_GET['filter_value'] ?? null;
 $testTypeFilter = $_GET['test_type'] ?? 'all';
 $levelFilter = $_GET['level'] ?? 'all';
 $factuelCards = [];
 $declaratifCards = [];
 $collaboratorCards = [];
+$personalMatrix = array();
+$collaboratorMatrix = array();
 $levelData = [
     'Junior' => [1, $junior],
     'Senior' => [2, $senior],
@@ -52,20 +121,38 @@ $testTypes = [
     ]
 ];
 $id = $_SESSION["id"];
+$userObjectId = new MongoDB\BSON\ObjectId($id);
 $currentUser = $users->findOne([
     '$and' => [
-        ["_id" => new MongoDB\BSON\ObjectId($id)],
+        ["_id" => $userObjectId],
         ["active" => true],
     ],
 ]);
-$hasPersonalExperience = $exams->count(["user" => new MongoDB\BSON\ObjectId($id)]) > 0;
+$hasPersonalExperience = $exams->count(["user" => $userObjectId]) > 0;
 $guidePersonal = $hasPersonalExperience ? 'false' : 'true';
 $isTechnician = isset($_SESSION['profile']) && strtolower($_SESSION['profile']) === 'technicien';
 $canTakeTests = $isTechnician || (isset($currentUser->test) && $currentUser->test === true);
+if ($canTakeTests) {
+    try {
+        allocationProgression_syncUnlockedLevels($allocations, $userObjectId);
+    } catch (Throwable $e) {
+        error_log('[ListeDesQcm] sync level unlock: ' . $e->getMessage());
+    }
+}
 // LOGIQUE CORRIGÉE : Les techniciens ne voient PAS les collaborateurs
 $showPersonal = $canTakeTests;
 $showCollaborators = !$isTechnician && isset($currentUser->users) && !empty($currentUser->users);
-$showSubsectionTitle = $showPersonal && $showCollaborators && !$isTechnician;
+// Managers : section collaborateurs visible meme sans equipe (message vide)
+$isManagerProfile = isset($_SESSION['profile']) && $_SESSION['profile'] === 'Manager';
+$showCollaboratorsSection = !$isTechnician && ($isManagerProfile || $showCollaborators);
+$showSubsectionTitle = $showPersonal && $showCollaboratorsSection && !$isTechnician;
+// « Mes Tests à Passer » : uniquement ses propres tests. L'évaluation des collaborateurs
+// se fait dans « Liste des collaborateurs à évaluer ».
+if ($canTakeTests) {
+    $showCollaborators = false;
+    $showCollaboratorsSection = false;
+    $showSubsectionTitle = false;
+}
 $hasEvalExperience = false;
 $guideEval = 'true';
 if ($showCollaborators) {
@@ -94,9 +181,12 @@ if ($showPersonal) {
             $statusHtml = '';
             $linkParams = '?test=' . $allocate["test"] . '&level=' . $allocate["level"] . '&type=' . $type . '&id=' . $id . '&guide=' . $guidePersonal;
             $linkHref = './' . $typeData['url'] . $linkParams;
-            $progressBarHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold">Progression (' . (int)$progress . '%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: ' . (int)$progress . '%;"></div></div></div>';
             if (!$isAvailable) {
-                $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold">Progression (0%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: 0%;"></div></div><span class="badge bg-secondary fs-6 mt-1 w-100 fw-bold">' . $non_disponible . '</span></div>';
+                $cell = array(
+                    'isAvailable' => false,
+                    'unavailableLabel' => 'Verrouillé · terminez le niveau précédent',
+                    'progress' => 0,
+                );
             } else {
                 $exam = $exams->findOne([
                     '$and' => [
@@ -112,43 +202,67 @@ if ($showPersonal) {
                         ["active" => false],
                     ],
                 ], ['sort' => ['_id' => -1]]);
-                if ($completedExam) {
+                $hasCompletedResult = $results->findOne([
+                    'user' => new MongoDB\BSON\ObjectId($id),
+                    'test' => new MongoDB\BSON\ObjectId($allocate['test']),
+                    'type' => $type,
+                    'level' => $levelKey,
+                    'active' => true,
+                ]);
+                $progress = 0;
+                $actionHtml = '';
+                $actionKind = '';
+                $actionLabel = '';
+                if ($completedExam || $hasCompletedResult) {
                     $progress = 100;
-                    $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold">Progression (100%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: 100%;"></div></div><span class="badge bg-success fs-6 mt-1 w-100 fw-bold">' . $effectue . '</span></div>';
                 } elseif ($exam) {
                     $questions = isset($exam['questions']) && $exam['questions'] instanceof \MongoDB\Model\BSONArray ? iterator_to_array($exam['questions']) : (array) ($exam['questions'] ?? []);
-                    if (!is_array($questions)) $questions = [];
+                    if (!is_array($questions)) {
+                        $questions = array();
+                    }
                     $answers = isset($exam['answers']) && $exam['answers'] instanceof \MongoDB\Model\BSONArray ? iterator_to_array($exam['answers']) : (array) ($exam['answers'] ?? []);
-                    if (!is_array($answers)) $answers = [];
+                    if (!is_array($answers)) {
+                        $answers = array();
+                    }
                     $totalQuestions = count($questions);
-                    $answeredQuestions = array_filter($answers, function($ans) { return $ans !== null && $ans !== '' && $ans !== 'null'; });
-                    $progress = 0;
-                    if (is_int($totalQuestions) && $totalQuestions > 0) {
-                        $answeredCount = count($answeredQuestions);
-                        $ratio = $answeredCount / $totalQuestions;
-                        if (is_numeric($ratio)) {
-                            $progress = round($ratio * 100);
-                        }
+                    $answeredQuestions = array_filter($answers, function ($ans) {
+                        return $ans !== null && $ans !== '' && $ans !== 'null';
+                    });
+                    if ($totalQuestions > 0) {
+                        $progress = max(0, min(100, round((count($answeredQuestions) / $totalQuestions) * 100)));
                     }
-                    $progress = max(0, min(100, $progress));
-                    $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold">Progression (' . (int)$progress . '%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: ' . (int)$progress . '%;"></div></div><a href="' . $linkHref . '" class="btn btn-primary btn-sm w-100 fw-bold mt-1" title="Continuer le QCM">Continuer</a></div>';
+                    $actionHtml = '<a href="' . htmlspecialchars($linkHref, ENT_QUOTES, 'UTF-8') . '" class="btn btn-action btn-sm qcm-cell-btn" title="Continuer le QCM"><i class="bi bi-play-fill me-1"></i>Continuer</a>';
+                    $actionKind = 'resume';
+                    $actionLabel = 'Continuer';
                 } else {
-                    $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold">Progression (0%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: 0%;"></div></div><a href="' . $linkHref . '" class="btn btn-primary btn-sm w-100 fw-bold mt-1" title="Commencer le QCM">Commencer le QCM</a></div>';
+                    $startLabel = 'Commencer le QCM';
                     if (isset($allocate['active']) && $allocate['active'] == false) {
-                        $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold">Progression (0%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: 0%;"></div></div><a href="' . $linkHref . '" class="btn btn-primary btn-sm w-100 fw-bold mt-1" title="Compléter le QCM">' . $completer_par_vous . '</a></div>';
+                        $startLabel = !empty($completer_par_vous) ? $completer_par_vous : 'À compléter';
                     }
+                    $actionHtml = '<a href="' . htmlspecialchars($linkHref, ENT_QUOTES, 'UTF-8') . '" class="btn btn-action btn-sm qcm-cell-btn" title="' . htmlspecialchars($startLabel, ENT_QUOTES, 'UTF-8') . '"><i class="bi bi-play-fill me-1"></i>' . htmlspecialchars($startLabel, ENT_QUOTES, 'UTF-8') . '</a>';
+                    $actionKind = 'start';
+                    $actionLabel = $startLabel;
                 }
+                $cell = array(
+                    'isAvailable' => true,
+                    'progress' => $progress,
+                    'actionHtml' => $actionHtml,
+                    'href' => $linkHref,
+                    'actionKind' => $actionKind,
+                    'actionLabel' => $actionLabel,
+                );
             }
+            $personalMatrix[$levelKey][$type] = $cell;
             $levelComponent = renderLevelBadge($levelNum, $levelLabel);
-            $card = [
+            $card = array(
                 'test' => $typeData['label'],
                 'icon' => $typeData['icon'],
                 'level' => $levelComponent,
-                'status' => $statusHtml,
+                'status' => '',
                 'type' => $type,
                 'isAvailable' => $isAvailable,
-                'progress' => $progress
-            ];
+                'progress' => isset($cell['progress']) ? $cell['progress'] : 0,
+            );
             if ($type === 'Factuel') {
                 $factuelCards[] = $card;
             } else {
@@ -172,7 +286,7 @@ if ($showCollaborators) {
         if (!$user) continue;
         $userName = htmlspecialchars($user->firstName . ' ' . $user->lastName);
         if ($filter && stripos($userName, strtolower($filter)) === false) continue;
-        $userLevels = [];
+        $userLevels = array();
         foreach ($levelData as $levelKey => $data) {
             if ($levelFilter !== 'all' && $levelKey !== $levelFilter) continue;
             $levelNum = $data[0];
@@ -185,13 +299,18 @@ if ($showCollaborators) {
                 ],
             ]);
             if (!$allocate) continue;
-            $isAvailable = isset($allocate['activeTest']) && $allocate['activeTest'] === true;
+            // Evaluation manager : possible a tout niveau, independamment de activeTest (pratique technicien).
+            $isAvailable = true;
             $statusHtml = '';
             $progress = 0;
             $linkParams = '?test=' . $allocate["test"] . '&level=' . $allocate["level"] . '&id=' . $id . '&user=' . $user["_id"] . '&guide=' . $guideEval;
             $linkHref = './quiz' . $linkParams;
             if (!$isAvailable) {
-                $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold small">Progression (0%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: 0%;"></div></div><span class="badge bg-secondary fs-6 mt-1 w-100 fw-bold">' . $non_disponible . '</span></div>';
+                $levelCell = array(
+                    'isAvailable' => false,
+                    'unavailableLabel' => $non_disponible,
+                    'progress' => 0,
+                );
             } else {
                 $exam = $exams->findOne([
                     '$and' => [
@@ -200,69 +319,70 @@ if ($showCollaborators) {
                         ["active" => true],
                     ],
                 ], ['sort' => ['_id' => -1]]);
+                $progress = 0;
+                $actionHtml = '';
                 if ($exam) {
                     $questions = isset($exam['questions']) && $exam['questions'] instanceof \MongoDB\Model\BSONArray ? iterator_to_array($exam['questions']) : (array) ($exam['questions'] ?? []);
-                    if (!is_array($questions)) $questions = [];
+                    if (!is_array($questions)) {
+                        $questions = array();
+                    }
                     $answers = isset($exam['answers']) && $exam['answers'] instanceof \MongoDB\Model\BSONArray ? iterator_to_array($exam['answers']) : (array) ($exam['answers'] ?? []);
-                    if (!is_array($answers)) $answers = [];
+                    if (!is_array($answers)) {
+                        $answers = array();
+                    }
                     $totalQuestions = count($questions);
-                    $answeredQuestions = array_filter($answers, function($ans) { return $ans !== null && $ans !== '' && $ans !== 'null'; });
-                    $progress = 0;
-                    if (is_int($totalQuestions) && $totalQuestions > 0) {
-                        $answeredCount = count($answeredQuestions);
-                        $ratio = $answeredCount / $totalQuestions;
-                        if (is_numeric($ratio)) {
-                            $progress = round($ratio * 100);
-                        }
+                    $answeredQuestions = array_filter($answers, function ($ans) {
+                        return $ans !== null && $ans !== '' && $ans !== 'null';
+                    });
+                    if ($totalQuestions > 0) {
+                        $progress = max(0, min(100, round((count($answeredQuestions) / $totalQuestions) * 100)));
                     }
-                    $progress = max(0, min(100, $progress));
-                    $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold small">Progression (' . (int)$progress . '%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill silent-progress" style="width: ' . (int)$progress . '%;"></div></div><a href="' . $linkHref . '" class="btn btn-primary btn-xs w-100 fw-bold mt-1" title="' . $click_to_open_test . '">Continuer</a></div>';
+                    $actionHtml = '<a href="' . htmlspecialchars($linkHref, ENT_QUOTES, 'UTF-8') . '" class="btn btn-action btn-sm qcm-cell-btn" title="' . htmlspecialchars($click_to_open_test, ENT_QUOTES, 'UTF-8') . '"><i class="bi bi-play-fill me-1"></i>Continuer</a>';
+                } elseif (isset($allocate['activeManager']) && $allocate['activeManager'] == false) {
+                    $evalLabel = !empty($evaluer_par_vous) ? $evaluer_par_vous : 'Évaluer';
+                    $actionHtml = '<a href="' . htmlspecialchars($linkHref, ENT_QUOTES, 'UTF-8') . '" class="btn btn-action btn-sm qcm-cell-btn" title="' . htmlspecialchars($click_to_open_test, ENT_QUOTES, 'UTF-8') . '"><i class="bi bi-pencil-square me-1"></i>' . htmlspecialchars($evalLabel, ENT_QUOTES, 'UTF-8') . '</a>';
                 } else {
-                    if (isset($allocate['activeManager']) && $allocate['activeManager'] == false) {
-                        $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold small">Progression (0%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill" style="width: 0%;"></div></div><a href="' . $linkHref . '" class="btn btn-primary btn-xs w-100 fw-bold mt-1" title="' . $click_to_open_test . '">' . $evaluer_par_vous . '</a></div>';
-                    } else {
-                        $progress = 100;
-                        $statusHtml = '<div class="d-flex flex-column align-items-center w-100 gap-1"><span class="text-center w-100 fw-bold small">Progression (100%)</span><div class="custom-progress mt-1 w-100"><div class="custom-progress-fill silent-progress" style="width: 100%;"></div></div><span class="badge bg-success fs-6 mt-1 w-100 fw-bold">' . $effectue . '</span></div>';
-                    }
+                    $progress = 100;
                 }
+                $levelCell = array(
+                    'isAvailable' => true,
+                    'progress' => $progress,
+                    'actionHtml' => $actionHtml,
+                );
             }
-            $levelComponent = renderLevelBadge($levelNum, $levelLabel);
-            $userLevels[] = [
-                'level' => $levelComponent,
-                'status' => $statusHtml,
-                'progress' => $progress,
-                'isAvailable' => $isAvailable
-            ];
+            $userLevels[$levelKey] = $levelCell;
         }
         if (!empty($userLevels)) {
-            $collaboratorCards[] = [
+            $collaboratorMatrix[] = array(
                 'name' => $userName,
-                'test' => $maitrise_tache_pro,
-                'icon' => 'bi bi-journal-text',
+                'userId' => (string) $user->_id,
                 'levels' => $userLevels,
-                'userId' => (string)$user->_id
-            ];
+            );
+            $collaboratorCards[] = array(
+                'name' => $userName,
+                'levels' => $userLevels,
+            );
         }
     }
 }
 $filters = [];
-$noPersonalMessage = $showPersonal && empty($factuelCards) && empty($declaratifCards) ? '
-    <div class="text-center py-10">
-        <i class="bi bi-search fs-1 text-light mb-3"></i>
-        <h5 class="text-light mb-1">Aucun test personnel trouvé</h5>
-        <p class="text-light mb-0">Aucun test ne correspond à vos critères.</p>
+$noPersonalMessage = $showPersonal && empty($personalMatrix) ? '
+    <div class="qcm-empty-state">
+        <div class="qcm-empty-icon" aria-hidden="true"><i class="bi bi-clipboard-x"></i></div>
+        <h5>Aucun QCM disponible</h5>
+        <p>Aucune épreuve ne correspond à vos critères pour le moment.</p>
     </div>' : '';
-$noCollaboratorsMessage = $showCollaborators && empty($collaboratorCards) ? '
-    <div class="text-center py-10">
-        <i class="bi bi-search fs-1 text-light mb-3"></i>
-        <h5 class="text-light mb-1">Aucun collaborateur trouvé</h5>
-        <p class="text-light mb-0">Aucun collaborateur ne correspond à vos critères.</p>
-    </div>' : '';
+$noCollaboratorsMessage = '
+    <div class="qcm-empty-state">
+        <div class="qcm-empty-icon" aria-hidden="true"><i class="bi bi-people"></i></div>
+        <h5>Aucun collaborateur à évaluer</h5>
+        <p>Lorsque des techniciens seront rattachés à votre compte manager, leurs évaluations apparaîtront dans ce tableau.</p>
+    </div>';
 // LOGIQUE CORRIGÉE : Adaptation des titres en fonction du type d'utilisateur
-if ($isTechnician) {
-    $title = $list_test_qcm;
-    $introTitle = "Mesurer mes compétences";
-    $introText1 = highlightKeywords("Répondez aux QCM (Question à Choix Multiples) sur les connaissances et les tâches professionnelles pour mesurer vos compétences.", $introKeywords);
+if ($isTechnician || ($showPersonal && !$showCollaboratorsSection)) {
+    $title = "Tests à passer";
+    $introTitle = "Tests à passer";
+    $introText1 = "Chaque niveau comporte 2 tests : <strong>Théorique</strong> (connaissances) et <strong>Pratique</strong> (tâches professionnelles).<br>Le niveau suivant s'ouvre quand les 2 tests du niveau sont terminés.";
     $introText2 = highlightKeywords('Cliquez sur le bouton "Commencer le QCM" pour démarrer un nouveau QCM ou "Continuer" pour reprendre un QCM en cours.', $guideKeywords);
     $titleIcon = "bi bi-clipboard-check fs-1";
 } elseif ($showPersonal && $showCollaborators) {
@@ -271,7 +391,7 @@ if ($isTechnician) {
     $introText1 = highlightKeywords("Complétez les QCM (Question à Choix Multiples) pour Mesurer vos compétences ainsi que la maîtrise des tâches professionnelles de vos collaborateurs.", $introKeywords);
     $introText2 = highlightKeywords('Cliquez sur le bouton "Commencer le QCM" pour démarrer un nouveau QCM ou "Continuer" pour reprendre un QCM en cours.', $guideKeywords);
     $titleIcon = "bi bi-clipboard-check fs-1";
-} elseif ($showPersonal && !$showCollaborators) {
+} elseif ($showPersonal && !$showCollaboratorsSection) {
     $title = $list_test_qcm;
     $introTitle = "Mesurez mes compétences techniques";
     $introText1 = highlightKeywords("Répondez aux QCM (Question à Choix Multiples) sur les connaissances et les tâches pour mesurer vos compétences.", $introKeywords);
@@ -289,546 +409,728 @@ $collabContainerId = "collab-tests";
 ?>
 <?php include_once "./partials/header.php"; ?>
 <title><?php echo $title; ?> | CFAO Mobility Academy</title>
-<link rel="stylesheet" href="../../public/css/measure/evaluations.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../../public/css/core/utilities.css">
 <style>
     :root {
-        --primary-gradient: linear-gradient(135deg, #24235c, #e62244);
-        --glass-bg: rgba(255, 255, 255, 0.15);
-        --glass-border: rgba(255, 255, 255, 0.25);
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
-        --transition: all 0.3s ease;
-        --border-radius: 12px;
-        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        --primary-gradient: linear-gradient(135deg, #1e1b4b 0%, #24235c 45%, #e62244 100%);
+        --glass-bg: rgba(255, 255, 255, 0.16);
+        --glass-border: rgba(255, 255, 255, 0.28);
+        --glass-blur: 20px;
+        --shadow-apple-sm: 0 4px 14px rgba(0, 0, 0, 0.06);
+        --shadow-apple-md: 0 16px 40px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        --shadow-apple-lg: 0 24px 50px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        --border-radius: 20px;
+        --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         --primary-color: #e62244;
         --secondary-color: #24235c;
     }
     body {
         font-family: var(--font-family);
-        line-height: 1.6;
-        color: white;
-        font-size: 1.125rem;
+        line-height: 1.5;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     .glass-card {
         background: var(--glass-bg);
-        backdrop-filter: blur(16px);
+        backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
         border: 1px solid var(--glass-border);
         border-radius: var(--border-radius);
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-apple-md);
         transition: var(--transition);
         overflow: hidden;
-        color: white;
+        color: #ffffff;
     }
-    .glass-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); }
     .intro-section {
         background: var(--glass-bg);
-        backdrop-filter: blur(20px);
+        backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
         border: 1px solid var(--glass-border);
         border-radius: var(--border-radius);
-        padding: 2.5rem;
-        margin-bottom: 2.5rem;
+        padding: 1.85rem 2rem;
+        margin-bottom: 1.75rem;
         text-align: center;
-        color: white;
+        color: #ffffff;
+        box-shadow: var(--shadow-apple-md);
     }
-    .personal-section, .collaborator-section {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--border-radius);
-        padding: 2rem;
-        margin-bottom: 2.5rem;
-        color: white;
+    .intro-section .card.glass-effect {
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.38) !important;
+        border-radius: 9999px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+        margin-bottom: 1.25rem !important;
     }
-    .intro-section h4 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-        color: white;
+    .intro-section h1 {
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        letter-spacing: -0.01em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     .intro-section p {
-        font-size: 1.125rem;
-        margin-bottom: 1rem;
-        opacity: 0.9;
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.92);
+        margin-bottom: 0;
+        line-height: 1.55;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
     .highlight {
-        background: rgba(230, 34, 68, 0.2);
-        color: white;
-        font-weight: 700;
-        padding: 0 2px;
-        border-radius: 3px;
-    }
-    .filters-row {
-        display: flex;
-        gap: 1.25rem;
-        flex-wrap: wrap;
-        margin-bottom: 2.5rem;
-        justify-content: center;
-        align-items: flex-end;
-    }
-    .filter-group {
-        flex: 1;
-        min-width: 260px;
-        max-width: 300px;
-    }
-    .filter-group label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-        color: white;
-        font-size: 1.125rem;
-    }
-    .filter-group select {
-        width: 100%;
-        padding: 0.875rem;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        font-size: 1.125rem;
-        transition: var(--transition);
-    }
-    .filter-group select option {
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-    }
-    .filter-group select:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(230, 34, 68, 0.1);
-    }
-    .section-title {
-        font-size: 1.75rem;
+        background: rgba(230, 34, 68, 0.25);
+        color: #ffffff;
         font-weight: 600;
-        color: white;
-        margin-bottom: 1.25rem;
-        padding-left: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 1rem;
-        border-radius: var(--border-radius);
-        border-left: 4px solid var(--primary-color);
+        padding: 0.12em 0.45em;
+        border-radius: 6px;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
     }
-    .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        justify-content: center;
-        gap: 1.75rem;
+    .qcm-table-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius);
         padding: 0;
-        max-height: 70vh;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--primary-color) transparent;
-    }
-    .cards-grid.collab-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .cards-grid::-webkit-scrollbar {
-        width: 6px;
-    }
-    .cards-grid::-webkit-scrollbar-track { background: transparent; }
-    .cards-grid::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 3px;
-    }
-    .cards-grid .test-card,
-    .cards-grid .collab-card {
-        width: 100%;
-    }
-    .test-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: var(--border-radius);
-        padding: 1.75rem;
-        box-shadow: var(--shadow-sm);
-        transition: var(--transition);
-        display: flex;
-        flex-direction: column;
-        height: 220px;
-        color: #333;
-        position: relative;
+        margin-bottom: 1.75rem;
+        color: #ffffff;
+        box-shadow: var(--shadow-apple-md);
         overflow: hidden;
     }
-    .test-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }
-    .test-card.unavailable {
-        filter: grayscale(100%) brightness(0.7);
-        pointer-events: none;
-    }
-    .test-card.unavailable:hover {
-        transform: none;
-        box-shadow: var(--shadow-sm);
-    }
-    .test-top-row {
+    .qcm-section-head {
+        padding: 1.6rem 1.75rem 1.25rem;
         display: flex;
-        flex-direction: row;
-        flex: 1;
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-    .test-icon-container {
-        width: 70px;
-        height: 70px;
-        display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: #e9ecef;
-        border-radius: 50%;
-        margin-right: 1rem;
+        text-align: center;
+    }
+    .qcm-section-title-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-align: center;
+    }
+    .qcm-section-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.22);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
         flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    .test-icon {
-        font-size: 3.5rem;
-        color: #333 !important;
-    }
-    .test-icon::before {
-        color: #333 !important;
-    }
-    .test-content-right-top {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .test-info-div {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-    .test-title {
-        font-size: 1.125rem;
+    .qcm-section-head h3 {
+        margin: 0;
+        font-size: 1.35rem;
         font-weight: 700;
-        color: var(--secondary-color);
-        line-height: 1.2;
-        margin-bottom: 0.5rem;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
-    .test-level {
-        font-size: 0.95rem;
-        color: #666;
-        font-weight: 500;
+    .qcm-section-head p {
+        margin: 0.35rem 0 0;
+        font-size: 0.925rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.45;
+        text-align: center;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
-    .test-status {
+    .qcm-table-wrap {
+        padding: 0 1.5rem 1.5rem;
+        overflow-x: auto;
+    }
+    .qcm-matrix-table {
         width: 100%;
-        margin-top: auto;
-        padding-top: 0.75rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        table-layout: fixed;
+        font-size: 0.9375rem;
     }
-    .test-status .btn,
-    .test-status .badge {
-        font-size: 0.875rem;
-        padding: 0.625rem 1rem;
-        color: white;
-        height: auto;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
+    .qcm-matrix-table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-align: center;
+        padding: 1rem 0.85rem;
+        border: none;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .qcm-matrix-table tbody td,
+    .qcm-matrix-table tbody th {
+        padding: 1.25rem 1rem;
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        text-align: center;
+        background: #ffffff;
+        color: #1e293b;
+        transition: background 0.2s ease;
+    }
+    .qcm-matrix-table tbody tr:last-child td,
+    .qcm-matrix-table tbody tr:last-child th {
+        border-bottom: none;
+    }
+    .qcm-matrix-table tbody tr:hover td,
+    .qcm-matrix-table tbody tr:hover th[scope="row"] {
+        background: #f8fafc;
+    }
+    .qcm-matrix-table tbody th[scope="row"] {
+        font-weight: 600;
+        color: var(--secondary-color);
+        white-space: nowrap;
+    }
+    .qcm-level-cell {
+        display: inline-flex;
         justify-content: center;
-        line-height: 1.3;
-        transition: var(--transition);
+        align-items: center;
     }
-    .test-status .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(230, 34, 68, 0.3);
+    /* Level Badges Apple Style (Junior = Bronze, Senior = Argent, Expert = Or) */
+    .badge-level-bronze,
+    .badge-bronze,
+    .badge-light-bronze,
+    .badge-light-success,
+    .qcm-badge-junior {
+        background: linear-gradient(135deg, rgba(217, 119, 6, 0.14) 0%, rgba(180, 83, 9, 0.20) 100%) !important;
+        color: #8c3e07 !important;
+        border: 1px solid rgba(180, 83, 9, 0.35) !important;
+        border-radius: 9999px !important;
+        padding: 0.42rem 1.15rem !important;
+        font-weight: 700 !important;
+        font-size: 0.82rem !important;
+        letter-spacing: 0.03em !important;
+        box-shadow: 0 1px 3px rgba(140, 62, 7, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.35rem !important;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    .badge-level-silver,
+    .badge-silver,
+    .badge-light-silver,
+    .badge-light-danger,
+    .qcm-badge-senior {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+        color: #334155 !important;
+        border: 1px solid rgba(148, 163, 184, 0.55) !important;
+        border-radius: 9999px !important;
+        padding: 0.42rem 1.15rem !important;
+        font-weight: 700 !important;
+        font-size: 0.82rem !important;
+        letter-spacing: 0.03em !important;
+        box-shadow: 0 1px 3px rgba(100, 116, 139, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.35rem !important;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .badge-level-gold,
+    .badge-gold,
+    .badge-light-gold,
+    .badge-light-warning,
+    .qcm-badge-expert {
+        background: linear-gradient(135deg, rgba(254, 240, 138, 0.65) 0%, rgba(245, 158, 11, 0.28) 100%) !important;
+        color: #78350f !important;
+        border: 1px solid rgba(217, 119, 6, 0.45) !important;
+        border-radius: 9999px !important;
+        padding: 0.42rem 1.15rem !important;
+        font-weight: 700 !important;
+        font-size: 0.82rem !important;
+        letter-spacing: 0.03em !important;
+        box-shadow: 0 1px 4px rgba(202, 138, 4, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.35rem !important;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+    /* Cell Inner & Progress Stack */
+    .qcm-cell-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        width: min(220px, 100%);
+        margin: 0 auto;
+    }
+    .qcm-cell-progress-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.25rem;
+        width: 100%;
     }
     .custom-progress {
-        height: 6px;
-        background-color: #e9ecef;
-        border-radius: 3px;
+        height: 7px;
+        background-color: #e2e8f0;
+        border-radius: 9999px;
         overflow: hidden;
         position: relative;
-        margin: 0.5rem 0;
+        margin: 0;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
     }
     .custom-progress-fill {
         height: 100%;
-        background: #007bff;
-        border-radius: 3px;
-        transition: width 0.4s ease;
+        background: #cbd5e1;
+        border-radius: 9999px;
+        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         overflow: hidden;
     }
-    .custom-progress-fill::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-        animation: shimmer 2s infinite;
+    .custom-progress-fill.progress-active {
+        background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
     }
-    @keyframes shimmer {
-        0% { left: -100%; }
-        100% { left: 100%; }
+    .custom-progress-fill.progress-complete {
+        background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+        box-shadow: 0 1px 3px rgba(5, 150, 105, 0.3);
     }
-    .silent-progress::after {
-        display: none;
-    }
-    .collab-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: var(--border-radius);
-        padding: 1.75rem;
-        box-shadow: var(--shadow-sm);
-        transition: var(--transition);
-        display: flex;
-        flex-direction: column;
-        height: 260px;
-        color: #333;
-        position: relative;
-        overflow: hidden;
-    }
-    .collab-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }
-    .collab-header {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin-bottom: 1rem;
-        flex: 1;
-    }
-    .collab-icon {
-        font-size: 3.5rem;
-        color: #333;
-        background: #e9ecef;
-        width: 70px;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-    .collab-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .collab-name {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: var(--secondary-color);
-        line-height: 1.2;
-        margin-bottom: 0.25rem;
-    }
-    .collab-test {
-        font-size: 0.95rem;
-        color: #666;
-        font-weight: 500;
-    }
-    .levels-container {
-        width: 100%;
-        margin-top: auto;
-        padding-top: 0.75rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-    .levels-row {
-        display: flex;
-        gap: 0.25rem;
-        justify-content: space-around;
-    }
-    .level-item {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        text-align: center;
-    }
-    .level-item.unavailable {
-        filter: grayscale(100%) brightness(0.7);
-        pointer-events: none;
-    }
-    .level-badge {
-        font-size: 0.875rem;
-        margin-bottom: 0.25rem;
-        color: #333;
-    }
-    .level-status {
-        width: 100%;
-    }
-    .level-status .btn,
-    .level-status .badge {
+    .qcm-cell-pct {
         font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        color: white;
-        border-radius: 6px;
+        font-weight: 600;
+        color: #64748b;
+        text-align: center;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.01em;
+    }
+    /* Buttons & Status Pill Badges */
+    .btn-action,
+    .qcm-cell-btn {
+        background: var(--primary-gradient) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        font-size: 0.8125rem !important;
+        font-weight: 600 !important;
+        padding: 0.45rem 1.15rem !important;
+        border-radius: 9999px !important;
+        white-space: nowrap !important;
+        letter-spacing: 0.015em !important;
+        box-shadow: 0 4px 12px rgba(230, 34, 68, 0.28), 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+        transition: var(--transition) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.35rem !important;
+        text-decoration: none !important;
+        width: 100%;
+        max-width: 200px;
+    }
+    .btn-action:hover,
+    .qcm-cell-btn:hover {
+        color: #ffffff !important;
+        filter: brightness(1.08) !important;
+        transform: translateY(-1.5px) !important;
+        box-shadow: 0 6px 18px rgba(230, 34, 68, 0.38), 0 2px 4px rgba(0, 0, 0, 0.12) !important;
+    }
+    .btn-action:active,
+    .qcm-cell-btn:active {
+        transform: translateY(0) scale(0.98) !important;
+        box-shadow: 0 2px 6px rgba(230, 34, 68, 0.25) !important;
+    }
+    .status-completed {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.42rem 1.1rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.015em;
+        color: #047857;
+        background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        border-radius: 9999px;
+        box-shadow: 0 1px 3px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        width: 100%;
+        max-width: 200px;
+    }
+    .status-completed i {
+        font-size: 0.95rem;
+        color: #10b981;
+    }
+    .qcm-badge-muted {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.4rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #94a3b8;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        letter-spacing: 0.01em;
+    }
+    .qcm-cell-empty {
+        color: #cbd5e1;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    /* Collaborator Row Details */
+    .collab-name-cell {
+        font-weight: 600;
+        color: var(--secondary-color);
+        text-align: left !important;
+        padding-left: 1.5rem !important;
+    }
+    .collab-user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .collab-user-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+        color: #64748b;
         display: flex;
         align-items: center;
         justify-content: center;
-        line-height: 1.2;
-        transition: var(--transition);
-        height: auto;
+        font-size: 1rem;
+        flex-shrink: 0;
+        border: 1px solid #e2e8f0;
     }
-    .level-status .custom-progress {
-        height: 4px;
-        margin: 0.125rem 0;
-        width: 100%;
-        background-color: #e9ecef;
-        border-radius: 2px;
+    .collab-user-name {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.925rem;
     }
-    .level-status .custom-progress-fill {
-        background: #007bff;
-        transition: width 0.3s ease;
-        height: 100%;
+    /* Empty State */
+    .qcm-empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: #475569;
     }
-    .level-status .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(230, 34, 68, 0.3);
+    .qcm-empty-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        border-radius: 16px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.65rem;
+        color: #94a3b8;
     }
-    .small { font-size: 0.8rem; }
-    .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+    .qcm-empty-state h5 {
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+        font-size: 1.1rem;
+    }
+    .qcm-empty-state p {
+        margin: 0 auto;
+        max-width: 420px;
+        line-height: 1.55;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+    /* Lisibilité : cartes opaques, texte sombre (le fond flouté rouge écrasait le texte blanc). */
+    .intro-section,
+    .qcm-table-section.glass-card {
+        background: rgba(255, 255, 255, 0.97);
+        color: #1e293b;
+    }
+    .intro-section .card.glass-effect {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .intro-section h1 {
+        color: #24235c !important;
+        text-shadow: none;
+    }
+    .intro-section h1 i { color: #e62244; }
+    .intro-section p {
+        color: #475569;
+        text-shadow: none;
+        font-size: 1rem;
+    }
+    .intro-section p strong { color: #24235c; }
+    .qcm-matrix-table thead th { color: #24235c; font-size: 0.95rem; }
+    .qcm-col-sub {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #64748b;
+        text-transform: none;
+        letter-spacing: 0;
+    }
     @media (max-width: 768px) {
-        .cards-grid {
-            grid-template-columns: 1fr;
-        }
-        .cards-grid.collab-grid {
-            grid-template-columns: 1fr;
-        }
-        .test-top-row,
-        .collab-header {
-            flex-direction: column;
-        }
-        .test-icon-container,
-        .collab-icon {
-            width: 100%;
-            height: auto;
-            padding: 1rem 0;
-            margin-right: 0;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-        .test-content-right-top,
-        .collab-content {
-            width: 100%;
-            padding-left: 0;
-        }
-        .test-card,
-        .collab-card {
-            height: auto;
-        }
-        .filters-row { flex-direction: column; align-items: stretch; }
-        .intro-section { padding: 1.75rem; }
-        .levels-row { flex-direction: column; gap: 0.5rem; }
+        .intro-section { padding: 1.25rem; }
+        .qcm-table-wrap { padding: 0.75rem; }
+        .qcm-section-head { padding: 1rem 1.25rem; }
+    }
+
+    /* ===== Parcours personnel : cartes par niveau ===== */
+    .lq-title-card { background: #fff !important; border-radius: 25px !important;
+        box-shadow: 0 8px 32px 0 rgba(31,38,135,.15); border: 1px solid rgba(255,255,255,.18); }
+    .lq-title { margin: 0; font-size: 1.9rem; font-weight: 700; color: #101828; }
+    .lq-subtitle { margin: 8px auto 0; max-width: 760px; font-size: 1.05rem; line-height: 1.55; color: #475467; }
+    .lq-glass { background: rgba(255,255,255,.88) !important; backdrop-filter: blur(18px);
+        border-radius: 18px !important; border: 1px solid rgba(255,255,255,.18) !important;
+        box-shadow: 0 8px 32px 0 rgba(31,38,135,.18) !important; }
+
+    .lq-summary { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .lq-summary-text { display: flex; flex-direction: column; min-width: 180px; }
+    .lq-summary-label { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #667085; }
+    .lq-summary-count { font-size: 1.15rem; color: #344054; }
+    .lq-summary-count strong { font-size: 1.6rem; color: #101828; }
+    .lq-summary-bar { flex: 1 1 240px; height: 12px; border-radius: 99px; background: #eaecf0; overflow: hidden; }
+    .lq-summary-bar span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #12b76a, #039855); }
+    .lq-summary-pct { font-size: 1.6rem; font-weight: 800; color: #039855; font-variant-numeric: tabular-nums; }
+
+    .lq-table-wrap { background: #fff; border: 1px solid #eaecf0; border-radius: 12px; }
+    .lq-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 0; }
+    .lq-table thead th { background: #f9fafb; padding: 14px 20px; font-size: .9rem; font-weight: 700; color: #667085;
+        text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #eaecf0; white-space: nowrap; }
+    .lq-table thead th.lq-lvl { text-align: center; width: 22%; }
+    .lq-table tbody td { padding: 18px 20px; border-bottom: 1px solid #eaecf0; vertical-align: middle; }
+    .lq-table tbody tr:last-child td { border-bottom: 0; }
+    .lq-table tbody tr:hover td { background: #fcfcfd; }
+    .lq-table td.lq-lvl { text-align: center; }
+    .lq-test { display: flex; align-items: center; gap: 12px; min-width: 220px; }
+    .lq-test-icon { width: 42px; height: 42px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center;
+        background: #eff8ff; color: #175cd3; font-size: 1.15rem; }
+    .lq-test-icon i { color: inherit; }
+    .lq-test-title { font-size: 1.15rem; font-weight: 600; color: #101828; }
+    .lq-test-sub { font-size: .9rem; color: #667085; }
+    .lq-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 18px; border-radius: 8px;
+        font-size: 1.05rem; font-weight: 600; text-decoration: none; white-space: nowrap; transition: background .15s, box-shadow .15s; }
+    .lq-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(41,112,255,.24); }
+    .lq-btn-primary { background: #175cd3; color: #fff; box-shadow: 0 1px 2px rgba(16,24,40,.08); }
+    .lq-btn-primary:hover { background: #1849a9; color: #fff; }
+    .lq-btn-resume { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
+    .lq-btn-resume:hover { background: #fef0c7; color: #b54708; }
+    .lq-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 99px;
+        font-size: 1rem; font-weight: 500; white-space: nowrap; }
+    .lq-btn i, .lq-pill i { color: inherit; }
+    .lq-pill-done { background: #ecfdf3; color: #067647; }
+    .lq-pill-na { background: #f2f4f7; color: #667085; }
+    @media (max-width: 767px) {
+        .lq-table thead th, .lq-table tbody td { padding: 12px 14px; }
     }
 </style>
 <?php openBackgroundContainer(); ?>
 <div class="post fs-5 d-flex flex-column-fluid" id="kt_post">
     <div class="container-xxl">
         <div class="row g-4 mb-4">
-            <div class="col-12">
-                <div class="intro-section glass-card">
-                    <?php renderTitleSection($titleIcon, [], $introTitle); ?>
-                    <p><?php echo $introText1; ?></p>
-                    <p><?php echo $introText2; ?></p>
-                </div>
-            </div>
-            <?php if ($showPersonal): ?>
-                <div class="col-12">
-                    <div class="personal-section glass-card">
-                        <?php if ($showSubsectionTitle && !$isTechnician): ?>
-                            <?php renderTitleSection('ki-duotone ki-chart fs-2 me-3', [], 'Mesurer mes compétences'); ?>
-                        <?php endif; ?>
-                        <?php if (empty($factuelCards) && empty($declaratifCards)): ?>
-                            <?php echo $noPersonalMessage; ?>
-                        <?php else: ?>
-                            <div class="row mb-4">
-                                <?php if (($testTypeFilter == 'all' || $testTypeFilter == 'Factuel') && !empty($factuelCards)): ?>
-                                    <div class="col-lg-<?php echo ($testTypeFilter == 'all' && !empty($declaratifCards)) ? '6' : '12'; ?>">
-                                        <?php renderTitleSection('bi bi-clipboard-data fs-2 me-3', [], $connaissances); ?>
-                                        <div class="cards-grid" id="factuel-tests">
-                                            <?php foreach ($factuelCards as $card): ?>
-                                                <div class="test-card glass-card <?php echo $card['isAvailable'] ? '' : 'unavailable'; ?>">
-                                                    <div class="test-top-row">
-                                                        <div class="test-icon-container">
-                                                            <i class="<?php echo htmlspecialchars($card['icon']); ?> test-icon"></i>
-                                                        </div>
-                                                        <div class="test-content-right-top">
-                                                            <div class="test-info-div">
-                                                                <div class="test-title"><?php echo htmlspecialchars($card['test']); ?></div>
-                                                                <div class="test-level"><?php echo $card['level']; ?></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="test-status"><?php echo $card['status']; ?></div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if (($testTypeFilter == 'all' || $testTypeFilter == 'Declaratif') && !empty($declaratifCards)): ?>
-                                    <div class="col-lg-<?php echo ($testTypeFilter == 'all' && !empty($factuelCards)) ? '6' : '12'; ?>">
-                                        <?php renderTitleSection('bi bi-journal-text fs-2 me-3', [], $tache_pro); ?>
-                                        <div class="cards-grid" id="declaratif-tests">
-                                            <?php foreach ($declaratifCards as $card): ?>
-                                                <div class="test-card glass-card <?php echo $card['isAvailable'] ? '' : 'unavailable'; ?>">
-                                                    <div class="test-top-row">
-                                                        <div class="test-icon-container">
-                                                            <i class="<?php echo htmlspecialchars($card['icon']); ?> test-icon"></i>
-                                                        </div>
-                                                        <div class="test-content-right-top">
-                                                            <div class="test-info-div">
-                                                                <div class="test-title"><?php echo htmlspecialchars($card['test']); ?></div>
-                                                                <div class="test-level"><?php echo $card['level']; ?></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="test-status"><?php echo $card['status']; ?></div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
+            <!-- Carte titre (même gabarit que bilanTestNotes / userManagerList) -->
+            <div class="col-12 pt-5">
+                <div class="card lq-title-card">
+                    <div class="card-body text-center py-4 px-6">
+                        <h1 class="lq-title"><i class="<?php echo htmlspecialchars($titleIcon, ENT_QUOTES, 'UTF-8'); ?> text-secondary me-3" aria-hidden="true"></i><?php echo $introTitle; ?></h1>
+                        <p class="lq-subtitle"><?php echo $introText1; ?></p>
                     </div>
                 </div>
-            <?php endif; ?>
-            <?php if ($showCollaborators): ?>
+            </div>
+            <?php if ($showPersonal):
+                // Parcours personnel : une carte par niveau, 2 tests (Théorique / Pratique) par carte
+                $lqTypes = array(
+                    'Factuel'    => array('Théorique', $connaissances, 'bi-book'),
+                    'Declaratif' => array('Pratique', $tache_pro, 'bi-tools'),
+                );
+                $lqLevels = array();
+                $lqTotal = 0;
+                $lqDone = 0;
+                foreach ($levelData as $levelKey => $data) {
+                    if ($levelFilter !== 'all' && $levelKey !== $levelFilter) {
+                        continue;
+                    }
+                    $tiles = array();
+                    $avail = 0;
+                    $done = 0;
+                    foreach ($lqTypes as $type => $meta) {
+                        if ($testTypeFilter !== 'all' && $testTypeFilter !== $type) {
+                            continue;
+                        }
+                        if (empty($personalMatrix[$levelKey][$type])) {
+                            continue;
+                        }
+                        $cell = $personalMatrix[$levelKey][$type];
+                        $tiles[$type] = $cell;
+                        $lqTotal++;
+                        if (!empty($cell['isAvailable'])) {
+                            $avail++;
+                            if ((int) $cell['progress'] >= 100) {
+                                $done++;
+                                $lqDone++;
+                            }
+                        }
+                    }
+                    if (empty($tiles)) {
+                        continue;
+                    }
+                    if ($avail === 0) {
+                        $state = 'locked';
+                    } elseif ($done === count($tiles)) {
+                        $state = 'done';
+                    } else {
+                        $state = 'current';
+                    }
+                    $lqLevels[$levelKey] = array('label' => $data[1], 'num' => $data[0], 'tiles' => $tiles, 'state' => $state, 'done' => $done);
+                }
+                $lqPct = $lqTotal > 0 ? (int) round($lqDone * 100 / $lqTotal) : 0;
+            ?>
+                <?php if (empty($lqLevels)): ?>
                 <div class="col-12">
-                    <div class="collaborator-section glass-card">
-                        <?php renderTitleSection('ki-duotone ki-chart fs-2 me-3', [], 'Mesurer les compétences de mes collaborateurs'); ?>
-                        <div class="cards-grid collab-grid" id="<?php echo $collabContainerId; ?>">
-                            <?php if (!empty($collaboratorCards)): ?>
-                                <?php foreach ($collaboratorCards as $card): ?>
-                                    <div class="collab-card glass-card">
-                                        <div class="collab-header">
-                                            <div class="collab-icon">
-                                                <i class="<?php echo htmlspecialchars($card['icon']); ?>"></i>
-                                            </div>
-                                            <div class="collab-content">
-                                                <div class="collab-name"><?php echo $card['name']; ?></div>
-                                                <div class="collab-test"><?php echo $card['test']; ?></div>
-                                            </div>
-                                        </div>
-                                        <div class="levels-container">
-                                            <div class="levels-row">
-                                                <?php foreach ($card['levels'] as $level): ?>
-                                                    <div class="level-item <?php echo $level['isAvailable'] ? '' : 'unavailable'; ?>">
-                                                        <div class="level-badge"><?php echo $level['level']; ?></div>
-                                                        <div class="level-status"><?php echo $level['status']; ?></div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <?php echo $noCollaboratorsMessage; ?>
-                            <?php endif; ?>
+                    <div class="qcm-table-section glass-card"><?php echo $noPersonalMessage; ?></div>
+                </div>
+                <?php else: ?>
+                <!-- Barre de progression globale -->
+                <div class="col-12">
+                    <div class="card lq-glass">
+                        <div class="card-body py-4 px-5 lq-summary">
+                            <div class="lq-summary-text">
+                                <span class="lq-summary-label"><?php echo $showCollaboratorsSection ? 'Mes tests' : 'Mon parcours'; ?></span>
+                                <span class="lq-summary-count"><strong><?php echo $lqDone; ?></strong> / <?php echo $lqTotal; ?> tests terminés</span>
+                            </div>
+                            <div class="lq-summary-bar" role="progressbar" aria-valuenow="<?php echo $lqPct; ?>" aria-valuemin="0" aria-valuemax="100">
+                                <span style="width: <?php echo $lqPct; ?>%"></span>
+                            </div>
+                            <span class="lq-summary-pct"><?php echo $lqPct; ?>%</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Tableau : une ligne par type de test, une colonne par niveau (même gabarit que userManagerList) -->
+                <div class="col-12">
+                    <div class="card lq-glass">
+                        <div class="card-body p-4">
+                            <div class="table-responsive lq-table-wrap">
+                                <table class="lq-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Test</th>
+                                            <?php foreach ($lqLevels as $levelKey => $lvl): ?>
+                                            <th scope="col" class="lq-lvl"><?php echo htmlspecialchars($level . ' ' . $lvl['label'], ENT_QUOTES, 'UTF-8'); ?></th>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($lqTypes as $type => $meta):
+                                            if ($testTypeFilter !== 'all' && $testTypeFilter !== $type) {
+                                                continue;
+                                            }
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <div class="lq-test">
+                                                    <span class="lq-test-icon"><i class="bi <?php echo $meta[2]; ?>" aria-hidden="true"></i></span>
+                                                    <div>
+                                                        <div class="lq-test-title"><?php echo $meta[0]; ?></div>
+                                                        <div class="lq-test-sub"><?php echo htmlspecialchars($meta[1], ENT_QUOTES, 'UTF-8'); ?></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <?php foreach ($lqLevels as $levelKey => $lvl):
+                                                $cell = isset($lvl['tiles'][$type]) ? $lvl['tiles'][$type] : null;
+                                                $available = $cell && !empty($cell['isAvailable']);
+                                                $progress = $available ? (int) $cell['progress'] : 0;
+                                            ?>
+                                            <td class="lq-lvl">
+                                                <?php if (!$cell): ?>
+                                                    <span class="lq-pill lq-pill-na"><i class="bi bi-dash" aria-hidden="true"></i><?php echo $non_disponible; ?></span>
+                                                <?php elseif (!$available): ?>
+                                                    <span class="lq-pill lq-pill-na" title="<?php echo htmlspecialchars($cell['unavailableLabel'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-lock-fill" aria-hidden="true"></i>Verrouillé</span>
+                                                <?php elseif ($progress >= 100): ?>
+                                                    <span class="lq-pill lq-pill-done"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><?php echo $effectue; ?></span>
+                                                <?php elseif (!empty($cell['href'])): ?>
+                                                    <?php if ($cell['actionKind'] === 'resume'): ?>
+                                                    <a href="<?php echo htmlspecialchars($cell['href'], ENT_QUOTES, 'UTF-8'); ?>" class="lq-btn lq-btn-resume"><i class="bi bi-hourglass-split" aria-hidden="true"></i><?php echo htmlspecialchars($cell['actionLabel'], ENT_QUOTES, 'UTF-8'); ?> · <?php echo $progress; ?>%</a>
+                                                    <?php else: ?>
+                                                    <a href="<?php echo htmlspecialchars($cell['href'], ENT_QUOTES, 'UTF-8'); ?>" class="lq-btn lq-btn-primary"><?php echo htmlspecialchars($cell['actionLabel'], ENT_QUOTES, 'UTF-8'); ?> <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+            <?php endif; ?>
+            <?php if ($showCollaboratorsSection): ?>
+                <div class="col-12">
+                    <div class="qcm-table-section glass-card">
+                        <div class="qcm-section-head">
+                            <div class="qcm-section-title-wrap">
+                                <span class="qcm-section-icon"><i class="bi bi-people-fill"></i></span>
+                                <h3>Mesure les compétences de mes collaborateurs</h3>
+                            </div>
+                            <p>Évaluation des tâches professionnelles par technicien et par niveau</p>
+                        </div>
+                        <?php if (empty($collaboratorMatrix)): ?>
+                            <?php echo $noCollaboratorsMessage; ?>
+                        <?php else: ?>
+                            <div class="qcm-table-wrap">
+                                <table class="qcm-matrix-table" id="<?php echo htmlspecialchars($collabContainerId, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="width: 28%;">Collaborateur</th>
+                                            <?php foreach ($levelData as $levelKey => $data):
+                                                if ($levelFilter !== 'all' && $levelKey !== $levelFilter) {
+                                                    continue;
+                                                }
+                                                ?>
+                                                <th scope="col"><?php echo renderLevelBadge($data[0], $data[1]); ?></th>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($collaboratorMatrix as $row): ?>
+                                            <tr>
+                                                <td class="collab-name-cell">
+                                                    <div class="collab-user-info">
+                                                        <span class="collab-user-avatar"><i class="bi bi-person-fill"></i></span>
+                                                        <span class="collab-user-name"><?php echo $row['name']; ?></span>
+                                                    </div>
+                                                </td>
+                                                <?php foreach ($levelData as $levelKey => $data):
+                                                    if ($levelFilter !== 'all' && $levelKey !== $levelFilter) {
+                                                        continue;
+                                                    }
+                                                    $cell = isset($row['levels'][$levelKey]) ? $row['levels'][$levelKey] : null;
+                                                    ?>
+                                                    <td><?php echo qcmRenderCollabMatrixCell($cell, $effectue); ?></td>
+                                                <?php endforeach; ?>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endif; ?>

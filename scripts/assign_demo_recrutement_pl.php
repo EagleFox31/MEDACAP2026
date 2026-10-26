@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Assigne le dernier paper PL multi-marques à un ou plusieurs comptes démo.
  *
@@ -19,21 +20,35 @@ const FIXED_SUBSIDIARY = 'CFAO MOBILITY CAMEROON';
 const FIXED_DEPARTMENT = 'Equipment & Motors';
 const FIXED_COUNTRY = 'Cameroun';
 
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://localhost:27017';
-$db = (new Client($uri))->academy;
+$mongoUri = medacapMongoUri('mongodb://10.68.0.7:27017');
+$paperIdArg = null;
+foreach ($argv as $arg) {
+    if (strpos($arg, '--mongo-uri=') === 0) {
+        $mongoUri = trim(substr($arg, 12));
+    }
+    if (strpos($arg, '--paper-id=') === 0) {
+        $paperIdArg = trim(substr($arg, 11));
+    }
+}
+
+$db = (new Client($mongoUri))->academy;
 $users = $db->users;
 $papers = $db->papers;
 
-$paper = $papers->findOne(
-    [
-        'active' => true,
-        '$and' => [
-            ['label' => new Regex('Poids Lourd', 'i')],
-            ['label' => ['$not' => new Regex('Renault Truck', 'i')]],
+if ($paperIdArg && preg_match('/^[a-f0-9]{24}$/i', $paperIdArg)) {
+    $paper = $papers->findOne(['_id' => new ObjectId($paperIdArg), 'active' => true]);
+} else {
+    $paper = $papers->findOne(
+        [
+            'active' => true,
+            '$and' => [
+                ['label' => new Regex('Poids Lourd| PL |Garoua', 'i')],
+                ['label' => ['$not' => new Regex('Renault Truck', 'i')]],
+            ],
         ],
-    ],
-    ['sort' => ['created' => -1]]
-);
+        ['sort' => ['created' => -1]]
+    );
+}
 
 if (!$paper) {
     fwrite(STDERR, "Aucun paper Poids Lourds multi-marques trouvé.\n");
@@ -44,7 +59,9 @@ $campRole = (string)$paper['label'];
 $paperId = (string)$paper['_id'];
 
 $assignAll = in_array('--all', $argv, true);
-$requested = array_values(array_filter(array_slice($argv, 1), static fn($a) => $a !== '--all'));
+$requested = array_values(array_filter(array_slice($argv, 1), function ($a) {
+    return $a !== '--all' && strpos($a, '--paper-id=') !== 0 && strpos($a, '--mongo-uri=') !== 0;
+}));
 
 if ($assignAll) {
     $targets = [];
@@ -74,6 +91,7 @@ foreach ($targets as $username) {
             [
                 '$set' => [
                     'role' => $campRole,
+                    'papers' => [$paper['_id']],
                     'status' => 'New',
                     'active' => true,
                 ],

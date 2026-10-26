@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Dashboard unifié pour participation et résultats aux quizzes/tests
  * Affichage conditionnel basé sur le profil utilisateur.
@@ -32,7 +33,7 @@ if(isset($_GET['subsidiary']) && $_GET['subsidiary'] == "Toutes les filiales"){
 }
 
 // ===== CONNEXION MONGODB ET COLLECTIONS COMMUNES =====
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 $academy = $conn->academy;
 $users = $academy->users;
 $allocations = $academy->allocations;
@@ -66,7 +67,7 @@ if ($isQCMProfile) {
         private $conn, $collections = [];
 
         private function __construct() {
-            $this->conn = new MongoDB\Client("mongodb://localhost:27017");
+            $this->conn = new MongoDB\Client(medacapMongoUri());
             $academy = $this->conn->academy;
             $this->collections = [
                 'users' => $academy->users,
@@ -358,7 +359,7 @@ if ($isQCMProfile) {
         private $conn, $collections = [];
 
         private function __construct() {
-            $this->conn = new MongoDB\Client("mongodb://localhost:27017");
+            $this->conn = new MongoDB\Client(medacapMongoUri());
             $academy = $this->conn->academy;
             $this->collections = [
                 'users' => $academy->users,

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 
 // Vérifiez si l'utilisateur est connecté
@@ -11,7 +12,7 @@ if (!isset($_SESSION["id"])) {
     $recommendationData = include "processRecommendations.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;

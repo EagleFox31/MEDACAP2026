@@ -1,9 +1,9 @@
 <?php
 /**
- * Compat MongoDB : le projet est verrouillé sur mongodb/mongodb 1.0.0, qui ne
- * connaît que Collection::count(). countDocuments() n'existe qu'à partir de 1.4.0
- * et déclenche sinon un « Call to undefined method » (Error, pas Exception).
- * Ce helper fonctionne sur les deux versions.
+ * Compat MongoDB. La bibliothèque 1.0.0 ne connaît que Collection::count().
+ * countDocuments() existe à partir de 1.4.0. Ce dossier vise 1.21, le site
+ * WAMP encore en service reste en 1.0.0 : le helper couvre les deux.
+ * Ne pas appeler countDocuments() directement dans les pages.
  */
 
 if (!function_exists('medacapCountDocuments')) {

@@ -30,6 +30,7 @@ try {
         'planningStatus' => $pif['planningStatus'],
         'brandPifStats' => $pif['brandPifStats'],
         'brandPlanningSummary' => $pif['brandPlanningSummary'] ?? [],
+        'pifTechnicians' => $pif['pifTechnicians'] ?? [],
     ]);
 } catch (Throwable $e) {
     portalApiJson(['error' => 'Server error', 'message' => $e->getMessage()], 500);

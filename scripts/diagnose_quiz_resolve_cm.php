@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 require __DIR__ . '/../vendor/autoload.php';
 
 function mongoToArray($field): array {
@@ -8,7 +9,7 @@ function mongoToArray($field): array {
     return [];
 }
 
-$client = new MongoDB\Client('mongodb://10.68.0.7:27017');
+$client = new MongoDB\Client(medacapMongoUri('mongodb://10.68.0.7:27017'));
 $vehicles = $client->academy->vehicles;
 $quizzes = $client->academy->quizzes;
 

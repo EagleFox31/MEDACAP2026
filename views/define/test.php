@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // performance_test.php
 
 require_once "../../vendor/autoload.php"; // Ajustez le chemin si nécessaire
@@ -6,7 +7,7 @@ require_once "configGF.php";
 require_once "TrainingRecommendation.php"; // Ajustez le chemin si nécessaire
 
 // Initialiser MongoDB Client
-$client = new MongoDB\Client("mongodb://localhost:27017"); // Ajustez l'URI si nécessaire
+$client = new MongoDB\Client(medacapMongoUri()); // Ajustez l'URI si nécessaire
 $academy = $client->academy; // Remplacez 'academy' par le nom réel de votre base de données
 
 // Charger la configuration

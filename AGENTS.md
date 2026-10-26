@@ -112,7 +112,7 @@ Warning: Illegal string offset 'enrolled' / 'threshold_pct'
 
 - `.page-background-container { overflow: hidden }` peut couper le contenu — ajouter une classe scope (`rr-report-scope`) avec `overflow: visible; height: auto;` si besoin.
 - Ne pas utiliser `scrollIntoView({ block: 'start' })` sous un header fixe — compenser la hauteur de `#kt_header` avant `window.scrollTo`.
-- `#kt_header .title-banner` a `overflow-hidden` : titres longs peuvent être tronqués en haut.
+- `#kt_header .title-banner` : centré dans le header (compact, sans `padding-left` fixe) ; titres longs en `clamp()` — ne pas remettre `p-4 mb-4` ni `overflow-hidden` sur le bandeau module.
 
 **Modèle minimal page Measure :**
 
@@ -207,6 +207,36 @@ php scripts/report_pl2026_composers.php --paper-id=6a82dbf45b3b2bb665098ec2 --mo
 php scripts/export_paper_scores.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://10.68.0.7:27017
 php cronjobs/check_paper_completion_threshold.php
 php views/measure/scripts/setup_rapport_recrutement_menu.php
+# QCM offline brousse (export sur prod, import retour fichier)
+php scripts/export_offline_qcm.php --agency=Bertoua --mongo-uri=mongodb://10.68.0.7:27017
+php scripts/import_offline_qcm.php --file=exports/offline-qcm/Bertoua/Michel_BAYEMI_Junior_QCM.html
 ```
 
+## QCM offline (brousse / hors réseau CFAO)
+
+- Export : `scripts/export_offline_qcm.php` → **1 fichier HTML par technicien/niveau** (`Prenom_NOM_Junior_QCM.html`) avec questions intégrées
+- Technicien : double-clic HTML → accueil (contexte épreuve) → saisie nom → compose → « Terminer » → télécharge `*_REPONSES.medacap.json`
+- Import retour RH : `scripts/import_offline_qcm.php --file=...` (HTML complété ou `.medacap.json` legacy)
+- Player dev / démo : `offline-qcm/player/` ; sample autonome : `php scripts/build_offline_sample_html.php` → `sample_QCM.html`
+- Format retour : réponses **dans le HTML** (`#medacap-quiz-data`, status `completed` puis `imported`) ; JSON legacy accepté à l'import
+- Moteur partagé web/offline : `views/measure/includes/quiz_factuel_engine.php` (requis par `userQuizFactuel.php`)
+
 Toujours lancer `php -l` sur les fichiers PHP modifiés avant livraison.
+
+## Déploiement prod
+
+L'utilisateur lance lui-même (copie vers `Y:\` = `http://10.68.0.7/medacap/`) :
+
+```powershell
+.\deploy.ps1 -Version 4 -SpecificFiles "views\measure\X.php","views\language.php"
+```
+
+- `-Version` : `1` PATCH, `2` MINOR, `3` MAJOR, `4` version inchangée (sans le paramètre → prompt interactif).
+- Toujours fournir la commande complète avec la liste des fichiers modifiés ; `-Version 4` par défaut (bump uniquement sur demande).
+- Exclusions : `deploy.exclude`.
+
+## Progression niveaux QCM (Junior → Senior → Expert)
+
+- Déverrouillage quand Factuel **et** Déclaratif du niveau ont `active=true` (`allocation_progression.php`).
+- **Automatique** : à la soumission Factuel/Déclaratif + à chaque ouverture de `ListeDesQcm.php` (`allocationProgression_syncUnlockedLevels`).
+- Rattrapage CLI : `php scripts/fix_stuck_level_unlock_cm.php` (dry-run avec `--dry-run`).

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/medacap_config.php';
 /**
  * Core Bootstrap File for MEDACAP
  * Initializes core functionality and configurations
@@ -19,7 +20,7 @@ require_once BASE_PATH . '/vendor/autoload.php';
 
 // MongoDB Connection
 try {
-    $mongoClient = new MongoDB\Client("mongodb://localhost:27017");
+    $mongoClient = new MongoDB\Client(medacapMongoUri());
     $database = $mongoClient->academy;
 } catch (Exception $e) {
     die("MongoDB connection failed: " . $e->getMessage());

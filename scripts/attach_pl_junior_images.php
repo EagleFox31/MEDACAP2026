@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Pré-attache les noms d'images (champ image) aux 9 questions Junior PL priorité HAUTE.
  * Les fichiers doivent être déposés dans public/files/
@@ -10,7 +11,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://localhost:27017';
+$uri = medacapMongoUri();
 $db = (new Client($uri))->academy;
 
 $map = [

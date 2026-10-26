@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * cronjobs/generate_subsidiary_reports.php
  *
@@ -134,7 +135,7 @@ function calculatePercentage($factuel, $declaratif) {
 // -------- Connexion Mongo --------
 echo "Génération des rapports de filiales...\n";
 
-$conn    = new Client("mongodb://localhost:27017");
+$conn    = new Client(medacapMongoUri());
 $academy = $conn->academy;
 
 // Collections

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
     session_start();
     include_once "../language.php";
 
@@ -8,7 +9,7 @@
     } else {
         require_once "../../vendor/autoload.php";
         // Create connection
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
 
         // Connecting in database
         $academy = $conn->academy;
@@ -637,7 +638,7 @@
 <?php include "./partials/footer.php"; ?>
 
 <!-- <script>
-    const results = <?php echo json_encode($results, JSON_HEX_APOS | JSON_HEX_QUOT); ?>
+    const results = <?php echo json_encode(isset($results) ? $results : null, JSON_HEX_APOS | JSON_HEX_QUOT); ?>
 
     console.log('results', results);
 </script> -->

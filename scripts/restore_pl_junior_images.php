@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Restaure les champs image Junior PL après le bulk rename abusif.
  * - Vide image sur les 67 questions texte-seul (PL26-JR-{id24}.png)
@@ -13,7 +14,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://127.0.0.1:27017';
+$uri = medacapMongoUri();
 $db = (new Client($uri))->academy;
 
 $keep9 = [

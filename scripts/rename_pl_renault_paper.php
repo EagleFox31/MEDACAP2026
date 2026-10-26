@@ -1,10 +1,11 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 require __DIR__ . '/../vendor/autoload.php';
 
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://10.68.0.7:27017';
+$uri = medacapMongoUri('mongodb://10.68.0.7:27017');
 $db = (new Client($uri))->academy;
 
 $renaultOnlyId = '6a452b7dc0904052260e9eb2';

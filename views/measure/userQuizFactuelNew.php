@@ -9,6 +9,7 @@
  */
 
 declare(strict_types=0);
+require_once __DIR__ . '/../../core/medacap_config.php';
 $___start = microtime(true);                              // micro‑bench
 
 session_start();
@@ -25,7 +26,9 @@ if (!isset($_SESSION['id'])) {
 /* ====================================================================
  *  CONSTANTES & CONFIG
  * ==================================================================== */
-const DB_URI  = 'mongodb://localhost:27017';
+if (!defined('DB_URI')) {
+    define('DB_URI', medacapMongoUri());
+}
 const DB_NAME = 'academy';
 
 const COLL_USERS       = 'users';
@@ -282,7 +285,7 @@ function processValidation(array $ctx=null): void
     if(isset($ctx['technician']['firstName'])){
         $tech=$ctx['technician'];$admins=getAdminsDocs($tech,db());if($admins){
             $subject=sprintf('QCM Connaissance finalisé par le Technicien %s %s pour le Niveau %s',$tech['firstName'],$tech['lastName'],$level);
-            $body=sprintf('<p>%s</p><p>Le QCM Connaissance vient d’être finalisé par le technicien <strong>%s&nbsp;%s</strong> pour le niveau <strong>%s</strong>. Vous pouvez consulter son résultat dans MEDACAP.</p>',buildAdminSalutation($admins),htmlspecialchars($tech['firstName']),htmlspecialchars($tech['lastName']),htmlspecialchars($level));
+            $body=sprintf('<p>Le QCM Connaissance vient d’être finalisé par le technicien <strong>%s&nbsp;%s</strong> pour le niveau <strong>%s</strong>. Vous pouvez consulter son résultat dans MEDACAP.</p>',htmlspecialchars($tech['firstName']),htmlspecialchars($tech['lastName']),htmlspecialchars($level));
             sendMailQcmFinalized($admins,$subject,$body,$ctx['manager']['email']??null,getRhAndDpsEmails($tech['subsidiary']??'',db()));
         }
     }

@@ -1,6 +1,6 @@
 {
     "require": {
-        "mongodb/mongodb": "1.0.0",
-        "phpoffice/phpspreadsheet": "^1.25"
+        "mongodb/mongodb": "1.21.5",
+        "phpoffice/phpspreadsheet": "1.30.7"
     }
 }

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 require_once "../../vendor/autoload.php";
 
@@ -141,7 +142,7 @@ $users = null;
 
 try {
     $conn = new MongoDB\Client(
-        "mongodb://localhost:27017",
+        medacapMongoUri(),
         [],
         ['typeMap' => ['root' => 'array', 'document' => 'array']]
     );

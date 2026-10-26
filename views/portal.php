@@ -188,7 +188,7 @@ if (in_array($profile, array_merge($admin_profiles, $user_profiles))) {
 
 $step_links[1] = '404';
 $step_classes[1] = 'card-step unauthorized';
-if (!in_array($profile, ['Technicien', 'Manager'])) {
+if (!in_array($profile, ['Technicien', 'Manager', 'Ressource Humaine'])) {
     $module = $module_names[1];
     $link = $landing_pages[$module]['default'];
     if (isset($landing_pages[$module][$profile])) {
@@ -200,7 +200,7 @@ if (!in_array($profile, ['Technicien', 'Manager'])) {
 
 $step_links[2] = '404';
 $step_classes[2] = 'card-step unauthorized';
-if (in_array($profile, array_merge($admin_profiles, ['Technicien', 'Manager']))) {
+if (in_array($profile, array_merge($admin_profiles, ['Technicien', 'Manager'])) && $profile !== 'Ressource Humaine') {
     $module = $module_names[2];
     $link = $landing_pages[$module]['default'];
     if (isset($landing_pages[$module][$profile])) {

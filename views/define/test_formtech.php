@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // Démarrer la session
 session_start();
 
@@ -16,7 +17,7 @@ if (!isset($_SESSION["id"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Récupérer le profil utilisateur de la session
     $profile = $_SESSION['profile'];

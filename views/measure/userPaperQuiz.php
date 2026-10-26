@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // ============================================================================
 // PAGE CANDIDAT (Cameroun) — Épreuve Figée (Paper) Factuel Mixed
 // QCM 1/1 + ORIENTATION comme pages #N+1, N+2 (ex: 61 & 62)
@@ -57,15 +58,21 @@ function to_oid(?string $id): ?ObjectId {
   try { return ($id && preg_match('/^[0-9a-f]{24}$/i', $id)) ? new ObjectId($id) : null; }
   catch (\Throwable $e) { return null; }
 }
-function collect_aligned_answers(array $post, int $n): array {
-  $tmp=[]; foreach ($post as $k=>$v){
+function collect_aligned_answers(array $post, int $n, array $baseAnswers = []): array {
+  $out = !empty($baseAnswers) ? array_values($baseAnswers) : array_fill(0, $n, 'null');
+  if (count($out) < $n) {
+    $out = array_pad($out, $n, 'null');
+  }
+  $tmp = [];
+  foreach ($post as $k => $v) {
     if (!is_string($k)) continue;
-    if (preg_match('/^answer(\d+)$/',$k,$m)) {
-      $idx=(int)$m[1]; $tmp[$idx]= is_string($v)?$v:'null';
+    if (preg_match('/^answer(\d+)$/', $k, $m)) {
+      $idx = (int)$m[1];
+      if ($idx < $n) {
+        $out[$idx] = is_string($v) ? $v : 'null';
+      }
     }
   }
-  $out=array_fill(0,$n,'null');
-  if ($tmp){ ksort($tmp); foreach($tmp as $i=>$val){ if ($i<$n) $out[$i]=$val; } }
   return $out;
 }
 function col_count(MongoDB\Collection $col, array $filter): int {
@@ -294,7 +301,9 @@ function finalize_exam_close(
   MongoDB\Collection $allocations,
   MongoDB\Collection $exams,
   $allocation,
-  $exam
+  $exam,
+  $db = null,
+  $paperOid = null
 ): void {
   if ($allocation) {
     $allocations->updateOne(
@@ -312,6 +321,10 @@ function finalize_exam_close(
         'updated' => date('Y-m-d H:i:s'),
       ]]
     );
+  }
+  if ($db !== null && $paperOid !== null) {
+    require_once __DIR__ . '/includes/paper_candidate_report_lib.php';
+    paperReportMaybeSendThresholdAlert($db, $paperOid);
   }
 }
 
@@ -376,11 +389,11 @@ function apply_catchup_answers_to_results(
   );
 }
 
-/** 2 minutes par question de rattrapage QCM */
-const CATCHUP_SECONDS_PER_QUESTION = 120;
+/** 1 minute par question de rattrapage QCM */
+const CATCHUP_SECONDS_PER_QUESTION = 60;
 
 /* ---------------- Mongo ---------------- */
-$client   = new Client("mongodb://localhost:27017");
+$client   = new Client(medacapMongoUri());
 $db       = $client->academy;
 
 $users         = $db->users;
@@ -553,6 +566,12 @@ try {
 
 /* ---------------- SAVE / VALID / TIMEUP ---------------- */
 $error_msg = null;
+$first_missing_idx = null;
+$first_unanswered_idx = null;
+$orientationStartIndex = count($paperQOids);
+if (qs_get('err', '') === 'orientation_missing') {
+  $error_msg = "Veuillez répondre aux questions de préférences pour finaliser votre test.";
+}
 /* En mode revue: on ignore toute soumission (lecture seule) */
 if ($reviewMode && $_SERVER['REQUEST_METHOD']==='POST') {
   header("Location: ".$_SERVER['REQUEST_URI']); exit;
@@ -677,8 +696,9 @@ if (!$reviewMode && $_SERVER['REQUEST_METHOD']==='POST') {
       $as_qids = [];
       foreach ($as_qidsRaw as $id) { $o = to_oid(is_string($id)?$id:null); if ($o) $as_qids[]=$o; }
       if (empty($as_qids)) $as_qids = $paperQOids;
-      $as_answers = collect_aligned_answers($_POST, count($as_qids));
-      $as_tot = 0; foreach ($as_answers as $a) if ($a!=='null') $as_tot++;
+      $currentBase = resolve_qcm_answers_snapshot($examArray, $results, $userOid, $paperOid, $paperQOids);
+      $as_answers = collect_aligned_answers($_POST, count($as_qids), $currentBase);
+      $as_tot = 0; foreach ($as_answers as $a) if ($a !== 'null' && $a !== '' && $a !== null) $as_tot++;
       $as_set['questions']=$as_qids; $as_set['answers']=$as_answers; $as_set['total']=$as_tot; $as_set['originalOrder']=$paperQOids;
     }
     if ($exam) {
@@ -714,8 +734,9 @@ if (!$reviewMode && $_SERVER['REQUEST_METHOD']==='POST') {
     foreach ($qidsRaw as $id) { $oid = to_oid(is_string($id)?$id:null); if ($oid) $qids[]=$oid; }
     if (empty($qids)) $qids = $paperQOids;
 
-    $answers = collect_aligned_answers($_POST, count($qids));
-    foreach ($answers as $a) if ($a!=='null') $totalAnswered++;
+    $currentBase = resolve_qcm_answers_snapshot($examArray, $results, $userOid, $paperOid, $paperQOids);
+    $answers = collect_aligned_answers($_POST, count($qids), $currentBase);
+    foreach ($answers as $a) if ($a !== 'null' && $a !== '' && $a !== null) $totalAnswered++;
   }
 
   // === TIMEUP (auto-validate & redirect congrat) ===
@@ -760,13 +781,13 @@ if ($isTimeUp) {
     }
 
     if ($wasPendingChoice) {
-        finalize_exam_close($allocations, $exams, $allocation, $exam);
+        finalize_exam_close($allocations, $exams, $allocation, $exam, $db, $paperOid);
         header("Location: ./congrat");
         exit;
     }
 
     if ($wasCatchupMode && !empty($wasCatchupIndices)) {
-        $baseAnswers = is_array($examArray['answers'] ?? null) ? $examArray['answers'] : [];
+        $baseAnswers = resolve_qcm_answers_snapshot($examArray, $results, $userOid, $paperOid, $paperQOids);
         $mergedAnswers = $baseAnswers;
         foreach ($wasCatchupIndices as $ci) {
             if (isset($answers[$ci])) {
@@ -782,16 +803,21 @@ if ($isTimeUp) {
             $mergedAnswers,
             $wasCatchupIndices
         );
+        $totalMerged = 0;
+        foreach ($mergedAnswers as $ma) {
+            if ($ma !== 'null' && $ma !== '' && $ma !== null) $totalMerged++;
+        }
         if ($exam) {
             $exams->updateOne(['_id' => $exam['_id']], ['$set' => [
                 'answers' => $mergedAnswers,
+                'total' => $totalMerged,
                 'hour' => $hr,
                 'minute' => $mn,
                 'second' => $sc,
                 'updated' => date('Y-m-d H:i:s'),
             ]]);
         }
-        finalize_exam_close($allocations, $exams, $allocation, $exam);
+        finalize_exam_close($allocations, $exams, $allocation, $exam, $db, $paperOid);
         header("Location: ./congrat");
         exit;
     }
@@ -978,6 +1004,9 @@ if ($isTimeUp) {
                 ['$set'=>['active'=>false]]
             ); 
         }
+
+        require_once __DIR__ . '/includes/paper_candidate_report_lib.php';
+        paperReportMaybeSendThresholdAlert($db, $paperOid);
         
         header("Location: ./congrat"); 
         exit;
@@ -1034,6 +1063,9 @@ if ($isTimeUp) {
                 ['$set'=>['active'=>false]]
             ); 
         }
+
+        require_once __DIR__ . '/includes/paper_candidate_report_lib.php';
+        paperReportMaybeSendThresholdAlert($db, $paperOid);
         
         header("Location: ./congrat"); 
         exit;
@@ -1073,7 +1105,7 @@ if ($isTimeUp) {
   // === CLÔTURE après orientation (choix candidat ou fin de temps) ===
   if (isset($_POST['close_exam_after_orientation'])) {
     if ($exam && ($examArray['pendingCatchupChoice'] ?? false)) {
-      finalize_exam_close($allocations, $exams, $allocation, $exam);
+      finalize_exam_close($allocations, $exams, $allocation, $exam, $db, $paperOid);
       header("Location: ./congrat"); exit;
     }
   }
@@ -1104,7 +1136,7 @@ if ($isTimeUp) {
         header("Location: ".$_SERVER['REQUEST_URI']); exit;
       }
     }
-    finalize_exam_close($allocations, $exams, $allocation, $exam);
+    finalize_exam_close($allocations, $exams, $allocation, $exam, $db, $paperOid);
     header("Location: ./congrat"); exit;
   }
 
@@ -1114,7 +1146,7 @@ if ($isTimeUp) {
       ? array_values(array_map('intval', $examArray['catchupIndices']))
       : [];
     if ($exam && $catchupMode && !empty($catchupIdx)) {
-      $baseAnswers = is_array($examArray['answers'] ?? null) ? $examArray['answers'] : [];
+      $baseAnswers = resolve_qcm_answers_snapshot($examArray, $results, $userOid, $paperOid, $paperQOids);
       $mergedAnswers = $baseAnswers;
       foreach ($catchupIdx as $ci) {
         if (isset($answers[$ci])) {
@@ -1125,6 +1157,9 @@ if ($isTimeUp) {
       foreach ($catchupIdx as $ci) {
         if ((string)($mergedAnswers[$ci] ?? 'null') === 'null') {
           $missing++;
+          if ($first_unanswered_idx === null) {
+            $first_unanswered_idx = $ci;
+          }
         }
       }
       if ($missing > 0) {
@@ -1139,14 +1174,19 @@ if ($isTimeUp) {
           $mergedAnswers,
           $catchupIdx
         );
+        $totalNonEmpty = 0;
+        foreach ($mergedAnswers as $ma) {
+          if ($ma !== 'null' && $ma !== '' && $ma !== null) $totalNonEmpty++;
+        }
         $exams->updateOne(['_id' => $exam['_id']], ['$set' => [
           'answers' => $mergedAnswers,
+          'total' => $totalNonEmpty,
           'hour' => $hr,
           'minute' => $mn,
           'second' => $sc,
           'updated' => date('Y-m-d H:i:s'),
         ]]);
-        finalize_exam_close($allocations, $exams, $allocation, $exam);
+        finalize_exam_close($allocations, $exams, $allocation, $exam, $db, $paperOid);
         header("Location: ./congrat"); exit;
       }
     }
@@ -1155,12 +1195,12 @@ if ($isTimeUp) {
   // === VALID ORIENTATION SEULE ===
   if (isset($_POST['valid_orientation'])) {
     if (!orientation_complete($orientationDocs, $orientationAnswers)) {
-        //Message dynamique basé sur les vraies règles
         $error_details = [];
+        $first_missing_idx = null;
         
-        foreach ($orientationDocs as $od) {
+        foreach ($orientationDocs as $i => $od) {
             $oid = (string)$od['_id'];
-            $title = (string)($od['title'] ?? 'Question d\'orientation');
+            $title = (string)($od['title'] ?? 'Question de préférences');
             $min = (int)($od['minSelect'] ?? 0);
             $max = (int)($od['maxSelect'] ?? 0);
             $sel = isset($orientationAnswers[$oid]) ? $orientationAnswers[$oid] : [];
@@ -1168,17 +1208,25 @@ if ($isTimeUp) {
             
             // Vérifier si cette question est incorrecte
             if ($min > 0 && $count < $min) {
-                $error_details[] = "• <strong>" . htmlspecialchars($title) . "</strong> : vous avez sélectionné {$count} option(s), mais le minimum requis est {$min}";
-            }
-            if ($max > 0 && $count > $max) {
-                $error_details[] = "• <strong>" . htmlspecialchars($title) . "</strong> : vous avez sélectionné {$count} option(s), mais le maximum autorisé est {$max}";
+                $error_details[] = $title;
+                if ($first_missing_idx === null) {
+                    $first_missing_idx = $orientationStartIndex + $i;
+                }
+            } elseif ($max > 0 && $count > $max) {
+                $error_details[] = $title;
+                if ($first_missing_idx === null) {
+                    $first_missing_idx = $orientationStartIndex + $i;
+                }
             }
         }
         
-        if (!empty($error_details)) {
-            $error_msg = "<strong>Veuillez corriger les questions d'orientation suivantes :</strong><br><br>" . implode("<br>", $error_details);
+        $missingCount = count($error_details);
+        if ($missingCount === 1) {
+            $error_msg = "Veuillez répondre à la question de préférences : « " . $error_details[0] . " ».";
+        } elseif ($missingCount > 1) {
+            $error_msg = "Veuillez compléter les {$missingCount} questions de préférences restantes pour valider votre parcours.";
         } else {
-            $error_msg = "Merci de compléter correctement toutes les questions d'orientation.";
+            $error_msg = "Merci de compléter correctement toutes les questions de préférences.";
         }
     } else {
       if ($exam) {
@@ -1215,7 +1263,7 @@ if ($isTimeUp) {
         header("Location: ".$_SERVER['REQUEST_URI']); exit;
       }
 
-      finalize_exam_close($allocations, $exams, $allocation, $exam);
+      finalize_exam_close($allocations, $exams, $allocation, $exam, $db, $paperOid);
       header("Location: ./congrat"); exit;
     }
   }
@@ -1226,7 +1274,13 @@ if ($isTimeUp) {
       $error_msg = "Aucune question trouvée.";
     } elseif ($totalAnswered !== count($qids)) {
       $missing = count($qids)-$totalAnswered;
-      $error_msg = "Vous n'avez pas répondu à {$missing} question(s).";
+      foreach ($answers as $ai => $av) {
+        if ((string)$av === 'null' || $av === null || $av === '') {
+          $first_unanswered_idx = $ai;
+          break;
+        }
+      }
+      $error_msg = "Vous n'avez pas répondu à {$missing} question(s) du test théorique.";
     } else {
       // Upsert exam
       if ($exam) {
@@ -1340,6 +1394,8 @@ if ($isTimeUp) {
       if ($oriCompleteNow || empty($orientationDocs)) {
         $allocations->updateOne(['_id'=>$allocation['_id']], ['$set'=>['status'=>'done','active'=>false,'finishedAt'=>date('Y-m-d H:i:s')]]);
         if ($exam) { $exams->updateOne(['_id'=>$exam['_id']], ['$set'=>['active'=>false]]); }
+        require_once __DIR__ . '/includes/paper_candidate_report_lib.php';
+        paperReportMaybeSendThresholdAlert($db, $paperOid);
         header("Location: ./congrat"); exit;
       } else {
         $allocations->updateOne(['_id'=>$allocation['_id']], ['$set'=>['status'=>'awaiting_orientation','active'=>true]]);
@@ -1404,7 +1460,7 @@ $candidate_nav_title = $cand_nav_quiz;
 $candidate_nav_subtitle = $cand_nav_quiz_subtitle;
 ?>
 <?php include_once "partials/header.php"; ?>
-<?php openBackgroundContainer(); ?>
+<?php openBackgroundContainer('candidate-fullscreen-bg'); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
 <style>
@@ -1416,7 +1472,7 @@ $candidate_nav_subtitle = $cand_nav_quiz_subtitle;
   --quiz-radius: 18px;
 }
 body.candidate-portal .container-xxl{
-  padding-top:1.25rem;padding-bottom:1.75rem;max-width:1280px;margin:0 auto;
+  padding-top:1.25rem;padding-bottom:.75rem;max-width:1280px;margin:0 auto;
 }
 .glass{
   background:rgba(255,255,255,.92);
@@ -1425,8 +1481,11 @@ body.candidate-portal .container-xxl{
   border-radius:var(--quiz-radius);
   box-shadow:0 8px 32px rgba(15,23,42,.08), 0 1px 0 rgba(255,255,255,.6) inset;
 }
-.q-card{padding:20px 22px;display:flex;flex-direction:column;height:auto;max-height:none;overflow:hidden}
-#qHost{flex:1;min-height:0;overflow:hidden;padding-right:0}
+.q-card{
+  padding:24px 28px;display:flex;flex-direction:column;
+  height:auto;max-height:none;min-height:460px;overflow:visible;
+}
+#qHost{flex:1 1 auto;min-height:0;overflow:visible;padding-right:0}
 .glass .text-muted{color:#64748b !important}
 
 /* ── Top bar ── */
@@ -1561,10 +1620,14 @@ body.candidate-portal .container-xxl{
 .questions-nav-hint i{color:var(--quiz-blue);margin-right:4px}
 
 /* ── Question card ── */
-.q-label{font-size:1.32rem;font-weight:700;line-height:1.45;margin:4px 0 14px;color:#0f172a}
-.q-layout{display:grid;grid-template-columns:46% 54%;gap:20px;align-items:stretch;flex:1;min-height:0;overflow:hidden}
+.q-label{font-size:1.5rem;font-weight:700;line-height:1.45;margin:4px 0 14px;color:#0f172a;flex-shrink:0}
+.q-layout{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;
+  align-items:start;flex:0 1 auto;min-height:0;width:100%;
+}
+.q-left{display:flex;flex-direction:column;gap:0;min-width:0}
 .quiz-form__ans{
-  display:flex;align-items:flex-start;gap:.65rem;
+  display:flex;align-items:center;gap:.65rem;
   margin:8px 0;border:1.5px solid #e2e8f0;border-radius:14px;
   background:#fff;padding:.85rem 1rem;cursor:pointer;
   transition:border-color .15s,background .15s,box-shadow .15s;
@@ -1574,12 +1637,12 @@ body.candidate-portal .container-xxl{
   border-color:var(--quiz-blue);background:linear-gradient(135deg,#eff6ff 0%,#f0f9ff 100%);
   box-shadow:0 0 0 1px rgba(18,115,234,.12);
 }
-.quiz-form__ans input{margin-top:.2rem;flex-shrink:0;accent-color:var(--quiz-blue)}
-.quiz-form__ans .text{line-height:1.4;color:#1e293b;font-weight:500}
+.quiz-form__ans input{margin-top:0;flex-shrink:0;accent-color:var(--quiz-blue)}
+.quiz-form__ans .text{line-height:1.4;color:#1e293b;font-weight:500;flex:1;min-width:0}
 
 /* ── Footer nav ── */
 .nav-footer{
-  flex-shrink:0;margin-top:1.25rem;padding-top:1.1rem;
+  flex:0 0 auto;margin-top:1rem;padding-top:1rem;
   border-top:1px solid #e8edf3;
 }
 .nav-footer .btn{
@@ -1598,10 +1661,9 @@ body.candidate-portal .container-xxl{
 
 .ref-badge{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-weight:600;font-size:.8rem;margin-left:.4rem;border-radius:8px;padding:.2rem .5rem}
 #qHost .q-item{display:none}
-#qHost .q-item.is-visible{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
-.q-left{min-width:0;overflow:hidden}
-.q-right{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:visible;gap:8px}
-.q-right .contImage{flex:1 1 auto;min-height:0}
+#qHost .q-item.is-visible{display:flex;flex-direction:column;height:auto;min-height:0;overflow:visible}
+.q-right{display:flex;flex-direction:column;min-width:0;gap:8px;align-self:start;width:100%}
+.q-right .contImage{flex:0 0 auto;width:100%}
 .exit-modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:9999}
 .exit-modal.show{display:flex}
 .exit-modal-card{width:min(460px,92vw);background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 18px 40px rgba(2,6,23,.25);padding:18px}
@@ -1611,15 +1673,15 @@ body.candidate-portal .container-xxl{
 .btn-modal-cancel,.btn-modal-confirm{border-radius:999px;padding:.52rem 1rem;font-weight:700;font-size:.86rem;border:1px solid transparent}
 .btn-modal-cancel{background:#fff;border-color:#cbd5e1;color:#334155}
 .btn-modal-confirm{background:var(--quiz-blue);color:#fff}
-.contImage{display:flex;justify-content:center;align-items:center;width:100%;height:100%;min-height:0;max-height:100%;overflow:hidden;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;cursor:zoom-in;position:relative}
-.contImage.is-fallback{cursor:default}
+.contImage{display:flex;justify-content:center;align-items:center;width:100%;height:auto;min-height:160px;max-height:min(42vh,360px);overflow:hidden;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;cursor:zoom-in;position:relative}
+.contImage.is-fallback{cursor:default;min-height:140px;max-height:min(30vh,240px)}
 .contImage.is-fallback::after{display:none}
 .img-magnifier-lens{position:fixed;z-index:10001;display:none;pointer-events:none;width:180px;height:180px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(15,23,42,.15),0 10px 28px rgba(15,23,42,.28);background-color:#fff;background-repeat:no-repeat}
 .contImage::after{content:"\f00e";font-family:"Font Awesome 6 Free";font-weight:900;position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;background:rgba(15,23,42,.7);color:#fff;opacity:0;transition:opacity .15s ease}
 .contImage:hover::after{opacity:1}
-.contImage img{width:100%;height:100%;max-height:100%;object-fit:contain}
-.img-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:200px}
-.img-fallback img{width:min(320px,78%);max-height:72%;height:auto;object-fit:contain;opacity:.95}
+.contImage img{width:100%;height:auto;max-height:min(42vh,360px);object-fit:contain}
+.img-fallback{display:flex;align-items:center;justify-content:center;width:100%;min-height:140px;padding:12px}
+.img-fallback img{width:min(240px,70%);max-height:180px;height:auto;object-fit:contain;opacity:.95}
 .btn-report-question{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;margin-top:8px;width:100%;border:1px solid #fecaca;border-radius:12px;background:#fff5f5;color:#b91c1c;font-size:.8rem;font-weight:700;padding:.55rem .75rem;cursor:pointer}
 .btn-report-question:hover{color:#991b1b;border-color:#f87171;background:#fee2e2}
 .btn-report-question.is-loading{opacity:.85;cursor:wait;pointer-events:none}
@@ -1630,7 +1692,78 @@ body.candidate-portal .container-xxl{
 .orient-hint{color:#64748b;font-size:.9rem}
 .q-catchup-hidden{display:none!important}
 .catchup-banner{border-left:4px solid #f59e0b}
-@media (min-width:992px){.q-card .contImage{margin:auto}}
+/* Rattrapage : colonne unique + image réduite pour libérer de la place aux réponses */
+.quiz-catchup-mode .q-layout{grid-template-columns:1fr;gap:14px}
+.quiz-catchup-mode .q-right{order:-1}
+.quiz-catchup-mode .contImage{max-height:min(24vh,200px);min-height:110px}
+.quiz-catchup-mode .contImage.is-fallback{max-height:min(20vh,160px);min-height:100px}
+.quiz-catchup-mode .contImage img{max-height:min(24vh,200px)}
+.quiz-catchup-mode .img-fallback img{max-height:130px}
+
+/* 15" / viewport bas (ex. 1366×768, 1920×1080 + barre navigateur) */
+@media (max-height: 900px) and (min-width: 993px) {
+  body.candidate-portal .container-xxl{padding-top:.65rem;padding-bottom:.75rem}
+  .quiz-topbar{min-height:58px;padding:10px 14px !important;margin-bottom:.65rem !important}
+  .quiz-topbar .topbar-left .h3{font-size:1.05rem;margin-bottom:2px}
+  .quiz-topbar .topbar-left .text-muted{font-size:.78rem}
+  .badge-time{padding:.4rem .75rem .4rem .65rem}
+  .badge-time .timer-icon{width:30px;height:30px;font-size:.82rem}
+  .badge-time #timer_sec{font-size:1.2rem}
+  .badge-progress{min-width:140px;padding:.4rem .7rem}
+  .questions-panel{padding:10px 12px 8px !important;margin-bottom:.65rem !important;top:4px}
+  .questions-head{margin-bottom:6px}
+  .questions-total{font-size:.92rem}
+  .questions-total #questionsTotalLabel{font-size:1rem}
+  .questions-meta{font-size:.72rem;padding:.35rem .6rem}
+  .q-nav-wrap{padding:6px;gap:6px}
+  .q-nav-btn{width:36px;height:36px;font-size:1rem;border-radius:10px}
+  .q-dot{width:28px;height:28px;font-size:.74rem;border-radius:8px}
+  .questions-nav-hint{margin-top:4px;font-size:.7rem}
+  .q-card{padding:18px 22px;min-height:400px}
+  .q-label{font-size:1.25rem;line-height:1.38;margin:0 0 8px}
+  .ref-badge{font-size:.72rem;padding:.15rem .4rem}
+  .q-layout{gap:12px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .quiz-form__ans{margin:5px 0;padding:.6rem .75rem;border-radius:12px}
+  .quiz-form__ans .text{font-size:.92rem;line-height:1.32}
+  .contImage{max-height:min(34vh,280px);min-height:130px}
+  .contImage.is-fallback{max-height:min(26vh,210px);min-height:120px}
+  .img-fallback{min-height:120px;padding:8px}
+  .img-fallback img{max-height:150px}
+  .btn-report-question{margin-top:6px;padding:.45rem .6rem;font-size:.74rem}
+  .nav-footer{padding-top:.65rem}
+  .nav-footer .btn{min-width:120px;padding:.5rem .9rem;font-size:.84rem}
+}
+
+.quiz-validation-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fffbeb !important;
+  border: 1px solid #fcd34d !important;
+  color: #92400e !important;
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.08);
+  animation: quizAlertSlide 0.2s ease-out;
+}
+.quiz-validation-alert .alert-icon {
+  font-size: 1.15rem;
+  color: #d97706;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.quiz-validation-alert .alert-body {
+  flex: 1;
+  line-height: 1.45;
+}
+@keyframes quizAlertSlide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width:992px){
   .quiz-topbar{grid-template-columns:1fr;gap:12px}
   .quiz-topbar .topbar-exit,.quiz-topbar .topbar-left,.quiz-topbar .topbar-right{justify-self:stretch}
@@ -1649,7 +1782,7 @@ body.candidate-portal .container-xxl{
 }
 </style>
 
-<div class="container-xxl">
+<div class="container-xxl<?php echo $catchupMode ? ' quiz-catchup-mode' : ''; ?>">
   <form method="POST" action="" id="quizForm">
     <!-- Header -->
     <div class="glass p-3 mb-3 quiz-topbar<?php echo $reviewMode ? ' quiz-topbar--review' : ''; ?>">
@@ -1771,6 +1904,9 @@ body.candidate-portal .container-xxl{
                       <span class="text"><?php echo htmlspecialchars($opt); ?></span>
                     </label>
                   <?php endforeach; ?>
+                  <?php if ($qcmLocked && $prev !== 'null' && $prev !== ''): ?>
+                    <input type="hidden" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars($prev); ?>">
+                  <?php endif; ?>
                   <label class="quiz-form__ans" hidden>
                     <input type="radio" onclick="checkedRadio()" name="<?php echo $name; ?>" value="null"<?php echo (!in_array($prev,$opts,true)?' checked':''); ?> <?php echo $qcmLocked?'disabled':''; ?>>
                     <span class="text"></span>
@@ -1863,13 +1999,9 @@ body.candidate-portal .container-xxl{
             <div class="d-flex gap-2">
               <?php if(!$reviewMode): ?>
                 <button type="submit" class="btn btn-secondary" name="save">Sauvegarder</button>
-                <?php if($catchupMode): ?>
-                  <button type="submit" class="btn btn-primary" name="valid_catchup">Terminer le rattrapage ›</button>
-                <?php elseif($modeOrientationOnly): ?>
-                  <button type="submit" class="btn btn-primary" name="valid_orientation">Valider mes préférences ›</button>
-                <?php else: ?>
-                  <button type="button" class="btn btn-primary" id="btnNext">Suivant ›</button>
-                <?php endif; ?>
+                <?php /* #btnNext : navigation Précédent/Suivant ; sur la dernière étape, finishSubmitName()
+                         soumet valid, valid_orientation (temps supplémentaire orientation) ou valid_catchup. */ ?>
+                <button type="button" class="btn btn-primary" id="btnNext">Suivant ›</button>
               <?php else: ?>
                 <a class="btn btn-secondary" href="./candidatePaperHome.php">Retour</a>
               <?php endif; ?>
@@ -1877,7 +2009,10 @@ body.candidate-portal .container-xxl{
           </div>
 
           <?php if (!empty($error_msg)): ?>
-            <div class="alert alert-warning mt-3 mb-0" role="alert"><?php echo htmlspecialchars($error_msg); ?></div>
+            <div class="alert alert-warning quiz-validation-alert mt-3 mb-0" role="alert">
+              <span class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+              <div class="alert-body"><?php echo htmlspecialchars($error_msg, ENT_QUOTES, 'UTF-8'); ?></div>
+            </div>
           <?php endif; ?>
         </div>
       </div>
@@ -2131,41 +2266,78 @@ tick();
 let tId=null;
 if(!isReview){ tId=setInterval(()=>{ if(time>=-1){ tick(); } else { clearInterval(tId); } },1000); }
 
-// Ajuste dynamiquement la card quiz à l'espace écran restant (desktop),
-// pour éviter le scroll de page et garder les boutons visibles.
+// Réserve en bas pour le footer candidat.
+function getViewportBottomReserve() {
+  const pageFooter = document.querySelector('.cand-footer');
+  return pageFooter ? Math.max(32, pageFooter.offsetHeight + 16) : 32;
+}
+
+// Ajuste la hauteur de la card de manière spacieuse et sans écrasement forcé.
 function fitQuizCardToViewport() {
   const card = document.querySelector('.q-card');
-  if (!card) return;
+  const host = document.getElementById('qHost');
+  if (!card || !host) return;
+
   if (window.matchMedia('(max-width: 992px)').matches) {
-    card.style.height = 'auto';
-    card.style.maxHeight = 'none';
+    card.style.height = '';
+    card.style.maxHeight = '';
+    card.style.minHeight = '';
+    host.style.maxHeight = '';
+    host.style.overflowY = '';
     return;
   }
-  const top = card.getBoundingClientRect().top;
-  const bottomGap = 12;
-  const available = Math.floor(window.innerHeight - top - bottomGap);
-  const minH = 360;
-  const target = Math.max(minH, available);
-  card.style.height = `${target}px`;
-  card.style.maxHeight = `${target}px`;
-  resizeActiveQuestionLayout();
+
+  const topbar = document.querySelector('.quiz-topbar');
+  const panel = document.querySelector('.questions-panel');
+  const topbarH = topbar ? topbar.offsetHeight + 16 : 80;
+  const panelH = panel ? panel.offsetHeight + 16 : 120;
+  const headerTotal = topbarH + panelH + 20;
+  const bottomReserve = getViewportBottomReserve();
+  const available = Math.floor(window.innerHeight - headerTotal - bottomReserve);
+  const minH = 460;
+  const maxH = Math.max(minH, available);
+
+  // Remettre à auto pour laisser la question respirer naturellement
+  card.style.height = 'auto';
+  card.style.maxHeight = '';
+  card.style.minHeight = minH + 'px';
+  host.style.maxHeight = '';
+  host.style.overflowY = 'visible';
+
+  const visibleItem = host.querySelector('.q-item.is-visible');
+  const layout = visibleItem ? visibleItem.querySelector('.q-layout') : null;
+  const qLeft = visibleItem ? visibleItem.querySelector('.q-left') : null;
+  if (layout) { layout.style.height = 'auto'; layout.style.maxHeight = ''; layout.style.overflowY = ''; }
+  if (qLeft) { qLeft.style.maxHeight = ''; qLeft.style.overflowY = ''; }
+
+  // Ne restreindre que si le contenu est réellement plus grand que tout l'écran disponible
+  if (card.scrollHeight > maxH && maxH > minH + 60) {
+    card.style.height = maxH + 'px';
+    card.style.maxHeight = maxH + 'px';
+    const footer = card.querySelector('.nav-footer');
+    const footerH = footer ? footer.offsetHeight + 16 : 60;
+    const cardStyle = window.getComputedStyle(card);
+    const cardPad = parseFloat(cardStyle.paddingTop) + parseFloat(cardStyle.paddingBottom);
+    const hostMax = Math.max(280, maxH - footerH - cardPad);
+    host.style.maxHeight = hostMax + 'px';
+    host.style.overflowY = 'auto';
+
+    if (layout && qLeft && !catchupMode) {
+      const qRight = layout.querySelector('.q-right');
+      const rightH = qRight ? qRight.offsetHeight : 0;
+      const leftMax = Math.max(180, hostMax - 20);
+      if (qLeft.scrollHeight > leftMax) {
+        qLeft.style.maxHeight = leftMax + 'px';
+        qLeft.style.overflowY = 'auto';
+      }
+    }
+  }
 }
 window.addEventListener('resize', fitQuizCardToViewport);
 window.addEventListener('load', fitQuizCardToViewport);
 
 function resizeActiveQuestionLayout() {
-  const currentStep = document.querySelector('#qHost .q-item.is-visible[data-type="qcm"]');
-  if (!currentStep) return;
-  const label = currentStep.querySelector('.q-label');
-  const layout = currentStep.querySelector('.q-layout');
-  const reportBtn = currentStep.querySelector('.btn-report-question');
-  if (!layout) return;
-  const labelH = label ? label.offsetHeight : 0;
-  const btnH = reportBtn ? reportBtn.offsetHeight + 8 : 0;
-  const available = currentStep.clientHeight - labelH - btnH - 8;
-  if (available > 120) {
-    layout.style.height = `${available}px`;
-  }
+  fitQuizCardToViewport();
 }
 
 // Navigation 1/1 + grille (QCM + Orientation)
@@ -2217,6 +2389,7 @@ function isOnOrientationItem(itemIdx) {
 }
 
 function finishSubmitName() {
+  if (catchupMode) return 'valid_catchup';
   if (hasOrientation && (lockQcmActive || isOnOrientationItem(idx))) {
     return 'valid_orientation';
   }
@@ -2228,11 +2401,19 @@ function updateNextButton() {
   const nav = getNavigableIndices();
   const pos = nav.indexOf(idx);
   const isLast = pos >= 0 && pos === nav.length - 1;
+  if (catchupMode) {
+    btnNext.textContent = isLast ? 'Terminer le rattrapage ›' : 'Suivant ›';
+    return;
+  }
   if (!isLast) {
     btnNext.textContent = 'Suivant ›';
     return;
   }
-  btnNext.textContent = hasOrientation ? 'Valider mes préférences ›' : 'Terminer ›';
+  if (lockQcmActive || isOnOrientationItem(idx)) {
+    btnNext.textContent = 'Valider mes préférences ›';
+    return;
+  }
+  btnNext.textContent = 'Terminer ›';
 }
 
 function submitFinishExam() {
@@ -2297,7 +2478,7 @@ function show(i){
   updateNextButton();
   updateTotals(); updateGridStates(); markCurrentDot();
   updateCurrentQuestionMeta();
-  resizeActiveQuestionLayout();
+  fitQuizCardToViewport();
 }
 function answeredCount(){
   let c=0;
@@ -2433,10 +2614,20 @@ document.querySelectorAll('.q-item[data-type="orient"]').forEach((item) => {
   });
 });
 
-// Démarrage : aller directement sur l'orientation si demandé, ou 1ère question de rattrapage
+// Démarrage : aller directement sur la question manquante/incomplète si erreur, ou orientation si demandé, ou rattrapage
 const orientationStartIndex = <?php echo (int)$orientationStartIndex; ?>;
-let startIndex = <?php echo (int)($shouldFocusOrientation ? $orientationStartIndex : 0); ?>;
-if (catchupMode && catchupIndices.length) {
+let startIndex = <?php
+  if (isset($first_missing_idx) && $first_missing_idx !== null) {
+    echo (int)$first_missing_idx;
+  } elseif (isset($first_unanswered_idx) && $first_unanswered_idx !== null) {
+    echo (int)$first_unanswered_idx;
+  } elseif ($shouldFocusOrientation) {
+    echo (int)$orientationStartIndex;
+  } else {
+    echo 0;
+  }
+?>;
+if (catchupMode && catchupIndices.length && startIndex === 0) {
   startIndex = catchupIndices[0];
 }
 buildGrid(); show(startIndex);

@@ -3,6 +3,32 @@
  * Centralized background styling system
  */
 
+/* Candidat : fond fixe plein écran (évite la bande blanche sous le footer) */
+.page-background-container.candidate-fullscreen-bg {
+  height: auto;
+  min-height: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.page-background-container.candidate-fullscreen-bg .page-background-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  border-radius: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.page-background-container.candidate-fullscreen-bg .page-content-container {
+  position: relative;
+  z-index: 1;
+}
+
 /* Base container for the page background */
 .page-background-container {
     position: relative;

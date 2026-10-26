@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -14,7 +15,7 @@ if (!isset($_SESSION['commercial_session']) || $_SESSION['commercial_session'] !
 
 $sid   = session_id();
 $now   = date('d-m-Y H:i:s');
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 
 $db->commercial_live->updateOne(

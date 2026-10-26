@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../../core/medacap_config.php';
 /**
  * RefactoredFilterController.php
  * PHP 7.3 — MongoDB 4.2
@@ -346,7 +347,7 @@ class RefactoredFilterController
  *   'subsidiary' => 'Cameroon',
  * ];
  *
- * $client = new \MongoDB\Client('mongodb://localhost:27017');
+ * $client = new \MongoDB\Client(medacapMongoUri());
  * $db     = $client->selectDatabase('academy');
  *
  * $controller = new RefactoredFilterController($db, 'academy', $_SESSION);

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // getTechnicians.php
 
 require_once "../../vendor/autoload.php";
@@ -27,7 +28,7 @@ if (!$filialeCountry) {
 $managerId = $_GET['managerId'] ?? 'all';
 
 try {
-    $mongo = new Client("mongodb://localhost:27017");
+    $mongo = new Client(medacapMongoUri());
     $academy = $mongo->academy;
 
     $usersColl = $academy->users;

@@ -1,9 +1,10 @@
     <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
     // Connexion à MongoDB (autoload déjà chargé par le script appelant)
     if (!class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/../../vendor/autoload.php';
     }
-    $client = new MongoDB\Client("mongodb://localhost:27017");
+    $client = new MongoDB\Client(medacapMongoUri());
     $academy = $client->academy;
     $profilesCollection = $academy->profiles;
     $functionalitiesCollection = $academy->functionalities;
@@ -208,7 +209,7 @@ foreach ($menuStructure as $groupName => $items) {
     // Map countries to their respective subsidiary name
     $subsidiaries = [
         "CFAO MOTORS BURKINA",
-        "CAMEROON MOTORS INDUSTRIES",
+        "CFAO MOBILITY CAMEROON",
         "CFAO MOTORS CONGO",
         "CFAO MOTORS COTE D'IVOIRE",
         "CFAO MOTORS GABON",

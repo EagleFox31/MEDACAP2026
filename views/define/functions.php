@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 function hasPermission($functionalityKey) {
     // Démarrer la session si ce n'est pas déjà fait
     if (session_status() == PHP_SESSION_NONE) {
@@ -13,7 +14,7 @@ function hasPermission($functionalityKey) {
 
     // Connexion à MongoDB
     require_once "../../vendor/autoload.php";
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $functionalitiesCollection = $academy->functionalities;
 

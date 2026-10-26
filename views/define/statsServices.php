@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * StatsService.php
  * =====================
@@ -33,7 +34,7 @@ $thresholdGroup = isset($_GET['thresholdGroup']) ? (int)$_GET['thresholdGroup'] 
 // --------------------------------------------------
 // 2) Connexion MongoDB
 // --------------------------------------------------
-$mongoUri = "mongodb://localhost:27017";
+$mongoUri = medacapMongoUri();
 $dbName   = "academy"; // Ajustez selon votre BD
 
 try {

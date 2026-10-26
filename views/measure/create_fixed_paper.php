@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * CFAO Mobility Academy — Générateur d'Épreuve Figée
  * (toute la logique PHP est intacte)
@@ -10,27 +11,36 @@ include_once "../partials/background-manager.php";
 setPageBackground("bg-dashboard");
 use MongoDB\Client; use MongoDB\BSON\ObjectId; use MongoDB\Model\BSONArray;
 
-$mongo=new Client("mongodb://localhost:27017"); $db=$mongo->academy;
+$mongo=new Client(medacapMongoUri()); $db=$mongo->academy;
 $users=$db->users; $vehicles=$db->vehicles; $quizzes=$db->quizzes;
 $questions=$db->questions; $papers=$db->papers; $orientCol=$db->orientation_questions;
 const CP_SPEC='Carrosserie & Peinture';
+require_once __DIR__ . '/includes/fixed_paper_builder.php';
 
-function s($v){if(!is_string($v))return $v;return trim(filter_var($v,FILTER_SANITIZE_STRING));}
-function arr_str(array $a):array{$o=[];foreach($a as $v){$v=s($v);if($v!=='')$o[]=$v;}return array_values(array_unique($o));}
-function toOid($v):?ObjectId{if($v instanceof ObjectId)return $v;if(is_string($v)&&preg_match('/^[0-9a-f]{24}$/i',$v))return new ObjectId($v);return null;}
-function dedupOids(array $a):array{$m=[];$o=[];foreach($a as $x){if(!($x instanceof ObjectId))continue;$k=(string)$x;if(isset($m[$k]))continue;$m[$k]=1;$o[]=$x;}return $o;}
-function pickRandom(array $arr,int $n):array{if($n<=0||empty($arr))return[];shuffle($arr);return array_slice($arr,0,min($n,count($arr)));}
-function poolBrandQuizzes(array $brands):array{global $vehicles,$quizzes;if(empty($brands))return[];$quizIdMap=[];$cur=$vehicles->find(['brand'=>['$in'=>$brands],'type'=>'Factuel','active'=>true],['projection'=>['quizzes'=>1]]);foreach($cur as $veh){$raw=$veh['quizzes']??[];if($raw instanceof BSONArray)$raw=$raw->getArrayCopy();if(!is_array($raw))continue;foreach($raw as $id){$oid=toOid(is_string($id)?$id:($id instanceof ObjectId?(string)$id:null));if($oid)$quizIdMap[(string)$oid]=$oid;}}if(empty($quizIdMap))return[];$docs=[];$qCur=$quizzes->find(['_id'=>['$in'=>array_values($quizIdMap)],'active'=>true,'type'=>['$in'=>['Factuel','Factuelle']]],['projection'=>['_id'=>1,'speciality'=>1,'total'=>1,'questions'=>1,'level'=>1]]);foreach($qCur as $q)$docs[]=$q;return $docs;}
-function poolCpQuizzes():array{global $quizzes;$out=[];$cursor=$quizzes->find(['active'=>true,'type'=>['$in'=>['Factuel','Factuelle']],'speciality'=>CP_SPEC],['projection'=>['_id'=>1,'speciality'=>1,'total'=>1,'questions'=>1,'level'=>1]]);foreach($cursor as $q){$out[]=$q;}return $out;}
-function quizStockSize($quizDoc):int{$t=(int)($quizDoc['total']??0);if($t>0)return $t;$raw=$quizDoc['questions']??[];if($raw instanceof BSONArray)$raw=$raw->getArrayCopy();if(!is_array($raw))return 0;return count($raw);}
-function distributeByStock(array $quizDocs,int $target):array{$stock=0;$ids=[];foreach($quizDocs as $q){$t=quizStockSize($q);$stock+=$t;$ids[(string)$q['_id']]=$t;}if($stock<=0||$target<=0)return[];$alloc=[];$frac=[];foreach($ids as $k=>$t){$r=($t/$stock)*$target;$alloc[$k]=(int)floor($r);$frac[$k]=$r-$alloc[$k];}$given=array_sum($alloc);$rem=$target-$given;if($rem>0){arsort($frac,SORT_NUMERIC);foreach(array_keys($frac)as $k){if($rem<=0)break;$alloc[$k]++;$rem--;}}return $alloc;}
-function sampleQuestionsOfQuiz($quizDoc,int $n):array{global $questions;if($n<=0)return[];$raw=$quizDoc['questions']??[];if($raw instanceof BSONArray)$raw=$raw->getArrayCopy();if(!is_array($raw)||empty($raw))return[];$ids=[];foreach($raw as $x){$oid=toOid(is_string($x)?$x:($x instanceof ObjectId?(string)$x:null));if($oid)$ids[(string)$oid]=$oid;}if(empty($ids))return[];$active=[];$cur=$questions->find(['_id'=>['$in'=>array_values($ids)],'active'=>true],['projection'=>['_id'=>1]]);foreach($cur as $qd)$active[]=$qd['_id'];if(empty($active))return[];return pickRandom($active,$n);}
-function buildFixedPaper(string $label,array $brands,int $qcmCount,array $ratio,array $orientationOids=[],bool $includeCp=true,int $durationHour=1,int $durationMinute=0):ObjectId{global $papers;if($includeCp){$cpTarget=(int)round($qcmCount*0.10);if($qcmCount>0&&$cpTarget===0)$cpTarget=1;}else{$cpTarget=0;}$brandTarget=max(0,$qcmCount-$cpTarget);$brandPool=poolBrandQuizzes($brands);$cpPool=$includeCp?poolCpQuizzes():[];$brandAlloc=distributeByStock($brandPool,$brandTarget);$cpAlloc=$includeCp?distributeByStock($cpPool,$cpTarget):[];$pickedQ=[];$sourceQuizIds=[];$specQuizMap=[];$useQuiz=function($q)use(&$sourceQuizIds,&$specQuizMap){$qid=(string)$q['_id'];$sourceQuizIds[$qid]=$q['_id'];$spec=(string)($q['speciality']??'');if($spec!==''&&!isset($specQuizMap[$spec]))$specQuizMap[$spec]=$q['_id'];};$byIdDoc=[];foreach($brandPool as $q){$byIdDoc[(string)$q['_id']]=$q;}foreach($cpPool as $q){$byIdDoc[(string)$q['_id']]=$q;}foreach($brandAlloc as $qid=>$take){if($take<=0||!isset($byIdDoc[$qid]))continue;$doc=$byIdDoc[$qid];$useQuiz($doc);$pickedQ=array_merge($pickedQ,sampleQuestionsOfQuiz($doc,$take));}foreach($cpAlloc as $qid=>$take){if($take<=0||!isset($byIdDoc[$qid]))continue;$doc=$byIdDoc[$qid];$useQuiz($doc);$pickedQ=array_merge($pickedQ,sampleQuestionsOfQuiz($doc,$take));}$need=$qcmCount-count($pickedQ);if($need>0){$allActive=[];foreach($byIdDoc as $doc){$allActive=array_merge($allActive,sampleQuestionsOfQuiz($doc,999999));}$seen=[];foreach($pickedQ as $x){$seen[(string)$x]=1;}$rest=[];foreach($allActive as $x){$k=(string)$x;if(!isset($seen[$k]))$rest[]=$x;}shuffle($rest);$pickedQ=array_merge($pickedQ,array_slice($rest,0,$need));}if(count($pickedQ)>$qcmCount)$pickedQ=array_slice($pickedQ,0,$qcmCount);shuffle($pickedQ);$doc=['label'=>$label,'type'=>'Factuel','mode'=>'mixed','level'=>'Mixed','brand'=>array_values(array_unique($brands)),'ratios'=>['Junior'=>(int)($ratio['Junior']??50),'Senior'=>(int)($ratio['Senior']??45),'Expert'=>(int)($ratio['Expert']??5)],'counts'=>['QCM_total'=>$qcmCount,'QCM_brand'=>array_sum($brandAlloc),'QCM_cp'=>array_sum($cpAlloc)],'source_quizzes'=>array_values($sourceQuizIds),'specQuizMap'=>$specQuizMap,'questions'=>$pickedQ,'orientation'=>dedupOids($orientationOids),'duration'=>['hour'=>$durationHour,'minute'=>$durationMinute,'second'=>0],'hour'=>$durationHour,'minute'=>$durationMinute,'second'=>0,'active'=>true,'created'=>date('Y-m-d H:i:s')];$res=$papers->insertOne($doc);return $res->getInsertedId();}
+// Specialites disponibles : lues des quiz Factuel actifs. Aucune liste en dur,
+// toute nouvelle specialite apparait seule.
+// Le stock est detaille PAR NIVEAU : un total global induit en erreur des que
+// les ratios ne prennent pas les trois niveaux. Exemple, "Electricite et
+// Electronique" totalise 49 questions mais seulement 19 en Senior — une epreuve
+// 100 % Senior ne peut en tirer que 19.
+$specialityOptions=[];
+try{
+  foreach($quizzes->find(['active'=>true,'type'=>['$in'=>['Factuel','Factuelle']]],['projection'=>['speciality'=>1,'level'=>1,'questions'=>1]]) as $q){
+    $sp=(string)($q['speciality']??''); if($sp==='')continue;
+    $raw=$q['questions']??[]; if($raw instanceof BSONArray)$raw=$raw->getArrayCopy();
+    $n=is_array($raw)?count($raw):0;
+    $lv=(string)($q['level']??'?');
+    if(!isset($specialityOptions[$sp]))$specialityOptions[$sp]=['stock'=>0,'byLevel'=>['Junior'=>0,'Senior'=>0,'Expert'=>0]];
+    $specialityOptions[$sp]['stock']+=$n;
+    if(isset($specialityOptions[$sp]['byLevel'][$lv]))$specialityOptions[$sp]['byLevel'][$lv]+=$n;
+  }
+  ksort($specialityOptions);
+}catch(\Throwable $e){}
 
 $orientationOptions=[];
 try{$oc=$orientCol->find(['active'=>true,'scope'=>'global'],['projection'=>['_id'=>1,'title'=>1],'sort'=>['title'=>1]]);foreach($oc as $q)$orientationOptions[]=['id'=>(string)$q->_id,'title'=>(string)$q['title']];}catch(\Throwable $e){}
 $success=null;$error=null;$createdPaperId=null;
-if($_SERVER['REQUEST_METHOD']==='POST'){try{$label=s($_POST['label']??'');$brands=isset($_POST['brand'])?arr_str((array)$_POST['brand']):[];$qcmCount=max(1,(int)($_POST['qcm_count']??50));$ratio=['Junior'=>(int)($_POST['ratio_junior']??50),'Senior'=>(int)($_POST['ratio_senior']??45),'Expert'=>(int)($_POST['ratio_expert']??5)];$durationHour=max(0,min(8,(int)($_POST['duration_hour']??1)));$durationMinute=max(0,min(59,(int)($_POST['duration_minute']??0)));if($durationHour===0&&$durationMinute===0)throw new \RuntimeException("La durée doit être supérieure à 0 minute.");$orientationIds=[];foreach((array)($_POST['orientation_selected']??[])as $id){$oid=toOid($id);if($oid)$orientationIds[]=$oid;}$includeCp=isset($_POST['include_cp']);if($label===''||empty($brands))throw new \RuntimeException("Le label et au moins une marque sont requis.");$paperId=buildFixedPaper($label,$brands,$qcmCount,$ratio,$orientationIds,$includeCp,$durationHour,$durationMinute);$createdPaperId=(string)$paperId;$success="Épreuve figée créée avec succès";}catch(\Throwable $e){$error="Erreur : ".$e->getMessage();}}
+if($_SERVER['REQUEST_METHOD']==='POST'){try{$label=s($_POST['label']??'');$brands=isset($_POST['brand'])?arr_str((array)$_POST['brand']):[];$qcmCount=max(1,(int)($_POST['qcm_count']??50));$ratio=['Junior'=>(int)($_POST['ratio_junior']??50),'Senior'=>(int)($_POST['ratio_senior']??45),'Expert'=>(int)($_POST['ratio_expert']??5)];$durationHour=max(0,min(8,(int)($_POST['duration_hour']??1)));$durationMinute=max(0,min(59,(int)($_POST['duration_minute']??0)));if($durationHour===0&&$durationMinute===0)throw new \RuntimeException("La durée doit être supérieure à 0 minute.");$orientationIds=[];foreach((array)($_POST['orientation_selected']??[])as $id){$oid=toOid($id);if($oid)$orientationIds[]=$oid;}$includeCp=isset($_POST['include_cp']);$specialities=isset($_POST['speciality'])?arr_str((array)$_POST['speciality']):[];if($label===''||empty($brands))throw new \RuntimeException("Le label et au moins une marque sont requis.");$paperId=buildFixedPaper($label,$brands,$qcmCount,$ratio,$orientationIds,$includeCp,$durationHour,$durationMinute,$specialities);$createdPaperId=(string)$paperId;$success="Épreuve figée créée avec succès";}catch(\Throwable $e){$error="Erreur : ".$e->getMessage();}}
 include_once "partials/header.php";
 openBackgroundContainer();
 ?>
@@ -237,7 +247,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;hei
     <div class="bctrl"><button type="button" class="ghost" onclick="sa(true)">Tout sélectionner</button><button type="button" class="ghost" onclick="sa(false)">Tout désélectionner</button></div>
     <div class="clbl">Utilitaires &amp; Poids lourds</div>
     <div class="bgrid">
-      <?php foreach(['FUSO','HINO','JCB','KING LONG','LOVOL','MERCEDES TRUCK','RENAULT TRUCK','SINOTRUCK','TOYOTA BT','TOYOTA FORKLIFT'] as $b):$sel=isset($_POST['brand'])&&in_array($b,(array)$_POST['brand']);?>
+      <?php /* SINOTRUK et non SINOTRUCK : la collection vehicles ne contient aucune marque "SINOTRUCK", l'ancienne valeur ne poolait donc jamais ses quiz. */ ?>
+      <?php foreach(['FUSO','HINO','JCB','KING LONG','LOVOL','MERCEDES TRUCK','RENAULT TRUCK','SINOTRUK','TOYOTA BT','TOYOTA FORKLIFT'] as $b):$sel=isset($_POST['brand'])&&in_array($b,(array)$_POST['brand']);?>
       <div class="bc"><input type="checkbox" name="brand[]" value="<?=htmlspecialchars($b)?>" id="b<?=md5($b)?>" <?=$sel?'checked':''?> onchange="uB()"><label for="b<?=md5($b)?>"><span class="cd"></span><?=htmlspecialchars($b)?></label></div>
       <?php endforeach;?>
     </div>
@@ -247,6 +258,43 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;hei
       <div class="bc"><input type="checkbox" name="brand[]" value="<?=htmlspecialchars($b)?>" id="b<?=md5($b)?>" <?=$sel?'checked':''?> onchange="uB()"><label for="b<?=md5($b)?>"><span class="cd"></span><?=htmlspecialchars($b)?></label></div>
       <?php endforeach;?>
     </div>
+  </div>
+</div>
+
+<!-- SPECIALITES (masqué — génération via scripts/create_electricien_pl_paper.php) -->
+<div class="card" style="display:none" aria-hidden="true">
+  <div class="ch">
+    <div class="ci"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+    <div><h2>Spécialités</h2><p>Laissez vide pour tirer dans toutes les spécialités des marques choisies</p></div>
+    <div class="badge" id="sb">toutes</div>
+  </div>
+  <div class="cb">
+    <div class="bctrl">
+      <button type="button" class="ghost" onclick="presetElec()">Préréglage Électricien PL</button>
+      <button type="button" class="ghost" onclick="ss(false)">Tout désélectionner</button>
+    </div>
+    <div class="bgrid">
+      <?php foreach($specialityOptions as $sp=>$meta):
+        $sel=isset($_POST['speciality'])&&in_array($sp,(array)$_POST['speciality']);
+        $parts=[];
+        foreach(['Junior','Senior','Expert'] as $lv){ if((int)$meta['byLevel'][$lv]>0)$parts[]=$lv.' '.(int)$meta['byLevel'][$lv]; } ?>
+      <div class="bc"
+           data-junior="<?=(int)$meta['byLevel']['Junior']?>"
+           data-senior="<?=(int)$meta['byLevel']['Senior']?>"
+           data-expert="<?=(int)$meta['byLevel']['Expert']?>">
+        <input type="checkbox" name="speciality[]" value="<?=htmlspecialchars($sp)?>" id="s<?=md5($sp)?>" <?=$sel?'checked':''?> onchange="uS()">
+        <label for="s<?=md5($sp)?>"><span class="cd"></span><?=htmlspecialchars($sp)?>
+          <small style="display:block;color:var(--light);font-size:.66rem;margin-top:1px;"><?=htmlspecialchars(implode(' · ', $parts))?></small>
+        </label>
+      </div>
+      <?php endforeach;?>
+    </div>
+    <div class="hint">
+      Stock indiqué <strong>par niveau</strong>, toutes marques confondues : seuls les niveaux ayant un ratio &gt; 0 seront mobilisés.
+      Le volume demandé est réparti <strong>au prorata du stock</strong> des quiz retenus — ce n'est pas un tirage uniforme entre spécialités.
+      Sans aucune coche, l'épreuve balaie toutes les spécialités des marques choisies.
+    </div>
+    <div class="hint" id="sstock" style="margin-top:6px;font-weight:600;color:var(--accent);"></div>
   </div>
 </div>
 
@@ -297,14 +345,74 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;hei
 </div>
 </div>
 <script>
-function uQ(){const n=parseInt(document.getElementById('qi').value)||0,h=document.getElementById('ct').checked,c=h?Math.max(1,Math.round(n*.1)):0,b=n-c;document.getElementById('qv').innerHTML=`<div class="qb brd" style="flex:${b||1}"></div>`+(h?`<div class="qb cp" style="flex:${c}"></div>`:'');document.getElementById('bl').textContent=b+' marques';document.getElementById('cl').textContent=h?c+' CP':'—';}
-function uR(k,v){v=parseInt(v);({'J':'vJ','S':'vS','E':'vE'}[k]&&(document.getElementById({'J':'vJ','S':'vS','E':'vE'}[k]).innerHTML=v+'<span>%</span>'));document.getElementById('h'+k).value=v;cR();}
+function uQ(){const n=parseInt(document.getElementById('qi').value)||0,h=document.getElementById('ct').checked,c=h?Math.max(1,Math.round(n*.1)):0,b=n-c;document.getElementById('qv').innerHTML=`<div class="qb brd" style="flex:${b||1}"></div>`+(h?`<div class="qb cp" style="flex:${c}"></div>`:'');document.getElementById('bl').textContent=b+' marques';document.getElementById('cl').textContent=h?c+' CP':'—';if(typeof uS==='function')uS();}
+function uR(k,v){v=parseInt(v);({'J':'vJ','S':'vS','E':'vE'}[k]&&(document.getElementById({'J':'vJ','S':'vS','E':'vE'}[k]).innerHTML=v+'<span>%</span>'));document.getElementById('h'+k).value=v;cR();uS();}
 function cR(){const t=(+document.getElementById('hJ').value||0)+(+document.getElementById('hS').value||0)+(+document.getElementById('hE').value||0),w=document.getElementById('rw'),b=document.getElementById('rb2');t!==100?(document.getElementById('rt').textContent=t,w.style.display='block',b.textContent='Total : '+t+'%',b.style.background='#fff7ed',b.style.color='#92400e'):(w.style.display='none',b.textContent='Total : 100%',b.style.background='',b.style.color='');}
 function uB(){document.getElementById('bb').textContent=document.querySelectorAll('input[name="brand[]"]:checked').length+' marque(s)';}
 function sa(v){document.querySelectorAll('input[name="brand[]"]').forEach(c=>c.checked=v);uB();}
+// Badge + stock mobilisable : somme des niveaux dont le ratio est > 0.
+// Sert d'alerte quand le volume demandé depasse le stock filtré, cas ou
+// buildFixedPaper produit une epreuve tronquee sans le signaler.
+function uS(){
+  const boxes=[...document.querySelectorAll('input[name="speciality[]"]')];
+  const on=boxes.filter(c=>c.checked);
+  document.getElementById('sb').textContent=on.length?on.length+' spécialité(s)':'toutes';
+  const out=document.getElementById('sstock'); if(!out)return;
+  if(!on.length){out.textContent='';return;}
+  const rJ=+(document.getElementById('hJ')||{}).value||0,
+        rS=+(document.getElementById('hS')||{}).value||0,
+        rE=+(document.getElementById('hE')||{}).value||0;
+  let stock=0;
+  on.forEach(c=>{const d=c.closest('.bc'); if(!d)return;
+    if(rJ>0)stock+=+d.dataset.junior||0;
+    if(rS>0)stock+=+d.dataset.senior||0;
+    if(rE>0)stock+=+d.dataset.expert||0;});
+  const want=+(document.getElementById('qi')||{}).value||0;
+  const lv=[rJ>0?'Junior':null,rS>0?'Senior':null,rE>0?'Expert':null].filter(Boolean).join(' + ')||'aucun niveau';
+  out.textContent=stock+' question(s) mobilisable(s) sur '+lv+' — '+want+' demandée(s)'+
+    (want>stock?'  ⚠ épreuve tronquée à '+stock:(want===stock?'  ⚠ stock épuisé : aucun aléa de tirage':''));
+}
+function ss(v){document.querySelectorAll('input[name="speciality[]"]').forEach(c=>c.checked=v);uS();}
+// Preréglage Électricien PL : 5 marques camions + les 4 specialites du
+// domaine electrique, soit 100 questions Senior mobilisables en prod :
+//   Electricité Poids Lourds     73  (scenarios atelier PL, refs Fac2o263-335)
+//   Electricité et Electronique  19  (banque historique)
+//   Réseaux de Communication      4
+//   Assistance à la Conduite      4
+//                              ----
+//                               100
+// Les ratios sont forcés à 100 % Senior : ces 4 specialites n'ont de stock
+// electrique qu'au niveau Senior sur les marques PL, et buildFixedPaper leve
+// une exception si un niveau demandé n'a aucun quiz dans le pool filtré.
+// Carrosserie & Peinture est décoché pour garder l'épreuve 100 % électricité.
+var PRESET_ELEC_SPECS = [
+  'Electricité Poids Lourds',
+  'Electricité et Electronique',
+  'Réseaux de Communication',
+  'Assistance à la Conduite'
+];
+function presetElec(){
+  const PL=['RENAULT TRUCK','MERCEDES TRUCK','SINOTRUK','HINO','FUSO'];
+  document.querySelectorAll('input[name="brand[]"]').forEach(c=>c.checked=PL.includes(c.value));
+  document.querySelectorAll('input[name="speciality[]"]').forEach(c=>c.checked=PRESET_ELEC_SPECS.indexOf(c.value)!==-1);
+  setRatio('J',0);setRatio('S',100);setRatio('E',0);
+  const cp=document.getElementById('ct'); if(cp&&cp.checked){cp.checked=false;uQ();}
+  const qi=document.getElementById('qi'); if(qi){qi.value=100;uQ();}
+  uB();uS();
+}
+// Positionne un curseur de ratio ET son input hidden (le POST lit le hidden).
+function setRatio(k,v){
+  const h=document.getElementById('h'+k); if(!h)return;
+  h.value=v;
+  const lbl={'J':'vJ','S':'vS','E':'vE'}[k];
+  const el=document.getElementById(lbl); if(el)el.innerHTML=v+'<span>%</span>';
+  const rg=h.parentElement?h.parentElement.querySelector('input[type="range"]'):null;
+  if(rg)rg.value=v;
+  cR();
+}
 function uO(){const e=document.getElementById('ob');if(e)e.textContent=document.querySelectorAll('input[name="orientation_selected[]"]:checked').length+' sélectionnée(s)';}
 function cO(){document.querySelectorAll('input[name="orientation_selected[]"]').forEach(c=>c.checked=false);uO();}
 function copyLink(){const t=document.getElementById('lc')?.textContent||'';navigator.clipboard.writeText(t).catch(()=>{});const b=document.querySelector('.cbtn');b.textContent='✓ Copié';setTimeout(()=>b.textContent='Copier',2000);}
-uQ();uB();uO();cR();
+uQ();uB();uS();uO();cR();
 </script>
 <?php closeBackgroundContainer(); include_once "partials/footer.php"; ?>

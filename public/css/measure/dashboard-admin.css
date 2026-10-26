@@ -218,9 +218,10 @@
 }
 
 .chart-card {
-    height: 430px;
+    height: auto;
+    min-height: 380px;
     width: 100%;
-    margin-bottom: 25px;
+    margin-bottom: 0;
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(25px) !important;
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -229,11 +230,67 @@
     transition: all 0.3s ease !important;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+
+.chart-card-head {
+    padding: 1.35rem 1rem 0.5rem;
+}
+
+.chart-card-title {
+    font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+    line-height: 1.35;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 0.15rem;
+}
+
+.chart-card-body {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0 0.75rem 1rem;
+    min-height: 0;
 }
 
 .chart-container {
-    height: 80%;
     width: 100%;
+    min-height: 280px;
+    height: auto;
+}
+
+.qcm-bar-chart .apexcharts-canvas,
+.qcm-bar-chart svg {
+    max-width: 100%;
+}
+
+.dashboard-chart-grid {
+    --bs-gutter-x: 1.25rem;
+    --bs-gutter-y: 1.25rem;
+}
+
+.dashboard-doughnut-wrap {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.dashboard-doughnut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.dashboard-doughnut-card canvas {
+    max-width: 100%;
+    height: auto;
 }
 
 .transparent-cell {
@@ -264,9 +321,10 @@
 }
 
 .result-card {
-    height: 430px;
+    height: auto;
+    min-height: 380px;
     width: 100%;
-    margin-bottom: 25px;
+    margin-bottom: 0;
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(25px) !important;
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -275,6 +333,7 @@
     transition: all 0.3s ease !important;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .result-title {
@@ -282,8 +341,148 @@
     margin-top: 18px !important;
 }
 
-.result-chart {
-    height: 100%;
+/* Dashboard participation — espacement sections (rows imbriquées) */
+.dashboard-admin-stack {
     width: 100%;
-    margin-top: 10px;
+}
+
+.dashboard-admin-stack > .row,
+.dashboard-admin-stack > .dashboard-section-title {
+    margin-top: 0 !important;
+}
+
+.dashboard-admin-stack > .dashboard-section-title {
+    margin-bottom: 1.25rem !important;
+}
+
+.dashboard-admin-stack > .row.mb-4,
+.dashboard-admin-stack > .row.g-6 {
+    margin-bottom: 1.5rem !important;
+}
+
+.dashboard-admin-stack > .row + .dashboard-section-title {
+    margin-top: 0.5rem !important;
+}
+
+.dashboard-section-title .card-body {
+    padding-top: 0.85rem !important;
+    padding-bottom: 0.85rem !important;
+}
+
+.dashboard-section-title h1 {
+    font-size: clamp(1.1rem, 2vw, 1.45rem);
+    line-height: 1.35;
+}
+
+/* Filtre marques avec logos */
+.filter-field-brand {
+    min-width: 220px;
+    max-width: 320px;
+}
+
+.brand-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border-radius: 10px;
+    border: 1.5px solid #e5e7eb;
+    background: #f9fafb;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.brand-filter-toggle::after {
+    margin-left: auto;
+}
+
+.filter-field--active .brand-filter-toggle {
+    border-color: #93c5fd;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+.brand-filter-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: #fff;
+    padding: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.brand-filter-logo--all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.brand-filter-label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.brand-filter-menu {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 0.35rem;
+}
+
+.brand-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border-radius: 8px;
+    padding: 0.45rem 0.55rem;
+}
+
+.brand-filter-option.active,
+.brand-filter-option:active {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.brand-filter-option-text {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.result-chart {
+    width: 100%;
+    min-height: 280px;
+    height: auto;
+    margin-top: 0;
+}
+
+@media (max-width: 1199.98px) {
+    .chart-card,
+    .result-card {
+        min-height: 360px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-chart-grid {
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1rem;
+    }
+
+    .chart-card,
+    .result-card {
+        min-height: 320px;
+    }
+
+    .chart-card-body {
+        padding-left: 0.35rem;
+        padding-right: 0.35rem;
+    }
 }

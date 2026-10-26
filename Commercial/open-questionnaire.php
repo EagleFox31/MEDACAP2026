@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -148,7 +149,7 @@ $i18n = [
 $isSubmitted = false;
 $isBannedSubmit = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answers'])) {
-    $mongoClient = new MongoClient("mongodb://localhost:27017");
+    $mongoClient = new MongoClient(medacapMongoUri());
     $responsesCollection = $mongoClient->academy->commercial_responses;
 
     $answers = isset($_POST['answers']) ? $_POST['answers'] : [];
@@ -194,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answers'])) {
 
     $brandNotif = $qType === 'sinotruk' ? 'SINOTRUK' : 'KING LONG';
     $mailSubject = $doc['lastName'] . ' — Questionnaire ' . $brandNotif . ' — ' . date('d/m/Y');
-    $downloadUrl = 'http://129.0.64.34/MEDACAP/Commercial/download-response.php?token=' . $downloadToken;
+    $downloadUrl = medacapCommercialUrl('Commercial/download-response.php?token=' . $downloadToken);
 
     $emailData = [
         'companyName' => 'CFAO Academy',
@@ -209,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answers'])) {
         'ctaText' => 'Télécharger en Excel',
         'ctaLink' => $downloadUrl,
         'ctaText2' => 'Corriger en ligne',
-        'ctaLink2' => 'http://129.0.64.34/MEDACAP/Commercial/responses.php',
+        'ctaLink2' => medacapCommercialUrl('Commercial/responses.php'),
         'supportEmail' => SUPER_ADMIN_EMAIL,
     ];
 
@@ -238,7 +239,7 @@ $txt = $i18n[$currentLang];
 // Tracker la session live (candidat en train de remplir le questionnaire)
 if ($isCommercialSession && !$isSubmitted) {
     try {
-        $liveClient = new MongoClient("mongodb://localhost:27017");
+        $liveClient = new MongoClient(medacapMongoUri());
         $liveDb     = $liveClient->academy;
         $sid        = session_id();
         $existing   = $liveDb->commercial_live->findOne(['session_id' => $sid]);

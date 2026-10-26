@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // insertTechnicianScores.php
 
 require_once "../../vendor/autoload.php"; // Assurez-vous que le chemin est correct
@@ -6,7 +7,7 @@ use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 
 // Configuration de la connexion MongoDB
-$mongoUri = "mongodb://localhost:27017"; // Modifiez si nécessaire
+$mongoUri = medacapMongoUri(); // Modifiez si nécessaire
 $databaseName = "academy"; // Nom de votre base de données
 $collectionName = "technicianScores"; // Nom de la collection cible
 

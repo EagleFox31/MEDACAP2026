@@ -1,11 +1,12 @@
 <?php
+require_once __DIR__ . '/../../../core/medacap_config.php';
 /**
  * Ajoute la fonctionnalité menu « Plans de formation de mes collaborateurs » au profil DPS.
  * Usage : php views/define/scripts/setup_collaborator_dashboard_menu.php
  */
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-$mongoUri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://10.68.0.7:27017';
+$mongoUri = medacapMongoUri('mongodb://10.68.0.7:27017');
 $db = (new MongoDB\Client($mongoUri))->academy;
 
 $key = 'collaborator_dashboard';
