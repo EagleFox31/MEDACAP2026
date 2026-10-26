@@ -1,5 +1,7 @@
 # MEDACAP — instructions agents
 
+> **IMPORTANT — contexte de cette branche (26/10/2026)** : `fix/quiz-factuel-countdocuments` est la copie de migration **MEDACAP 8.4 / version 2.9.4**, avec PHP 8.4, MongoDB 8.0 et `mongodb/mongodb` 1.21.5 dans Docker. Les règles ci-dessous sur PHP 7.3, MongoDB 4.2 et la bibliothèque 1.0.0 décrivent **l'installation WAMP historique encore en service**. Elles ne doivent PAS servir à dégrader les dépendances ni le runtime Docker de cette branche. Ne pas déployer depuis cette branche ni modifier la production. Lire d'abord `README.md` et `PLAN.md`. Le code source et les dépendances du conteneur doivent être reproductibles à partir d'un clone Git, `vendor/` étant géré par le build et un volume dédié. La base `academy` ne se restaure que sur le volume isolé `medacap84` à partir d'une archive autorisée, validée pour MongoDB 8.0. Les tests métier sur copie restent obligatoires avant la fusion. Les commits/push restent conditionnés aux demandes explicites de l'utilisatrice.
+
 Ce fichier est la **mémoire projet** pour les agents Cursor. Le consulter avant d’écrire ou modifier du PHP MEDACAP.
 
 ## Runtime cible
