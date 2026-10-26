@@ -13,6 +13,7 @@ on:
       - 'docker/**'
       - 'docker-compose.yml'
       - '.dockerignore'
+      - 'scripts/init-medacap84-copy.ps1'
       - '.github/workflows/medacap84-smoke.yml'
   workflow_dispatch:
 
@@ -47,6 +48,26 @@ jobs:
             }
             echo "Quiz class declarations OK\n";
           '
+
+  powershell-static:
+    name: Validate the guarded Mongo restore script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse PowerShell script without executing it
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            "scripts/init-medacap84-copy.ps1",
+            [ref]$tokens,
+            [ref]$parseErrors
+          ) | Out-Null
+          if ($parseErrors.Count -ne 0) {
+            $parseErrors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
 
   docker-build:
     name: Build PHP 8.4 runtime with Composer
