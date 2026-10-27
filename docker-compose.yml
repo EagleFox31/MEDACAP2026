@@ -78,7 +78,10 @@ services:
     entrypoint: ["sh", "/backup-loop.sh"]
     volumes:
       - type: bind
-        source: C:\wamp64\medacap-backups
+        # Dossier des dumps : BACKUP_DIR dans un .env local (non versionné), sinon ./backups
+        source: ${BACKUP_DIR:-./backups}
+        bind:
+          create_host_path: true
         target: /backups
       - type: bind
         source: ./docker/backup-loop.sh

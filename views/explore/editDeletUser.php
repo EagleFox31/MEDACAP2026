@@ -4217,9 +4217,7 @@ if (isset($_POST["retire-technician-manager"])) {
                                                                 [
                                                                     "_id" => [
                                                                         '$in' =>
-                                                                            $user[
-                                                                                "users"
-                                                                            ],
+                                                                            ($user["users"] ?? []),
                                                                     ],
                                                                 ]
                                                             );

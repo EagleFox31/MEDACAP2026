@@ -1,0 +1,26 @@
+{
+  "name": "MEDACAP QCM Offline",
+  "short_name": "MEDACAP QCM",
+  "description": "Lecteur QCM hors ligne pour techniciens CFAO Mobility",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#24235c",
+  "theme_color": "#24235c",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%2324235c' width='192' height='192' rx='32'/%3E%3Ctext x='96' y='128' text-anchor='middle' fill='%23e62244' font-size='96' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%2324235c' width='512' height='512' rx='64'/%3E%3Ctext x='256' y='340' text-anchor='middle' fill='%23e62244' font-size='260' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

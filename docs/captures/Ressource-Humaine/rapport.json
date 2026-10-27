@@ -1,0 +1,99 @@
+{
+  "profil": "Ressource Humaine",
+  "pages": [
+    {
+      "url": "/views/portal",
+      "statut": 200,
+      "capture": "00-portal.jpg",
+      "titre": "Portail MEDACAP | CFAO Mobility Academy",
+      "depuis": "connexion"
+    },
+    {
+      "url": "/views/measure/dashboardrh",
+      "statut": 200,
+      "capture": "01-dashboardrh.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/measure/manageRecruitment.php",
+      "statut": 200,
+      "capture": "02-manageRecruitment.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/measure/dashboard",
+      "statut": 200,
+      "capture": "03-dashboard.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/candidats.php",
+      "statut": 200,
+      "capture": "04-candidats.jpg",
+      "titre": "État d'avancement des campagnes | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/calendar",
+      "statut": 200,
+      "capture": "05-calendar.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/rapportRecrutement.php",
+      "statut": 200,
+      "capture": "06-rapportRecrutement.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/profile.php?id=68a6db778573000088003435",
+      "statut": 200,
+      "capture": "07-profile-id-68a6db778573000088003435.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/dashboardrh.php?spec_page=1",
+      "statut": 200,
+      "capture": "08-dashboardrh-spec-page-1.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/dashboardrh.php?spec_page=2",
+      "statut": 200,
+      "capture": "09-dashboardrh-spec-page-2.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/dashboardrh.php?page=1",
+      "statut": 200,
+      "capture": "10-dashboardrh-page-1.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/dashboardrh.php?page=2",
+      "statut": 200,
+      "capture": "11-dashboardrh-page-2.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardrh"
+    },
+    {
+      "url": "/views/measure/create_fixed_paper.php",
+      "statut": 200,
+      "capture": "12-create-fixed-paper.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/manageRecruitment.php"
+    }
+  ],
+  "erreurs": 0,
+  "avertissements": 0,
+  "connexion": "ok"
+}

@@ -2,7 +2,16 @@
 
 > **IMPORTANT — contexte de cette branche (26/10/2026)** : `fix/quiz-factuel-countdocuments` est la copie de migration **MEDACAP 8.4 / version 2.9.4**, avec PHP 8.4, MongoDB 8.0 et `mongodb/mongodb` 1.21.5 dans Docker. Les règles ci-dessous sur PHP 7.3, MongoDB 4.2 et la bibliothèque 1.0.0 décrivent **l'installation WAMP historique encore en service**. Elles ne doivent PAS servir à dégrader les dépendances ni le runtime Docker de cette branche. Ne pas déployer depuis cette branche ni modifier la production. Lire d'abord `README.md` et `PLAN.md`. Le code source et les dépendances du conteneur doivent être reproductibles à partir d'un clone Git, `vendor/` étant géré par le build et un volume dédié. La base `academy` ne se restaure que sur le volume isolé `medacap84` à partir d'une archive autorisée, validée pour MongoDB 8.0. Les tests métier sur copie restent obligatoires avant la fusion. Les commits/push restent conditionnés aux demandes explicites de l'utilisatrice.
 
-Ce fichier est la **mémoire projet** pour les agents Cursor. Le consulter avant d’écrire ou modifier du PHP MEDACAP.
+Ce fichier est la **mémoire projet** pour tout assistant de code et tout développeur, quel que soit l'outil. Le consulter avant d’écrire ou modifier du PHP MEDACAP.
+
+## Démarrage rapide (branche 8.4)
+
+- Runtime : conteneurs Docker (`docker compose up -d --build`), PHP 8.4, MongoDB 8.0, `mongodb/mongodb` 1.21.5. Site `http://127.0.0.1:8084/`, base de la copie `mongodb://127.0.0.1:27018`. Voir `README.md`.
+- Le code reste **compatible PHP 7.3** tant que le WAMP historique est en service (les deux tournent sur le même code) : pas d'arrow functions, pas de `match`, pas de propriétés typées, pas de `str_contains()`.
+- Compter avec `medacapCountDocuments()` (`core/mongo_compat.php`), lire l'URI Mongo et l'URL publique via `core/medacap_config.php` : jamais d'adresse en dur dans une page.
+- Vérifier avant de livrer : `docker compose exec -T web php -l <fichier>` puis `python tests/parcours/parcours_profils.py --accounts <comptes.json>` (lecture seule, rejouable). Aucun « c'est fait » sans cette preuve.
+- Scripts de données : toujours idempotents (relançables sans double effet), avec un mode `--dry-run` quand ils écrivent, et jamais exécutés contre `10.68.0.7` sans accord explicite.
+- Interdits dans le dépôt : identifiants, `.env`, dumps, exports Excel nominatifs, chemins propres à un poste (`C:\Users\…`). Les messages de commit décrivent uniquement le changement technique.
 
 ## Runtime cible
 

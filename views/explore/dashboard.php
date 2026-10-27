@@ -3485,8 +3485,8 @@ if (!isset($_SESSION["profile"])) {
                                         level = 'Total';
                                     }
 
-                                    var country = '<?php echo urlencode($selectedCountry); ?>'; // Le pays sélectionné
-                                    var agency = '<?php echo urlencode($selectedAgency); ?>'; // L'agence sélectionnée
+                                    var country = '<?php echo urlencode((string) $selectedCountry); ?>'; // Le pays sélectionné
+                                    var agency = '<?php echo urlencode((string) $selectedAgency); ?>'; // L'agence sélectionnée
 
                                     // Utilisation de AJAX pour charger le contenu du modal
                                     $.ajax({

@@ -2530,12 +2530,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BekingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2546,12 +2546,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Befuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2563,12 +2563,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Behino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2580,12 +2580,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BemercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2597,12 +2597,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BerenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2614,12 +2614,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Besinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2631,12 +2631,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BetoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2648,12 +2648,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BetoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2665,12 +2665,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bejcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2682,12 +2682,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Belovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2699,12 +2699,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bebyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2716,12 +2716,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Becitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2733,12 +2733,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bemercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2750,12 +2750,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bemitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2767,12 +2767,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bepeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2784,12 +2784,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Besuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2801,12 +2801,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Betoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2818,12 +2818,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BespecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2835,12 +2835,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BespecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2852,12 +2852,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BespecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -2869,12 +2869,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BespecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5119,12 +5119,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BukingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5135,12 +5135,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bufuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5152,12 +5152,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Buhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5169,12 +5169,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BumercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5186,12 +5186,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BurenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5203,12 +5203,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Businotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5220,12 +5220,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="ButoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5237,12 +5237,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="ButoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5254,12 +5254,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bujcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5271,12 +5271,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bulovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5288,12 +5288,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bubyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5305,12 +5305,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bucitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5322,12 +5322,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bumercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5339,12 +5339,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bumitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5356,12 +5356,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bupeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5373,12 +5373,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Busuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5390,12 +5390,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Butoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5407,12 +5407,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BuspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5424,12 +5424,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BuspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5441,12 +5441,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BuspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -5458,12 +5458,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BuspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7688,12 +7688,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CakingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7704,12 +7704,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cafuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7721,12 +7721,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cahino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7738,12 +7738,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CamercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7755,12 +7755,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CarenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7772,12 +7772,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Casinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7789,12 +7789,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CatoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7806,12 +7806,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CatoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7823,12 +7823,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cajcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7840,12 +7840,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Calovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7857,12 +7857,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cabyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7874,12 +7874,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cacitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7891,12 +7891,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Camercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7908,12 +7908,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Camitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7925,12 +7925,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Capeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7942,12 +7942,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Casuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7959,12 +7959,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Catoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7976,12 +7976,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CaspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -7993,12 +7993,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CaspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -8010,12 +8010,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CaspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -8027,12 +8027,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CaspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10277,12 +10277,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CokingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10293,12 +10293,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cofuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10310,12 +10310,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cohino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10327,12 +10327,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="ComercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10344,12 +10344,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CorenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10361,12 +10361,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cosinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10378,12 +10378,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CotoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10395,12 +10395,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CotoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10412,12 +10412,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cojcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10429,12 +10429,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Colovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10446,12 +10446,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cobyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10463,12 +10463,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cocitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10480,12 +10480,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Comercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10497,12 +10497,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Comitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10514,12 +10514,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Copeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10531,12 +10531,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cosuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10548,12 +10548,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Cotoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10565,12 +10565,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CospecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10582,12 +10582,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CospecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10599,12 +10599,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CospecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -10616,12 +10616,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="CospecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12866,12 +12866,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcikingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12882,12 +12882,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcifuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12899,12 +12899,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcihino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12916,12 +12916,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcimercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12933,12 +12933,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcirenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12950,12 +12950,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcisinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12967,12 +12967,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcitoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -12984,12 +12984,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcitoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13001,12 +13001,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcijcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13018,12 +13018,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcilovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13035,12 +13035,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcibyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13052,12 +13052,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcicitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13069,12 +13069,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcimercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13086,12 +13086,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcimitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13103,12 +13103,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcipeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13120,12 +13120,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcisuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13137,12 +13137,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcitoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13154,12 +13154,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcispecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13171,12 +13171,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcispecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13188,12 +13188,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcispecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -13205,12 +13205,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcispecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15455,12 +15455,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GakingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15471,12 +15471,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gafuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15488,12 +15488,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gahino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15505,12 +15505,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15522,12 +15522,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GarenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15539,12 +15539,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gasinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15556,12 +15556,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GatoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15573,12 +15573,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GatoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15590,12 +15590,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gajcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15607,12 +15607,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Galovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15624,12 +15624,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gabyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15641,12 +15641,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gacitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15658,12 +15658,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15675,12 +15675,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15692,12 +15692,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gapeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15709,12 +15709,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gasuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15726,12 +15726,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gatoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15743,12 +15743,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GaspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15760,12 +15760,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GaspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15777,12 +15777,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GaspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -15794,12 +15794,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GaspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18044,12 +18044,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamkingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18060,12 +18060,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18077,12 +18077,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18094,12 +18094,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GammercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18111,12 +18111,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18128,12 +18128,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamsinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18145,12 +18145,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamtoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18162,12 +18162,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamtoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18179,12 +18179,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18196,12 +18196,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamlovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18213,12 +18213,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gambyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18230,12 +18230,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamcitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18247,12 +18247,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gammercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18264,12 +18264,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gammitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18281,12 +18281,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gampeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18298,12 +18298,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamsuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18315,12 +18315,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gamtoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18332,12 +18332,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18349,12 +18349,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18366,12 +18366,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -18383,12 +18383,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GamspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20633,12 +20633,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhkingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20649,12 +20649,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20666,12 +20666,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20683,12 +20683,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhmercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20700,12 +20700,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20717,12 +20717,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghsinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20734,12 +20734,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhtoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20751,12 +20751,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhtoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20768,12 +20768,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20785,12 +20785,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghlovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20802,12 +20802,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bubyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20819,12 +20819,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghcitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20836,12 +20836,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghmercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20853,12 +20853,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghmitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20870,12 +20870,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghpeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20887,12 +20887,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghsuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20904,12 +20904,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Ghtoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20921,12 +20921,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20938,12 +20938,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20955,12 +20955,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -20972,12 +20972,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GhspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23222,12 +23222,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GukingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23238,12 +23238,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gufuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23255,12 +23255,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Guhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23272,12 +23272,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GumercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23289,12 +23289,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GurenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23306,12 +23306,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gusinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23323,12 +23323,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GutoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23340,12 +23340,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GutoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23357,12 +23357,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gujcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23374,12 +23374,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gulovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23391,12 +23391,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gubyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23408,12 +23408,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gucitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23425,12 +23425,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gumercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23442,12 +23442,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gumitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23459,12 +23459,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gupeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23476,12 +23476,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gusuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23493,12 +23493,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Gutoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23510,12 +23510,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GuspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23527,12 +23527,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GuspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23544,12 +23544,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GuspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -23561,12 +23561,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="GuspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25811,12 +25811,12 @@ if (!isset($_SESSION["id"])) {
                                             </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BikingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25827,12 +25827,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bifuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25844,12 +25844,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bihino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25861,12 +25861,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BimercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25878,12 +25878,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BirenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25895,12 +25895,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bisinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25912,12 +25912,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BitoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25929,12 +25929,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BitoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25946,12 +25946,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bijcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25963,12 +25963,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bilovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25980,12 +25980,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bibyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -25997,12 +25997,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bicitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26014,12 +26014,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bimercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26031,12 +26031,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bimitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26048,12 +26048,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bipeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26065,12 +26065,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bisuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26082,12 +26082,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Bitoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26099,12 +26099,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BispecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26116,12 +26116,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BispecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26133,12 +26133,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BispecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -26150,12 +26150,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="BispecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28400,12 +28400,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqkingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28416,12 +28416,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28433,12 +28433,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28450,12 +28450,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqmercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28467,12 +28467,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28484,12 +28484,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqsinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28501,12 +28501,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqtoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28518,12 +28518,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqtoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28535,12 +28535,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28552,12 +28552,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqlovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28569,12 +28569,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqbyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28586,12 +28586,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqcitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28603,12 +28603,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqmercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28620,12 +28620,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqmitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28637,12 +28637,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqpeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28654,12 +28654,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqsuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28671,12 +28671,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Eqtoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28688,12 +28688,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28705,12 +28705,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28722,12 +28722,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -28739,12 +28739,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="EqspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -30989,12 +30989,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadkingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31005,12 +31005,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31022,12 +31022,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31039,12 +31039,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadmercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31056,12 +31056,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31073,12 +31073,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madsinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31090,12 +31090,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadtoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31107,12 +31107,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadtoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31124,12 +31124,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31141,12 +31141,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madlovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31158,12 +31158,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madbyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31175,12 +31175,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madcitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31192,12 +31192,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madmercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31209,12 +31209,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madmitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31226,12 +31226,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madpeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31243,12 +31243,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madsuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31260,12 +31260,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Madtoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31277,12 +31277,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31294,12 +31294,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31311,12 +31311,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -31328,12 +31328,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MadspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33578,12 +33578,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalikingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33594,12 +33594,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malifuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33611,12 +33611,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malihino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33628,12 +33628,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalimercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33645,12 +33645,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalirenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33662,12 +33662,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malisinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33679,12 +33679,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalitoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33696,12 +33696,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalitoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33713,12 +33713,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malijcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33730,12 +33730,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malilovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33747,12 +33747,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malibyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33764,12 +33764,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malicitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33781,12 +33781,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malimercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33798,12 +33798,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malimitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33815,12 +33815,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malipeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33832,12 +33832,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malisuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33849,12 +33849,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Malitoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33866,12 +33866,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalispecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33883,12 +33883,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalispecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33900,12 +33900,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalispecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -33917,12 +33917,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MalispecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36168,12 +36168,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MaukingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36184,12 +36184,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maufuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36201,12 +36201,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Mauhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36218,12 +36218,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MaumercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36235,12 +36235,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MaurenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36252,12 +36252,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Mausinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36269,12 +36269,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MautoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36286,12 +36286,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MautoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36303,12 +36303,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maujcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36320,12 +36320,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maulovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36337,12 +36337,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maubyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36354,12 +36354,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maucitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36371,12 +36371,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maumercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36388,12 +36388,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maumitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36405,12 +36405,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Maupeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36422,12 +36422,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Mausuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36439,12 +36439,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Mautoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36456,12 +36456,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MauspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36473,12 +36473,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MauspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36490,12 +36490,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MauspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -36507,12 +36507,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="MauspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38757,12 +38757,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigerkingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38773,12 +38773,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38790,12 +38790,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerhino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38807,12 +38807,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigermercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38824,12 +38824,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigerrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38841,12 +38841,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigersinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38858,12 +38858,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigertoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38875,12 +38875,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigertoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38892,12 +38892,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38909,12 +38909,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerlovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38926,12 +38926,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerbyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38943,12 +38943,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigercitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38960,12 +38960,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigermercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38977,12 +38977,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigermitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -38994,12 +38994,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerpeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -39011,12 +39011,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigersuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -39028,12 +39028,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigertoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -39045,12 +39045,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigerspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -39062,12 +39062,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigerspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -39079,12 +39079,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigerspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -39096,12 +39096,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigerspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41346,12 +41346,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriakingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41362,12 +41362,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriafuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41379,12 +41379,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriahino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41396,12 +41396,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriamercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41413,12 +41413,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriarenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41430,12 +41430,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriasinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41447,12 +41447,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriatoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41464,12 +41464,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriatoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41481,12 +41481,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriajcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41498,12 +41498,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigerialovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41515,12 +41515,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriabyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41532,12 +41532,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriacitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41549,12 +41549,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriamercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41566,12 +41566,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriamitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41583,12 +41583,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriapeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41600,12 +41600,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriasuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41617,12 +41617,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Nigeriatoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41634,12 +41634,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriaspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41651,12 +41651,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriaspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41668,12 +41668,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriaspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -41685,12 +41685,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="NigeriaspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -43935,12 +43935,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcakingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -43951,12 +43951,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcafuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -43968,12 +43968,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcahino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -43985,12 +43985,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcamercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44002,12 +44002,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcarenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44019,12 +44019,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcasinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44036,12 +44036,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcatoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44053,12 +44053,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcatoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44070,12 +44070,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcajcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44087,12 +44087,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcalovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44104,12 +44104,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcabyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44121,12 +44121,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcacitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44138,12 +44138,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcamercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44155,12 +44155,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcamitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44172,12 +44172,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcapeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44189,12 +44189,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcasuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44206,12 +44206,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rcatoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44223,12 +44223,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcaspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44240,12 +44240,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcaspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44257,12 +44257,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcaspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -44274,12 +44274,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RcaspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46524,12 +46524,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdckingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46540,12 +46540,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46557,12 +46557,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdchino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46574,12 +46574,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdcmercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46591,12 +46591,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdcrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46608,12 +46608,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcsinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46625,12 +46625,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdctoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46642,12 +46642,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdctoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46659,12 +46659,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46676,12 +46676,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdclovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46693,12 +46693,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcbyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46710,12 +46710,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdccitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46727,12 +46727,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcmercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46744,12 +46744,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcmitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46761,12 +46761,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcpeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46778,12 +46778,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdcsuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46795,12 +46795,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Rdctoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46812,12 +46812,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdcspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46829,12 +46829,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdcspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46846,12 +46846,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdcspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -46863,12 +46863,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="RdcspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49113,12 +49113,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SekingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49129,12 +49129,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sefuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49146,12 +49146,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sehino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49163,12 +49163,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SemercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49180,12 +49180,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SerenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49197,12 +49197,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sesinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49214,12 +49214,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SetoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49231,12 +49231,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SetoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49248,12 +49248,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sejcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49265,12 +49265,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Selovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49282,12 +49282,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sebyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49299,12 +49299,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Secitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49316,12 +49316,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Semercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49333,12 +49333,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Semitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49350,12 +49350,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sepeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49367,12 +49367,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Sesuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49384,12 +49384,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Setoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49401,12 +49401,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SespecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49418,12 +49418,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SespecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49435,12 +49435,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SespecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -49452,12 +49452,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="SespecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51702,12 +51702,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TckingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51718,12 +51718,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcfuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51735,12 +51735,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tchino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51752,12 +51752,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TcmercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51769,12 +51769,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TcrenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51786,12 +51786,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcsinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51803,12 +51803,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TctoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51820,12 +51820,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TctoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51837,12 +51837,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcjcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51854,12 +51854,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tclovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51871,12 +51871,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcbyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51888,12 +51888,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tccitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51905,12 +51905,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcmercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51922,12 +51922,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcmitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51939,12 +51939,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcpeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51956,12 +51956,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tcsuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51973,12 +51973,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tctoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -51990,12 +51990,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TcspecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -52007,12 +52007,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TcspecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -52024,12 +52024,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TcspecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -52041,12 +52041,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TcspecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54291,12 +54291,12 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TokingLong">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'KING LONG'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                                    round((($kingLongScoreFac * 100) / ($kingLongFac ?: 1) + ($kingLongScore * 100) / ($kingLongDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54307,12 +54307,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tofuso">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'FUSO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                                    round((($fusoScoreFac * 100) / ($fusoFac ?: 1) + ($fusoScore * 100) / ($fusoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54324,12 +54324,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tohino">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'HINO'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                                    round((($hinoScoreFac * 100) / ($hinoFac ?: 1) + ($hinoScore * 100) / ($hinoDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54341,12 +54341,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TomercedesTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                                    round((($mercedesTruckScoreFac * 100) / ($mercedesTruckFac ?: 1) + ($mercedesTruckScore * 100) / ($mercedesTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54358,12 +54358,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TorenaultTruck">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'RENAULT TRUCK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                                    round((($renaultTruckScoreFac * 100) / ($renaultTruckFac ?: 1) + ($renaultTruckScore * 100) / ($renaultTruckDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54375,12 +54375,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tosinotruk">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SINOTRUK'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                                    round((($sinotrukScoreFac * 100) / ($sinotrukFac ?: 1) + ($sinotrukScore * 100) / ($sinotrukDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54392,12 +54392,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TotoyotaBt">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA BT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                                    round((($toyotaBtScoreFac * 100) / ($toyotaBtFac ?: 1) + ($toyotaBtScore * 100) / ($toyotaBtDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54409,12 +54409,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TotoyotaForflift">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA FORKLIFT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                                    round((($toyotaForfliftScoreFac * 100) / ($toyotaForfliftFac ?: 1) + ($toyotaForfliftScore * 100) / ($toyotaForfliftDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54426,12 +54426,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tojcb">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'JCB'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                                    round((($jcbScoreFac * 100) / ($jcbFac ?: 1) + ($jcbScore * 100) / ($jcbDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54443,12 +54443,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tolovol">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'LOVOL'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                                    round((($lovolScoreFac * 100) / ($lovolFac ?: 1) + ($lovolScore * 100) / ($lovolDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54460,12 +54460,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tobyd">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'BYD'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2)
+                                                    round((($bydScoreFac * 100) / ($bydFac ?: 1) + ($bydScore * 100) / ($bydDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54477,12 +54477,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tocitroen">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'CITROEN'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                                    round((($citroenScoreFac * 100) / ($citroenFac ?: 1) + ($citroenScore * 100) / ($citroenDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54494,12 +54494,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tomercedes">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MERCEDES'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                                    round((($mercedesScoreFac * 100) / ($mercedesFac ?: 1) + ($mercedesScore * 100) / ($mercedesDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54511,12 +54511,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tomitsubishi">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'MITSUBISHI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2)
+                                                    round((($mitsubishiScoreFac * 100) / ($mitsubishiFac ?: 1) + ($mitsubishiScore * 100) / ($mitsubishiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54528,12 +54528,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Topeugeot">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'PEUGEOT'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                                    round((($peugeotScoreFac * 100) / ($peugeotFac ?: 1) + ($peugeotScore * 100) / ($peugeotDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54545,12 +54545,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Tosuzuki">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'SUZUKI'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                                    round((($suzukiScoreFac * 100) / ($suzukiFac ?: 1) + ($suzukiScore * 100) / ($suzukiDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54562,12 +54562,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="Totoyota">
-                                            <?php for ($i=0; $i < count($tech['brand'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['brand'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['brand'.$niveau][$i] == 'TOYOTA'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                                    round((($toyotaScoreFac * 100) / ($toyotaFac ?: 1) + ($toyotaScore * 100) / ($toyotaDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54579,12 +54579,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TospecialityElectricite">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Electricité et Electronique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2)
+                                                    round((($specialityElectriciteScoreFac * 100) / ($specialityElectriciteFac ?: 1) + ($specialityElectriciteScore * 100) / ($specialityElectriciteDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54596,12 +54596,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TospecialityHydraulique">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Hydraulique'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2)
+                                                    round((($specialityHydrauliqueScoreFac * 100) / ($specialityHydrauliqueFac ?: 1) + ($specialityHydrauliqueScore * 100) / ($specialityHydrauliqueDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54613,12 +54613,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TospecialityMoteur">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Moteur'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2)
+                                                    round((($specialityMoteurScoreFac * 100) / ($specialityMoteurFac ?: 1) + ($specialityMoteurScore * 100) / ($specialityMoteurDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>
@@ -54630,12 +54630,12 @@ if (!isset($_SESSION["id"])) {
                                             <?php } ?>
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?>
                                             <td class="text-center hidden" id="TospecialityTransmission">
-                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau]); $i++) {
+                                            <?php for ($i=0; $i < count($tech['speciality'.$niveau] ?? []); $i++) {
                                             if (
                                                 $tech['speciality'.$niveau][$i] == 'Transmission'
                                             ) { ?>
                                                 <?php echo
-                                                    round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2)
+                                                    round((($specialityTransmissionScoreFac * 100) / ($specialityTransmissionFac ?: 1) + ($specialityTransmissionScore * 100) / ($specialityTransmissionDecla ?: 1)) / 2)
                                                 ?>%
                                             <?php }
                                                 } ?>

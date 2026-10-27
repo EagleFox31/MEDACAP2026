@@ -1,0 +1,50 @@
+{
+  "profil": "Technicien",
+  "pages": [
+    {
+      "url": "/views/measure/ListeDesQcm",
+      "statut": 200,
+      "capture": "00-ListeDesQcm.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "connexion"
+    },
+    {
+      "url": "/views/portal.php",
+      "statut": 200,
+      "capture": "01-portal.jpg",
+      "titre": "Portail MEDACAP | CFAO Mobility Academy",
+      "depuis": "/views/measure/ListeDesQcm"
+    },
+    {
+      "url": "/views/measure/dashboard",
+      "statut": 200,
+      "capture": "02-dashboard.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/ListeDesQcm"
+    },
+    {
+      "url": "/views/measure/dashboardAdmin",
+      "statut": 200,
+      "capture": "03-dashboardAdmin.jpg",
+      "titre": "Participation aux Tests | CFAO Mobility Academy | CFAO Mobility Academy",
+      "depuis": "/views/measure/ListeDesQcm"
+    },
+    {
+      "url": "/views/measure/profile.php?id=66694d8b582300001b0058fa",
+      "statut": 200,
+      "capture": "04-profile-id-66694d8b582300001b0058fa.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/ListeDesQcm"
+    },
+    {
+      "url": "/views/define/personalTraining",
+      "statut": 200,
+      "capture": "05-personalTraining.jpg",
+      "titre": "3 - Mon Plan Individuel de Formation Pluri-annuel (PIF) | CFAO Mobility Academy",
+      "depuis": "/views/portal.php"
+    }
+  ],
+  "erreurs": 0,
+  "avertissements": 0,
+  "connexion": "ok"
+}

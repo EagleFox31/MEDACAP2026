@@ -699,7 +699,7 @@
                                 <!--end:Menu item-->
                                 <!--begin:Menu item-->
                                 <div class="menu-item">
-                                    <!--begin:Menu link--><a class="menu-link" href="./messages.php"><span
+                                    <!--begin:Menu link--><a class="menu-link" href="../explore/messages.php"><span
                                             class="menu-icon">
                                             <i class="fas fa-message fs-2"><span class="path1"></span><span
                                                     class="path2"></span></i></span><span class="menu-title">

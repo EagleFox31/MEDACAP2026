@@ -1,0 +1,89 @@
+# Version serveur. Autonome : ne pas la fusionner avec docker-compose.yml.
+#   docker compose -f docker-compose.server.yml --env-file .env.server up -d --build
+# Différences avec la version PC : site joignable sur le réseau, URL publique
+# réglable, redémarrage automatique après reboot, aucun port MongoDB publié,
+# erreurs PHP non affichées, dossiers internes et scripts de la racine refusés par Apache.
+services:
+  mongo:
+    image: mongo:8.0
+    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.5"]
+    restart: unless-stopped
+    environment:
+      TZ: Africa/Douala
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    cpus: "1.0"
+    cpu_shares: 512
+    pids_limit: 128
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    ports:
+      # Le PHP partage cette pile réseau : seul le HTTP est publié, MongoDB reste interne.
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - medacap84:/data/db
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    network_mode: "service:mongo"
+    restart: unless-stopped
+    environment:
+      TZ: Africa/Douala
+      MEDACAP_MONGO_URI: mongodb://127.0.0.1:27017
+      MEDACAP_PUBLIC_URL: ${MEDACAP_PUBLIC_URL:?définir MEDACAP_PUBLIC_URL dans .env.server}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    cpus: "1.0"
+    cpu_shares: 512
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 80) ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - .:/var/www/html
+      - medacap84-sessions:/var/lib/medacap/sessions
+      - medacap84-vendor:/var/www/html/vendor
+      - ./docker/server/php-server.ini:/usr/local/etc/php/conf.d/zz-medacap-server.ini:ro
+      - ./docker/server/medacap-server.conf:/etc/apache2/conf-enabled/zz-medacap-server.conf:ro
+
+  backup:
+    image: mongo:8.0
+    restart: unless-stopped
+    environment:
+      TZ: Africa/Douala
+    depends_on:
+      mongo:
+        condition: service_healthy
+    mem_limit: 384m
+    memswap_limit: 384m
+    cpus: "0.5"
+    cpu_shares: 256
+    pids_limit: 64
+    entrypoint: ["sh", "/backup-loop.sh"]
+    volumes:
+      - type: bind
+        source: ${BACKUP_DIR:-./backups}
+        target: /backups
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ./docker/backup-loop.sh
+        target: /backup-loop.sh
+        read_only: true
+
+volumes:
+  medacap84:
+  medacap84-sessions:
+  medacap84-vendor:

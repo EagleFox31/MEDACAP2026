@@ -340,7 +340,7 @@ $subsidiaries = [
                                 </div>
                             <?php } elseif ($_SESSION["profile"] == "Directeur Pièce et Service") { ?>
                                 <div class="menu-content text-center"><span
-                                        class="fw-bolder text-black text-uppercase fs-5"><?php echo $dps_space ?></span>
+                                        class="fw-bolder text-black text-uppercase fs-5"><?php echo isset($dps_space) ? $dps_space : "DPS"; ?></span>
                                 </div>
                             <?php } elseif ($_SESSION["profile"] == "Directeur des Opérations") { ?>
                                 <div class="menu-content text-center"><span

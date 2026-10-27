@@ -635,7 +635,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'fix_username') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/fix_username.php">
+                                               href="../../fix_username.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-pencil fs-2">
                                                         <span class="path1"></span><span class="path2"></span>
@@ -646,7 +646,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'activation') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/views/explore/createUser.php">
+                                               href="../explore/createUser.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-user-tick fs-2">
                                                         <span class="path1"></span><span class="path2"></span><span class="path3"></span>
@@ -657,7 +657,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'create_fixed_paper') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/views/measure/create_fixed_paper.php">
+                                               href="./create_fixed_paper.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-notepad-edit fs-2">
                                                         <span class="path1"></span><span class="path2"></span>
@@ -668,7 +668,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'loadtest') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/views/measure/loadtest.php">
+                                               href="./loadtest.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-rocket fs-2">
                                                         <span class="path1"></span><span class="path2"></span>

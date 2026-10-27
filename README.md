@@ -5,17 +5,20 @@ Copie de travail pour faire tourner MEDACAP en PHP 8.4 et MongoDB 8.0, dans Dock
 Branche : `fix/quiz-factuel-countdocuments`  
 Dépôt : https://github.com/EagleFox31/MEDACAP2026/tree/fix/quiz-factuel-countdocuments
 
-`MEDACAP-8.4` est un nom de dossier sur ce poste. Ce n'est pas un dépôt GitHub à part. Le code envoyé est cette branche du dépôt déjà existant.
-
-Ne sont pas sur GitHub : les caches, `scratch/`, les scripts jetables, le `.htaccess` local, et `scripts/fix_segolene_password.php` (mot de passe en clair).
-
-| Dossier | Rôle |
-|---|---|
-| `C:\wamp64\www\MEDACAP-8.4` | Cette copie. C'est ici qu'on modifie. |
-| `C:\wamp64\www\MEDACAP` | Arborescence WAMP d'origine. PHP 7.3 visé, lib MongoDB 1.0.0. |
-| `C:\wamp64\www\MEDACAP-sauvegarde-20261023` | Copie gelée du 23 octobre 2026, version 2.9.4. Ne pas modifier. |
+Ne sont pas sur GitHub : `vendor/`, `scratch/`, les scripts jetables (`scripts/tmp_*`, scripts nominatifs), le `.htaccess` local, les `.env`, les présentations `docs/*.pptx`, les dumps et les réponses de techniciens.
 
 Le détail des phases est dans `PLAN.md`.
+
+## Pour reprendre le projet (personne ou assistant de code)
+
+À lire dans cet ordre : ce README, puis `AGENTS.md` (règles de code, pièges connus), puis `PLAN.md`. `AGENTS.md` est le fichier d'instructions standard lu par les assistants de code ; si l'outil utilisé lit un autre nom de fichier, créer en local un fichier qui renvoie vers `AGENTS.md`, sans le versionner.
+
+1. Cloner, lancer Docker et restaurer une copie de la base (section « Démarrer sur une machine neuve »).
+2. Modifier le code. Le conteneur monte le dossier : pas de rebuild pour un changement PHP.
+3. Vérifier : `docker compose exec -T web php -l <fichier>` puis rejouer les parcours (section « Parcours par profil »).
+4. Commit sur une branche, puis PR vers `main`. Ne jamais pointer ce Compose sur la base de production.
+
+Aucun chemin propre à un poste n'est requis : tout se règle par variables (`.env` local pour `BACKUP_DIR`, `.env.server` pour le serveur, voir `.env.server.example`).
 
 ## Ce qui a changé
 
@@ -107,7 +110,7 @@ Comparer les comptes de collections attendus à ceux du dump source. **Ne pas ut
 
 Le conteneur web partage la pile réseau de Mongo. Le `27017` de WAMP n'est pas publié. Les variables `MEDACAP_MONGO_URI` et `MEDACAP_PUBLIC_URL` sont configurées dans `docker-compose.yml`.
 
-La sauvegarde quotidienne cible `C:\\wamp64\\medacap-backups` sur le poste de référence. **Adapter explicitement ce chemin sur toute autre machine et vérifier la restauration d'essai** avant exploitation. Les quotas CPU/mémoire sont dans le Compose.
+La sauvegarde quotidienne écrit dans `BACKUP_DIR` (fichier `.env` local, non versionné), sinon dans `./backups`. **Vérifier la restauration d'essai** avant exploitation. Les quotas CPU/mémoire sont dans le Compose.
 
 ### Tests à effectuer avant de proposer une fusion dans `main`
 
@@ -117,6 +120,35 @@ La sauvegarde quotidienne cible `C:\\wamp64\\medacap-backups` sur le poste de r�
 4. Rejouer la liste de contrôle complète de `PLAN.md`. Tester SMTP et sauvegardes sur le serveur cible **avant** toute bascule.
 
 La présence des fichiers manquants dans Git ne constitue pas une preuve de réussite des tests métier. `main`, WAMP et le serveur de production sont inchangés tant que la PR reste en brouillon.
+
+## Serveur
+
+`docker-compose.server.yml` est autonome (ne pas le combiner avec `docker-compose.yml`) :
+
+```powershell
+copy .env.server.example .env.server   # puis renseigner MEDACAP_PUBLIC_URL, HTTP_PORT, BACKUP_DIR
+docker compose -f docker-compose.server.yml --env-file .env.server up -d --build
+```
+
+Différences avec le poste : port HTTP publié sur le réseau, MongoDB non publié, redémarrage automatique, erreurs PHP masquées (`docker/server/php-server.ini`), dossiers internes et scripts de la racine refusés par Apache (`docker/server/medacap-server.conf`).
+
+## Parcours par profil
+
+`tests/parcours/parcours_profils.py` (Python 3 + Playwright) se connecte avec un compte par profil, parcourt les menus sur 2 niveaux, prend une capture par page et signale les erreurs PHP, les codes HTTP ≥ 400 et les liens vers la page 404.
+
+- Lecture seule : les liens d'action, d'envoi, d'export, de suppression, de déconnexion et les pages de QCM ne sont pas suivis. Rejouer le script ne change pas la base.
+- Rejouable : chaque passage remplace les captures du profil passé ; `docs/captures/rapport.json` reprend tous les profils.
+- Les identifiants viennent d'un fichier local jamais versionné (`tests/parcours/comptes*.json` est ignoré).
+
+```powershell
+pip install playwright ; python -m playwright install chromium   # ou Chrome / Edge déjà installé
+python tests/parcours/parcours_profils.py --accounts tests/parcours/comptes.json --base http://127.0.0.1:8084 --max 30
+python tests/parcours/parcours_profils.py --accounts tests/parcours/comptes.json --only "Manager,Technicien"
+```
+
+Format de `comptes.json` : `{"Technicien": {"username": "…", "password": "…"}, "Manager": {…}}`. Les erreurs PHP n'étant plus affichées dans les pages (`display_errors=Off`), contrôler aussi `docker compose logs web --since 30m` après un passage.
+
+Captures du dernier passage : `docs/captures/<profil>/`.
 
 ## Preuve déjà rejouée
 

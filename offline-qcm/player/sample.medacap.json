@@ -1,0 +1,149 @@
+{
+  "format": "medacap-offline-qcm-v1",
+  "meta": {
+    "userId": "demo-user-001",
+    "username": "Technicien Demo",
+    "firstName": "Michel",
+    "lastName": "BAYEMI",
+    "agency": "Bertoua",
+    "subsidiary": "CFAO MOBILITY CAMEROON",
+    "country": "Cameroun",
+    "level": "Junior",
+    "type": "Factuel",
+    "questionCount": 5,
+    "exportId": "demo-export-pl-2026-001"
+  },
+  "status": "pending",
+  "session": {
+    "timer": {
+      "hours": 0,
+      "minutes": 15,
+      "seconds": 0
+    }
+  },
+  "questions": [
+    {
+      "index": 1,
+      "id": "q-demo-001",
+      "ref": "MEC-01",
+      "specialty": "Mécanique — Freinage",
+      "label": "Quelle est la fonction principale du maître-cylindre sur un véhicule poids lourd ?",
+      "proposals": [
+        "Stocker le liquide de frein uniquement",
+        "Convertir la force mécanique de la pédale en pression hydraulique",
+        "Refroidir les disques de frein",
+        "Mesurer l'usure des plaquettes"
+      ],
+      "image": null
+    },
+    {
+      "index": 2,
+      "id": "q-demo-002",
+      "ref": "MEC-02",
+      "specialty": "Mécanique — Moteur",
+      "label": "Lors d'une vidange moteur, quel élément doit impérativement être remplacé ?",
+      "proposals": [
+        "Le filtre à air",
+        "Le filtre à huile",
+        "La courroie de distribution",
+        "Le liquide de refroidissement"
+      ],
+      "image": null
+    },
+    {
+      "index": 3,
+      "id": "q-demo-003",
+      "ref": "ELEC-01",
+      "specialty": "Électricité — Démarrage",
+      "label": "Un alternateur qui ne charge plus peut être causé par :",
+      "proposals": [
+        "Une courroie d'accessoires usée ou desserrée",
+        "Un filtre à gasoil colmaté",
+        "Un embrayage patiné",
+        "Une crémaillère de direction défectueuse"
+      ],
+      "image": null
+    },
+    {
+      "index": 4,
+      "id": "q-demo-004",
+      "ref": "MEC-03",
+      "specialty": "Mécanique — Transmission",
+      "label": "Le couple est défini comme :",
+      "proposals": [
+        "La vitesse maximale du véhicule",
+        "La force de rotation exercée par le moteur",
+        "La consommation de carburant au ralenti",
+        "La pression des pneus"
+      ],
+      "image": null
+    },
+    {
+      "index": 5,
+      "id": "q-demo-005",
+      "ref": "SEC-01",
+      "specialty": "Sécurité — Atelier",
+      "label": "Avant de soulever un PL sur un pont élévateur, vous devez :",
+      "proposals": [
+        "Vérifier les points de levage prévus par le constructeur",
+        "Placer les crics n'importe où sous le châssis",
+        "Démonter les roues avant le levage",
+        "Couper le contact sans caler le véhicule"
+      ],
+      "image": null
+    }
+  ],
+  "answers": {
+    "1": null,
+    "2": null,
+    "3": null,
+    "4": null,
+    "5": null
+  },
+  "declaratifQuestions": [
+    {
+      "index": 1,
+      "id": "qd-demo-001",
+      "ref": "DECLA-01",
+      "specialty": "Freinage Hydraulique",
+      "short": "freinage_hyd",
+      "label": "Remplacer et purger le liquide de frein sur un circuit hydraulique.",
+      "proposals": [
+        "Je maîtrise",
+        "Je ne maîtrise pas",
+        "J'ai jamais fait"
+      ]
+    },
+    {
+      "index": 2,
+      "id": "qd-demo-002",
+      "ref": "DECLA-02",
+      "specialty": "Moteur Diesel",
+      "short": "moteur_diesel",
+      "label": "Remplacer le filtre à carburant et réamorcer le circuit basse pression.",
+      "proposals": [
+        "Je maîtrise",
+        "Je ne maîtrise pas",
+        "J'ai jamais fait"
+      ]
+    },
+    {
+      "index": 3,
+      "id": "qd-demo-003",
+      "ref": "DECLA-03",
+      "specialty": "Electricité et Electronique",
+      "short": "electricite",
+      "label": "Diagnostiquer un faisceau électrique au multimètre (continuité, tension, masse).",
+      "proposals": [
+        "Je maîtrise",
+        "Je ne maîtrise pas",
+        "J'ai jamais fait"
+      ]
+    }
+  ],
+  "declaratifAnswers": {
+    "1": null,
+    "2": null,
+    "3": null
+  }
+}

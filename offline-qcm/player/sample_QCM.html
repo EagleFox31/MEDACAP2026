@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#24235c">
+  <meta name="description" content="MEDACAP — Lecteur QCM hors ligne pour techniciens CFAO">
+  <title>MEDACAP QCM Offline</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%2324235c' width='32' height='32' rx='6'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%23e62244' font-size='14' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E">
+  <style>/* MEDACAP Offline QCM Player — CFAO glassmorphism */
+:root {
+  --cfao-red: #e62244;
+  --cfao-navy: #24235c;
+  --cfao-navy-light: #34337a;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  --text: #f4f4f8;
+  --text-muted: rgba(244, 244, 248, 0.72);
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: var(--cfao-red);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --header-h: auto;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font);
+  color: var(--text);
+  background: linear-gradient(145deg, var(--cfao-navy) 0%, #1a1945 40%, #2a1040 70%, var(--cfao-navy-light) 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(230, 34, 68, 0.18), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(230, 34, 68, 0.12), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Screens */
+.screen {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 16px;
+  padding-bottom: calc(16px + var(--safe-bottom));
+  animation: fadeIn 0.35s ease;
+}
+
+.screen-active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glass components */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-bar {
+  background: rgba(36, 35, 92, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+}
+
+.hidden { display: none !important; }
+
+/* Landing */
+.landing-card {
+  max-width: 440px;
+  margin: auto;
+  width: 100%;
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.brand-logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--cfao-red), #c41a38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(230, 34, 68, 0.4);
+}
+
+.brand h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brand-sub {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.drop-zone {
+  border: 2px dashed rgba(255, 255, 255, 0.35);
+  border-radius: var(--radius);
+  padding: 28px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+}
+
+.drop-zone:focus-visible {
+  border-color: var(--cfao-red);
+  box-shadow: 0 0 0 3px rgba(230, 34, 68, 0.35);
+}
+
+.drop-zone.drag-over {
+  border-color: var(--cfao-red);
+  background: rgba(230, 34, 68, 0.1);
+}
+
+.drop-icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+.drop-title {
+  margin: 0 0 8px;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.drop-hint {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.landing-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.resume-wrap {
+  margin-top: 24px;
+  text-align: left;
+}
+
+.resume-wrap h2 {
+  font-size: 0.9rem;
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.resume-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.resume-list li {
+  margin-bottom: 8px;
+}
+
+.resume-list button {
+  width: 100%;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 10px 14px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.resume-list button:hover {
+  background: rgba(230, 34, 68, 0.15);
+}
+
+.error-msg {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: rgba(230, 34, 68, 0.2);
+  border: 1px solid rgba(230, 34, 68, 0.5);
+  border-radius: var(--radius-sm);
+  color: #ffb3c0;
+  font-size: 0.85rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active:not(:disabled) { transform: scale(0.97); }
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--cfao-red), #c41a38);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(230, 34, 68, 0.35);
+}
+
+.btn-accent {
+  background: var(--cfao-red);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border: 1px solid var(--glass-border);
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+/* Quiz header */
+.quiz-header {
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.header-user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.timer.warning { color: var(--warning); }
+.timer.danger {
+  color: #ff6b6b;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.7; }
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.8125rem;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-progress { background: rgba(52, 152, 219, 0.3); color: #7ec8ff; }
+.badge-done { background: rgba(46, 204, 113, 0.3); color: #7dffb0; }
+.badge-locked { background: rgba(230, 34, 68, 0.3); color: #ffb3c0; }
+
+.progress-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cfao-red), #ff4d6d);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Question */
+.quiz-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.question-card {
+  flex: 1;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.question-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+
+.q-index {
+  font-weight: 800;
+  font-size: 0.875rem;
+  color: var(--cfao-red);
+  background: rgba(230, 34, 68, 0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.q-specialty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.q-image-wrap {
+  margin-bottom: 14px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.q-image-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+}
+
+.q-label {
+  margin: 0 0 18px;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.proposals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proposal-item {
+  position: relative;
+}
+
+.proposal-item input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.proposal-item label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.proposal-item label:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.proposal-item input:focus-visible + label {
+  outline: 2px solid var(--cfao-red);
+  outline-offset: 2px;
+}
+
+.proposal-item input:checked + label {
+  border-color: var(--cfao-red);
+  background: rgba(230, 34, 68, 0.15);
+}
+
+.proposal-letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+
+.proposal-item input:checked + label .proposal-letter {
+  background: var(--cfao-red);
+  color: #fff;
+}
+
+.quiz-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.quiz-nav .btn-prev { justify-self: start; }
+.quiz-nav .btn-next { justify-self: end; }
+
+.quiz-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  flex-shrink: 0;
+  max-width: 640px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.save-status {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.save-status.saved { color: var(--success); }
+
+/* Done screen */
+.done-card {
+  max-width: 420px;
+  margin: auto;
+  width: 100%;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.done-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(46, 204, 113, 0.2);
+  color: var(--success);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--success);
+}
+
+.done-card h2 { margin: 0 0 10px; }
+
+.done-stats {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0 0 24px;
+}
+
+.done-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Modals */
+dialog {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 96vw;
+  max-height: 90dvh;
+}
+
+dialog::backdrop {
+  background: rgba(10, 8, 30, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.grid-modal-inner,
+.confirm-inner {
+  padding: 18px 16px;
+  width: min(420px, 92vw);
+  margin: auto;
+}
+
+.grid-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.grid-modal-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.question-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 8px;
+  max-height: 50dvh;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.grid-cell {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.grid-cell:hover { background: rgba(255, 255, 255, 0.18); }
+.grid-cell.current {
+  outline: 2px solid var(--cfao-red);
+  outline-offset: 2px;
+}
+.grid-cell.answered { background: rgba(46, 204, 113, 0.35); }
+.grid-cell.answered.current { background: rgba(230, 34, 68, 0.4); }
+
+.grid-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.dot-current { background: var(--cfao-red); }
+.dot-answered { background: var(--success); }
+.dot-empty { background: rgba(255, 255, 255, 0.25); }
+
+.confirm-inner h3 { margin: 0 0 10px; }
+.confirm-inner p { margin: 0 0 10px; color: var(--text-muted); font-size: 0.9rem; }
+
+.finalize-summary {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem !important;
+  color: var(--text) !important;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.confirm-actions .btn { flex: 1; }
+
+/* Locked state */
+.quiz-locked .proposals label {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.quiz-locked #btn-finalize,
+.quiz-locked #btn-save { display: none; }
+
+/* Tablet+ */
+@media (min-width: 600px) {
+  .screen { padding: 24px; }
+  .landing-card { padding: 36px 32px; }
+  .question-card { padding: 24px 22px; }
+  .q-label { font-size: 1.125rem; }
+}
+
+/* Accueil kit + identification */
+.welcome-card,
+.identify-card {
+  text-align: left;
+}
+
+.welcome-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.info-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.info-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.9rem;
+}
+
+.info-list li:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-weight: 600;
+  text-align: right;
+}
+
+.welcome-note {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.welcome-actions .btn {
+  width: 100%;
+}
+
+.brand-compact {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.brand-compact h1 {
+  margin: 8px 0 0;
+  font-size: 1.35rem;
+}
+
+.brand-logo-sm {
+  width: 44px;
+  height: 44px;
+  font-size: 1.35rem;
+  margin-bottom: 0;
+}
+
+.identify-lead {
+  margin: 0 0 18px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field::placeholder {
+  color: rgba(244, 244, 248, 0.4);
+}
+
+.input-field:focus {
+  border-color: var(--cfao-red);
+  box-shadow: 0 0 0 3px rgba(230, 34, 68, 0.25);
+}
+
+.identify-hint {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.identify-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.identify-actions .btn {
+  flex: 1;
+}
+
+.identify-card .error-msg {
+  margin-top: 12px;
+}
+
+/* Kit technicien : questions deja dans le fichier, pas d'ecran d'import */
+body.embedded-kit #screen-landing {
+  display: none !important;
+}
+body.embedded-kit #btn-new {
+  display: none !important;
+}
+
+/* ── 2-in-1 Kit (Factuel + Déclaratif) ── */
+.user-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge-step {
+  background: rgba(52, 152, 219, 0.2);
+  color: #70b5f9;
+  border: 1px solid rgba(52, 152, 219, 0.4);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.badge-step-done {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.4);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+/* Transition screen */
+.transition-card {
+  max-width: 540px;
+  text-align: left;
+}
+
+.transition-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 0 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
+}
+
+.transition-lead {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.transition-box {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  margin-bottom: 24px;
+}
+
+.transition-box-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.transition-box-head h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.transition-box-desc {
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.transition-guide {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guide-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: transform 0.15s ease;
+}
+
+.guide-item.guide-master {
+  border-left: 4px solid #2ecc71;
+}
+
+.guide-item.guide-partial {
+  border-left: 4px solid #f39c12;
+}
+
+.guide-item.guide-never {
+  border-left: 4px solid #95a5a6;
+}
+
+.guide-bullet {
+  font-size: 1.15rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.guide-content strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 3px;
+}
+
+.guide-content p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.transition-tip {
+  margin: 16px 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.transition-actions .btn-lg {
+  padding: 16px 24px;
+  font-size: 1.05rem;
+  width: 100%;
+}
+
+/* Declaratif proposal buttons */
+.proposal-item.proposal-declaratif label {
+  padding: 16px 18px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.proposal-item.choice-master input:checked + label {
+  border-color: #2ecc71;
+  background: rgba(46, 204, 113, 0.18);
+  box-shadow: 0 0 16px rgba(46, 204, 113, 0.25);
+}
+
+.proposal-item.choice-master input:checked + label .proposal-letter {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.proposal-item.choice-partial input:checked + label {
+  border-color: #f39c12;
+  background: rgba(243, 156, 18, 0.18);
+  box-shadow: 0 0 16px rgba(243, 156, 18, 0.25);
+}
+
+.proposal-item.choice-partial input:checked + label .proposal-letter {
+  background: #f39c12;
+  color: #fff;
+}
+
+.proposal-item.choice-never input:checked + label {
+  border-color: #95a5a6;
+  background: rgba(149, 165, 166, 0.2);
+  box-shadow: 0 0 16px rgba(149, 165, 166, 0.25);
+}
+
+.proposal-item.choice-never input:checked + label .proposal-letter {
+  background: #95a5a6;
+  color: #fff;
+}
+
+/* Done screen breakdown */
+.done-breakdown {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0;
+  width: 100%;
+}
+
+.done-box {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--glass-border);
+  text-align: center;
+}
+
+.done-box-title {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.done-box-val {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+}
+</style>
+</head>
+<body class="embedded-kit">
+  <div id="app" class="app">
+    <!-- Landing -->
+    <section id="screen-landing" class="screen screen-active">
+      <div class="glass-card landing-card">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">M</div>
+          <h1>MEDACAP QCM</h1>
+          <p class="brand-sub">Mode hors ligne — CFAO Mobility</p>
+        </div>
+
+        <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Déposer un fichier QCM">
+          <div class="drop-icon" aria-hidden="true">📋</div>
+          <p class="drop-title">Charger votre épreuve</p>
+          <p class="drop-hint">Glissez un fichier <strong>.medacap.json</strong> ici<br>ou utilisez le bouton ci-dessous</p>
+          <button type="button" id="btn-pick-file" class="btn btn-primary">Choisir un fichier</button>
+          <input type="file" id="file-input" accept=".json,.medacap.json,application/json" hidden>
+        </div>
+
+        <div id="resume-list-wrap" class="resume-wrap hidden">
+          <h2>Reprendre une session</h2>
+          <ul id="resume-list" class="resume-list"></ul>
+        </div>
+
+        <p id="landing-error" class="error-msg hidden" role="alert"></p>
+      </div>
+      <footer class="landing-footer">
+        <span>v1 · medacap-offline-qcm</span>
+      </footer>
+    </section>
+
+    <!-- Accueil kit technicien (épreuve embarquée) -->
+    <section id="screen-welcome" class="screen">
+      <div class="glass-card landing-card welcome-card">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">M</div>
+          <h1>MEDACAP QCM</h1>
+          <p class="brand-sub">Épreuve hors ligne — CFAO Mobility</p>
+        </div>
+
+        <div class="welcome-context">
+          <h2 class="welcome-title">Votre épreuve</h2>
+          <ul id="welcome-info-list" class="info-list"></ul>
+        </div>
+
+        <p class="welcome-note">
+          Vous composez <strong>sans connexion Internet</strong>.
+          À la fin, un fichier de réponses sera téléchargé à remettre au RH.
+        </p>
+
+        <div class="welcome-actions">
+          <button type="button" id="btn-welcome-resume" class="btn btn-accent hidden">Reprendre ma session</button>
+          <button type="button" id="btn-welcome-continue" class="btn btn-primary">Continuer</button>
+        </div>
+      </div>
+      <footer class="landing-footer">
+        <span id="welcome-footer-meta">MEDACAP · QCM offline</span>
+      </footer>
+    </section>
+
+    <!-- Identification candidat -->
+    <section id="screen-identify" class="screen">
+      <div class="glass-card landing-card identify-card">
+        <div class="brand brand-compact">
+          <div class="brand-logo brand-logo-sm" aria-hidden="true">M</div>
+          <h1>Identification</h1>
+        </div>
+
+        <p class="identify-lead">
+          Saisissez votre <strong>nom et prénom</strong> pour confirmer que vous composez la bonne épreuve.
+        </p>
+
+        <label class="field-label" for="input-candidate-name">Nom complet</label>
+        <input
+          type="text"
+          id="input-candidate-name"
+          class="input-field"
+          autocomplete="name"
+          autocapitalize="words"
+          placeholder="Ex. Jean Dupont"
+          maxlength="120"
+        >
+        <p id="identify-hint" class="identify-hint"></p>
+        <p id="identify-error" class="error-msg hidden" role="alert"></p>
+
+        <div class="identify-actions">
+          <button type="button" id="btn-identify-back" class="btn btn-ghost">Retour</button>
+          <button type="button" id="btn-identify-start" class="btn btn-primary">Commencer l'épreuve</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="screen-quiz" class="screen">
+      <header class="quiz-header glass-bar">
+        <div class="header-top">
+          <div class="header-user">
+            <span id="display-username" class="user-name">—</span>
+            <div class="user-meta-line">
+              <span id="display-meta" class="user-meta">—</span>
+              <span id="quiz-step-badge" class="badge badge-step">Étape 1/2</span>
+            </div>
+          </div>
+          <div id="timer" class="timer" aria-live="polite">
+            <span class="timer-icon" aria-hidden="true">⏱</span>
+            <span id="timer-display">00:00:00</span>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span id="progress-text">0 / 0</span>
+            <span id="status-badge" class="badge badge-progress">En cours</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+      </header>
+
+      <main class="quiz-main">
+        <article id="question-card" class="glass-card question-card">
+          <div class="question-head">
+            <span id="question-index" class="q-index">Q 1</span>
+            <span id="question-specialty" class="q-specialty"></span>
+          </div>
+          <div id="question-image-wrap" class="q-image-wrap hidden">
+            <img id="question-image" src="" alt="Illustration question">
+          </div>
+          <p id="question-label" class="q-label">—</p>
+          <ul id="proposals-list" class="proposals" role="radiogroup" aria-labelledby="question-label"></ul>
+        </article>
+
+        <nav class="quiz-nav" aria-label="Navigation questions">
+          <button type="button" id="btn-prev" class="btn btn-ghost" disabled>
+            <span aria-hidden="true">←</span> Préc.
+          </button>
+          <button type="button" id="btn-grid" class="btn btn-ghost btn-grid" aria-haspopup="dialog">
+            <span aria-hidden="true">▦</span> Grille
+          </button>
+          <button type="button" id="btn-next" class="btn btn-primary">
+            Suiv. <span aria-hidden="true">→</span>
+          </button>
+        </nav>
+      </main>
+
+      <footer class="quiz-footer glass-bar">
+        <button type="button" id="btn-save" class="btn btn-ghost btn-sm">Sauvegarder</button>
+        <span id="save-status" class="save-status" aria-live="polite"></span>
+        <button type="button" id="btn-finalize" class="btn btn-accent btn-sm">Terminer l'épreuve</button>
+      </footer>
+    </section>
+
+    <!-- Transition entre Factuel et Déclaratif -->
+    <section id="screen-transition" class="screen">
+      <div class="glass-card landing-card transition-card">
+        <div class="transition-icon" aria-hidden="true">✓</div>
+        <span class="badge badge-step-done">Partie 1 terminée</span>
+        <h2>QCM Théorique validé !</h2>
+        <p class="transition-lead">
+          Vous avez terminé la partie théorique. Vos réponses sont bien enregistrées.
+        </p>
+
+        <div class="transition-box">
+          <div class="transition-box-head">
+            <span class="badge badge-step">Étape 2 / 2</span>
+            <h3>Évaluation Pratique (Déclaratif)</h3>
+          </div>
+          <p class="transition-box-desc">
+            Vous allez maintenant vous auto-évaluer sur <strong id="transition-task-count">les tâches</strong> professionnelles du métier.
+          </p>
+          <ul class="transition-guide">
+            <li class="guide-item guide-master">
+              <span class="guide-bullet">🟢</span>
+              <div class="guide-content">
+                <strong>Je maîtrise</strong>
+                <p>Je sais réaliser cette tâche technique seul en totale autonomie.</p>
+              </div>
+            </li>
+            <li class="guide-item guide-partial">
+              <span class="guide-bullet">🟡</span>
+              <div class="guide-content">
+                <strong>Je ne maîtrise pas</strong>
+                <p>J'ai besoin d'une assistance ou d'un complément de formation.</p>
+              </div>
+            </li>
+            <li class="guide-item guide-never">
+              <span class="guide-bullet">⚪</span>
+              <div class="guide-content">
+                <strong>J'ai jamais fait</strong>
+                <p>Je n'ai pas encore eu l'occasion d'effectuer cette tâche en atelier.</p>
+              </div>
+            </li>
+          </ul>
+          <p class="transition-tip">
+            <em>💡 Prenez votre temps, évaluez vos compétences en toute franchise.</em>
+          </p>
+        </div>
+
+        <div class="transition-actions">
+          <button type="button" id="btn-start-declaratif" class="btn btn-primary btn-lg">
+            Démarrer l'évaluation pratique →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Completed -->
+    <section id="screen-done" class="screen">
+      <div class="glass-card done-card">
+        <div class="done-icon" aria-hidden="true">✓</div>
+        <h2>Épreuve terminée</h2>
+        <p id="done-message">Vos réponses ont été enregistrées.</p>
+        <div id="done-breakdown" class="done-breakdown">
+          <div id="done-factuel-box" class="done-box hidden">
+            <span class="done-box-title">QCM Théorique (Factuel)</span>
+            <span id="done-factuel-val" class="done-box-val">—</span>
+          </div>
+          <div id="done-decla-box" class="done-box hidden">
+            <span class="done-box-title">Auto-évaluation (Déclaratif)</span>
+            <span id="done-decla-val" class="done-box-val">—</span>
+          </div>
+        </div>
+        <p id="done-stats" class="done-stats"></p>
+        <div class="done-actions">
+          <button type="button" id="btn-download" class="btn btn-primary">Télécharger le fichier complété</button>
+          <button type="button" id="btn-new" class="btn btn-ghost">Nouvelle épreuve</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Question grid modal -->
+  <dialog id="grid-modal" class="grid-modal">
+    <div class="grid-modal-inner glass-card">
+      <header class="grid-modal-head">
+        <h3>Grille des questions</h3>
+        <button type="button" id="btn-close-grid" class="btn-icon" aria-label="Fermer">✕</button>
+      </header>
+      <div id="question-grid" class="question-grid" role="list"></div>
+      <div class="grid-legend">
+        <span><i class="dot dot-current"></i> Actuelle</span>
+        <span><i class="dot dot-answered"></i> Répondue</span>
+        <span><i class="dot dot-empty"></i> Non répondue</span>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Finalize confirm -->
+  <dialog id="finalize-modal" class="confirm-modal">
+    <div class="confirm-inner glass-card">
+      <h3>Terminer l'épreuve ?</h3>
+      <p>Vous ne pourrez plus modifier vos réponses après validation.</p>
+      <p id="finalize-summary" class="finalize-summary"></p>
+      <div class="confirm-actions">
+        <button type="button" id="btn-cancel-finalize" class="btn btn-ghost">Continuer</button>
+        <button type="button" id="btn-confirm-finalize" class="btn btn-accent">Confirmer</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="medacap-quiz-data">{"format":"medacap-offline-qcm-v1","meta":{"userId":"demo-user-001","username":"Technicien Demo","firstName":"Michel","lastName":"BAYEMI","agency":"Bertoua","subsidiary":"CFAO MOBILITY CAMEROON","country":"Cameroun","level":"Junior","type":"Factuel + Déclaratif","questionCount":5,"exportId":"demo-export-pl-2026-001","hasFactuel":true,"hasDeclaratif":true,"declaratifQuestionCount":3,"signature":"e536de8fb0387b87ed2e504b35b5ac332efa6e82f954f9b50ac6234c9a1716c5"},"status":"pending","session":{"step":"factuel","startedAt":null,"lastSavedAt":null,"completedAt":null,"timer":{"hours":0,"minutes":15,"seconds":0},"timerFormatted":"00:15:00","remainingSeconds":null,"declaratifStartedAt":null,"declaratifCompletedAt":null},"questions":[{"index":1,"id":"q-demo-001","ref":"MEC-01","specialty":"Mécanique — Freinage","label":"Quelle est la fonction principale du maître-cylindre sur un véhicule poids lourd ?","proposals":["Stocker le liquide de frein uniquement","Convertir la force mécanique de la pédale en pression hydraulique","Refroidir les disques de frein","Mesurer l\u0027usure des plaquettes"],"image":null},{"index":2,"id":"q-demo-002","ref":"MEC-02","specialty":"Mécanique — Moteur","label":"Lors d\u0027une vidange moteur, quel élément doit impérativement être remplacé ?","proposals":["Le filtre à air","Le filtre à huile","La courroie de distribution","Le liquide de refroidissement"],"image":null},{"index":3,"id":"q-demo-003","ref":"ELEC-01","specialty":"Électricité — Démarrage","label":"Un alternateur qui ne charge plus peut être causé par :","proposals":["Une courroie d\u0027accessoires usée ou desserrée","Un filtre à gasoil colmaté","Un embrayage patiné","Une crémaillère de direction défectueuse"],"image":null},{"index":4,"id":"q-demo-004","ref":"MEC-03","specialty":"Mécanique — Transmission","label":"Le couple est défini comme :","proposals":["La vitesse maximale du véhicule","La force de rotation exercée par le moteur","La consommation de carburant au ralenti","La pression des pneus"],"image":null},{"index":5,"id":"q-demo-005","ref":"SEC-01","specialty":"Sécurité — Atelier","label":"Avant de soulever un PL sur un pont élévateur, vous devez :","proposals":["Vérifier les points de levage prévus par le constructeur","Placer les crics n\u0027importe où sous le châssis","Démonter les roues avant le levage","Couper le contact sans caler le véhicule"],"image":null}],"answers":{"1":null,"2":null,"3":null,"4":null,"5":null},"declaratifQuestions":[{"index":1,"id":"qd-demo-001","ref":"DECLA-01","specialty":"Freinage Hydraulique","short":"freinage_hyd","label":"Remplacer et purger le liquide de frein sur un circuit hydraulique.","proposals":["Je maîtrise","Je ne maîtrise pas","J\u0027ai jamais fait"]},{"index":2,"id":"qd-demo-002","ref":"DECLA-02","specialty":"Moteur Diesel","short":"moteur_diesel","label":"Remplacer le filtre à carburant et réamorcer le circuit basse pression.","proposals":["Je maîtrise","Je ne maîtrise pas","J\u0027ai jamais fait"]},{"index":3,"id":"qd-demo-003","ref":"DECLA-03","specialty":"Electricité et Electronique","short":"electricite","label":"Diagnostiquer un faisceau électrique au multimètre (continuité, tension, masse).","proposals":["Je maîtrise","Je ne maîtrise pas","J\u0027ai jamais fait"]}],"declaratifAnswers":{"1":null,"2":null,"3":null}}</script>
+<script>/**
+ * MEDACAP Offline QCM Player v1
+ * Vanilla JS — Chrome / Edge Android compatible
+ */
+(function () {
+  'use strict';
+
+  var FORMAT_VERSION = 'medacap-offline-qcm-v1';
+  var DB_NAME = 'medacap-offline-qcm';
+  var DB_STORE = 'sessions';
+  var DB_VERSION = 1;
+
+  /** @type {object|null} */
+  var state = null;
+  /** @type {number} */
+  var currentIndex = 0;
+  /** @type {boolean} */
+  var embeddedMode = false;
+  /** @type {object|null} */
+  var pendingKitData = null;
+  /** @type {object|null} */
+  var pendingKitCache = null;
+  /** @type {number|null} */
+  var timerInterval = null;
+  /** @type {number} */
+  var remainingSeconds = 0;
+
+  /* DOM refs */
+  var el = {};
+
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  function initDom() {
+    el.landing = $('screen-landing');
+    el.welcome = $('screen-welcome');
+    el.identify = $('screen-identify');
+    el.quiz = $('screen-quiz');
+    el.done = $('screen-done');
+    el.dropZone = $('drop-zone');
+    el.fileInput = $('file-input');
+    el.btnPick = $('btn-pick-file');
+    el.landingError = $('landing-error');
+    el.resumeWrap = $('resume-list-wrap');
+    el.resumeList = $('resume-list');
+    el.displayUsername = $('display-username');
+    el.displayMeta = $('display-meta');
+    el.timerDisplay = $('timer-display');
+    el.timerEl = $('timer');
+    el.progressText = $('progress-text');
+    el.progressFill = $('progress-fill');
+    el.progressTrack = document.querySelector('.progress-track');
+    el.statusBadge = $('status-badge');
+    el.questionIndex = $('question-index');
+    el.questionSpecialty = $('question-specialty');
+    el.questionLabel = $('question-label');
+    el.questionImageWrap = $('question-image-wrap');
+    el.questionImage = $('question-image');
+    el.proposalsList = $('proposals-list');
+    el.btnPrev = $('btn-prev');
+    el.btnNext = $('btn-next');
+    el.btnGrid = $('btn-grid');
+    el.btnSave = $('btn-save');
+    el.btnFinalize = $('btn-finalize');
+    el.saveStatus = $('save-status');
+    el.gridModal = $('grid-modal');
+    el.questionGrid = $('question-grid');
+    el.btnCloseGrid = $('btn-close-grid');
+    el.finalizeModal = $('finalize-modal');
+    el.finalizeSummary = $('finalize-summary');
+    el.btnCancelFinalize = $('btn-cancel-finalize');
+    el.btnConfirmFinalize = $('btn-confirm-finalize');
+    el.doneMessage = $('done-message');
+    el.doneStats = $('done-stats');
+    el.btnDownload = $('btn-download');
+    el.btnNew = $('btn-new');
+    el.welcomeInfoList = $('welcome-info-list');
+    el.welcomeFooterMeta = $('welcome-footer-meta');
+    el.btnWelcomeContinue = $('btn-welcome-continue');
+    el.btnWelcomeResume = $('btn-welcome-resume');
+    el.inputCandidateName = $('input-candidate-name');
+    el.identifyHint = $('identify-hint');
+    el.identifyError = $('identify-error');
+    el.btnIdentifyBack = $('btn-identify-back');
+    el.btnIdentifyStart = $('btn-identify-start');
+    el.quizStepBadge = $('quiz-step-badge');
+    el.screenTransition = $('screen-transition');
+    el.btnStartDeclaratif = $('btn-start-declaratif');
+    el.transitionTaskCount = $('transition-task-count');
+    el.doneBreakdown = $('done-breakdown');
+    el.doneFactuelBox = $('done-factuel-box');
+    el.doneFactuelVal = $('done-factuel-val');
+    el.doneDeclaBox = $('done-decla-box');
+    el.doneDeclaVal = $('done-decla-val');
+  }
+
+  /* ── IndexedDB ── */
+
+  function openDb() {
+    return new Promise(function (resolve, reject) {
+      var req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(DB_STORE)) {
+          db.createObjectStore(DB_STORE, { keyPath: 'exportId' });
+        }
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+
+  function idbGet(exportId) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(DB_STORE, 'readonly');
+        var store = tx.objectStore(DB_STORE);
+        var req = store.get(exportId);
+        req.onsuccess = function () { resolve(req.result || null); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+
+  function idbPut(record) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(DB_STORE, 'readwrite');
+        var store = tx.objectStore(DB_STORE);
+        var req = store.put(record);
+        req.onsuccess = function () { resolve(); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+
+  function idbGetAll() {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(DB_STORE, 'readonly');
+        var store = tx.objectStore(DB_STORE);
+        var req = store.getAll();
+        req.onsuccess = function () { resolve(req.result || []); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+
+  /* ── Validation ── */
+
+  function validatePayload(data) {
+    if (!data || typeof data !== 'object') {
+      throw new Error('Fichier JSON invalide.');
+    }
+    if (data.format !== FORMAT_VERSION && data.version !== FORMAT_VERSION) {
+      throw new Error('Format non reconnu. Attendu : ' + FORMAT_VERSION);
+    }
+    if (!data.meta || !data.meta.exportId) {
+      throw new Error('Champ meta.exportId manquant.');
+    }
+    var hasF = Array.isArray(data.questions) && data.questions.length > 0;
+    var hasD = Array.isArray(data.declaratifQuestions) && data.declaratifQuestions.length > 0;
+    if (!hasF && !hasD) {
+      throw new Error('Aucune question trouvée dans le kit.');
+    }
+    var validStatus = ['pending', 'in_progress', 'completed'];
+    if (validStatus.indexOf(data.status) === -1) {
+      data.status = 'pending';
+    }
+    if (!data.session) {
+      data.session = {};
+    }
+    if (!data.session.timer) {
+      data.session.timer = { hours: 2, minutes: 0, seconds: 0 };
+    }
+    return data;
+  }
+
+  function ensureAnswersKeys(data) {
+    if (data.questions && Array.isArray(data.questions)) {
+      data.answers = data.answers || {};
+      data.questions.forEach(function (q) {
+        var key = String(q.index != null ? q.index : q.id);
+        if (!(key in data.answers)) {
+          data.answers[key] = null;
+        }
+      });
+    }
+    if (data.declaratifQuestions && Array.isArray(data.declaratifQuestions)) {
+      data.declaratifAnswers = data.declaratifAnswers || {};
+      data.declaratifQuestions.forEach(function (q) {
+        var key = String(q.index != null ? q.index : q.id);
+        if (!(key in data.declaratifAnswers)) {
+          data.declaratifAnswers[key] = null;
+        }
+      });
+    }
+    data.session = data.session || {};
+    if (!data.session.step) {
+      data.session.step = (data.questions && data.questions.length > 0) ? 'factuel' : 'declaratif';
+    }
+    return data;
+  }
+
+  /* ── 2-en-1 Helpers ── */
+
+  function hasFactuel() {
+    return !!(state && state.questions && state.questions.length > 0);
+  }
+
+  function hasDeclaratif() {
+    return !!(state && state.declaratifQuestions && state.declaratifQuestions.length > 0);
+  }
+
+  function isDeclaratifStep() {
+    return !!(state && state.session && state.session.step === 'declaratif');
+  }
+
+  function getActiveQuestions() {
+    if (isDeclaratifStep()) {
+      return (state && state.declaratifQuestions) || [];
+    }
+    return (state && state.questions) || [];
+  }
+
+  function getActiveAnswers() {
+    if (isDeclaratifStep()) {
+      return (state && state.declaratifAnswers) || {};
+    }
+    return (state && state.answers) || {};
+  }
+
+  /* ── File I/O ── */
+
+  function readFileAsText(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result); };
+      reader.onerror = function () { reject(new Error('Lecture du fichier impossible.')); };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+
+  function parseJson(text) {
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error('JSON illisible : ' + e.message);
+    }
+  }
+
+  function getEmbeddedData() {
+    var el = document.getElementById('medacap-quiz-data');
+    if (!el || !el.textContent) {
+      return null;
+    }
+    return parseJson(el.textContent);
+  }
+
+  function downloadBlob(content, filename, mimeType) {
+    var blob = new Blob([content], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'epreuve.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function downloadJson(data, filename) {
+    downloadBlob(JSON.stringify(data, null, 2), filename || 'epreuve.medacap.json', 'application/json');
+  }
+
+  function syncEmbeddedDataInDom(data) {
+    var node = document.getElementById('medacap-quiz-data');
+    if (node) {
+      node.textContent = JSON.stringify(data);
+    }
+  }
+
+  function downloadCompletedHtml(data, filename) {
+    syncEmbeddedDataInDom(data);
+    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    downloadBlob(html, filename || suggestedHtmlFilename(), 'text/html;charset=utf-8');
+  }
+
+  function suggestedFilename() {
+    if (!state || !state.meta) {
+      return 'epreuve_REPONSES.medacap.json';
+    }
+    var slug = (state.meta.username || 'candidat').replace(/[^a-zA-Z0-9_-]/g, '_');
+    var level = state.meta.level || 'QCM';
+    return slug + '_' + level + '_REPONSES.medacap.json';
+  }
+
+  function suggestedHtmlFilename() {
+    if (!state || !state.meta) {
+      return 'epreuve_QCM.html';
+    }
+    var slug = (state.meta.username || 'candidat').replace(/[^a-zA-Z0-9_-]/g, '_');
+    var level = state.meta.level || 'QCM';
+    return slug + '_' + level + '_QCM.html';
+  }
+
+  function downloadResultFile() {
+    if (embeddedMode) {
+      downloadCompletedHtml(state, suggestedHtmlFilename());
+    } else {
+      downloadJson(state, suggestedFilename());
+    }
+  }
+
+  /* ── State persistence ── */
+
+  function buildPersistRecord() {
+    return {
+      exportId: state.meta.exportId,
+      username: state.meta.username || '',
+      level: state.meta.level || '',
+      type: state.meta.type || '',
+      status: state.status,
+      updatedAt: new Date().toISOString(),
+      currentIndex: currentIndex,
+      remainingSeconds: remainingSeconds,
+      data: state
+    };
+  }
+
+  function saveAll(showFeedback) {
+    if (!state) {
+      return Promise.resolve();
+    }
+
+    state.session.remainingSeconds = remainingSeconds;
+    state.session.lastSavedAt = new Date().toISOString();
+
+    var record = buildPersistRecord();
+
+    return idbPut(record).then(function () {
+      if (showFeedback) {
+        el.saveStatus.textContent = 'Sauvegardé';
+        el.saveStatus.classList.add('saved');
+        setTimeout(function () {
+          el.saveStatus.textContent = '';
+          el.saveStatus.classList.remove('saved');
+        }, 2500);
+      }
+    }).catch(function (err) {
+      console.error('Save error:', err);
+      if (showFeedback) {
+        el.saveStatus.textContent = 'Erreur sauvegarde';
+      }
+    });
+  }
+
+  function autosave() {
+    saveAll(false);
+  }
+
+  /* ── Timer ── */
+
+  function timerToSeconds(timer) {
+    var h = parseInt(timer.hours, 10) || 0;
+    var m = parseInt(timer.minutes, 10) || 0;
+    var s = parseInt(timer.seconds, 10) || 0;
+    return h * 3600 + m * 60 + s;
+  }
+
+  function formatTime(totalSec) {
+    var sec = Math.max(0, totalSec);
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    if (h > 0) {
+      return pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+    return pad(m) + ':' + pad(s);
+  }
+
+  function startTimer() {
+    stopTimer();
+    updateTimerDisplay();
+
+    timerInterval = setInterval(function () {
+      if (remainingSeconds <= 0) {
+        stopTimer();
+        onTimerExpired();
+        return;
+      }
+      remainingSeconds -= 1;
+      updateTimerDisplay();
+      if (remainingSeconds % 30 === 0) {
+        autosave();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function updateTimerDisplay() {
+    el.timerDisplay.textContent = formatTime(remainingSeconds);
+    el.timerEl.classList.remove('warning', 'danger');
+    if (remainingSeconds <= 300 && remainingSeconds > 60) {
+      el.timerEl.classList.add('warning');
+    } else if (remainingSeconds <= 60) {
+      el.timerEl.classList.add('danger');
+    }
+  }
+
+  function onTimerExpired() {
+    el.timerDisplay.textContent = '00:00';
+    if (state && state.status !== 'completed') {
+      alert('Temps écoulé ! Veuillez terminer et enregistrer votre épreuve.');
+    }
+  }
+
+  function initTimerFromState() {
+    if (state.session.remainingSeconds != null && state.session.remainingSeconds >= 0) {
+      remainingSeconds = state.session.remainingSeconds;
+    } else {
+      remainingSeconds = timerToSeconds(state.session.timer);
+      state.session.remainingSeconds = remainingSeconds;
+    }
+    if (state.status !== 'completed') {
+      if (!state.session.startedAt) {
+        state.session.startedAt = new Date().toISOString();
+        state.status = 'in_progress';
+      }
+      startTimer();
+    } else {
+      updateTimerDisplay();
+    }
+  }
+
+  /* ── UI helpers ── */
+
+  function showScreen(name) {
+    el.landing.classList.remove('screen-active');
+    if (el.welcome) { el.welcome.classList.remove('screen-active'); }
+    if (el.identify) { el.identify.classList.remove('screen-active'); }
+    el.quiz.classList.remove('screen-active');
+    if (el.screenTransition) { el.screenTransition.classList.remove('screen-active'); }
+    el.done.classList.remove('screen-active');
+    if (name === 'landing') { el.landing.classList.add('screen-active'); }
+    if (name === 'welcome' && el.welcome) { el.welcome.classList.add('screen-active'); }
+    if (name === 'identify' && el.identify) { el.identify.classList.add('screen-active'); }
+    if (name === 'quiz') { el.quiz.classList.add('screen-active'); }
+    if (name === 'transition' && el.screenTransition) { el.screenTransition.classList.add('screen-active'); }
+    if (name === 'done') { el.done.classList.add('screen-active'); }
+  }
+
+  function formatTimerLabel(timer) {
+    if (!timer) {
+      return '—';
+    }
+    var h = parseInt(timer.hours, 10) || 0;
+    var m = parseInt(timer.minutes, 10) || 0;
+    var parts = [];
+    if (h > 0) {
+      parts.push(h + ' h');
+    }
+    if (m > 0 || h === 0) {
+      parts.push(m + ' min');
+    }
+    return parts.join(' ');
+  }
+
+  function expectedCandidateName(meta) {
+    if (!meta) {
+      return '';
+    }
+    if (meta.firstName || meta.lastName) {
+      return ((meta.firstName || '') + ' ' + (meta.lastName || '')).trim();
+    }
+    return meta.username || '';
+  }
+
+  function normalizeName(str) {
+    return (str || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  function namesRoughlyMatch(typed, expected) {
+    var a = normalizeName(typed);
+    var b = normalizeName(expected);
+    if (!a || !b) {
+      return true;
+    }
+    return a === b || a.indexOf(b) >= 0 || b.indexOf(a) >= 0;
+  }
+
+  function addWelcomeInfoRow(label, value) {
+    if (!value) {
+      return;
+    }
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="info-label">' + escapeHtml(label) + '</span>' +
+      '<span class="info-value">' + escapeHtml(value) + '</span>';
+    el.welcomeInfoList.appendChild(li);
+  }
+
+  function renderWelcomeScreen(data, cached) {
+    var meta = data.meta || {};
+    var expected = expectedCandidateName(meta);
+    var qCount = meta.questionCount || (data.questions ? data.questions.length : 0);
+    var declaCount = meta.declaratifQuestionCount || (data.declaratifQuestions ? data.declaratifQuestions.length : 0);
+    var timerLabel = formatTimerLabel(data.session && data.session.timer);
+
+    el.welcomeInfoList.innerHTML = '';
+    addWelcomeInfoRow('Candidat attendu', expected || meta.username || '—');
+    addWelcomeInfoRow('Agence', meta.agency);
+    addWelcomeInfoRow('Filiale', meta.subsidiary);
+    addWelcomeInfoRow('Pays', meta.country);
+    addWelcomeInfoRow('Niveau', meta.level);
+    addWelcomeInfoRow('Type d\'épreuve', meta.type || 'Factuel');
+
+    if (qCount > 0 && declaCount > 0) {
+      addWelcomeInfoRow('Partie 1 (Théorique)', qCount + ' questions QCM (' + timerLabel + ')');
+      addWelcomeInfoRow('Partie 2 (Pratique)', declaCount + ' tâches (Chrono libre)');
+    } else if (qCount > 0) {
+      addWelcomeInfoRow('Questions', String(qCount));
+      addWelcomeInfoRow('Durée', timerLabel);
+    } else if (declaCount > 0) {
+      addWelcomeInfoRow('Tâches à évaluer', String(declaCount));
+      addWelcomeInfoRow('Durée', 'Chrono libre');
+    }
+
+    if (el.welcomeFooterMeta) {
+      var footerParts = ['MEDACAP'];
+      if (meta.agency) { footerParts.push(meta.agency); }
+      if (meta.level) { footerParts.push(meta.level); }
+      el.welcomeFooterMeta.textContent = footerParts.join(' · ');
+    }
+
+    var canResume = cached && cached.data && data.status !== 'completed' &&
+      data.session && data.session.candidateName;
+    if (canResume) {
+      el.btnWelcomeResume.classList.remove('hidden');
+      el.btnWelcomeContinue.textContent = 'Nouvelle identification';
+      el.btnWelcomeContinue.classList.remove('btn-primary');
+      el.btnWelcomeContinue.classList.add('btn-ghost');
+    } else {
+      el.btnWelcomeResume.classList.add('hidden');
+      el.btnWelcomeContinue.textContent = 'Continuer';
+      el.btnWelcomeContinue.classList.add('btn-primary');
+      el.btnWelcomeContinue.classList.remove('btn-ghost');
+    }
+  }
+
+  function showIdentifyScreen() {
+    var meta = pendingKitData && pendingKitData.meta ? pendingKitData.meta : {};
+    var expected = expectedCandidateName(meta);
+    var prefill = (pendingKitData && pendingKitData.session && pendingKitData.session.candidateName) || '';
+
+    el.inputCandidateName.value = prefill;
+    el.identifyHint.textContent = expected
+      ? 'Épreuve prévue pour : ' + expected
+      : '';
+    el.identifyError.classList.add('hidden');
+    el.identifyError.textContent = '';
+    showScreen('identify');
+    setTimeout(function () {
+      el.inputCandidateName.focus();
+    }, 100);
+  }
+
+  function clearIdentifyError() {
+    el.identifyError.classList.add('hidden');
+    el.identifyError.textContent = '';
+  }
+
+  function showIdentifyError(msg) {
+    el.identifyError.textContent = msg;
+    el.identifyError.classList.remove('hidden');
+  }
+
+  function startExamWithName(name) {
+    if (!pendingKitData) {
+      return;
+    }
+    pendingKitData.session = pendingKitData.session || {};
+    pendingKitData.session.candidateName = name.trim();
+    pendingKitData.session.identifiedAt = new Date().toISOString();
+    loadFromData(pendingKitData, pendingKitCache);
+    pendingKitCache = null;
+  }
+
+  function submitIdentifyForm() {
+    var name = (el.inputCandidateName.value || '').trim();
+    if (name.length < 2) {
+      showIdentifyError('Veuillez saisir votre nom complet (au moins 2 caractères).');
+      return;
+    }
+    clearIdentifyError();
+
+    var expected = expectedCandidateName(pendingKitData.meta);
+    if (expected && !namesRoughlyMatch(name, expected)) {
+      var ok = confirm(
+        'Le nom saisi (« ' + name + ' ») ne correspond pas exactement au candidat prévu (« ' +
+        expected + ' »).\n\nVoulez-vous quand même commencer cette épreuve ?'
+      );
+      if (!ok) {
+        return;
+      }
+    }
+
+    startExamWithName(name);
+  }
+
+  function showLandingError(msg) {
+    el.landingError.textContent = msg;
+    el.landingError.classList.remove('hidden');
+  }
+
+  function clearLandingError() {
+    el.landingError.classList.add('hidden');
+    el.landingError.textContent = '';
+  }
+
+  function answerKeyForQuestion(q) {
+    return String(q.index != null ? q.index : q.id);
+  }
+
+  function countFactuelAnswered() {
+    if (!hasFactuel()) return 0;
+    var n = 0;
+    state.questions.forEach(function (q) {
+      var key = answerKeyForQuestion(q);
+      if (state.answers && state.answers[key] != null && state.answers[key] !== '') {
+        n += 1;
+      }
+    });
+    return n;
+  }
+
+  function countDeclaratifAnswered() {
+    if (!hasDeclaratif()) return 0;
+    var n = 0;
+    state.declaratifQuestions.forEach(function (q) {
+      var key = answerKeyForQuestion(q);
+      if (state.declaratifAnswers && state.declaratifAnswers[key] != null && state.declaratifAnswers[key] !== '') {
+        n += 1;
+      }
+    });
+    return n;
+  }
+
+  function countAnswered() {
+    var questions = getActiveQuestions();
+    var answers = getActiveAnswers();
+    var n = 0;
+    questions.forEach(function (q) {
+      var key = answerKeyForQuestion(q);
+      if (answers[key] != null && answers[key] !== '') {
+        n += 1;
+      }
+    });
+    return n;
+  }
+
+  function isLocked() {
+    return state && state.status === 'completed';
+  }
+
+  function updateProgress() {
+    var questions = getActiveQuestions();
+    var total = questions.length;
+    var answered = countAnswered();
+    var noun = isDeclaratifStep() ? 'tâches évaluées' : 'répondues';
+    el.progressText.textContent = answered + ' / ' + total + ' ' + noun;
+    var pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+    el.progressFill.style.width = pct + '%';
+    if (el.progressTrack) {
+      el.progressTrack.setAttribute('aria-valuenow', String(pct));
+    }
+  }
+
+  function updateStatusBadge() {
+    var badge = el.statusBadge;
+    badge.classList.remove('badge-progress', 'badge-done', 'badge-locked');
+    if (state.status === 'completed') {
+      badge.textContent = 'Terminé';
+      badge.classList.add('badge-done');
+    } else if (state.status === 'in_progress') {
+      badge.textContent = 'En cours';
+      badge.classList.add('badge-progress');
+    } else {
+      badge.textContent = 'En attente';
+      badge.classList.add('badge-progress');
+    }
+  }
+
+  function renderQuestion() {
+    var questions = getActiveQuestions();
+    var answers = getActiveAnswers();
+    var q = questions[currentIndex];
+    if (!q) {
+      return;
+    }
+
+    var key = answerKeyForQuestion(q);
+    var selected = answers[key];
+    var isDecla = isDeclaratifStep();
+
+    if (isDecla) {
+      el.questionIndex.textContent = 'Tâche ' + (q.index != null ? q.index : currentIndex + 1);
+      if (el.quizStepBadge) {
+        el.quizStepBadge.textContent = 'Étape 2/2 · Pratique';
+      }
+      el.btnFinalize.textContent = 'Terminer l\'épreuve';
+      el.timerDisplay.textContent = 'Auto-évaluation';
+      el.timerEl.classList.remove('warning', 'danger');
+    } else {
+      el.questionIndex.textContent = 'Q ' + (q.index != null ? q.index : currentIndex + 1);
+      if (el.quizStepBadge) {
+        el.quizStepBadge.textContent = hasDeclaratif() ? 'Étape 1/2 · Théorique' : 'QCM Théorique';
+      }
+      el.btnFinalize.textContent = hasDeclaratif() ? 'Passer à la pratique →' : 'Terminer l\'épreuve';
+    }
+
+    el.questionSpecialty.textContent = q.specialty || q.ref || '';
+    el.questionLabel.textContent = q.label || '—';
+
+    if (q.image) {
+      el.questionImage.src = q.image;
+      el.questionImageWrap.classList.remove('hidden');
+    } else {
+      el.questionImage.src = '';
+      el.questionImageWrap.classList.add('hidden');
+    }
+
+    el.proposalsList.innerHTML = '';
+    var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var proposals = q.proposals || [];
+    var locked = isLocked();
+
+    proposals.forEach(function (text, i) {
+      var li = document.createElement('li');
+      li.className = 'proposal-item';
+      if (isDecla) {
+        li.classList.add('proposal-declaratif');
+        if (i === 0) li.classList.add('choice-master');
+        else if (i === 1) li.classList.add('choice-partial');
+        else if (i === 2) li.classList.add('choice-never');
+      }
+
+      var inputId = 'prop-' + key + '-' + i;
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q-' + key;
+      input.id = inputId;
+      input.value = String(i);
+      input.disabled = locked;
+
+      if (selected != null && String(selected) === String(i)) {
+        input.checked = true;
+      }
+
+      input.addEventListener('change', function () {
+        answers[key] = i;
+        updateProgress();
+        autosave();
+        renderGridCells();
+
+        if (isDecla && currentIndex < questions.length - 1) {
+          setTimeout(function () {
+            if (currentIndex < questions.length - 1) {
+              currentIndex += 1;
+              renderQuestion();
+            }
+          }, 250);
+        }
+      });
+
+      var label = document.createElement('label');
+      label.setAttribute('for', inputId);
+
+      var badgeContent = '';
+      if (isDecla) {
+        var icons = ['🟢', '🟡', '⚪'];
+        badgeContent = '<span class="proposal-letter">' + (icons[i] || '•') + '</span>';
+      } else {
+        badgeContent = '<span class="proposal-letter">' + (letters[i] || (i + 1)) + '</span>';
+      }
+
+      label.innerHTML = badgeContent + '<span class="proposal-text">' + escapeHtml(text) + '</span>';
+
+      li.appendChild(input);
+      li.appendChild(label);
+      el.proposalsList.appendChild(li);
+    });
+
+    el.btnPrev.disabled = currentIndex <= 0;
+    el.btnNext.disabled = currentIndex >= questions.length - 1;
+
+    if (locked) {
+      el.quiz.classList.add('quiz-locked');
+    } else {
+      el.quiz.classList.remove('quiz-locked');
+    }
+
+    updateProgress();
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderHeader() {
+    var displayName = (state.session && state.session.candidateName) ||
+      state.meta.username || 'Candidat';
+    el.displayUsername.textContent = displayName;
+    var parts = [];
+    if (state.meta.level) { parts.push(state.meta.level); }
+    if (state.meta.type) { parts.push(state.meta.type); }
+    el.displayMeta.textContent = parts.join(' · ') || state.meta.exportId;
+
+    if (el.quizStepBadge) {
+      if (isDeclaratifStep()) {
+        el.quizStepBadge.textContent = 'Étape 2/2 · Pratique';
+      } else {
+        el.quizStepBadge.textContent = hasDeclaratif() ? 'Étape 1/2 · Théorique' : 'QCM Théorique';
+      }
+    }
+    updateStatusBadge();
+  }
+
+  function renderGridCells() {
+    var questions = getActiveQuestions();
+    var answers = getActiveAnswers();
+    el.questionGrid.innerHTML = '';
+    questions.forEach(function (q, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'grid-cell';
+      btn.setAttribute('role', 'listitem');
+      btn.textContent = String(q.index != null ? q.index : i + 1);
+
+      var key = answerKeyForQuestion(q);
+      var ans = answers[key];
+      if (ans != null && ans !== '') {
+        btn.classList.add('answered');
+      }
+      if (i === currentIndex) {
+        btn.classList.add('current');
+      }
+
+      btn.addEventListener('click', function () {
+        currentIndex = i;
+        renderQuestion();
+        renderGridCells();
+        closeGridModal();
+      });
+
+      el.questionGrid.appendChild(btn);
+    });
+  }
+
+  function openGridModal() {
+    renderGridCells();
+    if (typeof el.gridModal.showModal === 'function') {
+      el.gridModal.showModal();
+    } else {
+      el.gridModal.setAttribute('open', 'open');
+    }
+  }
+
+  function closeGridModal() {
+    if (typeof el.gridModal.close === 'function') {
+      el.gridModal.close();
+    } else {
+      el.gridModal.removeAttribute('open');
+    }
+  }
+
+  /* ── Load & start ── */
+
+  function loadFromData(data, fromIdbRecord) {
+    state = ensureAnswersKeys(validatePayload(data));
+    currentIndex = 0;
+
+    var activeQ = getActiveQuestions();
+    if (fromIdbRecord && fromIdbRecord.currentIndex != null) {
+      currentIndex = Math.min(fromIdbRecord.currentIndex, Math.max(0, activeQ.length - 1));
+    }
+
+    if (state.session && state.session.step === 'transition') {
+      showTransitionScreen();
+      return;
+    }
+
+    renderHeader();
+    if (!isDeclaratifStep() && hasFactuel()) {
+      initTimerFromState();
+    }
+    renderQuestion();
+    showScreen('quiz');
+    clearLandingError();
+    saveAll(false);
+  }
+
+  function loadFromFile(file) {
+    clearLandingError();
+    return readFileAsText(file).then(function (text) {
+      var data = parseJson(text);
+      return idbGet(data.meta && data.meta.exportId).then(function (cached) {
+        if (cached && cached.data && cached.status !== 'completed') {
+          var useCache = confirm(
+            'Une session en cours existe pour cette épreuve.\n' +
+            'Voulez-vous reprendre où vous vous étiez arrêté ?'
+          );
+          if (useCache) {
+            loadFromData(cached.data, cached);
+            return;
+          }
+        }
+        loadFromData(data, null);
+      });
+    }).catch(function (err) {
+      showLandingError(err.message || 'Erreur de chargement.');
+    });
+  }
+
+  function loadFromPicker() {
+    clearLandingError();
+    el.fileInput.click();
+  }
+
+  function refreshResumeList() {
+    idbGetAll().then(function (records) {
+      var active = records.filter(function (r) {
+        return r.status !== 'completed';
+      });
+      if (active.length === 0) {
+        el.resumeWrap.classList.add('hidden');
+        return;
+      }
+      el.resumeWrap.classList.remove('hidden');
+      el.resumeList.innerHTML = '';
+      active.sort(function (a, b) {
+        return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+      });
+      active.forEach(function (rec) {
+        var li = document.createElement('li');
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        var label = rec.username || 'Session';
+        if (rec.level) { label += ' — ' + rec.level; }
+        btn.textContent = label + ' (' + (rec.status || 'en cours') + ')';
+        btn.addEventListener('click', function () {
+          loadFromData(rec.data, rec);
+        });
+        li.appendChild(btn);
+        el.resumeList.appendChild(li);
+      });
+    }).catch(function () {
+      el.resumeWrap.classList.add('hidden');
+    });
+  }
+
+  /* ── Finalize ── */
+
+  function openFinalizeModal() {
+    var isDecla = isDeclaratifStep();
+    var questions = getActiveQuestions();
+    var total = questions.length;
+    var answered = countAnswered();
+    var unanswered = total - answered;
+
+    var modalTitle = el.finalizeModal.querySelector('h3');
+    var modalDesc = el.finalizeModal.querySelector('p');
+
+    if (!isDecla && hasDeclaratif()) {
+      if (modalTitle) modalTitle.textContent = 'Passer à l\'épreuve pratique ?';
+      if (modalDesc) modalDesc.textContent = 'Vos réponses théoriques seront enregistrées. Vous passerez ensuite à l\'auto-évaluation déclarative.';
+      el.finalizeSummary.textContent =
+        answered + ' question(s) répondue(s) sur ' + total +
+        (unanswered > 0 ? ' — ' + unanswered + ' sans réponse.' : '.');
+      el.btnConfirmFinalize.textContent = 'Valider et continuer →';
+    } else {
+      if (modalTitle) modalTitle.textContent = 'Terminer l\'épreuve ?';
+      if (modalDesc) modalDesc.textContent = 'Vous ne pourrez plus modifier vos réponses après validation.';
+      var fAns = countFactuelAnswered();
+      var dAns = countDeclaratifAnswered();
+      var summaryParts = [];
+      if (hasFactuel()) {
+        summaryParts.push('Théorique : ' + fAns + '/' + state.questions.length);
+      }
+      if (hasDeclaratif()) {
+        summaryParts.push('Pratique : ' + dAns + '/' + state.declaratifQuestions.length);
+      }
+      el.finalizeSummary.textContent = summaryParts.join(' · ');
+      el.btnConfirmFinalize.textContent = 'Confirmer et terminer';
+    }
+
+    if (typeof el.finalizeModal.showModal === 'function') {
+      el.finalizeModal.showModal();
+    } else {
+      el.finalizeModal.setAttribute('open', 'open');
+    }
+  }
+
+  function closeFinalizeModal() {
+    if (typeof el.finalizeModal.close === 'function') {
+      el.finalizeModal.close();
+    } else {
+      el.finalizeModal.removeAttribute('open');
+    }
+  }
+
+  function showTransitionScreen() {
+    if (el.transitionTaskCount && state.declaratifQuestions) {
+      el.transitionTaskCount.textContent = state.declaratifQuestions.length + ' tâches';
+    }
+    showScreen('transition');
+  }
+
+  function startDeclaratifStep() {
+    state.session.step = 'declaratif';
+    state.session.declaratifStartedAt = new Date().toISOString();
+    currentIndex = 0;
+    saveAll(false);
+    renderHeader();
+    renderQuestion();
+    showScreen('quiz');
+  }
+
+  function finalizeExam() {
+    closeFinalizeModal();
+
+    if (!isDeclaratifStep() && hasDeclaratif()) {
+      stopTimer();
+      state.session.step = 'transition';
+      state.session.remainingSeconds = remainingSeconds;
+      var rs = remainingSeconds;
+      var th = Math.floor(rs / 3600);
+      var tm = Math.floor((rs % 3600) / 60);
+      var ts = rs % 60;
+      function padT(n) { return n < 10 ? '0' + n : String(n); }
+      state.session.timerFormatted = padT(th) + ':' + padT(tm) + ':' + padT(ts);
+
+      saveAll(false).then(function () {
+        showTransitionScreen();
+      });
+      return;
+    }
+
+    stopTimer();
+    state.status = 'completed';
+    state.session.completedAt = new Date().toISOString();
+    if (hasFactuel()) {
+      state.session.remainingSeconds = remainingSeconds;
+      var rs = remainingSeconds;
+      var th = Math.floor(rs / 3600);
+      var tm = Math.floor((rs % 3600) / 60);
+      var ts = rs % 60;
+      function padT(n) { return n < 10 ? '0' + n : String(n); }
+      state.session.timerFormatted = padT(th) + ':' + padT(tm) + ':' + padT(ts);
+    }
+
+    saveAll(false).then(function () {
+      downloadResultFile();
+      showDoneScreen();
+    });
+  }
+
+  function showDoneScreen() {
+    var fAns = countFactuelAnswered();
+    var dAns = countDeclaratifAnswered();
+
+    if (el.doneFactuelBox && hasFactuel()) {
+      el.doneFactuelBox.classList.remove('hidden');
+      el.doneFactuelVal.textContent = fAns + ' / ' + state.questions.length + ' répondues';
+    } else if (el.doneFactuelBox) {
+      el.doneFactuelBox.classList.add('hidden');
+    }
+
+    if (el.doneDeclaBox && hasDeclaratif()) {
+      el.doneDeclaBox.classList.remove('hidden');
+      el.doneDeclaVal.textContent = dAns + ' / ' + state.declaratifQuestions.length + ' tâches';
+    } else if (el.doneDeclaBox) {
+      el.doneDeclaBox.classList.add('hidden');
+    }
+
+    if (embeddedMode) {
+      el.doneMessage.textContent =
+        'Votre épreuve complétée a été téléchargée (fichier HTML). Renvoyez ce même fichier à votre responsable RH MEDACAP.';
+      if (el.btnDownload) {
+        el.btnDownload.textContent = 'Télécharger à nouveau le HTML complété';
+      }
+    } else {
+      el.doneMessage.textContent =
+        'Votre fichier de réponses a été téléchargé. Remettez-le à votre responsable RH MEDACAP.';
+      if (el.btnDownload) {
+        el.btnDownload.textContent = 'Télécharger le fichier';
+      }
+    }
+
+    var parts = [];
+    if (hasFactuel()) parts.push('Théorique : ' + fAns + '/' + state.questions.length);
+    if (hasDeclaratif()) parts.push('Pratique : ' + dAns + '/' + state.declaratifQuestions.length);
+    el.doneStats.textContent = parts.join(' · ') + ' · Statut : Terminé';
+
+    showScreen('done');
+  }
+
+  /* ── Event bindings ── */
+
+  function bindEvents() {
+    el.btnPick.addEventListener('click', function (e) {
+      e.stopPropagation();
+      loadFromPicker();
+    });
+
+    el.dropZone.addEventListener('click', function () {
+      loadFromPicker();
+    });
+
+    el.dropZone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        loadFromPicker();
+      }
+    });
+
+    el.fileInput.addEventListener('change', function () {
+      var file = el.fileInput.files && el.fileInput.files[0];
+      if (file) {
+        loadFromFile(file);
+      }
+      el.fileInput.value = '';
+    });
+
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      el.dropZone.addEventListener(evt, function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.dropZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(function (evt) {
+      el.dropZone.addEventListener(evt, function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.dropZone.classList.remove('drag-over');
+      });
+    });
+
+    el.dropZone.addEventListener('drop', function (e) {
+      var file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) {
+        loadFromFile(file);
+      }
+    });
+
+    el.btnPrev.addEventListener('click', function () {
+      if (currentIndex > 0) {
+        currentIndex -= 1;
+        renderQuestion();
+      }
+    });
+
+    el.btnNext.addEventListener('click', function () {
+      var questions = getActiveQuestions();
+      if (currentIndex < questions.length - 1) {
+        currentIndex += 1;
+        renderQuestion();
+      }
+    });
+
+    if (el.btnStartDeclaratif) {
+      el.btnStartDeclaratif.addEventListener('click', function () {
+        startDeclaratifStep();
+      });
+    }
+
+    el.btnGrid.addEventListener('click', openGridModal);
+    el.btnCloseGrid.addEventListener('click', closeGridModal);
+
+    el.btnSave.addEventListener('click', function () {
+      saveAll(true);
+    });
+
+    el.btnFinalize.addEventListener('click', function () {
+      if (isLocked()) {
+        return;
+      }
+      openFinalizeModal();
+    });
+
+    el.btnCancelFinalize.addEventListener('click', closeFinalizeModal);
+    el.btnConfirmFinalize.addEventListener('click', finalizeExam);
+
+    el.btnDownload.addEventListener('click', function () {
+      downloadResultFile();
+    });
+
+    el.btnNew.addEventListener('click', function () {
+      if (embeddedMode) {
+        return;
+      }
+      state = null;
+      stopTimer();
+      showScreen('landing');
+      refreshResumeList();
+    });
+
+    if (el.btnWelcomeContinue) {
+      el.btnWelcomeContinue.addEventListener('click', function () {
+        showIdentifyScreen();
+      });
+    }
+
+    if (el.btnWelcomeResume) {
+      el.btnWelcomeResume.addEventListener('click', function () {
+        if (pendingKitData && pendingKitCache) {
+          loadFromData(pendingKitData, pendingKitCache);
+          pendingKitCache = null;
+        } else if (pendingKitData) {
+          loadFromData(pendingKitData, null);
+        }
+      });
+    }
+
+    if (el.btnIdentifyBack) {
+      el.btnIdentifyBack.addEventListener('click', function () {
+        clearIdentifyError();
+        showScreen('welcome');
+      });
+    }
+
+    if (el.btnIdentifyStart) {
+      el.btnIdentifyStart.addEventListener('click', submitIdentifyForm);
+    }
+
+    if (el.inputCandidateName) {
+      el.inputCandidateName.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitIdentifyForm();
+        }
+      });
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden && state && !isLocked()) {
+        autosave();
+      }
+    });
+
+    window.addEventListener('beforeunload', function () {
+      if (state && !isLocked()) {
+        state.session.remainingSeconds = remainingSeconds;
+      }
+    });
+  }
+
+  function applyEmbeddedMode() {
+    document.body.classList.add('embedded-kit');
+    if (el.btnNew) {
+      el.btnNew.classList.add('hidden');
+    }
+  }
+
+  function bootEmbedded(embedded) {
+    embeddedMode = true;
+    applyEmbeddedMode();
+    clearLandingError();
+
+    var baseData = ensureAnswersKeys(validatePayload(embedded));
+
+    idbGet(embedded.meta.exportId).then(function (cached) {
+      pendingKitCache = (cached && cached.data && cached.status !== 'completed') ? cached : null;
+      pendingKitData = pendingKitCache ? ensureAnswersKeys(validatePayload(cached.data)) : baseData;
+
+      if (pendingKitData.status === 'completed') {
+        state = pendingKitData;
+        currentIndex = 0;
+        pendingKitData = null;
+        showDoneScreen();
+        return;
+      }
+
+      renderWelcomeScreen(pendingKitData, pendingKitCache);
+      showScreen('welcome');
+    }).catch(function () {
+      pendingKitData = baseData;
+      pendingKitCache = null;
+      if (embedded.status === 'completed') {
+        state = pendingKitData;
+        currentIndex = 0;
+        pendingKitData = null;
+        showDoneScreen();
+        return;
+      }
+      renderWelcomeScreen(pendingKitData, null);
+      showScreen('welcome');
+    });
+  }
+
+  /* ── Boot ── */
+
+  function boot() {
+    initDom();
+    bindEvents();
+
+    var embedded = getEmbeddedData();
+    if (embedded) {
+      bootEmbedded(embedded);
+      return;
+    }
+
+    refreshResumeList();
+    showScreen('landing');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>

@@ -1487,8 +1487,8 @@ if ($countryContext) {
                     (chartId === 'chartSenior') ? 'Senior' :
                     (chartId === 'chartExpert') ? 'Expert' : 'Total';
 
-                var country = '<?php echo urlencode($selectedCountry); ?>';
-                var agency = '<?php echo urlencode($selectedAgency); ?>';
+                var country = '<?php echo urlencode((string) $selectedCountry); ?>';
+                var agency = '<?php echo urlencode((string) $selectedAgency); ?>';
 
                 $.ajax({
                     url: 'listQuestions.php',

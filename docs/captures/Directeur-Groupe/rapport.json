@@ -1,0 +1,129 @@
+{
+  "profil": "Directeur Groupe",
+  "pages": [
+    {
+      "url": "/views/portal",
+      "statut": 200,
+      "capture": "00-portal.jpg",
+      "titre": "Portail MEDACAP | CFAO Mobility Academy",
+      "depuis": "connexion"
+    },
+    {
+      "url": "/views/measure/dashboardAdmin",
+      "statut": 200,
+      "capture": "01-dashboardAdmin.jpg",
+      "titre": "Résultats des Techniciens par Niveau | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/explore/dashboard",
+      "statut": 200,
+      "capture": "02-dashboard.jpg",
+      "titre": "Tableau de Bord | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/define/dashboard",
+      "statut": 200,
+      "capture": "03-dashboard.jpg",
+      "titre": "Tableau de Bord Directeur | CFAO Mobility Academy",
+      "depuis": "/views/portal",
+      "erreur_php": "Warning:  Undefined variable $dir_grp_space in /var/www/html/views/define/partials/header.php on line 351\n\n                                \n                                                                                    <sp"
+    },
+    {
+      "url": "/views/measure/manageRecruitment.php",
+      "statut": 200,
+      "capture": "04-manageRecruitment.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/measure/dashboard",
+      "statut": 200,
+      "capture": "05-dashboard.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/measure/users",
+      "statut": 200,
+      "capture": "06-users.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/measure/bilanTestNotes",
+      "statut": 200,
+      "capture": "07-bilanTestNotes.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/measure/profile.php?id=669e38e7015d00000f0014fc",
+      "statut": 200,
+      "capture": "08-profile-id-669e38e7015d00000f0014fc.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/explore/stateFiliale?country=all",
+      "statut": 200,
+      "capture": "09-stateFiliale-country-all.jpg",
+      "titre": "Etat d'Avancement des Filiales Cameroun | CFAO Mobility Academy",
+      "depuis": "/views/explore/dashboard"
+    },
+    {
+      "url": "/views/explore/resultSubsidiary",
+      "statut": 200,
+      "capture": "10-resultSubsidiary.jpg",
+      "titre": "État d'Avancement des Résultats des Filiales Tous Niveaux | CFAO Mobility Academy",
+      "depuis": "/views/explore/dashboard"
+    },
+    {
+      "url": "/views/explore/userSpeciality?level=Junior",
+      "statut": 200,
+      "capture": "11-userSpeciality-level-Junior.jpg",
+      "titre": "Taux de couverture des tâches professionnelles du niveau junior | CFAO Mobility Academy",
+      "depuis": "/views/explore/dashboard"
+    },
+    {
+      "url": "/views/explore/subsidiaryResult?level=Junior",
+      "statut": 200,
+      "capture": "12-subsidiaryResult-level-Junior.jpg",
+      "titre": "Resultat des Filiales | CFAO Mobility Academy",
+      "depuis": "/views/explore/dashboard",
+      "erreur_php": "Warning:  Trying to access array offset on null in /var/www/html/views/explore/subsidiaryResult.php on line 9744Warning:  Trying to access array offset on null in /var/www/html/views/explore/subsidiaryResult.php on line 9744Warning:  Tryi"
+    },
+    {
+      "url": "/views/explore/profile.php?id=669e38e7015d00000f0014fc",
+      "statut": 200,
+      "capture": "13-profile-id-669e38e7015d00000f0014fc.jpg",
+      "titre": "Mes Informations | CFAO Mobility Academy",
+      "depuis": "/views/explore/dashboard"
+    },
+    {
+      "url": "/views/define/planning",
+      "statut": 200,
+      "capture": "14-planning.jpg",
+      "titre": "Planning des formations | CFAO Mobility Academy",
+      "depuis": "/views/define/dashboard"
+    },
+    {
+      "url": "/views/define/profile.php?id=669e38e7015d00000f0014fc",
+      "statut": 200,
+      "capture": "15-profile-id-669e38e7015d00000f0014fc.jpg",
+      "titre": "3 - Définir les plans individuels et collectifs de formation | CFAO Mobility Academy",
+      "depuis": "/views/define/dashboard"
+    },
+    {
+      "url": "/views/measure/create_fixed_paper.php",
+      "statut": 200,
+      "capture": "16-create-fixed-paper.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/manageRecruitment.php"
+    }
+  ],
+  "erreurs": 0,
+  "avertissements": 2,
+  "connexion": "ok"
+}
