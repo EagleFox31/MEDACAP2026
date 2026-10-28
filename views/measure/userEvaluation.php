@@ -728,7 +728,7 @@ $labels = [
     <link rel="stylesheet" href="../../public/css/modules/quiz.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css">
 <?php
-renderQuizComponent($allQuestions, $technician, $params, $exam, isset($evaluer_tache_pro) ? $evaluer_tache_pro : 'Évaluation Tâche Professionnelle', $level_label, 'declaratif', $labels);
+renderQuizComponent($allQuestions, $technician, $params, $exam, isset($evaluer_tache_pro) ? $evaluer_tache_pro : 'Évaluation Tâche Professionnelle', isset($level_label) ? $level_label : 'Niveau', 'declaratif', $labels);
 ?>
 <?php include_once "partials/footer.php"; ?>
 <?php include_once "chat.php"; ?>

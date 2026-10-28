@@ -2017,7 +2017,7 @@ if (!isset($_SESSION["id"])) {
                                                 }
                                             
                                                 $scoreTransmission = 0;
-                                                if (isset($transmissionDecla)) {
+                                                if (isset($transmissionDecla, $transmissionMa)) {
                                                     for ($i = 0; $i < count($transmissionDecla["answers"]); ++$i) {
                                                         if (
                                                             $transmissionDecla["answers"][$i] == "Oui" &&
@@ -2028,7 +2028,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransfert = 0;
-                                                if (isset($transfertDecla)) {
+                                                if (isset($transfertDecla, $transfertMa)) {
                                                     for ($i = 0; $i < count($transfertDecla["answers"]); ++$i) {
                                                         if (
                                                             $transfertDecla["answers"][$i] == "Oui" &&
@@ -2039,7 +2039,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreAssistance= 0;
-                                                if (isset($assistanceConduiteDecla)) {
+                                                if (isset($assistanceConduiteDecla, $assistanceConduiteMa)) {
                                                     for ($i = 0; $i < count($assistanceConduiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $assistanceConduiteDecla["answers"][$i] == "Oui" &&
@@ -2050,7 +2050,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoite = 0;
-                                                if (isset($boiteDecla)) {
+                                                if (isset($boiteDecla, $boiteMa)) {
                                                     for ($i = 0; $i < count($boiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteDecla["answers"][$i] == "Oui" &&
@@ -2061,7 +2061,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteMan = 0;
-                                                if (isset($boiteManDecla)) {
+                                                if (isset($boiteManDecla, $boiteManMa)) {
                                                     for ($i = 0; $i < count($boiteManDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteManDecla["answers"][$i] == "Oui" &&
@@ -2072,7 +2072,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteAuto = 0;
-                                                if (isset($boiteAutoDecla)) {
+                                                if (isset($boiteAutoDecla, $boiteAutoMa)) {
                                                     for ($i = 0; $i < count($boiteAutoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteAutoDecla["answers"][$i] == "Oui" &&
@@ -2083,7 +2083,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteVaCo = 0;
-                                                if (isset($boiteVaCoDecla)) {
+                                                if (isset($boiteVaCoDecla, $boiteVaCoMa)) {
                                                     for ($i = 0; $i < count($boiteVaCoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteVaCoDecla["answers"][$i] == "Oui" &&
@@ -2094,7 +2094,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreClim = 0;
-                                                if (isset($climatisationDecla)) {
+                                                if (isset($climatisationDecla, $climatisationMa)) {
                                                     for ($i = 0; $i < count($climatisationDecla["answers"]); ++$i) {
                                                         if (
                                                             $climatisationDecla["answers"][$i] == "Oui" &&
@@ -2105,7 +2105,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDemi = 0;
-                                                if (isset($demiDecla)) {
+                                                if (isset($demiDecla, $demiMa)) {
                                                     for ($i = 0; $i < count($demiDecla["answers"]); ++$i) {
                                                         if (
                                                             $demiDecla["answers"][$i] == "Oui" &&
@@ -2116,7 +2116,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDirection = 0;
-                                                if (isset($directionDecla)) {
+                                                if (isset($directionDecla, $directionMa)) {
                                                     for ($i = 0; $i < count($directionDecla["answers"]); ++$i) {
                                                         if (
                                                             $directionDecla["answers"][$i] == "Oui" &&
@@ -2127,7 +2127,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreElectricite = 0;
-                                                if (isset($electriciteDecla)) {
+                                                if (isset($electriciteDecla, $electriciteMa)) {
                                                     for ($i = 0; $i < count($electriciteDecla["answers"]); ++$i) {
                                                         if (
                                                             $electriciteDecla["answers"][$i] == "Oui" &&
@@ -2138,7 +2138,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFrein = 0;
-                                                if (isset($freiDecla)) {
+                                                if (isset($freiDecla, $freiMa)) {
                                                     for ($i = 0; $i < count($freiDecla["answers"]); ++$i) {
                                                         if (
                                                             $freiDecla["answers"][$i] == "Oui" &&
@@ -2149,7 +2149,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinElec = 0;
-                                                if (isset($freinageElecDecla)) {
+                                                if (isset($freinageElecDecla, $freinageElecMa)) {
                                                     for ($i = 0; $i < count($freinageElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageElecDecla["answers"][$i] == "Oui" &&
@@ -2160,7 +2160,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinHydro = 0;
-                                                if (isset($freinageDecla)) {
+                                                if (isset($freinageDecla, $freinageMa)) {
                                                     for ($i = 0; $i < count($freinageDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageDecla["answers"][$i] == "Oui" &&
@@ -2171,7 +2171,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinPneu = 0;
-                                                if (isset($freinDecla)) {
+                                                if (isset($freinDecla, $freinMa)) {
                                                     for ($i = 0; $i < count($freinDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinDecla["answers"][$i] == "Oui" &&
@@ -2182,7 +2182,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreHydro = 0;
-                                                if (isset($hydrauliqueDecla)) {
+                                                if (isset($hydrauliqueDecla, $hydrauliqueMa)) {
                                                     for ($i = 0; $i < count($hydrauliqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $hydrauliqueDecla["answers"][$i] == "Oui" &&
@@ -2193,7 +2193,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurDiesel = 0;
-                                                if (isset($moteurDieselDecla)) {
+                                                if (isset($moteurDieselDecla, $moteurDieselMa)) {
                                                     for ($i = 0; $i < count($moteurDieselDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurDieselDecla["answers"][$i] == "Oui" &&
@@ -2204,7 +2204,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurElec = 0;
-                                                if (isset($moteurElecDecla)) {
+                                                if (isset($moteurElecDecla, $moteurElecMa)) {
                                                     for ($i = 0; $i < count($moteurElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurElecDecla["answers"][$i] == "Oui" &&
@@ -2215,7 +2215,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurEssence = 0;
-                                                if (isset($moteurEssenceDecla)) {
+                                                if (isset($moteurEssenceDecla, $moteurEssenceMa)) {
                                                     for ($i = 0; $i < count($moteurEssenceDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurEssenceDecla["answers"][$i] == "Oui" &&
@@ -2226,7 +2226,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurThermique = 0;
-                                                if (isset($moteurThermiqueDecla)) {
+                                                if (isset($moteurThermiqueDecla, $moteurThermiqueMa)) {
                                                     for ($i = 0; $i < count($moteurThermiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurThermiqueDecla["answers"][$i] == "Oui" &&
@@ -2237,7 +2237,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMultiplexage = 0;
-                                                if (isset($multiplexageDecla)) {
+                                                if (isset($multiplexageDecla, $multiplexageMa)) {
                                                     for ($i = 0; $i < count($multiplexageDecla["answers"]); ++$i) {
                                                         if (
                                                             $multiplexageDecla["answers"][$i] == "Oui" &&
@@ -2248,7 +2248,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePneu = 0;
-                                                if (isset($pneuDecla)) {
+                                                if (isset($pneuDecla, $pneuMa)) {
                                                     for ($i = 0; $i < count($pneuDecla["answers"]); ++$i) {
                                                         if (
                                                             $pneuDecla["answers"][$i] == "Oui" &&
@@ -2259,7 +2259,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePont = 0;
-                                                if (isset($pontDecla)) {
+                                                if (isset($pontDecla, $pontMa)) {
                                                     for ($i = 0; $i < count($pontDecla["answers"]); ++$i) {
                                                         if (
                                                             $pontDecla["answers"][$i] == "Oui" &&
@@ -2270,7 +2270,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreRed = 0;
-                                                if (isset($reducteurDecla)) {
+                                                if (isset($reducteurDecla, $reducteurMa)) {
                                                     for ($i = 0; $i < count($reducteurDecla["answers"]); ++$i) {
                                                         if (
                                                             $reducteurDecla["answers"][$i] == "Oui" &&
@@ -2281,7 +2281,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspension = 0;
-                                                if (isset($suspensionDecla)) {
+                                                if (isset($suspensionDecla, $suspensionMa)) {
                                                     for ($i = 0; $i < count($suspensionDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionDecla["answers"][$i] == "Oui" &&
@@ -2292,7 +2292,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionLame = 0;
-                                                if (isset($suspensionLameDecla)) {
+                                                if (isset($suspensionLameDecla, $suspensionLameMa)) {
                                                     for ($i = 0; $i < count($suspensionLameDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionLameDecla["answers"][$i] == "Oui" &&
@@ -2303,7 +2303,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionRessort = 0;
-                                                if (isset($suspensionRessortDecla)) {
+                                                if (isset($suspensionRessortDecla, $suspensionRessortMa)) {
                                                     for ($i = 0; $i < count($suspensionRessortDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionRessortDecla["answers"][$i] == "Oui" &&
@@ -2314,7 +2314,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionPneu = 0;
-                                                if (isset($suspensionPneumatiqueDecla)) {
+                                                if (isset($suspensionPneumatiqueDecla, $suspensionPneumatiqueMa)) {
                                                     for ($i = 0; $i < count($suspensionPneumatiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionPneumatiqueDecla["answers"][$i] == "Oui" &&
@@ -2325,7 +2325,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransversale = 0;
-                                                if (isset($transversaleDecla)) {
+                                                if (isset($transversaleDecla, $transversaleMa)) {
                                                     for ($i = 0; $i < count($transversaleDecla["answers"]); ++$i) {
                                                         if (
                                                             $transversaleDecla["answers"][$i] == "Oui" &&
@@ -4661,7 +4661,7 @@ if (!isset($_SESSION["id"])) {
                                                 }
                                             
                                                 $scoreTransmission = 0;
-                                                if (isset($transmissionDecla)) {
+                                                if (isset($transmissionDecla, $transmissionMa)) {
                                                     for ($i = 0; $i < count($transmissionDecla["answers"]); ++$i) {
                                                         if (
                                                             $transmissionDecla["answers"][$i] == "Oui" &&
@@ -4672,7 +4672,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransfert = 0;
-                                                if (isset($transfertDecla)) {
+                                                if (isset($transfertDecla, $transfertMa)) {
                                                     for ($i = 0; $i < count($transfertDecla["answers"]); ++$i) {
                                                         if (
                                                             $transfertDecla["answers"][$i] == "Oui" &&
@@ -4683,7 +4683,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreAssistance= 0;
-                                                if (isset($assistanceConduiteDecla)) {
+                                                if (isset($assistanceConduiteDecla, $assistanceConduiteMa)) {
                                                     for ($i = 0; $i < count($assistanceConduiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $assistanceConduiteDecla["answers"][$i] == "Oui" &&
@@ -4694,7 +4694,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoite = 0;
-                                                if (isset($boiteDecla)) {
+                                                if (isset($boiteDecla, $boiteMa)) {
                                                     for ($i = 0; $i < count($boiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteDecla["answers"][$i] == "Oui" &&
@@ -4705,7 +4705,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteMan = 0;
-                                                if (isset($boiteManDecla)) {
+                                                if (isset($boiteManDecla, $boiteManMa)) {
                                                     for ($i = 0; $i < count($boiteManDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteManDecla["answers"][$i] == "Oui" &&
@@ -4716,7 +4716,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteAuto = 0;
-                                                if (isset($boiteAutoDecla)) {
+                                                if (isset($boiteAutoDecla, $boiteAutoMa)) {
                                                     for ($i = 0; $i < count($boiteAutoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteAutoDecla["answers"][$i] == "Oui" &&
@@ -4727,7 +4727,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteVaCo = 0;
-                                                if (isset($boiteVaCoDecla)) {
+                                                if (isset($boiteVaCoDecla, $boiteVaCoMa)) {
                                                     for ($i = 0; $i < count($boiteVaCoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteVaCoDecla["answers"][$i] == "Oui" &&
@@ -4738,7 +4738,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreClim = 0;
-                                                if (isset($climatisationDecla)) {
+                                                if (isset($climatisationDecla, $climatisationMa)) {
                                                     for ($i = 0; $i < count($climatisationDecla["answers"]); ++$i) {
                                                         if (
                                                             $climatisationDecla["answers"][$i] == "Oui" &&
@@ -4749,7 +4749,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDemi = 0;
-                                                if (isset($demiDecla)) {
+                                                if (isset($demiDecla, $demiMa)) {
                                                     for ($i = 0; $i < count($demiDecla["answers"]); ++$i) {
                                                         if (
                                                             $demiDecla["answers"][$i] == "Oui" &&
@@ -4760,7 +4760,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDirection = 0;
-                                                if (isset($directionDecla)) {
+                                                if (isset($directionDecla, $directionMa)) {
                                                     for ($i = 0; $i < count($directionDecla["answers"]); ++$i) {
                                                         if (
                                                             $directionDecla["answers"][$i] == "Oui" &&
@@ -4771,7 +4771,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreElectricite = 0;
-                                                if (isset($electriciteDecla)) {
+                                                if (isset($electriciteDecla, $electriciteMa)) {
                                                     for ($i = 0; $i < count($electriciteDecla["answers"]); ++$i) {
                                                         if (
                                                             $electriciteDecla["answers"][$i] == "Oui" &&
@@ -4782,7 +4782,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFrein = 0;
-                                                if (isset($freiDecla)) {
+                                                if (isset($freiDecla, $freiMa)) {
                                                     for ($i = 0; $i < count($freiDecla["answers"]); ++$i) {
                                                         if (
                                                             $freiDecla["answers"][$i] == "Oui" &&
@@ -4793,7 +4793,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinElec = 0;
-                                                if (isset($freinageElecDecla)) {
+                                                if (isset($freinageElecDecla, $freinageElecMa)) {
                                                     for ($i = 0; $i < count($freinageElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageElecDecla["answers"][$i] == "Oui" &&
@@ -4804,7 +4804,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinHydro = 0;
-                                                if (isset($freinageDecla)) {
+                                                if (isset($freinageDecla, $freinageMa)) {
                                                     for ($i = 0; $i < count($freinageDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageDecla["answers"][$i] == "Oui" &&
@@ -4815,7 +4815,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinPneu = 0;
-                                                if (isset($freinDecla)) {
+                                                if (isset($freinDecla, $freinMa)) {
                                                     for ($i = 0; $i < count($freinDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinDecla["answers"][$i] == "Oui" &&
@@ -4826,7 +4826,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreHydro = 0;
-                                                if (isset($hydrauliqueDecla)) {
+                                                if (isset($hydrauliqueDecla, $hydrauliqueMa)) {
                                                     for ($i = 0; $i < count($hydrauliqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $hydrauliqueDecla["answers"][$i] == "Oui" &&
@@ -4837,7 +4837,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurDiesel = 0;
-                                                if (isset($moteurDieselDecla)) {
+                                                if (isset($moteurDieselDecla, $moteurDieselMa)) {
                                                     for ($i = 0; $i < count($moteurDieselDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurDieselDecla["answers"][$i] == "Oui" &&
@@ -4848,7 +4848,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurElec = 0;
-                                                if (isset($moteurElecDecla)) {
+                                                if (isset($moteurElecDecla, $moteurElecMa)) {
                                                     for ($i = 0; $i < count($moteurElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurElecDecla["answers"][$i] == "Oui" &&
@@ -4859,7 +4859,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurEssence = 0;
-                                                if (isset($moteurEssenceDecla)) {
+                                                if (isset($moteurEssenceDecla, $moteurEssenceMa)) {
                                                     for ($i = 0; $i < count($moteurEssenceDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurEssenceDecla["answers"][$i] == "Oui" &&
@@ -4870,7 +4870,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurThermique = 0;
-                                                if (isset($moteurThermiqueDecla)) {
+                                                if (isset($moteurThermiqueDecla, $moteurThermiqueMa)) {
                                                     for ($i = 0; $i < count($moteurThermiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurThermiqueDecla["answers"][$i] == "Oui" &&
@@ -4881,7 +4881,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMultiplexage = 0;
-                                                if (isset($multiplexageDecla)) {
+                                                if (isset($multiplexageDecla, $multiplexageMa)) {
                                                     for ($i = 0; $i < count($multiplexageDecla["answers"]); ++$i) {
                                                         if (
                                                             $multiplexageDecla["answers"][$i] == "Oui" &&
@@ -4892,7 +4892,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePneu = 0;
-                                                if (isset($pneuDecla)) {
+                                                if (isset($pneuDecla, $pneuMa)) {
                                                     for ($i = 0; $i < count($pneuDecla["answers"]); ++$i) {
                                                         if (
                                                             $pneuDecla["answers"][$i] == "Oui" &&
@@ -4903,7 +4903,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePont = 0;
-                                                if (isset($pontDecla)) {
+                                                if (isset($pontDecla, $pontMa)) {
                                                     for ($i = 0; $i < count($pontDecla["answers"]); ++$i) {
                                                         if (
                                                             $pontDecla["answers"][$i] == "Oui" &&
@@ -4914,7 +4914,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreRed = 0;
-                                                if (isset($reducteurDecla)) {
+                                                if (isset($reducteurDecla, $reducteurMa)) {
                                                     for ($i = 0; $i < count($reducteurDecla["answers"]); ++$i) {
                                                         if (
                                                             $reducteurDecla["answers"][$i] == "Oui" &&
@@ -4925,7 +4925,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspension = 0;
-                                                if (isset($suspensionDecla)) {
+                                                if (isset($suspensionDecla, $suspensionMa)) {
                                                     for ($i = 0; $i < count($suspensionDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionDecla["answers"][$i] == "Oui" &&
@@ -4936,7 +4936,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionLame = 0;
-                                                if (isset($suspensionLameDecla)) {
+                                                if (isset($suspensionLameDecla, $suspensionLameMa)) {
                                                     for ($i = 0; $i < count($suspensionLameDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionLameDecla["answers"][$i] == "Oui" &&
@@ -4947,7 +4947,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionRessort = 0;
-                                                if (isset($suspensionRessortDecla)) {
+                                                if (isset($suspensionRessortDecla, $suspensionRessortMa)) {
                                                     for ($i = 0; $i < count($suspensionRessortDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionRessortDecla["answers"][$i] == "Oui" &&
@@ -4958,7 +4958,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionPneu = 0;
-                                                if (isset($suspensionPneumatiqueDecla)) {
+                                                if (isset($suspensionPneumatiqueDecla, $suspensionPneumatiqueMa)) {
                                                     for ($i = 0; $i < count($suspensionPneumatiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionPneumatiqueDecla["answers"][$i] == "Oui" &&
@@ -4969,7 +4969,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransversale = 0;
-                                                if (isset($transversaleDecla)) {
+                                                if (isset($transversaleDecla, $transversaleMa)) {
                                                     for ($i = 0; $i < count($transversaleDecla["answers"]); ++$i) {
                                                         if (
                                                             $transversaleDecla["answers"][$i] == "Oui" &&

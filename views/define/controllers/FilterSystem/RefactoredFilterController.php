@@ -37,7 +37,7 @@ class RefactoredFilterController
      * @param string $dbName
      * @param array|null $session
      */
-    public function __construct($mongoOrDb = null, $dbName = 'academy', array $session = null)
+    public function __construct($mongoOrDb = null, $dbName = 'academy', ?array $session = null)
     {
         // 1) Init DB
         if ($mongoOrDb instanceof \MongoDB\Database) {

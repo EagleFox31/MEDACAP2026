@@ -657,6 +657,14 @@ $params = [
 ];
 QuizValidator::validateParams($params);
 $db = new MongoDBConnection();
+// Un QCM déjà terminé ne se repasse pas : sinon l'ouverture crée un nouvel examen vierge.
+if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['id']), 'test' => new ObjectId($params['test']), 'active' => true])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $db->jsonResponse(false, 'Ce QCM est déjà terminé.', './ListeDesQcm');
+    }
+    header('Location: ./ListeDesQcm');
+    exit();
+}
 $fetcher = new QuizDataFetcher($db);
 $data = $fetcher->fetchUserData($params['id'], new ObjectId($params['test']), $params['level']);
 if (!$data) {

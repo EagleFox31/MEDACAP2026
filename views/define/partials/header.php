@@ -9,6 +9,16 @@ $functionalitiesCollection = $academy->functionalities;
 // Inclure le fichier de langue (FR/EN)
 require_once __DIR__ . '/../../partials/medacap_topbar.php';
 $lang = medacapTopbarSyncLang(__DIR__ . '/../..');
+// L'include fait dans la fonction reste local : importer ici les seuls libellés du menu, sans écraser $title & co.
+$defineHeaderLabels = (function ($file) {
+    include $file;
+    return compact('tableau', 'technicien', 'admin_space', 'rh_space', 'tech_space', 'manager_space', 'super_admin_space', 'dps_space', 'dop_space', 'dir_grp_space');
+})(__DIR__ . '/../../' . ($lang === 'EN' ? 'language_EN.php' : 'language.php'));
+foreach ($defineHeaderLabels as $defineHeaderKey => $defineHeaderValue) {
+    if (!isset($$defineHeaderKey)) {
+        $$defineHeaderKey = $defineHeaderValue;
+    }
+}
 
 // Récupérer le profil de l'utilisateur
 $currentProfileName = $_SESSION['profile'] ?? '';
