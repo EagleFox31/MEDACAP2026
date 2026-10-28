@@ -36,7 +36,7 @@ if (!class_exists('QuizValidator')) {
             while (ob_get_level() > 0) {
                 @ob_end_clean();
             }
-            header('Content-Type: application/json');
+            header('Content-Type: application/json; charset=utf-8');
             echo json_encode(array('success' => false, 'message' => $message));
             exit();
         }

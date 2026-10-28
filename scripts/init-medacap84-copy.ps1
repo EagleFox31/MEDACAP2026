@@ -30,8 +30,10 @@ try {
     if (-not (Test-Path -LiteralPath $composeFile)) {
         throw "docker-compose.yml introuvable."
     }
-    $serviceId = (docker compose ps -q mongo | Select-Object -First 1)
-    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($serviceId)) {
+    $ids = @(docker compose ps -q mongo)
+    $composeExit = $LASTEXITCODE
+    $serviceId = if ($ids.Count -gt 0) { [string]$ids[0] } else { '' }
+    if ($composeExit -ne 0 -or [string]::IsNullOrWhiteSpace($serviceId)) {
         throw "Le conteneur Mongo MEDACAP 8.4 n'est pas demarre. Executer d'abord docker compose up -d --build."
     }
 

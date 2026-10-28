@@ -26,7 +26,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             @ob_end_clean();
         }
         if (!headers_sent()) {
-            header('Content-Type: application/json');
+            header('Content-Type: application/json; charset=utf-8');
             http_response_code(500);
         }
         $message = 'Server error during submission';
@@ -81,7 +81,7 @@ class MongoDBConnection {
             $response['redirect'] = $redirect;
         }
         while (ob_get_level() > 0) { @ob_end_clean(); }
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($response);
         exit();
     }
@@ -279,15 +279,25 @@ class QuizPostHandler {
             $resp['redirect'] = $redirect;
         }
         while (ob_get_level() > 0) { @ob_end_clean(); }
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($resp);
         exit();
     }
 }
 // Bootstrap
 QuizValidator::validateSession();
+// Un technicien ne compose que son propre QCM : ?id= n'est accepté tel quel que pour le Super Admin.
+$quizUserId = (string) $_SESSION['id'];
+if (isset($_GET['id']) && (string) $_GET['id'] !== $quizUserId) {
+    if (($_SESSION['profile'] ?? '') !== 'Super Admin') {
+        error_log('[quizFactuel] id refusé : session=' . $quizUserId . ' demandé=' . (string) $_GET['id']);
+        header('Location: ./ListeDesQcm');
+        exit();
+    }
+    $quizUserId = (string) $_GET['id'];
+}
 $params = [
-    'id' => $_GET['id'] ?? ($_SESSION['id'] ?? ''),
+    'id' => $quizUserId,
     'level' => $_GET['level'] ?? '',
     'test' => $_GET['test'] ?? '',
     'guide' => $_GET['guide'] ?? false,

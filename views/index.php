@@ -181,7 +181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
         }
         require_once __DIR__ . '/../core/login_session.php';
         medacapOpenLoginSession($login, $connections);
-        header('Location: ' . medacapLoginLandingPath($login, $academy));
+        $landing = medacapLoginLandingPath($login, $academy);
+        // Chemin relatif à la racine : retirer "views/" quand la page est ouverte en /views/index.php.
+        if (basename(dirname($_SERVER['SCRIPT_NAME'] ?? '')) === 'views' && strpos($landing, 'views/') === 0) {
+            $landing = substr($landing, strlen('views/'));
+        }
+        header('Location: ' . $landing);
         exit;
     }
 }
