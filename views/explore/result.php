@@ -85,8 +85,9 @@ if (!isset($_SESSION["id"])) {
             ["active" => true],
         ],
     ]);
-    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
-    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+    // Évaluation manager absente (candidat, ou manager pas encore passé) : pas de division par zéro
+    $percentageFac = !empty($resultFac['total']) ? ($resultFac['score'] * 100) / $resultFac['total'] : 0;
+    $percentageTechMa = !empty($resultTechMa['total']) ? ($resultTechMa['score'] * 100) / $resultTechMa['total'] : 0;
 
     function getBootstrapClass($pourcentage) {
         if ($pourcentage <= 59) {
@@ -99,7 +100,7 @@ if (!isset($_SESSION["id"])) {
     }
 
     function getclasses($grp){
-        $percent  = round(($grp->score * 100) / ($grp->total));
+        $percent  = ($grp && !empty($grp->total)) ? round(($grp->score * 100) / ($grp->total)) : 0;
         $bootstrapclass = getBootstrapClass($percent);
         return $bootstrapclass;                                    
     }
@@ -4582,28 +4583,19 @@ if (!isset($_SESSION["id"])) {
                                         <th id="result-n1"
                                             class="min-w-125px sorting text-black text-center table-light fw-bold text-uppercase gs-0 <?php echo getclasses($resultDecla); ?>"
                                             style="width: 100px;">
-                                            <?php echo round(
-                                            ($resultDecla->score * 100) /
-                                                $resultDecla->total ??
-                                                "0"); ?>%
+                                            <?php echo (!empty($resultDecla->total) ? round(($resultDecla->score * 100) / $resultDecla->total) : 0); ?>%
                                         </th>
                                         <th id="result-n1"
                                             class="min-w-125px sorting text-black text-center table-light fw-bold text-uppercase gs-0 <?php echo getclasses($resultMa); ?>"
                                             tabindex="0" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 100px;">
-                                            <?php echo round(
-                                            ($resultMa->score * 100) /
-                                                $resultMa->total ??
-                                                "0"); ?>%
+                                            <?php echo (!empty($resultMa->total) ? round(($resultMa->score * 100) / $resultMa->total) : 0); ?>%
                                         </th>
                                         <th id="result-savoir-faire"
                                             class="min-w-125px sorting text-black text-center table-light fw-bold text-uppercase gs-0 <?php echo getclasses($resultTechMa); ?>"
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 100px;">
-                                            <?php echo round(
-                                            ($resultTechMa->score * 100) /
-                                                $resultTechMa->total ??
-                                                "0"); ?>%
+                                            <?php echo (!empty($resultTechMa->total) ? round(($resultTechMa->score * 100) / $resultTechMa->total) : 0); ?>%
                                         </th>
                                         <th name="fiable" id="result-fiable"
                                             class="min-w-125px sorting text-black text-center table-light fw-bold text-uppercase gs-0"
