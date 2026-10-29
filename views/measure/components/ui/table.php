@@ -90,7 +90,7 @@ function renderSubTableComponent(array $headers, array $subRows, string $trainin
 /**
  * Génère un composant HTML de tableau principal
  */
-function renderTableComponent(array $headers, array $rows, string $dropDownColumn = null): string {
+function renderTableComponent(array $headers, array $rows, ?string $dropDownColumn = null): string {
     ob_start();
     ?>
     <style>

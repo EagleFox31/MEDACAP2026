@@ -454,6 +454,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                     ],
                                                 ]);
+                                                $techManagerId = isset($tech->manager) ? $tech->manager : null;
                                                 $transmissionFac = $results->findOne([
                                                     '$and' => [
                                                         [
@@ -3098,6 +3099,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                     ],
                                                 ]);
+                                                $techManagerId = isset($tech->manager) ? $tech->manager : null;
                                                 $transmissionFac = $results->findOne([
                                                     '$and' => [
                                                         [
@@ -3140,7 +3142,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3193,7 +3195,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3240,7 +3242,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3284,7 +3286,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3334,7 +3336,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3387,7 +3389,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3440,7 +3442,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3487,7 +3489,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3531,7 +3533,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3575,7 +3577,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3625,7 +3627,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3672,7 +3674,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3722,7 +3724,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3775,7 +3777,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3828,7 +3830,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3875,7 +3877,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3919,7 +3921,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3963,7 +3965,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4007,7 +4009,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4051,7 +4053,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4095,7 +4097,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4139,7 +4141,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4183,7 +4185,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4227,7 +4229,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4271,7 +4273,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4315,7 +4317,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4359,7 +4361,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4411,7 +4413,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4459,7 +4461,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4488,7 +4490,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($tech->_id)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($tech->manager)],
+                                                        ["manager" => new MongoDB\BSON\ObjectId($techManagerId)],
                                                         ["typeR" => "Managers"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -4497,7 +4499,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultTechMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($tech->_id)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($tech->manager)],
+                                                        ["manager" => new MongoDB\BSON\ObjectId($techManagerId)],
                                                         ["typeR" => "Technicien - Manager"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],

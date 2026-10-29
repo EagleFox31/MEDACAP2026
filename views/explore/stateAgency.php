@@ -910,7 +910,7 @@ openBackgroundContainer('', 'id="kt_content"');
 <?php if ( $_SESSION["profile"] == "Super Admin") { ?>
     <title><?php echo $etat_avanacement_qcm_agences ?>| CFAO Mobility Academy</title> 
 <?php } else { ?>
-    <title><?php echo $etat_avanacement_agence ?> <?php echo $_GET['agency'] ?> | CFAO Mobility Academy</title> 
+    <title><?php echo $etat_avanacement_agence ?> <?php echo isset($_GET['agency']) ? htmlspecialchars($_GET['agency']) : '' ?> | CFAO Mobility Academy</title> 
 <?php } ?>
 <!--end::Title-->
 <!--begin::Content-->
