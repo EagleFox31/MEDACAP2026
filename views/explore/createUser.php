@@ -167,7 +167,8 @@ final class Input
     }
     if (!is_string($v))
       return $v;
-    $v = filter_var($v, FILTER_SANITIZE_STRING);
+    // Équivalent de FILTER_SANITIZE_STRING (déprécié en PHP 8.1) : balises retirées, guillemets encodés.
+    $v = str_replace(['"', "'"], ['&#34;', '&#39;'], strip_tags($v));
     return trim($v);
   }
 }

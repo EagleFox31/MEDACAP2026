@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Export / import kits QCM offline MEDACAP.
- * PHP 7.3
+ * PHP 8.4
  */
 
 require_once __DIR__ . '/../../vendor/autoload.php';

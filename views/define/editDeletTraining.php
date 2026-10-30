@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include_once "partials/header.php";
-<?php include_once "../core/background-manager.php"; setPageBackground("bg-welcome-tech"); openBackgroundContainer(); ?>
+include_once "../core/background-manager.php"; setPageBackground("bg-welcome-tech"); openBackgroundContainer();
 ?>
 
 <title><?php echo $title_edit_sup_training ?> | CFAO Mobility Academy</title>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Contrôle d'accès aux données d'un autre utilisateur (id passé en GET).
- * PHP 7.3. Technicien / Candidat : soi seul. Manager : soi + son équipe.
+ * PHP 8.4. Technicien / Candidat : soi seul. Manager : soi + son équipe.
  * Les autres profils (Admin, RH, directeurs, formateurs) gardent leur accès.
  */
 

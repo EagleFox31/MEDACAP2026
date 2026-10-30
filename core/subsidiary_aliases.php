@@ -1,7 +1,7 @@
 <?php
 /**
  * Alias filiales MEDACAP — libellés historiques vs actuels (sans migration Mongo).
- * PHP 7.3
+ * PHP 8.4
  *
  * Ex. Cameroun : CFAO MOBILITY CAMEROON est le libellé stocké.
  * CAMEROON MOTORS INDUSTRIES reste accepté s'il réapparaît dans d'anciennes données.

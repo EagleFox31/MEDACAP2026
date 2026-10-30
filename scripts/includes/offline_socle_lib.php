@@ -6,7 +6,7 @@
  * envoye une seule fois. Ce qui varie par technicien et par campagne circule
  * ensuite sous forme de « cle » (aller) et de « jeton » (retour), tailles texte.
  *
- * PHP 7.3
+ * PHP 8.4
  */
 
 require_once __DIR__ . '/offline_qcm_lib.php';

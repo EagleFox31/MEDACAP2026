@@ -1,7 +1,7 @@
 <?php
 /**
  * Session ouverte par mot de passe ou par lien de connexion.
- * PHP 7.3. $login est un document utilisateur MongoDB.
+ * PHP 8.4. $login est un document utilisateur MongoDB.
  */
 
 function medacapOpenLoginSession($login, $connections)

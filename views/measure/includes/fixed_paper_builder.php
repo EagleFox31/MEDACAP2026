@@ -3,7 +3,7 @@
 use MongoDB\BSON\ObjectId;
 use MongoDB\Model\BSONArray;
 
-function s($v){if(!is_string($v))return $v;return trim(filter_var($v,FILTER_SANITIZE_STRING));}
+function s($v){if(!is_string($v))return $v;return trim(str_replace(['"',"'"],['&#34;','&#39;'],strip_tags($v)));}
 function arr_str(array $a):array{$o=[];foreach($a as $v){$v=s($v);if($v!=='')$o[]=$v;}return array_values(array_unique($o));}
 function toOid($v):?ObjectId{if($v instanceof ObjectId)return $v;if(is_string($v)&&preg_match('/^[0-9a-f]{24}$/i',$v))return new ObjectId($v);return null;}
 function dedupOids(array $a):array{$m=[];$o=[];foreach($a as $x){if(!($x instanceof ObjectId))continue;$k=(string)$x;if(isset($m[$k]))continue;$m[$k]=1;$o[]=$x;}return $o;}

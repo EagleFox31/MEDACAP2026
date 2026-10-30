@@ -4,7 +4,7 @@ require_once __DIR__ . '/../core/medacap_config.php';
  * cronjobs/generate_subsidiary_reports.php
  *
  * Génère le cache quotidien des résultats par filiale.
- * - Compatible PHP 7.3 + MongoDB 4.2
+ * - Compatible PHP 8.4 + MongoDB 8.0
  * - Historique conservé (inter-jours)
  * - 1 document par filiale et par jour (upsert {date, subsidiary})
  */
@@ -51,7 +51,7 @@ function oid_str($maybeOid) {
 
 /**
  * Convertit proprement BSONDocument/BSONArray -> array PHP
- * (compatible PHP 7.3)
+ * (PHP 8.4)
  */
 function bson_to_array($value) {
     if ($value instanceof MongoDB\Model\BSONDocument || $value instanceof MongoDB\Model\BSONArray) {

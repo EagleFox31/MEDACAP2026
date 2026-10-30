@@ -1,7 +1,7 @@
 <?php
 /**
  * Cohorte CFAO Cameroun 2026 — liste officielle (37 lignes, moins les sortis des effectifs).
- * PHP 7.3
+ * PHP 8.4
  */
 require_once __DIR__ . '/cfao_name_helpers.php';
 
