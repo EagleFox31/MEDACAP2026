@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 // groupFunctions.php
 require_once "../../vendor/autoload.php";
 
@@ -8,7 +9,7 @@ use MongoDB\BSON\UTCDateTime;
 
 // Fonction pour obtenir le client MongoDB
 function getMongoClient() {
-    return new Client("mongodb://localhost:27017");
+    return new Client(medacapMongoUri());
 }
 
 // Fonction pour obtenir la collection des fonctionnalités

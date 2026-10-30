@@ -391,10 +391,20 @@ if (!isset($_SESSION["id"])) {
             </div>
 
             <!-- Actions -->
+            <?php
+            $userProfile = isset($_SESSION['profile']) ? trim((string) $_SESSION['profile']) : '';
+            $isTechnicianProfile = strcasecmp($userProfile, 'Technicien') === 0;
+            ?>
             <div class="lms-actions">
+                <?php if ($isTechnicianProfile): ?>
+                <a href="./ListeDesQcm.php" class="lms-btn-primary">
+                    <i class="fas fa-list-check me-2"></i><?php echo isset($retour_liste_qcm) ? $retour_liste_qcm : 'Retour à la liste des QCM'; ?>
+                </a>
+                <?php else: ?>
                 <a href="./logout.php" class="lms-btn-primary">
                     <i class="fas fa-right-from-bracket me-2"></i><?php echo isset($se_deconnecter) ? $se_deconnecter : 'Se déconnecter'; ?>
                 </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

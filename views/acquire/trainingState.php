@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
     session_start();
     include_once "../language.php";
 
@@ -9,7 +10,7 @@
         require_once "../../vendor/autoload.php";
 
         // Create connection
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
 
         // Connecting in database
         $academy = $conn->academy;
@@ -71,6 +72,8 @@
             $filters['manager'] = new MongoDB\BSON\ObjectId($manager);
         } elseif (in_array($profileSession, ['Directeur Filiale', 'Ressource Humaine'])) {
             $filters['subsidiary'] = $subsidiary;
+        } elseif (in_array($profileSession, ['Technicien', 'Candidat'])) {
+            $filters['_id'] = new MongoDB\BSON\ObjectId($manager);
         }
 
         $technicians = $users->find($filters)->toArray();
@@ -522,8 +525,7 @@
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>
@@ -593,10 +595,10 @@ $(document).ready(function() {
             params.append('country', selectedCountry);
             params.append('agency', selectedAgency);
 
-            console.log('URL de la requête fetch :', 'getManagers.php?' + params.toString());
+            console.log('URL de la requête fetch :', '../define/getManagers.php?' + params.toString());
 
             // Requête AJAX pour récupérer les managers
-            fetch('getManagers.php?' + params.toString())
+            fetch('../define/getManagers.php?' + params.toString())
                 .then(response => {
                     console.log('Réponse brute de fetch :', response);
                     return response.json();

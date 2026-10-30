@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 
 include_once "../partials/background-manager.php";
@@ -9,7 +10,7 @@ if (!isset($_SESSION["id"])) {
 } else {
     require_once "../../vendor/autoload.php";
 
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $users = $academy->users;
     $results = $academy->results;
@@ -130,9 +131,6 @@ if (!isset($_SESSION["id"])) {
         if ($selectedLevel && $selectedLevel !== 'all') {
             $query['level'] = $selectedLevel;
         }
-        if ($selectedDepartment && $selectedDepartment !== 'all') {
-            $query['department'] = $selectedDepartment;
-        }
         $technicians = $users->find($query)->toArray();
         foreach ($technicians as $techn) {
             if ($techn["profile"] == "Technicien" ||
@@ -168,6 +166,8 @@ if (!isset($_SESSION["id"])) {
         .table thead tr { background-color: #edf2f7 !important; }
         .table td { background-color: #ffffff !important; }
         .table td.td-grey { background-color: #f9f9f9 !important; }
+        /* Compteur et export de largeur égale : les filtres restent centrés */
+        .filter-side { flex: 1 1 0; min-width: max-content; }
         .filter-label {
             font-weight: 600;
             white-space: nowrap;
@@ -191,9 +191,9 @@ if (!isset($_SESSION["id"])) {
                     Résultats des Techniciens par Niveau
                 </h1>
                 <div style="flex:1;" class="d-flex justify-content-end">
-                    <a href="./bilanTest" class="btn btn-dark-secondary btn-sm">
+                    <a href="./bilanTest?view=progress" class="btn btn-dark-secondary btn-sm">
                         <i class="ki-duotone ki-arrow-left fs-2 me-1"><span class="path1"></span><span class="path2"></span></i>
-                        Retour au bilan
+                        Voir l'avancement des tests
                     </a>
                 </div>
             </div>
@@ -204,7 +204,17 @@ if (!isset($_SESSION["id"])) {
     <div class="container-xxl mb-4">
         <div class="card glassmorphism">
             <div class="card-body py-3 px-5">
-                <div class="d-flex flex-wrap align-items-center justify-content-center gap-4">
+                <!-- Compteur (gauche) · filtres (centre) · export (droite) -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-4">
+
+                    <!-- Compteur -->
+                    <div class="filter-side d-flex justify-content-start">
+                        <span class="badge badge-light-primary fs-4 fw-bold px-4 py-3">
+                            <i class="bi bi-people fs-3 me-2"></i><?php echo count($tech); ?> technicien(s)
+                        </span>
+                    </div>
+
+                    <div class="d-flex flex-wrap align-items-center justify-content-center gap-4">
 
                     <?php if ($isGroupScope): ?>
                     <!-- Filiale -->
@@ -241,7 +251,7 @@ if (!isset($_SESSION["id"])) {
                     </div>
 
                     <!-- Département -->
-                    <?php if (!empty($departmentOptions)): ?>
+                    <?php if (!empty($departmentOptions) && $_SESSION['profile'] !== 'Manager'): ?>
                     <div class="d-flex align-items-center gap-2">
                         <label class="filter-label">
                             <i class="bi bi-diagram-3 text-warning me-1"></i>Département
@@ -258,11 +268,13 @@ if (!isset($_SESSION["id"])) {
                     </div>
                     <?php endif; ?>
 
-                    <!-- Compteur -->
-                    <div>
-                        <span class="badge badge-light-primary fs-7">
-                            <i class="bi bi-people me-1"></i><?php echo count($tech); ?> technicien(s)
-                        </span>
+                    </div>
+
+                    <!-- Export -->
+                    <div class="filter-side d-flex justify-content-end">
+                        <button type="button" id="btn-export-notes" class="btn btn-success fw-bold fs-5 px-5 py-2">
+                            <i class="bi bi-file-earmark-excel fs-3 me-2"></i>Exporter
+                        </button>
                     </div>
 
                 </div>
@@ -391,6 +403,37 @@ if (!isset($_SESSION["id"])) {
                                     return '<td class="text-center"><span class="badge ' . $class . ' fs-7">' . $percentage . '%</span></td>';
                                 }
 
+                                // Note manager : si non complétée et que le collaborateur relève du manager connecté,
+                                // propose un raccourci vers son évaluation (même lien que userManagerList).
+                                function renderManagerNoteCell($percentage, $allocations, $exams, $user, $level) {
+                                    if ($percentage !== null || !isset($user['manager'])
+                                        || (string) $user['manager'] !== (string) $_SESSION['id']) {
+                                        return renderNoteCell($percentage);
+                                    }
+                                    $allocate = $allocations->findOne([
+                                        "user" => new MongoDB\BSON\ObjectId($user['_id']),
+                                        "type" => "Declaratif",
+                                        "level" => $level,
+                                    ]);
+                                    if (!$allocate || !isset($allocate['test'])) {
+                                        return renderNoteCell($percentage);
+                                    }
+                                    $exam = $exams->findOne([
+                                        "manager" => new MongoDB\BSON\ObjectId($_SESSION['id']),
+                                        "test" => new MongoDB\BSON\ObjectId($allocate['test']),
+                                        "active" => true,
+                                    ]);
+                                    $url = './userEvaluation?test=' . urlencode((string) $allocate['test'])
+                                        . '&level=' . urlencode((string) $allocate['level'])
+                                        . '&id=' . urlencode((string) $_SESSION['id'])
+                                        . '&user=' . urlencode((string) $user['_id']);
+                                    $label = $exam ? 'Reprendre' : 'Évaluer';
+                                    return '<td class="text-center"><a href="' . htmlspecialchars($url) . '"'
+                                        . ' class="btn btn-sm btn-light-primary fw-bold py-1 px-3"'
+                                        . ' title="Évaluer ce collaborateur (niveau ' . htmlspecialchars($level) . ')">'
+                                        . '<i class="bi bi-pencil-square me-1"></i>' . $label . '</a></td>';
+                                }
+
                                 $isGroupScopeInLoop = in_array($_SESSION['profile'], ['Super Admin', 'Directeur Groupe']);
 
                                 for ($i = 0; $i < count($tech); $i++) {
@@ -416,7 +459,10 @@ if (!isset($_SESSION["id"])) {
                                 ?>
                                 <tr class="odd">
                                     <td class="text-center">
-                                        <?php echo htmlspecialchars($user["firstName"] . ' ' . $user["lastName"]); ?>
+                                        <a href="./detailTechnicien?user=<?php echo urlencode((string) $user['_id']); ?>"
+                                           class="text-gray-800 text-hover-primary fw-bold" title="Voir le détail par spécialité">
+                                            <?php echo htmlspecialchars($user["firstName"] . ' ' . $user["lastName"]); ?>
+                                        </a>
                                     </td>
                                     <?php if ($isGroupScopeInLoop): ?>
                                         <td class="text-center">
@@ -445,15 +491,15 @@ if (!isset($_SESSION["id"])) {
                                     // Junior (1)
                                     echo $userLevelN >= 1 ? renderNoteCell($pFacJu)      : $grey;
                                     echo $userLevelN >= 1 ? renderNoteCell($pDeclaTechJu) : $grey;
-                                    echo $userLevelN >= 1 ? renderNoteCell($pDeclaMaJu)   : $grey;
+                                    echo $userLevelN >= 1 ? renderManagerNoteCell($pDeclaMaJu, $allocations, $exams, $user, "Junior")   : $grey;
                                     // Senior (2)
                                     echo $userLevelN >= 2 ? renderNoteCell($pFacSe)      : $grey;
                                     echo $userLevelN >= 2 ? renderNoteCell($pDeclaTechSe) : $grey;
-                                    echo $userLevelN >= 2 ? renderNoteCell($pDeclaMaSe)   : $grey;
+                                    echo $userLevelN >= 2 ? renderManagerNoteCell($pDeclaMaSe, $allocations, $exams, $user, "Senior")   : $grey;
                                     // Expert (3)
                                     echo $userLevelN >= 3 ? renderNoteCell($pFacEx)      : $grey;
                                     echo $userLevelN >= 3 ? renderNoteCell($pDeclaTechEx) : $grey;
-                                    echo $userLevelN >= 3 ? renderNoteCell($pDeclaMaEx)   : $grey;
+                                    echo $userLevelN >= 3 ? renderManagerNoteCell($pDeclaMaEx, $allocations, $exams, $user, "Expert")   : $grey;
                                     ?>
                                 </tr>
                                 <?php } ?>
@@ -489,7 +535,115 @@ if (!isset($_SESSION["id"])) {
     <?php endif; ?>
     <?php closeBackgroundContainer(); ?>
 
+    <!-- xlsx-js-style : SheetJS + styles de cellules (couleurs, bordures, fusions) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js" defer></script>
     <script>
+        // Export Excel mis en forme du tableau affiché (lignes visibles) :
+        // titre, en-têtes fusionnés colorés par niveau, notes colorées selon les seuils de la page.
+        function exportNotes() {
+            if (typeof XLSX === 'undefined') { alert('Bibliothèque XLSX non chargée'); return; }
+            var table = document.getElementById('kt_customers_table');
+            if (!table) { return; }
+
+            var clean = function (s) { return s.replace(/\s+/g, ' ').trim(); };
+            var border = { style: 'thin', color: { rgb: 'D0D5DD' } };
+            var borders = { top: border, bottom: border, left: border, right: border };
+            var levelColors = {               // [fond en-tête groupe, fond en-tête colonne]
+                tech:   ['1F2A44', 'E4E7EC'],
+                Junior: ['1570EF', 'D1E9FF'],
+                Senior: ['DC6803', 'FEF0C7'],
+                Expert: ['6938EF', 'EBE9FE']
+            };
+            var noteStyle = function (pct) {
+                if (pct >= 70) { return { fill: 'D1FADF', font: '067647' }; }
+                if (pct >= 50) { return { fill: 'FEF0C7', font: 'B54708' }; }
+                return { fill: 'FEE4E2', font: 'B42318' };
+            };
+
+            var headRows = table.tHead.rows;
+            var nbIdentity = headRows[0].cells[0].colSpan || 1;
+            var groups = [];                  // clé de couleur par colonne
+            var groupCells = [];              // [libellé, colonne début, nb colonnes, clé]
+            var col = 0;
+            Array.prototype.forEach.call(headRows[0].cells, function (th, i) {
+                var span = th.colSpan || 1;
+                var key = i === 0 ? 'tech' : ['Junior', 'Senior', 'Expert'][i - 1];
+                groupCells.push([clean(th.textContent), col, span, key]);
+                for (var k = 0; k < span; k++) { groups.push(key); }
+                col += span;
+            });
+            var nbCols = col;
+            var colLabels = Array.prototype.map.call(headRows[1].cells, function (th) { return clean(th.textContent); });
+
+            var ws = {};
+            var merges = [];
+            var put = function (r, c, cell) { ws[XLSX.utils.encode_cell({ r: r, c: c })] = cell; };
+
+            // Ligne 0 : titre
+            var title = 'Résultats des techniciens par niveau — export du ' + new Date().toLocaleDateString('fr-FR');
+            put(0, 0, { v: title, t: 's', s: { font: { bold: true, sz: 14, color: { rgb: '101828' } },
+                alignment: { horizontal: 'left', vertical: 'center' } } });
+            merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: nbCols - 1 } });
+
+            // Ligne 1 : groupes (Techniciens / Niveau Junior / Senior / Expert)
+            groupCells.forEach(function (g) {
+                for (var c = g[1]; c < g[1] + g[2]; c++) {
+                    put(1, c, { v: c === g[1] ? g[0] : '', t: 's', s: {
+                        font: { bold: true, color: { rgb: 'FFFFFF' } },
+                        fill: { fgColor: { rgb: levelColors[g[3]][0] } },
+                        alignment: { horizontal: 'center', vertical: 'center' }, border: borders } });
+                }
+                if (g[2] > 1) { merges.push({ s: { r: 1, c: g[1] }, e: { r: 1, c: g[1] + g[2] - 1 } }); }
+            });
+
+            // Ligne 2 : intitulés de colonnes
+            colLabels.forEach(function (label, c) {
+                put(2, c, { v: label, t: 's', s: {
+                    font: { bold: true, color: { rgb: '101828' } },
+                    fill: { fgColor: { rgb: levelColors[groups[c]][1] } },
+                    alignment: { horizontal: 'center', vertical: 'center', wrapText: true }, border: borders } });
+            });
+
+            // Données
+            var r = 3;
+            Array.prototype.forEach.call(table.tBodies[0].rows, function (tr) {
+                if (tr.style.display === 'none' || tr.cells.length < nbCols) { return; }
+                Array.prototype.forEach.call(tr.cells, function (td, c) {
+                    var txt = clean(td.textContent);
+                    var base = { alignment: { horizontal: c < nbIdentity ? 'left' : 'center', vertical: 'center', wrapText: true },
+                        border: borders };
+                    if (c >= nbIdentity && /^\d+%$/.test(txt)) {
+                        var pct = parseInt(txt, 10);
+                        var ns = noteStyle(pct);
+                        base.font = { bold: true, color: { rgb: ns.font } };
+                        base.fill = { fgColor: { rgb: ns.fill } };
+                        put(r, c, { v: pct / 100, t: 'n', z: '0%', s: base });
+                    } else if (c >= nbIdentity && (td.querySelector('a') || txt === 'Pas complété')) {
+                        base.font = { italic: true, color: { rgb: '667085' } };
+                        base.fill = { fgColor: { rgb: 'F9FAFB' } };
+                        put(r, c, { v: 'Pas complété', t: 's', s: base });
+                    } else if (c >= nbIdentity) {
+                        // Niveau non concerné
+                        base.fill = { fgColor: { rgb: 'EAECF0' } };
+                        put(r, c, { v: '', t: 's', s: base });
+                    } else {
+                        base.font = { bold: c === 0, color: { rgb: '101828' } };
+                        put(r, c, { v: txt, t: 's', s: base });
+                    }
+                });
+                r++;
+            });
+
+            ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: Math.max(r - 1, 2), c: nbCols - 1 } });
+            ws['!merges'] = merges;
+            ws['!cols'] = colLabels.map(function (l, c) { return { wch: c === 0 ? 30 : (c < nbIdentity ? 18 : 16) }; });
+            ws['!rows'] = [{ hpt: 26 }, { hpt: 22 }, { hpt: 48 }];
+
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Notes');
+            XLSX.writeFile(wb, 'notes_techniciens_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+        }
+
         function applyFilters() {
             var params = new URLSearchParams(window.location.search);
             <?php if ($isGroupScope): ?>
@@ -522,6 +676,9 @@ if (!isset($_SESSION["id"])) {
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            var exportBtn = document.getElementById('btn-export-notes');
+            if (exportBtn) { exportBtn.addEventListener('click', exportNotes); }
+
             var searchInput = document.getElementById('search');
             if (searchInput) {
                 searchInput.addEventListener('keyup', function () {

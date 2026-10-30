@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 include "./partials/header.php";
@@ -12,7 +13,7 @@ if (!isset($_SESSION["profile"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;
@@ -909,7 +910,7 @@ openBackgroundContainer('', 'id="kt_content"');
 <?php if ( $_SESSION["profile"] == "Super Admin") { ?>
     <title><?php echo $etat_avanacement_qcm_agences ?>| CFAO Mobility Academy</title> 
 <?php } else { ?>
-    <title><?php echo $etat_avanacement_agence ?> <?php echo $_GET['agency'] ?> | CFAO Mobility Academy</title> 
+    <title><?php echo $etat_avanacement_agence ?> <?php echo isset($_GET['agency']) ? htmlspecialchars($_GET['agency']) : '' ?> | CFAO Mobility Academy</title> 
 <?php } ?>
 <!--end::Title-->
 <!--begin::Content-->
@@ -1636,8 +1637,7 @@ openBackgroundContainer('', 'id="kt_content"');
     </div>
     <!--end:Row-->
 <?php closeBackgroundContainer(); ?>
-    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
     </script>
     <script src="../../public/js/main.js"></script>

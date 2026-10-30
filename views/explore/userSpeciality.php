@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 
 include_once "../language.php";
@@ -35,9 +36,14 @@ if (!isset($_SESSION["profile"])) {
     // =========================
     // Mongo + collections
     // =========================
-    $conn    = new MongoDB\Client("mongodb://localhost:27017");
+    $conn    = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $questionsCol = $academy->questions;
+
+    require_once __DIR__ . '/../../core/user_access.php';
+    if ($selectedUser !== null) {
+        medacapRequireUserAccess($academy->users, $selectedUser);
+    }
 
     // =========================
     // Pays / agences disponibles selon profil
@@ -1180,7 +1186,7 @@ if ($countryContext) {
     </div>
 
     <!-- Scripts (une seule fois) -->
-    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
     <script src="../public/js/main.js"></script>
@@ -1486,8 +1492,8 @@ if ($countryContext) {
                     (chartId === 'chartSenior') ? 'Senior' :
                     (chartId === 'chartExpert') ? 'Expert' : 'Total';
 
-                var country = '<?php echo urlencode($selectedCountry); ?>';
-                var agency = '<?php echo urlencode($selectedAgency); ?>';
+                var country = '<?php echo urlencode((string) $selectedCountry); ?>';
+                var agency = '<?php echo urlencode((string) $selectedAgency); ?>';
 
                 $.ajax({
                     url: 'listQuestions.php',

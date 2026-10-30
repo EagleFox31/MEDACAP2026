@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -10,7 +11,7 @@ if (!isset($_SESSION["id"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;
@@ -21,6 +22,8 @@ if (!isset($_SESSION["id"])) {
     $validations = $academy->validations;
 
     $user = $_GET["user"];
+    require_once __DIR__ . '/../../core/user_access.php';
+    medacapRequireUserAccess($users, $user);
     $level = $_GET["level"];
     $numberTest = $_GET["numberTest"];
 
@@ -67,7 +70,7 @@ if (!isset($_SESSION["id"])) {
     $resultMa = $results->findOne([
         '$and' => [
             ["user" => new MongoDB\BSON\ObjectId($user)],
-            ["manager" => new MongoDB\BSON\ObjectId($technician->manager)],
+            ["manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager))],
             ["typeR" => "Managers"],
             ["level" => $level],
             ["numberTest" => +$numberTest],
@@ -77,15 +80,15 @@ if (!isset($_SESSION["id"])) {
     $resultTechMa = $results->findOne([
         '$and' => [
             ["user" => new MongoDB\BSON\ObjectId($user)],
-            ["manager" => new MongoDB\BSON\ObjectId($technician->manager)],
+            ["manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager))],
             ["typeR" => "Technicien - Manager"],
             ["level" => $level],
             ["numberTest" => +$numberTest],
             ["active" => false],
         ],
     ]);
-    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
-    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
+    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
     ?>
 <title>Résultat Technicien | CFAO Mobility Academy</title>
 <!--end::Title-->
@@ -100,13 +103,12 @@ if (!isset($_SESSION["id"])) {
 <!--begin::Vendor Stylesheets(used for this page only)-->
 <link href="../../public/assets/plugins/custom/leaflet/leaflet.bundle.css" rel="stylesheet" type="text/css" />
 <link href="../../public/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <!--end::Vendor Stylesheets-->
 <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
 <link href="../../public/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 <link href="../../public/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/css/multi-select-tag.css">
 <!--end::Global Stylesheets Bundle-->
 
 <!--begin::Body-->
@@ -284,9 +286,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -318,11 +318,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transmissionFac->score * 100) /
-                                                $transmissionFac->total); ?>%
+                                                max(1, (float) $transmissionFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($transmissionFac->score * 100) /
-                                            $transmissionFac->total >=
+                                            max(1, (float) $transmissionFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facTransmission">
@@ -331,7 +331,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($transmissionFac->score * 100) /
-                                            $transmissionFac->total <
+                                            max(1, (float) $transmissionFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facTransmission">
@@ -341,12 +341,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transmissionDecla->score * 100) /
-                                                $transmissionDecla->total); ?>%
+                                                max(1, (float) $transmissionDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transmissionMa->score * 100) /
-                                                $transmissionMa->total); ?>%
+                                                max(1, (float) $transmissionMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -436,9 +436,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -471,11 +469,11 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($assistanceConduiteFac->score *
                                                 100) /
-                                                $assistanceConduiteFac->total); ?>%
+                                                max(1, (float) $assistanceConduiteFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($assistanceConduiteFac->score * 100) /
-                                            $assistanceConduiteFac->total >=
+                                            max(1, (float) $assistanceConduiteFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facAssistance">
@@ -484,7 +482,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($assistanceConduiteFac->score * 100) /
-                                            $assistanceConduiteFac->total <
+                                            max(1, (float) $assistanceConduiteFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facAssistance">
@@ -495,13 +493,13 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($assistanceConduiteDecla->score *
                                                 100) /
-                                                $assistanceConduiteDecla->total); ?>%
+                                                max(1, (float) $assistanceConduiteDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($assistanceConduiteMa->score *
                                                 100) /
-                                                $assistanceConduiteMa->total); ?>%
+                                                max(1, (float) $assistanceConduiteMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -589,9 +587,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -620,11 +616,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transfertFac->score * 100) /
-                                                $transfertFac->total); ?>%
+                                                max(1, (float) $transfertFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($transfertFac->score * 100) /
-                                            $transfertFac->total >=
+                                            max(1, (float) $transfertFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facTransfert">
@@ -633,7 +629,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($transfertFac->score * 100) /
-                                            $transfertFac->total <
+                                            max(1, (float) $transfertFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facTransfert">
@@ -643,12 +639,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transfertDecla->score * 100) /
-                                                $transfertDecla->total); ?>%
+                                                max(1, (float) $transfertDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transfertMa->score * 100) /
-                                                $transfertMa->total); ?>%
+                                                max(1, (float) $transfertMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -728,9 +724,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -759,11 +753,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteFac->score * 100) /
-                                                $boiteFac->total); ?>%
+                                                max(1, (float) $boiteFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($boiteFac->score * 100) /
-                                            $boiteFac->total >=
+                                            max(1, (float) $boiteFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoite">
@@ -772,7 +766,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($boiteFac->score * 100) /
-                                            $boiteFac->total <
+                                            max(1, (float) $boiteFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoite">
@@ -782,12 +776,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteDecla->score * 100) /
-                                                $boiteDecla->total); ?>%
+                                                max(1, (float) $boiteDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteMa->score * 100) /
-                                                $boiteMa->total); ?>%
+                                                max(1, (float) $boiteMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -874,9 +868,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -908,11 +900,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteAutoFac->score * 100) /
-                                                $boiteAutoFac->total); ?>%
+                                                max(1, (float) $boiteAutoFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($boiteAutoFac->score * 100) /
-                                            $boiteAutoFac->total >=
+                                            max(1, (float) $boiteAutoFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoiteAuto">
@@ -921,7 +913,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($boiteAutoFac->score * 100) /
-                                            $boiteAutoFac->total <
+                                            max(1, (float) $boiteAutoFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoiteAuto">
@@ -931,12 +923,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteAutoDecla->score * 100) /
-                                                $boiteAutoDecla->total); ?>%
+                                                max(1, (float) $boiteAutoDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteAutoMa->score * 100) /
-                                                $boiteAutoMa->total); ?>%
+                                                max(1, (float) $boiteAutoMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1023,9 +1015,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1057,11 +1047,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteManFac->score * 100) /
-                                                $boiteManFac->total); ?>%
+                                                max(1, (float) $boiteManFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($boiteManFac->score * 100) /
-                                            $boiteManFac->total >=
+                                            max(1, (float) $boiteManFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoiteMan">
@@ -1070,7 +1060,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($boiteManFac->score * 100) /
-                                            $boiteManFac->total <
+                                            max(1, (float) $boiteManFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoiteMan">
@@ -1080,12 +1070,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteManDecla->score * 100) /
-                                                $boiteManDecla->total); ?>%
+                                                max(1, (float) $boiteManDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteManMa->score * 100) /
-                                                $boiteManMa->total); ?>%
+                                                max(1, (float) $boiteManMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1172,9 +1162,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1206,11 +1194,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteVaCoFac->score * 100) /
-                                                $boiteVaCoFac->total); ?>%
+                                                max(1, (float) $boiteVaCoFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($boiteVaCoFac->score * 100) /
-                                            $boiteVaCoFac->total >=
+                                            max(1, (float) $boiteVaCoFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoiteVaCo">
@@ -1219,7 +1207,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($boiteVaCoFac->score * 100) /
-                                            $boiteVaCoFac->total <
+                                            max(1, (float) $boiteVaCoFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facBoiteVaCo">
@@ -1229,12 +1217,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteVaCoDecla->score * 100) /
-                                                $boiteVaCoDecla->total); ?>%
+                                                max(1, (float) $boiteVaCoDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($boiteVaCoMa->score * 100) /
-                                                $boiteVaCoMa->total); ?>%
+                                                max(1, (float) $boiteVaCoMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1315,9 +1303,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1346,11 +1332,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($climatisationFac->score * 100) /
-                                                $climatisationFac->total); ?>%
+                                                max(1, (float) $climatisationFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($climatisationFac->score * 100) /
-                                            $climatisationFac->total >=
+                                            max(1, (float) $climatisationFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facClimatisation">
@@ -1359,7 +1345,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($climatisationFac->score * 100) /
-                                            $climatisationFac->total <
+                                            max(1, (float) $climatisationFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facClimatisation">
@@ -1369,12 +1355,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($climatisationDecla->score * 100) /
-                                                $climatisationDecla->total); ?>%
+                                                max(1, (float) $climatisationDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($climatisationMa->score * 100) /
-                                                $climatisationMa->total); ?>%
+                                                max(1, (float) $climatisationMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1458,9 +1444,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1489,11 +1473,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($demiFac->score * 100) /
-                                                $demiFac->total); ?>%
+                                                max(1, (float) $demiFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($demiFac->score * 100) /
-                                            $demiFac->total >=
+                                            max(1, (float) $demiFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facDemi">
@@ -1502,7 +1486,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($demiFac->score * 100) /
-                                            $demiFac->total <
+                                            max(1, (float) $demiFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facDemi">
@@ -1512,12 +1496,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($demiDecla->score * 100) /
-                                                $demiDecla->total); ?>%
+                                                max(1, (float) $demiDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($demiMa->score * 100) /
-                                                $demiMa->total); ?>%
+                                                max(1, (float) $demiMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1598,9 +1582,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1629,11 +1611,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($directionFac->score * 100) /
-                                                $directionFac->total); ?>%
+                                                max(1, (float) $directionFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($directionFac->score * 100) /
-                                            $directionFac->total >=
+                                            max(1, (float) $directionFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facDirection">
@@ -1642,7 +1624,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($directionFac->score * 100) /
-                                            $directionFac->total <
+                                            max(1, (float) $directionFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facDirection">
@@ -1652,12 +1634,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($directionDecla->score * 100) /
-                                                $directionDecla->total); ?>%
+                                                max(1, (float) $directionDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($directionMa->score * 100) /
-                                                $directionMa->total); ?>%
+                                                max(1, (float) $directionMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1744,9 +1726,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1778,11 +1758,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($electriciteFac->score * 100) /
-                                                $electriciteFac->total); ?>%
+                                                max(1, (float) $electriciteFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($electriciteFac->score * 100) /
-                                            $electriciteFac->total >=
+                                            max(1, (float) $electriciteFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facElectricite">
@@ -1791,7 +1771,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($electriciteFac->score * 100) /
-                                            $electriciteFac->total <
+                                            max(1, (float) $electriciteFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facElectricite">
@@ -1801,12 +1781,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($electriciteDecla->score * 100) /
-                                                $electriciteDecla->total); ?>%
+                                                max(1, (float) $electriciteDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($electriciteMa->score * 100) /
-                                                $electriciteMa->total); ?>%
+                                                max(1, (float) $electriciteMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -1890,9 +1870,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -1921,11 +1899,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freiFac->score * 100) /
-                                                $freiFac->total); ?>%
+                                                max(1, (float) $freiFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($freiFac->score * 100) /
-                                            $freiFac->total >=
+                                            max(1, (float) $freiFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facFrei">
@@ -1934,7 +1912,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($freiFac->score * 100) /
-                                            $freiFac->total <
+                                            max(1, (float) $freiFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facFrei">
@@ -1944,12 +1922,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freiDecla->score * 100) /
-                                                $freiDecla->total); ?>%
+                                                max(1, (float) $freiDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freiMa->score * 100) /
-                                                $freiMa->total); ?>%
+                                                max(1, (float) $freiMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2036,9 +2014,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2070,11 +2046,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinageElecFac->score * 100) /
-                                                $freinageElecFac->total); ?>%
+                                                max(1, (float) $freinageElecFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($freinageElecFac->score * 100) /
-                                            $freinageElecFac->total >=
+                                            max(1, (float) $freinageElecFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facfreinageElec">
@@ -2083,7 +2059,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($freinageElecFac->score * 100) /
-                                            $freinageElecFac->total <
+                                            max(1, (float) $freinageElecFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facfreinageElec">
@@ -2093,12 +2069,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinageElecDecla->score * 100) /
-                                                $freinageElecDecla->total); ?>%
+                                                max(1, (float) $freinageElecDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinageElecMa->score * 100) /
-                                                $freinageElecMa->total); ?>%
+                                                max(1, (float) $freinageElecMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2188,9 +2164,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2222,11 +2196,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinageFac->score * 100) /
-                                                $freinageFac->total); ?>%
+                                                max(1, (float) $freinageFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($freinageFac->score * 100) /
-                                            $freinageFac->total >=
+                                            max(1, (float) $freinageFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facFreinage">
@@ -2235,7 +2209,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($freinageFac->score * 100) /
-                                            $freinageFac->total <
+                                            max(1, (float) $freinageFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facFreinage">
@@ -2245,12 +2219,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinageDecla->score * 100) /
-                                                $freinageDecla->total); ?>%
+                                                max(1, (float) $freinageDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinageMa->score * 100) /
-                                                $freinageMa->total); ?>%
+                                                max(1, (float) $freinageMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2337,9 +2311,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2371,11 +2343,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinFac->score * 100) /
-                                                $freinFac->total); ?>%
+                                                max(1, (float) $freinFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($freinFac->score * 100) /
-                                            $freinFac->total >=
+                                            max(1, (float) $freinFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facFrein">
@@ -2384,7 +2356,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($freinFac->score * 100) /
-                                            $freinFac->total <
+                                            max(1, (float) $freinFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facFrein">
@@ -2394,12 +2366,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinDecla->score * 100) /
-                                                $freinDecla->total); ?>%
+                                                max(1, (float) $freinDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($freinMa->score * 100) /
-                                                $freinMa->total); ?>%
+                                                max(1, (float) $freinMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2480,9 +2452,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2511,11 +2481,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($hydrauliqueFac->score * 100) /
-                                                $hydrauliqueFac->total); ?>%
+                                                max(1, (float) $hydrauliqueFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($hydrauliqueFac->score * 100) /
-                                            $hydrauliqueFac->total >=
+                                            max(1, (float) $hydrauliqueFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facHydraulique">
@@ -2524,7 +2494,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($hydrauliqueFac->score * 100) /
-                                            $hydrauliqueFac->total <
+                                            max(1, (float) $hydrauliqueFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facHydraulique">
@@ -2534,12 +2504,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($hydrauliqueDecla->score * 100) /
-                                                $hydrauliqueDecla->total); ?>%
+                                                max(1, (float) $hydrauliqueDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($hydrauliqueMa->score * 100) /
-                                                $hydrauliqueMa->total); ?>%
+                                                max(1, (float) $hydrauliqueMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2623,9 +2593,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2654,11 +2622,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurDieselFac->score * 100) /
-                                                $moteurDieselFac->total); ?>%
+                                                max(1, (float) $moteurDieselFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($moteurDieselFac->score * 100) /
-                                            $moteurDieselFac->total >=
+                                            max(1, (float) $moteurDieselFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurDiesel">
@@ -2667,7 +2635,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($moteurDieselFac->score * 100) /
-                                            $moteurDieselFac->total <
+                                            max(1, (float) $moteurDieselFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurDiesel">
@@ -2677,12 +2645,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurDieselDecla->score * 100) /
-                                                $moteurDieselDecla->total); ?>%
+                                                max(1, (float) $moteurDieselDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurDieselMa->score * 100) /
-                                                $moteurDieselMa->total); ?>%
+                                                max(1, (float) $moteurDieselMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2766,9 +2734,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2797,11 +2763,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurElecFac->score * 100) /
-                                                $moteurElecFac->total); ?>%
+                                                max(1, (float) $moteurElecFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($moteurElecFac->score * 100) /
-                                            $moteurElecFac->total >=
+                                            max(1, (float) $moteurElecFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurElec">
@@ -2810,7 +2776,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($moteurElecFac->score * 100) /
-                                            $moteurElecFac->total <
+                                            max(1, (float) $moteurElecFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurElec">
@@ -2820,12 +2786,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurElecDecla->score * 100) /
-                                                $moteurElecDecla->total); ?>%
+                                                max(1, (float) $moteurElecDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurElecMa->score * 100) /
-                                                $moteurElecMa->total); ?>%
+                                                max(1, (float) $moteurElecMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -2908,9 +2874,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -2939,11 +2903,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurEssenceFac->score * 100) /
-                                                $moteurEssenceFac->total); ?>%
+                                                max(1, (float) $moteurEssenceFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($moteurEssenceFac->score * 100) /
-                                            $moteurEssenceFac->total >=
+                                            max(1, (float) $moteurEssenceFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurEssence">
@@ -2952,7 +2916,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($moteurEssenceFac->score * 100) /
-                                            $moteurEssenceFac->total <
+                                            max(1, (float) $moteurEssenceFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurEssence">
@@ -2962,12 +2926,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurEssenceDecla->score * 100) /
-                                                $moteurEssenceDecla->total); ?>%
+                                                max(1, (float) $moteurEssenceDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurEssenceMa->score * 100) /
-                                                $moteurEssenceMa->total); ?>%
+                                                max(1, (float) $moteurEssenceMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3051,9 +3015,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3082,11 +3044,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurThermiqueFac->score * 100) /
-                                                $moteurThermiqueFac->total); ?>%
+                                                max(1, (float) $moteurThermiqueFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($moteurThermiqueFac->score * 100) /
-                                            $moteurThermiqueFac->total >=
+                                            max(1, (float) $moteurThermiqueFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurThermique">
@@ -3095,7 +3057,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($moteurThermiqueFac->score * 100) /
-                                            $moteurThermiqueFac->total <
+                                            max(1, (float) $moteurThermiqueFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMoteurThermique">
@@ -3106,12 +3068,12 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($moteurThermiqueDecla->score *
                                                 100) /
-                                                $moteurThermiqueDecla->total); ?>%
+                                                max(1, (float) $moteurThermiqueDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($moteurThermiqueMa->score * 100) /
-                                                $moteurThermiqueMa->total); ?>%
+                                                max(1, (float) $moteurThermiqueMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3195,9 +3157,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3226,11 +3186,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($multiplexageFac->score * 100) /
-                                                $multiplexageFac->total); ?>%
+                                                max(1, (float) $multiplexageFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($multiplexageFac->score * 100) /
-                                            $multiplexageFac->total >=
+                                            max(1, (float) $multiplexageFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMultiplexage">
@@ -3239,7 +3199,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($multiplexageFac->score * 100) /
-                                            $multiplexageFac->total <
+                                            max(1, (float) $multiplexageFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facMultiplexage">
@@ -3249,12 +3209,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($multiplexageDecla->score * 100) /
-                                                $multiplexageDecla->total); ?>%
+                                                max(1, (float) $multiplexageDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($multiplexageMa->score * 100) /
-                                                $multiplexageMa->total); ?>%
+                                                max(1, (float) $multiplexageMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3338,9 +3298,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3369,11 +3327,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($pneuFac->score * 100) /
-                                                $pneuFac->total); ?>%
+                                                max(1, (float) $pneuFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($pneuFac->score * 100) /
-                                            $pneuFac->total >=
+                                            max(1, (float) $pneuFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facPneu">
@@ -3382,7 +3340,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($pneuFac->score * 100) /
-                                            $pneuFac->total <
+                                            max(1, (float) $pneuFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facPneu">
@@ -3392,12 +3350,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($pneuDecla->score * 100) /
-                                                $pneuDecla->total); ?>%
+                                                max(1, (float) $pneuDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($pneuMa->score * 100) /
-                                                $pneuMa->total); ?>%
+                                                max(1, (float) $pneuMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3478,9 +3436,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3509,11 +3465,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($pontFac->score * 100) /
-                                                $pontFac->total); ?>%
+                                                max(1, (float) $pontFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($pontFac->score * 100) /
-                                            $pontFac->total >=
+                                            max(1, (float) $pontFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facPont">
@@ -3522,7 +3478,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($pontFac->score * 100) /
-                                            $pontFac->total <
+                                            max(1, (float) $pontFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facPont">
@@ -3532,12 +3488,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($pontDecla->score * 100) /
-                                                $pontDecla->total); ?>%
+                                                max(1, (float) $pontDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($pontMa->score * 100) /
-                                                $pontMa->total); ?>%
+                                                max(1, (float) $pontMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3618,9 +3574,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3649,11 +3603,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($reducteurFac->score * 100) /
-                                                $reducteurFac->total); ?>%
+                                                max(1, (float) $reducteurFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($reducteurFac->score * 100) /
-                                            $reducteurFac->total >=
+                                            max(1, (float) $reducteurFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facReducteur">
@@ -3662,7 +3616,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($reducteurFac->score * 100) /
-                                            $reducteurFac->total <
+                                            max(1, (float) $reducteurFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facReducteur">
@@ -3672,12 +3626,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($reducteurDecla->score * 100) /
-                                                $reducteurDecla->total); ?>%
+                                                max(1, (float) $reducteurDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($reducteurMa->score * 100) /
-                                                $reducteurMa->total); ?>%
+                                                max(1, (float) $reducteurMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3758,9 +3712,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3789,11 +3741,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionFac->score * 100) /
-                                                $suspensionFac->total); ?>%
+                                                max(1, (float) $suspensionFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($suspensionFac->score * 100) /
-                                            $suspensionFac->total >=
+                                            max(1, (float) $suspensionFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspension">
@@ -3802,7 +3754,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($suspensionFac->score * 100) /
-                                            $suspensionFac->total <
+                                            max(1, (float) $suspensionFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspension">
@@ -3812,12 +3764,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionDecla->score * 100) /
-                                                $suspensionDecla->total); ?>%
+                                                max(1, (float) $suspensionDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionMa->score * 100) /
-                                                $suspensionMa->total); ?>%
+                                                max(1, (float) $suspensionMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -3900,9 +3852,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -3931,11 +3881,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionLameFac->score * 100) /
-                                                $suspensionLameFac->total); ?>%
+                                                max(1, (float) $suspensionLameFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($suspensionLameFac->score * 100) /
-                                            $suspensionLameFac->total >=
+                                            max(1, (float) $suspensionLameFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspensionLame">
@@ -3944,7 +3894,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($suspensionLameFac->score * 100) /
-                                            $suspensionLameFac->total <
+                                            max(1, (float) $suspensionLameFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspensionLame">
@@ -3955,12 +3905,12 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($suspensionLameDecla->score *
                                                 100) /
-                                                $suspensionLameDecla->total); ?>%
+                                                max(1, (float) $suspensionLameDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionLameMa->score * 100) /
-                                                $suspensionLameMa->total); ?>%
+                                                max(1, (float) $suspensionLameMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -4044,9 +3994,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -4076,11 +4024,11 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($suspensionRessortFac->score *
                                                 100) /
-                                                $suspensionRessortFac->total); ?>%
+                                                max(1, (float) $suspensionRessortFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($suspensionRessortFac->score * 100) /
-                                            $suspensionRessortFac->total >=
+                                            max(1, (float) $suspensionRessortFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspensionRessort">
@@ -4089,7 +4037,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($suspensionRessortFac->score * 100) /
-                                            $suspensionRessortFac->total <
+                                            max(1, (float) $suspensionRessortFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspensionRessort">
@@ -4100,13 +4048,13 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($suspensionRessortDecla->score *
                                                 100) /
-                                                $suspensionRessortDecla->total); ?>%
+                                                max(1, (float) $suspensionRessortDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionRessortMa->score *
                                                 100) /
-                                                $suspensionRessortMa->total); ?>%
+                                                max(1, (float) $suspensionRessortMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -4202,9 +4150,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         [
@@ -4237,12 +4183,12 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($suspensionPneumatiqueFac->score *
                                                 100) /
-                                                $suspensionPneumatiqueFac->total); ?>%
+                                                max(1, (float) $suspensionPneumatiqueFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($suspensionPneumatiqueFac->score *
                                             100) /
-                                            $suspensionPneumatiqueFac->total >=
+                                            max(1, (float) $suspensionPneumatiqueFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspensionPneumatique">
@@ -4252,7 +4198,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php if (
                                         ($suspensionPneumatiqueFac->score *
                                             100) /
-                                            $suspensionPneumatiqueFac->total <
+                                            max(1, (float) $suspensionPneumatiqueFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facSuspensionPneumatique">
@@ -4263,13 +4209,13 @@ if (!isset($_SESSION["id"])) {
                                         <?php echo ceil(
                                             ($suspensionPneumatiqueDecla->score *
                                                 100) /
-                                                $suspensionPneumatiqueDecla->total); ?>%
+                                                max(1, (float) $suspensionPneumatiqueDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($suspensionPneumatiqueMa->score *
                                                 100) /
-                                                $suspensionPneumatiqueMa->total); ?>%
+                                                max(1, (float) $suspensionPneumatiqueMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -4361,9 +4307,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["numberTest" => +$numberTest],
@@ -4392,11 +4336,11 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transversaleFac->score * 100) /
-                                                $transversaleFac->total); ?>%
+                                                max(1, (float) $transversaleFac->total)); ?>%
                                     </td>
                                     <?php if (
                                         ($transversaleFac->score * 100) /
-                                            $transversaleFac->total >=
+                                            max(1, (float) $transversaleFac->total) >=
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facTransversale">
@@ -4405,7 +4349,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php } ?>
                                     <?php if (
                                         ($transversaleFac->score * 100) /
-                                            $transversaleFac->total <
+                                            max(1, (float) $transversaleFac->total) <
                                         $seuil
                                     ) { ?>
                                     <td class="text-center" id="facTransversale">
@@ -4415,12 +4359,12 @@ if (!isset($_SESSION["id"])) {
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transversaleDecla->score * 100) /
-                                                $transversaleDecla->total); ?>%
+                                                max(1, (float) $transversaleDecla->total)); ?>%
                                     </td>
                                     <td class="text-center">
                                         <?php echo ceil(
                                             ($transversaleMa->score * 100) /
-                                                $transversaleMa->total); ?>%
+                                                max(1, (float) $transversaleMa->total)); ?>%
                                     </td>
                                     <?php for (
                                         $i = 0;
@@ -4479,7 +4423,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo round(
                                             ($resultFac->score * 100) /
-                                                $resultFac->total); ?>%
+                                                max(1, (float) $resultFac->total)); ?>%
 
                                     </th>
                                     <th id="decision-savoir"
@@ -4492,7 +4436,7 @@ if (!isset($_SESSION["id"])) {
                                         style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($resultDecla->score * 100) /
-                                                $resultDecla->total ??
+                                                max(1, (float) $resultDecla->total) ??
                                                 "0"); ?>%
                                     </th>
                                     <th id="result-n1"
@@ -4501,7 +4445,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($resultMa->score * 100) /
-                                                $resultMa->total ??
+                                                max(1, (float) $resultMa->total) ??
                                                 "0"); ?>%
                                     </th>
                                     <th id="result-savoir-faire"
@@ -4510,7 +4454,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($resultTechMa->score * 100) /
-                                                $resultTechMa->total ??
+                                                max(1, (float) $resultTechMa->total) ??
                                                 "0"); ?>%
                                     </th>
                                     <th id="decision-savoir-faire"
@@ -4561,7 +4505,7 @@ if (!isset($_SESSION["id"])) {
                                         style="width: 152.719px;">
                                         <?php echo ceil(
                                             ($resultFac->score * 100) /
-                                                $resultFac->total); ?>%
+                                                max(1, (float) $resultFac->total)); ?>%
                                     </th>
                                     <th class="min-w-125px sorting  text-white fw-bold text-center table-light text-uppercase gs-0" tabindex="0" aria-controls="kt_customers_table"
                                         rowspan="1" colspan="1" style=""
@@ -4569,7 +4513,7 @@ if (!isset($_SESSION["id"])) {
                                         style="width: 152.719px;">
                                         <?php echo ceil(
                                             ($resultTechMa->score * 100) /
-                                                $resultTechMa->total ??
+                                                max(1, (float) $resultTechMa->total) ??
                                                 "0"); ?>%
                                     </th>
                                     <tr></tr>
@@ -4602,8 +4546,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>

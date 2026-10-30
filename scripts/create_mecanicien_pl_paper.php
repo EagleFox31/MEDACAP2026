@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Crée une épreuve figée « Mécanicien Poids Lourds » — recrutement.
  *
@@ -13,7 +14,7 @@ use MongoDB\Client;
 use MongoDB\Model\BSONArray;
 
 $dryRun = in_array('--dry-run', $argv, true);
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://10.68.0.7:27017';
+$uri = medacapMongoUri('mongodb://10.68.0.7:27017');
 $db = (new Client($uri))->academy;
 
 const LABEL = 'Recrutement Mécanicien Poids Lourds 2026';

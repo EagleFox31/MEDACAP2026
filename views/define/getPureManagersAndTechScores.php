@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * getPureManagersAndTechScores.php
  *
@@ -21,7 +22,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // -- 1) Connexion MongoDB
-$mongoClient = new Client("mongodb://localhost:27017");
+$mongoClient = new Client(medacapMongoUri());
 $academy     = $mongoClient->selectDatabase('academy');
 
 /**

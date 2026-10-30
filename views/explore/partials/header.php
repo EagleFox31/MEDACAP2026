@@ -1,13 +1,15 @@
 <?php
+require_once __DIR__ . '/../../../core/medacap_config.php';
 // Connexion à MongoDB
 require_once "../../vendor/autoload.php";
-$client = new MongoDB\Client("mongodb://localhost:27017");
+$client = new MongoDB\Client(medacapMongoUri());
 $academy = $client->academy;
 $profilesCollection = $academy->profiles;
 $functionalitiesCollection = $academy->functionalities;
 
-// Inclure le fichier de langue (si nécessaire)
-include_once "../language.php";
+// Inclure le fichier de langue (FR/EN)
+require_once __DIR__ . '/../../partials/medacap_topbar.php';
+$lang = medacapTopbarSyncLang(__DIR__ . '/../..');
 
 // Récupérer le profil de l'utilisateur
 $currentProfileName = $_SESSION['profile'] ?? '';
@@ -177,33 +179,6 @@ $subsidiaries = [
 ];
                                     
 ?>
-<style>
-.title-banner {
-    /* Fond blanc translucide */
-    background: rgba(255, 255, 255, 0.85);
-
-    /* Effet de flou en arrière-plan */
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(8px);
-
-    /* Léger contour + coins arrondis */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-
-    /* Ombre discrète */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-    /* Couleur du texte */
-    color: #333;
-    /* Ajuste en #fff si tu préfères un texte clair */
-    justify-content: center;
-    /* Centre verticalement */
-    align-items: center;
-    /* Centre horizontalement */
-    text-align: center;
-    /* Centre le texte */
-}
-</style>
 <!DOCTYPE html>
 <html lang="en">
 <!--begin::Head-->
@@ -216,21 +191,6 @@ $subsidiaries = [
 <style>
     .card {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-    
-    .title-banner {
-        /* Effet de flou en arrière-plan */
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-
-        /* Couleur du texte */
-        color: #333;
-        /* Ajuste en #fff si tu préfères un texte clair */
-    }
-    
-    /* Hide header spinner when page-specific loader is active */
-    body.loading-active #spinner {
-        display: none !important;
     }
 </style>
 
@@ -260,13 +220,13 @@ $subsidiaries = [
     <link href="../../public/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="../../public/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
+        href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/css/multi-select-tag.css">
         <link href="../../public/assets/css/ki-duotone-icons.css" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
     <!--Begin::Google Tag Manager -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.22/index.global.min.js'></script>
     <script>
     (function(w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -290,11 +250,11 @@ $subsidiaries = [
         window.top.location.replace(window.self.location.href);
     }
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.3.js"
-        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
     </script>
 
+    <?php medacapTopbarIncludeAssets(); ?>
 
 </head>
 <!--end::Head-->
@@ -607,265 +567,17 @@ $subsidiaries = [
             <!--begin::Wrapper-->
             <div style="background:#e6e6e6;" class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
                 <!--begin::Header-->
-                <div style="background:#e6e6e6;" id="kt_header" class="header " data-kt-sticky="true" data-kt-sticky-name="header"
-                    data-kt-sticky-offset="{default: '200px', lg: '300px'}">
-                    <!--begin::Container-->
-                    <div class=" container-fluid  d-flex align-items-stretch justify-content-between">
-                        <!--begin::Logo bar-->
-                        <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-                            <!--begin::Aside Toggle-->
-                            <div class="d-flex align-items-center d-lg-none">
-                                <div class="btn btn-icon btn-active-color-primary ms-n2 me-1 " id="kt_aside_toggle">
-                                    <i class="ki-duotone ki-abstract-14 fs-1"><span class="path1"></span><span
-                                            class="path2"></span></i>
-                                </div>
-                            </div>
-                            <!--end::Aside Toggle-->
-                            <!--begin::Logo-->
-                            <a href="<?= $dashRoute ?>.php" class="d-lg-none">
-                                <img alt="Logo" src="../../public/images/logo.png" class="mh-40px" />
-                            </a>
-                            <!--end::Logo-->
-                            <!--begin::Aside toggler-->
-                            <div class="btn btn-icon w-auto ps-0 btn-active-color-danger d-none d-lg-inline-flex me-2 me-lg-5 "
-                                data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
-                                data-kt-toggle-name="aside-minimize">
-                                <i class="ki-duotone ki-black-left-line fs-1 rotate-180"><span
-                                        class="path1"></span><span class="path2"></span></i>
-                            </div>
-                            <!--end::Aside toggler-->
-                        </div>
-                        <!--end::Logo bar-->
-                        <!--begin::Topbar-->
-                        <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
-                            <!--begin::Search-->
-                            <div class="d-flex align-items-stretch me-1">
-                                <!-- ICI on affiche le module s’il existe -->
-                                <div class="d-flex align-items-center justify-content-center me-1" style="padding-left: 205px;">
-                                    <section
-                                        class="title-banner w-100 text-center p-4 mb-4 position-relative overflow-hidden mx-auto">
-                                        <div class="container">
-                                            <h1 class="text-uppercase fw-bold mb-0">
-                                                <?php echo $displayModule; ?>
-                                            </h1>
-                                        </div>
-                                    </section>
-                                </div>
-                            </div>
-                            <!--end::Search-->
-                            <!--begin::Toolbar wrapper-->
-                            <div class="d-flex align-items-stretch flex-shrink-0">
-                                <!--begin::User-->
-                                <div class="d-flex align-items-center ms-2 ms-lg-3" id="kt_header_user_menu_toggle">
-                                    <!--begin::Menu wrapper-->
-                                    <div class="cursor-pointer symbol symbol-35px symbol-lg-35px"
-                                        data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                                        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                                        <img alt="Pic" src="../../public/assets/media/avatars/300-1.png" />
-                                        <b>
-                                            <?php echo $_SESSION[
-                                                "firstName"
-                                            ]; ?>
-                                            <?php echo $_SESSION["lastName"]; ?>
-                                        </b>
-                                    </div>
-                                    <!--begin::User account menu-->
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
-                                        data-kt-menu="true">
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="./profile.php?id=<?php echo $_SESSION[
-                                                "id"
-                                            ]; ?>">
-                                                <div class="menu-content d-flex align-items-center px-3">
-                                                    <!--begin::Avatar-->
-                                                    <div class="symbol symbol-50px me-5">
-                                                        <img alt="Logo" src="../../public/assets/media/avatars/300-1.png"
-                                                            style="max-width:100%;height:auto;" />
-                                                    </div>
-                                                    <!--end::Avatar-->
-                                                    <span>
-                                                        <!--begin::Username-->
-                                                        <div class="d-flex flex-column">
-                                                            <div
-                                                                class="fw-bolder d-flex align-items-center text-black fs-5">
-                                                                <?php echo $salut ?>, <?php echo $_SESSION[
-                                                                    "firstName"
-                                                                ]; ?>
-                                                                <span
-                                                                    class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
-                                                                    <?php echo $_SESSION[
-                                                                        "profile"
-                                                                    ]; ?>
-                                                                </span>
-                                                            </div>
-                                                            <div class="fw-bold text-black text-hover-primary fs-7">
-                                                                <?php echo $_SESSION[
-                                                                    "email"
-                                                                ]; ?>
-                                                            </div>
-                                                        </div>
-                                                        <!--end::Username-->
-                                                    </span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu separator-->
-                                        <div class="separator my-2"></div>
-                                        <!--end::Menu separator-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-5">
-                                            <a href="./profile.php?id=<?php echo $_SESSION[
-                                                "id"
-                                            ]; ?>"
-                                                class="menu-link px-5">
-                                                <?php echo $my_info ?>
-                                            </a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu separator-->
-                                        <div class="separator my-2"></div>
-                                        <!--end::Menu separator-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-5"
-                                            data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                                            data-kt-menu-placement="left-start" data-kt-menu-offset="-15px, 0">
-                                            <a href="#" class="menu-link px-5">
-                                                <span class="menu-title position-relative">
-                                                    <?php echo $langue ?>
-                                                    <span
-                                                        class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">
-                                                        <?php echo $francais ?> <img class="w-15px h-15px rounded-1 ms-2"
-                                                            src="../../public/assets/media/flags/france.svg" alt="" />
-                                                    </span>
-                                                </span>
-                                            </a>
-                                            <!--begin::Menu sub-->
-                                            <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                                <!--begin::Menu item-->
-                                                <!-- <div class="menu-item px-3">
-                                                    <a href="account/settings.html"
-                                                        class="menu-link d-flex px-5 active">
-                                                        <span
-                                                            class="symbol symbol-20px me-4">
-                                                            <img class="rounded-1"
-                                                                src="../../public/assets/media/flags/united-states.svg"
-                                                                alt="" />
-                                                        </span>
-                                                        English
-                                                    </a>
-                                                </div> -->
-                                                <!--end::Menu item-->
-                                                <!--begin::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <a href="#" class="menu-link d-flex px-5">
-                                                        <span class="symbol symbol-20px me-4">
-                                                            <img class="rounded-1"
-                                                                src="../../public/assets/media/flags/france.svg" alt="" />
-                                                        </span>
-                                                        <?php echo $francais ?>
-                                                    </a>
-                                                </div>
-                                                <!--end::Menu item-->
-                                            </div>
-                                            <!--end::Menu sub-->
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-5">
-                                            <a href="../portal.php" class="menu-link px-5">
-                                                <?php echo 'Portail MEDACAP' ?>
-                                            </a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-5">
-                                            <a href="../logout.php" id="logout-button" class="menu-link px-5">
-                                                <?php echo $deconnexion ?>
-                                            </a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                    </div>
-                                    <!--end::User account menu-->
-                                    <!--end::Menu wrapper-->
-                                </div>
-                                <!--end::User -->
-                            </div>
-                            <!--end::Toolbar wrapper-->
-                        </div>
-                        <!--end::Topbar-->
-                    </div>
-                    <!--end::Container-->
-                </div>
+                <?php
+                medacapTopbarRenderHeader(array(
+                    'displayModule' => $displayModule,
+                    'lang' => $lang,
+                    'mobileLogoHref' => $dashRoute . '.php',
+                    'dashboardHref' => $dashRoute . '.php',
+                    'profileHref' => './profile.php?id=' . urlencode((string) ($_SESSION['id'] ?? '')),
+                    'portalHref' => '../portal.php',
+                    'logoutHref' => '../logout.php',
+                    'logoutRedirect' => './logout.php',
+                ));
+                ?>
                 <!--end::Header-->
                                                         
-<script>
-// Function to clear specific cookies
-function 
-clearCookies() {
-
-    document.cookie =
-'userFullName=; Max-Age=-99999999; path=/';
-
-    document.cookie =
-'userObjectId=; Max-Age=-99999999; path=/';
-
-    document.cookie =
-'chatExpanded=; Max-Age=-99999999; path=/';
-
-}
-
-// Add event listener to the logout button
-document.getElementById('logout-button').addEventListener('click',
-function(event) {
-
-    event.preventDefault();
-// Prevent the default action (navigation)
-
-    // Clear the cookies
-
-    clearCookies();
-
-    // Redirect to the logout page
-
-    window.location.href =
-'./logout.php';
-
-});
-</script>
-
-<!-- Loading Management Script -->
-<script>
-// Add loading-active class to body to hide header spinner when page has its own loader
-document.body.classList.add('loading-active');
-
-// Set multiple timeouts for progressive loader handling
-setTimeout(function() {
-    // Primary timeout (800ms) - remove loading-active if page script hasn't taken control
-    if (document.body.classList.contains('loading-active')) {
-        document.body.classList.remove('loading-active');
-        console.log("Header spinner restored - primary timeout (800ms)");
-    }
-}, 800);
-
-// Secondary timeout (100ms) for fast connections
-setTimeout(function() {
-    // If page already loaded and no custom loader took control, remove loading class immediately
-    if (document.readyState === 'complete' && document.body.classList.contains('loading-active')) {
-        document.body.classList.remove('loading-active');
-        console.log("Header spinner restored - secondary timeout (100ms, page already loaded)");
-    }
-}, 100);
-
-// Self-executing cleanup function when document is fully loaded
-(function() {
-    window.addEventListener('load', function() {
-        // If no custom loader has taken control, ensure spinner is removed
-        if (document.body.classList.contains('loading-active')) {
-            document.body.classList.remove('loading-active');
-            console.log("Header spinner restored - window load event");
-        }
-    });
-})();
-</script>

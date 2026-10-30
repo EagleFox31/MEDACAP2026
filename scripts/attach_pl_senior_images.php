@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Attache les 3 images Senior PL manquantes.
  * Usage: php scripts/attach_pl_senior_images.php
@@ -8,7 +9,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://127.0.0.1:27017';
+$uri = medacapMongoUri();
 $db = (new Client($uri))->academy;
 $filesDir = realpath(__DIR__ . '/../public/files');
 

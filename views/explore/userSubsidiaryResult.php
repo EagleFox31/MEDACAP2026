@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 
 if (!isset($_SESSION["id"])) {
@@ -9,7 +10,7 @@ if (!isset($_SESSION["id"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;
@@ -453,6 +454,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                     ],
                                                 ]);
+                                                $techManagerId = !empty($tech->manager) ? $tech->manager : '000000000000000000000000';
                                                 $transmissionFac = $results->findOne([
                                                     '$and' => [
                                                         [
@@ -494,9 +496,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -547,9 +547,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -594,9 +592,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Boite de Transfert"],
@@ -638,9 +634,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Boite de Vitesse"],
@@ -688,9 +682,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -741,9 +733,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -794,9 +784,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -841,9 +829,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Climatisation"],
@@ -885,9 +871,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Demi Arbre de Roue"],
@@ -929,9 +913,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Direction"],
@@ -979,9 +961,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1026,9 +1006,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Freinage"],
@@ -1076,9 +1054,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1129,9 +1105,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1182,9 +1156,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1229,9 +1201,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Hydraulique"],
@@ -1273,9 +1243,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Diesel"],
@@ -1317,9 +1285,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Electrique"],
@@ -1361,9 +1327,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Essence"],
@@ -1405,9 +1369,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Thermique"],
@@ -1449,9 +1411,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Réseaux de Communication"],
@@ -1493,9 +1453,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Pneumatique"],
@@ -1537,9 +1495,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Pont"],
@@ -1581,9 +1537,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Reducteur"],
@@ -1625,9 +1579,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Suspension"],
@@ -1669,9 +1621,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Suspension à Lame"],
@@ -1713,9 +1663,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Suspension Ressort"],
@@ -1765,9 +1713,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1813,9 +1759,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Transversale"],
@@ -1843,7 +1787,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($managerTechnician)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($managerTech->manager)],
+                                                        ["manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager))],
                                                         ["typeR" => "Managers"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -1852,7 +1796,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultTechMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($managerTechnician)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($managerTech->manager)],
+                                                        ["manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager))],
                                                         ["typeR" => "Technicien - Manager"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -2009,14 +1953,14 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
-                                                if (isset($transmissionDecla)) {
+                                                if (isset($transmissionDecla, $transmissionMa)) {
                                                     for ($i = 0; $i < count($transmissionDecla["answers"]); ++$i) {
                                                         if (
                                                             $transmissionDecla["answers"][$i] == "Oui" &&
@@ -2027,7 +1971,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransfert = 0;
-                                                if (isset($transfertDecla)) {
+                                                if (isset($transfertDecla, $transfertMa)) {
                                                     for ($i = 0; $i < count($transfertDecla["answers"]); ++$i) {
                                                         if (
                                                             $transfertDecla["answers"][$i] == "Oui" &&
@@ -2038,7 +1982,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreAssistance= 0;
-                                                if (isset($assistanceConduiteDecla)) {
+                                                if (isset($assistanceConduiteDecla, $assistanceConduiteMa)) {
                                                     for ($i = 0; $i < count($assistanceConduiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $assistanceConduiteDecla["answers"][$i] == "Oui" &&
@@ -2049,7 +1993,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoite = 0;
-                                                if (isset($boiteDecla)) {
+                                                if (isset($boiteDecla, $boiteMa)) {
                                                     for ($i = 0; $i < count($boiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteDecla["answers"][$i] == "Oui" &&
@@ -2060,7 +2004,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteMan = 0;
-                                                if (isset($boiteManDecla)) {
+                                                if (isset($boiteManDecla, $boiteManMa)) {
                                                     for ($i = 0; $i < count($boiteManDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteManDecla["answers"][$i] == "Oui" &&
@@ -2071,7 +2015,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteAuto = 0;
-                                                if (isset($boiteAutoDecla)) {
+                                                if (isset($boiteAutoDecla, $boiteAutoMa)) {
                                                     for ($i = 0; $i < count($boiteAutoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteAutoDecla["answers"][$i] == "Oui" &&
@@ -2082,7 +2026,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteVaCo = 0;
-                                                if (isset($boiteVaCoDecla)) {
+                                                if (isset($boiteVaCoDecla, $boiteVaCoMa)) {
                                                     for ($i = 0; $i < count($boiteVaCoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteVaCoDecla["answers"][$i] == "Oui" &&
@@ -2093,7 +2037,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreClim = 0;
-                                                if (isset($climatisationDecla)) {
+                                                if (isset($climatisationDecla, $climatisationMa)) {
                                                     for ($i = 0; $i < count($climatisationDecla["answers"]); ++$i) {
                                                         if (
                                                             $climatisationDecla["answers"][$i] == "Oui" &&
@@ -2104,7 +2048,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDemi = 0;
-                                                if (isset($demiDecla)) {
+                                                if (isset($demiDecla, $demiMa)) {
                                                     for ($i = 0; $i < count($demiDecla["answers"]); ++$i) {
                                                         if (
                                                             $demiDecla["answers"][$i] == "Oui" &&
@@ -2115,7 +2059,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDirection = 0;
-                                                if (isset($directionDecla)) {
+                                                if (isset($directionDecla, $directionMa)) {
                                                     for ($i = 0; $i < count($directionDecla["answers"]); ++$i) {
                                                         if (
                                                             $directionDecla["answers"][$i] == "Oui" &&
@@ -2126,7 +2070,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreElectricite = 0;
-                                                if (isset($electriciteDecla)) {
+                                                if (isset($electriciteDecla, $electriciteMa)) {
                                                     for ($i = 0; $i < count($electriciteDecla["answers"]); ++$i) {
                                                         if (
                                                             $electriciteDecla["answers"][$i] == "Oui" &&
@@ -2137,7 +2081,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFrein = 0;
-                                                if (isset($freiDecla)) {
+                                                if (isset($freiDecla, $freiMa)) {
                                                     for ($i = 0; $i < count($freiDecla["answers"]); ++$i) {
                                                         if (
                                                             $freiDecla["answers"][$i] == "Oui" &&
@@ -2148,7 +2092,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinElec = 0;
-                                                if (isset($freinageElecDecla)) {
+                                                if (isset($freinageElecDecla, $freinageElecMa)) {
                                                     for ($i = 0; $i < count($freinageElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageElecDecla["answers"][$i] == "Oui" &&
@@ -2159,7 +2103,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinHydro = 0;
-                                                if (isset($freinageDecla)) {
+                                                if (isset($freinageDecla, $freinageMa)) {
                                                     for ($i = 0; $i < count($freinageDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageDecla["answers"][$i] == "Oui" &&
@@ -2170,7 +2114,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinPneu = 0;
-                                                if (isset($freinDecla)) {
+                                                if (isset($freinDecla, $freinMa)) {
                                                     for ($i = 0; $i < count($freinDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinDecla["answers"][$i] == "Oui" &&
@@ -2181,7 +2125,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreHydro = 0;
-                                                if (isset($hydrauliqueDecla)) {
+                                                if (isset($hydrauliqueDecla, $hydrauliqueMa)) {
                                                     for ($i = 0; $i < count($hydrauliqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $hydrauliqueDecla["answers"][$i] == "Oui" &&
@@ -2192,7 +2136,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurDiesel = 0;
-                                                if (isset($moteurDieselDecla)) {
+                                                if (isset($moteurDieselDecla, $moteurDieselMa)) {
                                                     for ($i = 0; $i < count($moteurDieselDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurDieselDecla["answers"][$i] == "Oui" &&
@@ -2203,7 +2147,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurElec = 0;
-                                                if (isset($moteurElecDecla)) {
+                                                if (isset($moteurElecDecla, $moteurElecMa)) {
                                                     for ($i = 0; $i < count($moteurElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurElecDecla["answers"][$i] == "Oui" &&
@@ -2214,7 +2158,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurEssence = 0;
-                                                if (isset($moteurEssenceDecla)) {
+                                                if (isset($moteurEssenceDecla, $moteurEssenceMa)) {
                                                     for ($i = 0; $i < count($moteurEssenceDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurEssenceDecla["answers"][$i] == "Oui" &&
@@ -2225,7 +2169,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurThermique = 0;
-                                                if (isset($moteurThermiqueDecla)) {
+                                                if (isset($moteurThermiqueDecla, $moteurThermiqueMa)) {
                                                     for ($i = 0; $i < count($moteurThermiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurThermiqueDecla["answers"][$i] == "Oui" &&
@@ -2236,7 +2180,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMultiplexage = 0;
-                                                if (isset($multiplexageDecla)) {
+                                                if (isset($multiplexageDecla, $multiplexageMa)) {
                                                     for ($i = 0; $i < count($multiplexageDecla["answers"]); ++$i) {
                                                         if (
                                                             $multiplexageDecla["answers"][$i] == "Oui" &&
@@ -2247,7 +2191,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePneu = 0;
-                                                if (isset($pneuDecla)) {
+                                                if (isset($pneuDecla, $pneuMa)) {
                                                     for ($i = 0; $i < count($pneuDecla["answers"]); ++$i) {
                                                         if (
                                                             $pneuDecla["answers"][$i] == "Oui" &&
@@ -2258,7 +2202,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePont = 0;
-                                                if (isset($pontDecla)) {
+                                                if (isset($pontDecla, $pontMa)) {
                                                     for ($i = 0; $i < count($pontDecla["answers"]); ++$i) {
                                                         if (
                                                             $pontDecla["answers"][$i] == "Oui" &&
@@ -2269,7 +2213,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreRed = 0;
-                                                if (isset($reducteurDecla)) {
+                                                if (isset($reducteurDecla, $reducteurMa)) {
                                                     for ($i = 0; $i < count($reducteurDecla["answers"]); ++$i) {
                                                         if (
                                                             $reducteurDecla["answers"][$i] == "Oui" &&
@@ -2280,7 +2224,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspension = 0;
-                                                if (isset($suspensionDecla)) {
+                                                if (isset($suspensionDecla, $suspensionMa)) {
                                                     for ($i = 0; $i < count($suspensionDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionDecla["answers"][$i] == "Oui" &&
@@ -2291,7 +2235,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionLame = 0;
-                                                if (isset($suspensionLameDecla)) {
+                                                if (isset($suspensionLameDecla, $suspensionLameMa)) {
                                                     for ($i = 0; $i < count($suspensionLameDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionLameDecla["answers"][$i] == "Oui" &&
@@ -2302,7 +2246,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionRessort = 0;
-                                                if (isset($suspensionRessortDecla)) {
+                                                if (isset($suspensionRessortDecla, $suspensionRessortMa)) {
                                                     for ($i = 0; $i < count($suspensionRessortDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionRessortDecla["answers"][$i] == "Oui" &&
@@ -2313,7 +2257,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionPneu = 0;
-                                                if (isset($suspensionPneumatiqueDecla)) {
+                                                if (isset($suspensionPneumatiqueDecla, $suspensionPneumatiqueMa)) {
                                                     for ($i = 0; $i < count($suspensionPneumatiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionPneumatiqueDecla["answers"][$i] == "Oui" &&
@@ -2324,7 +2268,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransversale = 0;
-                                                if (isset($transversaleDecla)) {
+                                                if (isset($transversaleDecla, $transversaleMa)) {
                                                     for ($i = 0; $i < count($transversaleDecla["answers"]); ++$i) {
                                                         if (
                                                             $transversaleDecla["answers"][$i] == "Oui" &&
@@ -2554,7 +2498,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array("KING LONG", $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $kingLongFac != 0 && $kingLongDecla != 0) { ?>
-                                                <?php $percentageKingLong = round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2); ?>
+                                                <?php $percentageKingLong = round((($kingLongScoreFac * 100) / max(1, (float) $kingLongFac) + ($kingLongScore * 100) / max(1, (float) $kingLongDecla)) / 2); ?>
                                                 <?php if($percentageKingLong < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageKingLong ?>
@@ -2579,7 +2523,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('FUSO', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $fusoFac != 0 && $fusoDecla != 0) { ?>
-                                                <?php $percentageFuso = round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2); ?>
+                                                <?php $percentageFuso = round((($fusoScoreFac * 100) / max(1, (float) $fusoFac) + ($fusoScore * 100) / max(1, (float) $fusoDecla)) / 2); ?>
                                                 <?php if($percentageFuso < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageFuso ?>
@@ -2605,7 +2549,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('HINO', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $hinoFac != 0 && $hinoDecla != 0) { ?>
-                                                <?php $percentageHino = round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2); ?>
+                                                <?php $percentageHino = round((($hinoScoreFac * 100) / max(1, (float) $hinoFac) + ($hinoScore * 100) / max(1, (float) $hinoDecla)) / 2); ?>
                                                 <?php if($percentageHino < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageHino ?>
@@ -2631,7 +2575,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('MERCEDES TRUCK', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $mercedesTruckFac != 0 && $mercedesTruckDecla != 0) { ?>
-                                                <?php $percentageMercedesTruck = round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2); ?>
+                                                <?php $percentageMercedesTruck = round((($mercedesTruckScoreFac * 100) / max(1, (float) $mercedesTruckFac) + ($mercedesTruckScore * 100) / max(1, (float) $mercedesTruckDecla)) / 2); ?>
                                                 <?php if($percentageMercedesTruck < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageMercedesTruck ?>
@@ -2657,7 +2601,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('RENAULT TRUCK', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $renaultTruckFac != 0 && $renaultTruckDecla != 0) { ?>
-                                                <?php $percentageRenaultTruck = round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2); ?>
+                                                <?php $percentageRenaultTruck = round((($renaultTruckScoreFac * 100) / max(1, (float) $renaultTruckFac) + ($renaultTruckScore * 100) / max(1, (float) $renaultTruckDecla)) / 2); ?>
                                                 <?php if($percentageRenaultTruck < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageRenaultTruck ?>
@@ -2683,7 +2627,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('SINOTRUK', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $sinotrukFac != 0 && $sinotrukDecla != 0) { ?>
-                                                <?php $percentageSinotruk = round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2); ?>
+                                                <?php $percentageSinotruk = round((($sinotrukScoreFac * 100) / max(1, (float) $sinotrukFac) + ($sinotrukScore * 100) / max(1, (float) $sinotrukDecla)) / 2); ?>
                                                 <?php if($percentageSinotruk < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageSinotruk ?>
@@ -2709,7 +2653,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('TOYOTA BT', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $toyotaBtFac != 0 && $toyotaBtDecla != 0) { ?>
-                                                <?php $percentageToyotaBt = round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2); ?>
+                                                <?php $percentageToyotaBt = round((($toyotaBtScoreFac * 100) / max(1, (float) $toyotaBtFac) + ($toyotaBtScore * 100) / max(1, (float) $toyotaBtDecla)) / 2); ?>
                                                 <?php if($percentageToyotaBt < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageToyotaBt ?>
@@ -2735,7 +2679,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('TOYOTA FORKLIFT', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $toyotaForfliftFac != 0 && $toyotaForfliftDecla != 0) { ?>
-                                                <?php $percentageToyotaForflift = round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2); ?>
+                                                <?php $percentageToyotaForflift = round((($toyotaForfliftScoreFac * 100) / max(1, (float) $toyotaForfliftFac) + ($toyotaForfliftScore * 100) / max(1, (float) $toyotaForfliftDecla)) / 2); ?>
                                                 <?php if($percentageToyotaForflift < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageToyotaForflift ?>
@@ -2761,7 +2705,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('JCB', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $jcbFac != 0 && $jcbDecla != 0) { ?>
-                                                <?php $percentageJcb = round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2); ?>
+                                                <?php $percentageJcb = round((($jcbScoreFac * 100) / max(1, (float) $jcbFac) + ($jcbScore * 100) / max(1, (float) $jcbDecla)) / 2); ?>
                                                 <?php if($percentageJcb < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageJcb ?>
@@ -2787,7 +2731,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('LOVOL', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $lovolFac != 0 && $lovolDecla != 0) { ?>
-                                                <?php $percentageLovol = round((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2); ?>
+                                                <?php $percentageLovol = round((($lovolScoreFac * 100) / max(1, (float) $lovolFac) + ($lovolScore * 100) / max(1, (float) $lovolDecla)) / 2); ?>
                                                 <?php if($percentageLovol < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageLovol ?>
@@ -2813,7 +2757,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('CITROEN', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $citroenFac != 0 && $citroenDecla != 0) { ?>
-                                                <?php $percentageCitroen = round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2); ?>
+                                                <?php $percentageCitroen = round((($citroenScoreFac * 100) / max(1, (float) $citroenFac) + ($citroenScore * 100) / max(1, (float) $citroenDecla)) / 2); ?>
                                                 <?php if($percentageCitroen < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageCitroen ?>
@@ -2839,7 +2783,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('MERCEDES', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $mercedesFac != 0 && $mercedesDecla != 0) { ?>
-                                                <?php $percentageMercedes = round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2); ?>
+                                                <?php $percentageMercedes = round((($mercedesScoreFac * 100) / max(1, (float) $mercedesFac) + ($mercedesScore * 100) / max(1, (float) $mercedesDecla)) / 2); ?>
                                                 <?php if($percentageMercedes < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageMercedes ?>
@@ -2865,7 +2809,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('PEUGEOT', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $peugeotFac != 0 && $peugeotDecla != 0) { ?>
-                                                <?php $percentagePeugeot = round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2); ?>
+                                                <?php $percentagePeugeot = round((($peugeotScoreFac * 100) / max(1, (float) $peugeotFac) + ($peugeotScore * 100) / max(1, (float) $peugeotDecla)) / 2); ?>
                                                 <?php if($percentagePeugeot < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentagePeugeot ?>
@@ -2891,7 +2835,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('SUZUKI', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $suzukiFac != 0 && $suzukiDecla != 0) { ?>
-                                                <?php $percentageSuzuki = round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2); ?>
+                                                <?php $percentageSuzuki = round((($suzukiScoreFac * 100) / max(1, (float) $suzukiFac) + ($suzukiScore * 100) / max(1, (float) $suzukiDecla)) / 2); ?>
                                                 <?php if($percentageSuzuki < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageSuzuki ?>
@@ -2917,7 +2861,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('TOYOTA', $brandselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $toyotaFac != 0 && $toyotaDecla != 0) { ?>
-                                                <?php $percentageToyota = round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2); ?>
+                                                <?php $percentageToyota = round((($toyotaScoreFac * 100) / max(1, (float) $toyotaFac) + ($toyotaScore * 100) / max(1, (float) $toyotaDecla)) / 2); ?>
                                                 <?php if($percentageToyota < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageToyota ?>
@@ -2944,7 +2888,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('Electricité et Electronique', $specialityselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $specialityElectriciteFac != 0 && $specialityElectriciteDecla != 0) { ?>
-                                                <?php $percentageSpecialityElectricite = round((($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac + ($specialityElectriciteScore * 100) / $specialityElectriciteDecla) / 2); ?>
+                                                <?php $percentageSpecialityElectricite = round((($specialityElectriciteScoreFac * 100) / max(1, (float) $specialityElectriciteFac) + ($specialityElectriciteScore * 100) / max(1, (float) $specialityElectriciteDecla)) / 2); ?>
                                                 <?php if($percentageSpecialityElectricite < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageSpecialityElectricite ?>
@@ -2970,7 +2914,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('Hydraulique', $specialityselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $specialityHydrauliqueFac != 0 && $specialityHydrauliqueDecla != 0) { ?>
-                                                <?php $percentageSpecialityHydraulique = round((($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac + ($specialityHydrauliqueScore * 100) / $specialityHydrauliqueDecla) / 2); ?>
+                                                <?php $percentageSpecialityHydraulique = round((($specialityHydrauliqueScoreFac * 100) / max(1, (float) $specialityHydrauliqueFac) + ($specialityHydrauliqueScore * 100) / max(1, (float) $specialityHydrauliqueDecla)) / 2); ?>
                                                 <?php if($percentageSpecialityHydraulique < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageSpecialityHydraulique ?>
@@ -2996,7 +2940,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('Moteur', $specialityselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $specialityMoteurFac != 0 && $specialityMoteurDecla != 0) { ?>
-                                                <?php $percentageSpecialityMoteur = round((($specialityMoteurScoreFac * 100) / $specialityMoteurFac + ($specialityMoteurScore * 100) / $specialityMoteurDecla) / 2); ?>
+                                                <?php $percentageSpecialityMoteur = round((($specialityMoteurScoreFac * 100) / max(1, (float) $specialityMoteurFac) + ($specialityMoteurScore * 100) / max(1, (float) $specialityMoteurDecla)) / 2); ?>
                                                 <?php if($percentageSpecialityMoteur < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageSpecialityMoteur ?>
@@ -3022,7 +2966,7 @@ if (!isset($_SESSION["id"])) {
                                                 in_array('Transmission', $specialityselectedLevel)
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $specialityTransmissionFac != 0 && $specialityTransmissionDecla != 0) { ?>
-                                                <?php $percentageSpecialityTransmission = round((($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac + ($specialityTransmissionScore * 100) / $specialityTransmissionDecla) / 2); ?>
+                                                <?php $percentageSpecialityTransmission = round((($specialityTransmissionScoreFac * 100) / max(1, (float) $specialityTransmissionFac) + ($specialityTransmissionScore * 100) / max(1, (float) $specialityTransmissionDecla)) / 2); ?>
                                                 <?php if($percentageSpecialityTransmission < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentageSpecialityTransmission ?>
@@ -3046,7 +2990,7 @@ if (!isset($_SESSION["id"])) {
                                         <?php } ?>
                                             <td class="text-center" style="background-color: #e6f2fb;">
                                                 <?php if (isset($resultFac) && isset($resultTechMa)) { ?>
-                                                <?php $percentage = round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2); ?>
+                                                <?php $percentage = round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2); ?>
                                                 <?php if($percentage < 60 ) { ?>
                                                 <span class="badge text-danger fs-7 m-1">
                                                     <?php echo $percentage ?>
@@ -3097,6 +3041,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                     ],
                                                 ]);
+                                                $techManagerId = !empty($tech->manager) ? $tech->manager : '000000000000000000000000';
                                                 $transmissionFac = $results->findOne([
                                                     '$and' => [
                                                         [
@@ -3139,7 +3084,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3192,7 +3137,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3239,7 +3184,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3283,7 +3228,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3333,7 +3278,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3386,7 +3331,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3439,7 +3384,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3486,7 +3431,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3530,7 +3475,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3574,7 +3519,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3624,7 +3569,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3671,7 +3616,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3721,7 +3666,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3774,7 +3719,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3827,7 +3772,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3874,7 +3819,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3918,7 +3863,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -3962,7 +3907,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4006,7 +3951,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4050,7 +3995,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4094,7 +4039,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4138,7 +4083,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4182,7 +4127,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4226,7 +4171,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4270,7 +4215,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4314,7 +4259,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4358,7 +4303,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4410,7 +4355,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4458,7 +4403,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                         [
                                                             "manager" => new MongoDB\BSON\ObjectId(
-                                                                $tech->manager
+                                                                $techManagerId
                                                             ),
                                                         ],
                                                         ["level" => $selectedLevel],
@@ -4487,7 +4432,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($tech->_id)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($tech->manager)],
+                                                        ["manager" => new MongoDB\BSON\ObjectId($techManagerId)],
                                                         ["typeR" => "Managers"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -4496,7 +4441,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultTechMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($tech->_id)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($tech->manager)],
+                                                        ["manager" => new MongoDB\BSON\ObjectId($techManagerId)],
                                                         ["typeR" => "Technicien - Manager"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -4653,14 +4598,14 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
-                                                if (isset($transmissionDecla)) {
+                                                if (isset($transmissionDecla, $transmissionMa)) {
                                                     for ($i = 0; $i < count($transmissionDecla["answers"]); ++$i) {
                                                         if (
                                                             $transmissionDecla["answers"][$i] == "Oui" &&
@@ -4671,7 +4616,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransfert = 0;
-                                                if (isset($transfertDecla)) {
+                                                if (isset($transfertDecla, $transfertMa)) {
                                                     for ($i = 0; $i < count($transfertDecla["answers"]); ++$i) {
                                                         if (
                                                             $transfertDecla["answers"][$i] == "Oui" &&
@@ -4682,7 +4627,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreAssistance= 0;
-                                                if (isset($assistanceConduiteDecla)) {
+                                                if (isset($assistanceConduiteDecla, $assistanceConduiteMa)) {
                                                     for ($i = 0; $i < count($assistanceConduiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $assistanceConduiteDecla["answers"][$i] == "Oui" &&
@@ -4693,7 +4638,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoite = 0;
-                                                if (isset($boiteDecla)) {
+                                                if (isset($boiteDecla, $boiteMa)) {
                                                     for ($i = 0; $i < count($boiteDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteDecla["answers"][$i] == "Oui" &&
@@ -4704,7 +4649,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteMan = 0;
-                                                if (isset($boiteManDecla)) {
+                                                if (isset($boiteManDecla, $boiteManMa)) {
                                                     for ($i = 0; $i < count($boiteManDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteManDecla["answers"][$i] == "Oui" &&
@@ -4715,7 +4660,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteAuto = 0;
-                                                if (isset($boiteAutoDecla)) {
+                                                if (isset($boiteAutoDecla, $boiteAutoMa)) {
                                                     for ($i = 0; $i < count($boiteAutoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteAutoDecla["answers"][$i] == "Oui" &&
@@ -4726,7 +4671,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreBoiteVaCo = 0;
-                                                if (isset($boiteVaCoDecla)) {
+                                                if (isset($boiteVaCoDecla, $boiteVaCoMa)) {
                                                     for ($i = 0; $i < count($boiteVaCoDecla["answers"]); ++$i) {
                                                         if (
                                                             $boiteVaCoDecla["answers"][$i] == "Oui" &&
@@ -4737,7 +4682,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreClim = 0;
-                                                if (isset($climatisationDecla)) {
+                                                if (isset($climatisationDecla, $climatisationMa)) {
                                                     for ($i = 0; $i < count($climatisationDecla["answers"]); ++$i) {
                                                         if (
                                                             $climatisationDecla["answers"][$i] == "Oui" &&
@@ -4748,7 +4693,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDemi = 0;
-                                                if (isset($demiDecla)) {
+                                                if (isset($demiDecla, $demiMa)) {
                                                     for ($i = 0; $i < count($demiDecla["answers"]); ++$i) {
                                                         if (
                                                             $demiDecla["answers"][$i] == "Oui" &&
@@ -4759,7 +4704,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreDirection = 0;
-                                                if (isset($directionDecla)) {
+                                                if (isset($directionDecla, $directionMa)) {
                                                     for ($i = 0; $i < count($directionDecla["answers"]); ++$i) {
                                                         if (
                                                             $directionDecla["answers"][$i] == "Oui" &&
@@ -4770,7 +4715,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreElectricite = 0;
-                                                if (isset($electriciteDecla)) {
+                                                if (isset($electriciteDecla, $electriciteMa)) {
                                                     for ($i = 0; $i < count($electriciteDecla["answers"]); ++$i) {
                                                         if (
                                                             $electriciteDecla["answers"][$i] == "Oui" &&
@@ -4781,7 +4726,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFrein = 0;
-                                                if (isset($freiDecla)) {
+                                                if (isset($freiDecla, $freiMa)) {
                                                     for ($i = 0; $i < count($freiDecla["answers"]); ++$i) {
                                                         if (
                                                             $freiDecla["answers"][$i] == "Oui" &&
@@ -4792,7 +4737,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinElec = 0;
-                                                if (isset($freinageElecDecla)) {
+                                                if (isset($freinageElecDecla, $freinageElecMa)) {
                                                     for ($i = 0; $i < count($freinageElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageElecDecla["answers"][$i] == "Oui" &&
@@ -4803,7 +4748,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinHydro = 0;
-                                                if (isset($freinageDecla)) {
+                                                if (isset($freinageDecla, $freinageMa)) {
                                                     for ($i = 0; $i < count($freinageDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinageDecla["answers"][$i] == "Oui" &&
@@ -4814,7 +4759,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreFreinPneu = 0;
-                                                if (isset($freinDecla)) {
+                                                if (isset($freinDecla, $freinMa)) {
                                                     for ($i = 0; $i < count($freinDecla["answers"]); ++$i) {
                                                         if (
                                                             $freinDecla["answers"][$i] == "Oui" &&
@@ -4825,7 +4770,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreHydro = 0;
-                                                if (isset($hydrauliqueDecla)) {
+                                                if (isset($hydrauliqueDecla, $hydrauliqueMa)) {
                                                     for ($i = 0; $i < count($hydrauliqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $hydrauliqueDecla["answers"][$i] == "Oui" &&
@@ -4836,7 +4781,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurDiesel = 0;
-                                                if (isset($moteurDieselDecla)) {
+                                                if (isset($moteurDieselDecla, $moteurDieselMa)) {
                                                     for ($i = 0; $i < count($moteurDieselDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurDieselDecla["answers"][$i] == "Oui" &&
@@ -4847,7 +4792,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurElec = 0;
-                                                if (isset($moteurElecDecla)) {
+                                                if (isset($moteurElecDecla, $moteurElecMa)) {
                                                     for ($i = 0; $i < count($moteurElecDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurElecDecla["answers"][$i] == "Oui" &&
@@ -4858,7 +4803,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurEssence = 0;
-                                                if (isset($moteurEssenceDecla)) {
+                                                if (isset($moteurEssenceDecla, $moteurEssenceMa)) {
                                                     for ($i = 0; $i < count($moteurEssenceDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurEssenceDecla["answers"][$i] == "Oui" &&
@@ -4869,7 +4814,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMoteurThermique = 0;
-                                                if (isset($moteurThermiqueDecla)) {
+                                                if (isset($moteurThermiqueDecla, $moteurThermiqueMa)) {
                                                     for ($i = 0; $i < count($moteurThermiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $moteurThermiqueDecla["answers"][$i] == "Oui" &&
@@ -4880,7 +4825,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreMultiplexage = 0;
-                                                if (isset($multiplexageDecla)) {
+                                                if (isset($multiplexageDecla, $multiplexageMa)) {
                                                     for ($i = 0; $i < count($multiplexageDecla["answers"]); ++$i) {
                                                         if (
                                                             $multiplexageDecla["answers"][$i] == "Oui" &&
@@ -4891,7 +4836,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePneu = 0;
-                                                if (isset($pneuDecla)) {
+                                                if (isset($pneuDecla, $pneuMa)) {
                                                     for ($i = 0; $i < count($pneuDecla["answers"]); ++$i) {
                                                         if (
                                                             $pneuDecla["answers"][$i] == "Oui" &&
@@ -4902,7 +4847,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scorePont = 0;
-                                                if (isset($pontDecla)) {
+                                                if (isset($pontDecla, $pontMa)) {
                                                     for ($i = 0; $i < count($pontDecla["answers"]); ++$i) {
                                                         if (
                                                             $pontDecla["answers"][$i] == "Oui" &&
@@ -4913,7 +4858,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreRed = 0;
-                                                if (isset($reducteurDecla)) {
+                                                if (isset($reducteurDecla, $reducteurMa)) {
                                                     for ($i = 0; $i < count($reducteurDecla["answers"]); ++$i) {
                                                         if (
                                                             $reducteurDecla["answers"][$i] == "Oui" &&
@@ -4924,7 +4869,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspension = 0;
-                                                if (isset($suspensionDecla)) {
+                                                if (isset($suspensionDecla, $suspensionMa)) {
                                                     for ($i = 0; $i < count($suspensionDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionDecla["answers"][$i] == "Oui" &&
@@ -4935,7 +4880,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionLame = 0;
-                                                if (isset($suspensionLameDecla)) {
+                                                if (isset($suspensionLameDecla, $suspensionLameMa)) {
                                                     for ($i = 0; $i < count($suspensionLameDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionLameDecla["answers"][$i] == "Oui" &&
@@ -4946,7 +4891,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionRessort = 0;
-                                                if (isset($suspensionRessortDecla)) {
+                                                if (isset($suspensionRessortDecla, $suspensionRessortMa)) {
                                                     for ($i = 0; $i < count($suspensionRessortDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionRessortDecla["answers"][$i] == "Oui" &&
@@ -4957,7 +4902,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreSuspensionPneu = 0;
-                                                if (isset($suspensionPneumatiqueDecla)) {
+                                                if (isset($suspensionPneumatiqueDecla, $suspensionPneumatiqueMa)) {
                                                     for ($i = 0; $i < count($suspensionPneumatiqueDecla["answers"]); ++$i) {
                                                         if (
                                                             $suspensionPneumatiqueDecla["answers"][$i] == "Oui" &&
@@ -4968,7 +4913,7 @@ if (!isset($_SESSION["id"])) {
                                                     }
                                                 }
                                                 $scoreTransversale = 0;
-                                                if (isset($transversaleDecla)) {
+                                                if (isset($transversaleDecla, $transversaleMa)) {
                                                     for ($i = 0; $i < count($transversaleDecla["answers"]); ++$i) {
                                                         if (
                                                             $transversaleDecla["answers"][$i] == "Oui" &&
@@ -5219,9 +5164,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $kingLongFac != 0) { ?>
-                                                        <?php $percentageKingLong = round(($kingLongScoreFac * 100) / $kingLongFac); ?>
+                                                        <?php $percentageKingLong = round(($kingLongScoreFac * 100) / max(1, (float) $kingLongFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $kingLongFac != 0 && $kingLongDecla != 0) { ?>
-                                                        <?php $percentageKingLong = round((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2); ?>
+                                                        <?php $percentageKingLong = round((($kingLongScoreFac * 100) / max(1, (float) $kingLongFac) + ($kingLongScore * 100) / max(1, (float) $kingLongDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageKingLong = null; ?>
                                                     <?php } ?>
@@ -5250,9 +5195,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $fusoFac != 0) { ?>
-                                                        <?php $percentageFuso = round(($fusoScoreFac * 100) / $fusoFac); ?>
+                                                        <?php $percentageFuso = round(($fusoScoreFac * 100) / max(1, (float) $fusoFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $fusoFac != 0 && $fusoDecla != 0) { ?>
-                                                        <?php $percentageFuso = round((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2); ?>
+                                                        <?php $percentageFuso = round((($fusoScoreFac * 100) / max(1, (float) $fusoFac) + ($fusoScore * 100) / max(1, (float) $fusoDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageFuso = null; ?>
                                                     <?php } ?>
@@ -5282,9 +5227,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $hinoFac != 0) { ?>
-                                                        <?php $percentageHino = round(($hinoScoreFac * 100) / $hinoFac); ?>
+                                                        <?php $percentageHino = round(($hinoScoreFac * 100) / max(1, (float) $hinoFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $hinoFac != 0 && $hinoDecla != 0) { ?>
-                                                        <?php $percentageHino = round((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2); ?>
+                                                        <?php $percentageHino = round((($hinoScoreFac * 100) / max(1, (float) $hinoFac) + ($hinoScore * 100) / max(1, (float) $hinoDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageHino = null; ?>
                                                     <?php } ?>
@@ -5314,9 +5259,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $mercedesTruckFac != 0) { ?>
-                                                        <?php $percentageMercedesTruck = round(($mercedesTruckScoreFac * 100) / $mercedesTruckFac); ?>
+                                                        <?php $percentageMercedesTruck = round(($mercedesTruckScoreFac * 100) / max(1, (float) $mercedesTruckFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $mercedesTruckFac != 0 && $mercedesTruckDecla != 0) { ?>
-                                                        <?php $percentageMercedesTruck = round((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2); ?>
+                                                        <?php $percentageMercedesTruck = round((($mercedesTruckScoreFac * 100) / max(1, (float) $mercedesTruckFac) + ($mercedesTruckScore * 100) / max(1, (float) $mercedesTruckDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageMercedesTruck = null; ?>
                                                     <?php } ?>
@@ -5346,9 +5291,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $renaultTruckFac != 0) { ?>
-                                                        <?php $percentageRenaultTruck = round(($renaultTruckScoreFac * 100) / $renaultTruckFac); ?>
+                                                        <?php $percentageRenaultTruck = round(($renaultTruckScoreFac * 100) / max(1, (float) $renaultTruckFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $renaultTruckFac != 0 && $renaultTruckDecla != 0) { ?>
-                                                        <?php $percentageRenaultTruck = round((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2); ?>
+                                                        <?php $percentageRenaultTruck = round((($renaultTruckScoreFac * 100) / max(1, (float) $renaultTruckFac) + ($renaultTruckScore * 100) / max(1, (float) $renaultTruckDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageRenaultTruck = null; ?>
                                                     <?php } ?>
@@ -5378,9 +5323,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $sinotrukFac != 0) { ?>
-                                                        <?php $percentageSinotruk = round(($sinotrukScoreFac * 100) / $sinotrukFac); ?>
+                                                        <?php $percentageSinotruk = round(($sinotrukScoreFac * 100) / max(1, (float) $sinotrukFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $sinotrukFac != 0 && $sinotrukDecla != 0) { ?>
-                                                        <?php $percentageSinotruk = round((($sinotrukScoreFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2); ?>
+                                                        <?php $percentageSinotruk = round((($sinotrukScoreFac * 100) / max(1, (float) $sinotrukFac) + ($sinotrukScore * 100) / max(1, (float) $sinotrukDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageSinotruk = null; ?>
                                                     <?php } ?>
@@ -5410,9 +5355,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $toyotaBtFac != 0) { ?>
-                                                        <?php $percentageToyotaBt = round(($toyotaBtScoreFac * 100) / $toyotaBtFac); ?>
+                                                        <?php $percentageToyotaBt = round(($toyotaBtScoreFac * 100) / max(1, (float) $toyotaBtFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $toyotaBtFac != 0 && $toyotaBtDecla != 0) { ?>
-                                                        <?php $percentageToyotaBt = round((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2); ?>
+                                                        <?php $percentageToyotaBt = round((($toyotaBtScoreFac * 100) / max(1, (float) $toyotaBtFac) + ($toyotaBtScore * 100) / max(1, (float) $toyotaBtDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageToyotaBt = null; ?>
                                                     <?php } ?>
@@ -5442,9 +5387,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $toyotaForfliftFac != 0) { ?>
-                                                        <?php $percentageToyotaForflift = round(($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac); ?>
+                                                        <?php $percentageToyotaForflift = round(($toyotaForfliftScoreFac * 100) / max(1, (float) $toyotaForfliftFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $toyotaForfliftFac != 0 && $toyotaForfliftDecla != 0) { ?>
-                                                        <?php $percentageToyotaForflift = round((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2); ?>
+                                                        <?php $percentageToyotaForflift = round((($toyotaForfliftScoreFac * 100) / max(1, (float) $toyotaForfliftFac) + ($toyotaForfliftScore * 100) / max(1, (float) $toyotaForfliftDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageToyotaForflift = null; ?>
                                                     <?php } ?>
@@ -5474,9 +5419,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $jcbFac != 0) { ?>
-                                                        <?php $percentageJcb = round(($jcbScoreFac * 100) / $jcbFac); ?>
+                                                        <?php $percentageJcb = round(($jcbScoreFac * 100) / max(1, (float) $jcbFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $jcbFac != 0 && $jcbDecla != 0) { ?>
-                                                        <?php $percentageJcb = round((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2); ?>
+                                                        <?php $percentageJcb = round((($jcbScoreFac * 100) / max(1, (float) $jcbFac) + ($jcbScore * 100) / max(1, (float) $jcbDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageJcb = null; ?>
                                                     <?php } ?>
@@ -5509,7 +5454,7 @@ if (!isset($_SESSION["id"])) {
                                                     |-------------------------------------------------------*/
                                                     if (isset($tech['candidat']) && $tech['candidat'] === true && $lovolFac != 0) {
                                                         // Cas Candidat : on ne considère que les scores de la FAC
-                                                        $percentageLovol = round(($lovolScoreFac * 100) / $lovolFac);
+                                                        $percentageLovol = round(($lovolScoreFac * 100) / max(1, (float) $lovolFac));
                                                     } elseif (
                                                         $allocateDecla['active'] === true &&
                                                         $allocateDecla['activeManager'] === true &&
@@ -5519,8 +5464,8 @@ if (!isset($_SESSION["id"])) {
                                                         // Cas Mixte : moyenne FAC + DECLARATION
                                                         $percentageLovol = round(
                                                             (
-                                                                ($lovolScoreFac * 100) / $lovolFac +
-                                                                ($lovolScore * 100)   / $lovolDecla
+                                                                ($lovolScoreFac * 100) / max(1, (float) $lovolFac) +
+                                                                ($lovolScore * 100)   / max(1, (float) $lovolDecla)
                                                             ) / 2
                                                         );
                                                     } else {
@@ -5554,9 +5499,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $bydFac != 0) { ?>
-                                                        <?php $percentageByd = round(($bydScoreFac * 100) / $bydFac); ?>
+                                                        <?php $percentageByd = round(($bydScoreFac * 100) / max(1, (float) $bydFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $bydFac != 0 && $bydDecla != 0) { ?>
-                                                        <?php $percentageByd = round((($bydScoreFac * 100) / $bydFac + ($bydScore * 100) / $bydDecla) / 2); ?>
+                                                        <?php $percentageByd = round((($bydScoreFac * 100) / max(1, (float) $bydFac) + ($bydScore * 100) / max(1, (float) $bydDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageByd = null; ?>
                                                     <?php } ?>
@@ -5586,9 +5531,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $citroenFac != 0) { ?>
-                                                        <?php $percentageCitroen = round(($citroenScoreFac * 100) / $citroenFac); ?>
+                                                        <?php $percentageCitroen = round(($citroenScoreFac * 100) / max(1, (float) $citroenFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $citroenFac != 0 && $citroenDecla != 0) { ?>
-                                                        <?php $percentageCitroen = round((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2); ?>
+                                                        <?php $percentageCitroen = round((($citroenScoreFac * 100) / max(1, (float) $citroenFac) + ($citroenScore * 100) / max(1, (float) $citroenDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageCitroen = null; ?>
                                                     <?php } ?>
@@ -5618,9 +5563,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $mercedesFac != 0) { ?>
-                                                        <?php $percentageMercedes = round(($mercedesScoreFac * 100) / $mercedesFac); ?>
+                                                        <?php $percentageMercedes = round(($mercedesScoreFac * 100) / max(1, (float) $mercedesFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $mercedesFac != 0 && $mercedesDecla != 0) { ?>
-                                                        <?php $percentageMercedes = round((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2); ?>
+                                                        <?php $percentageMercedes = round((($mercedesScoreFac * 100) / max(1, (float) $mercedesFac) + ($mercedesScore * 100) / max(1, (float) $mercedesDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageMercedes = null; ?>
                                                     <?php } ?>
@@ -5650,9 +5595,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $mitsubishiFac != 0) { ?>
-                                                        <?php $percentageMitsubishi = round(($mitsubishiScoreFac * 100) / $mitsubishiFac); ?>
+                                                        <?php $percentageMitsubishi = round(($mitsubishiScoreFac * 100) / max(1, (float) $mitsubishiFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $mitsubishiFac != 0 && $mitsubishiDecla != 0) { ?>
-                                                        <?php $percentageMitsubishi = round((($mitsubishiScoreFac * 100) / $mitsubishiFac + ($mitsubishiScore * 100) / $mitsubishiDecla) / 2); ?>
+                                                        <?php $percentageMitsubishi = round((($mitsubishiScoreFac * 100) / max(1, (float) $mitsubishiFac) + ($mitsubishiScore * 100) / max(1, (float) $mitsubishiDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageMitsubishi = null; ?>
                                                     <?php } ?>
@@ -5682,9 +5627,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $peugeotFac != 0) { ?>
-                                                        <?php $percentagePeugeot = round(($peugeotScoreFac * 100) / $peugeotFac); ?>
+                                                        <?php $percentagePeugeot = round(($peugeotScoreFac * 100) / max(1, (float) $peugeotFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $peugeotFac != 0 && $peugeotDecla != 0) { ?>
-                                                        <?php $percentagePeugeot = round((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2); ?>
+                                                        <?php $percentagePeugeot = round((($peugeotScoreFac * 100) / max(1, (float) $peugeotFac) + ($peugeotScore * 100) / max(1, (float) $peugeotDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentagePeugeot = null; ?>
                                                     <?php } ?>
@@ -5714,9 +5659,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $suzukiFac != 0) { ?>
-                                                        <?php $percentageSuzuki = round(($suzukiScoreFac * 100) / $suzukiFac); ?>
+                                                        <?php $percentageSuzuki = round(($suzukiScoreFac * 100) / max(1, (float) $suzukiFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $suzukiFac != 0 && $suzukiDecla != 0) { ?>
-                                                        <?php $percentageSuzuki = round((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2); ?>
+                                                        <?php $percentageSuzuki = round((($suzukiScoreFac * 100) / max(1, (float) $suzukiFac) + ($suzukiScore * 100) / max(1, (float) $suzukiDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageSuzuki = null; ?>
                                                     <?php } ?>
@@ -5746,9 +5691,9 @@ if (!isset($_SESSION["id"])) {
                                             ) { ?>
                                                 <?php if ($allocateFac['active'] == true) { ?>
                                                     <?php if (isset($tech["candidat"]) && $tech["candidat"] == true && $toyotaFac != 0) { ?>
-                                                        <?php $percentageToyota = round(($toyotaScoreFac * 100) / $toyotaFac); ?>
+                                                        <?php $percentageToyota = round(($toyotaScoreFac * 100) / max(1, (float) $toyotaFac)); ?>
                                                     <?php } else if ($allocateDecla['active'] == true && $allocateDecla['activeManager'] == true && $toyotaFac != 0 && $toyotaDecla != 0) { ?>
-                                                        <?php $percentageToyota = round((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2); ?>
+                                                        <?php $percentageToyota = round((($toyotaScoreFac * 100) / max(1, (float) $toyotaFac) + ($toyotaScore * 100) / max(1, (float) $toyotaDecla)) / 2); ?>
                                                     <?php } else { ?>
                                                         <?php $percentageToyota = null; ?>
                                                     <?php } ?>
@@ -5788,7 +5733,7 @@ if (!isset($_SESSION["id"])) {
                                                         ) {
                                                             // Cas Candidat : uniquement les scores FAC
                                                             $percentageSpecialityElectricite = round(
-                                                                ($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac
+                                                                ($specialityElectriciteScoreFac * 100) / max(1, (float) $specialityElectriciteFac)
                                                             );
                                                         } elseif (
                                                             $allocateDecla['active'] === true &&
@@ -5799,8 +5744,8 @@ if (!isset($_SESSION["id"])) {
                                                             // Cas Mixte : moyenne FAC + DECLARATION
                                                             $percentageSpecialityElectricite = round(
                                                                 (
-                                                                    ($specialityElectriciteScoreFac * 100) / $specialityElectriciteFac +
-                                                                    ($specialityElectriciteScore     * 100) / $specialityElectriciteDecla
+                                                                    ($specialityElectriciteScoreFac * 100) / max(1, (float) $specialityElectriciteFac) +
+                                                                    ($specialityElectriciteScore     * 100) / max(1, (float) $specialityElectriciteDecla)
                                                                 ) / 2
                                                             );
                                                         } else {
@@ -5843,7 +5788,7 @@ if (!isset($_SESSION["id"])) {
                                                     ) {
                                                         // Cas Candidat : uniquement les scores FAC
                                                         $percentageSpecialityHydraulique = round(
-                                                            ($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac
+                                                            ($specialityHydrauliqueScoreFac * 100) / max(1, (float) $specialityHydrauliqueFac)
                                                         );
                                                     } elseif (
                                                         $allocateDecla['active'] === true &&
@@ -5854,8 +5799,8 @@ if (!isset($_SESSION["id"])) {
                                                         // Cas Mixte : moyenne FAC + DECLARATION
                                                         $percentageSpecialityHydraulique = round(
                                                             (
-                                                                ($specialityHydrauliqueScoreFac * 100) / $specialityHydrauliqueFac +
-                                                                ($specialityHydrauliqueScore     * 100) / $specialityHydrauliqueDecla
+                                                                ($specialityHydrauliqueScoreFac * 100) / max(1, (float) $specialityHydrauliqueFac) +
+                                                                ($specialityHydrauliqueScore     * 100) / max(1, (float) $specialityHydrauliqueDecla)
                                                             ) / 2
                                                         );
                                                     } else {
@@ -5888,7 +5833,7 @@ if (!isset($_SESSION["id"])) {
                                                         $specialityMoteurFac != 0
                                                     ) {
                                                         $percentageSpecialityMoteur = round(
-                                                            ($specialityMoteurScoreFac * 100) / $specialityMoteurFac
+                                                            ($specialityMoteurScoreFac * 100) / max(1, (float) $specialityMoteurFac)
                                                         );
                                                     } elseif (
                                                         $allocateDecla['active'] === true &&
@@ -5898,8 +5843,8 @@ if (!isset($_SESSION["id"])) {
                                                     ) {
                                                         $percentageSpecialityMoteur = round(
                                                             (
-                                                                ($specialityMoteurScoreFac * 100) / $specialityMoteurFac +
-                                                                ($specialityMoteurScore     * 100) / $specialityMoteurDecla
+                                                                ($specialityMoteurScoreFac * 100) / max(1, (float) $specialityMoteurFac) +
+                                                                ($specialityMoteurScore     * 100) / max(1, (float) $specialityMoteurDecla)
                                                             ) / 2
                                                         );
                                                     } else {
@@ -5932,7 +5877,7 @@ if (!isset($_SESSION["id"])) {
                                                         $specialityTransmissionFac != 0
                                                     ) {
                                                         $percentageSpecialityTransmission = round(
-                                                            ($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac
+                                                            ($specialityTransmissionScoreFac * 100) / max(1, (float) $specialityTransmissionFac)
                                                         );
                                                     } elseif (
                                                         $allocateDecla['active'] === true &&
@@ -5942,8 +5887,8 @@ if (!isset($_SESSION["id"])) {
                                                     ) {
                                                         $percentageSpecialityTransmission = round(
                                                             (
-                                                                ($specialityTransmissionScoreFac * 100) / $specialityTransmissionFac +
-                                                                ($specialityTransmissionScore     * 100) / $specialityTransmissionDecla
+                                                                ($specialityTransmissionScoreFac * 100) / max(1, (float) $specialityTransmissionFac) +
+                                                                ($specialityTransmissionScore     * 100) / max(1, (float) $specialityTransmissionDecla)
                                                             ) / 2
                                                         );
                                                     } else {
@@ -5968,10 +5913,10 @@ if (!isset($_SESSION["id"])) {
                                                 if (isset($resultFac)) {
                                                     if (isset($tech["candidat"]) && $tech["candidat"] == true && $resultFac->total != 0) {
                                                         // Cas candidat : FAC seul
-                                                        $percentage = round(($resultFac->score * 100) / $resultFac->total);
+                                                        $percentage = round(($resultFac->score * 100) / max(1, (float) $resultFac->total));
                                                     } elseif (isset($resultTechMa) && $resultFac->total != 0 && $resultTechMa->total != 0) {
                                                         // Cas normal : moyenne FAC + TechMa
-                                                        $percentage = round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total) / 2);
+                                                        $percentage = round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total)) / 2);
                                                     } else {
                                                         $percentage = null;
                                                     }
@@ -6145,8 +6090,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>

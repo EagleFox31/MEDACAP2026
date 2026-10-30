@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -11,7 +12,7 @@ if (!isset($_SESSION["id"])) {
 require_once "../../vendor/autoload.php";
 
 // Connexion Mongo
-$conn      = new MongoDB\Client("mongodb://localhost:27017");
+$conn      = new MongoDB\Client(medacapMongoUri());
 $academy   = $conn->academy;
 $users     = $academy->users;
 $allocations = $academy->allocations;

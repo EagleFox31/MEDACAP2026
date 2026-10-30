@@ -16,6 +16,7 @@ Commercial
 [files]
 deploy.ps1
 deploy.exclude
+.htaccess
 check_*.php
 debug_*.php
 find_*.php
@@ -38,3 +39,4 @@ expert_declaratif_results.txt
 full_technician_report*.txt
 technicians_report*.md
 null
+*_cursor.php

@@ -35,6 +35,7 @@ try {
     if ($includeInsights) {
         $insights = portalApiDpsFilialeInsights(
             $ctx['technicianDocs'],
+            $db,
             $db->allocations,
             $db->exams,
             $db->results,
@@ -45,6 +46,7 @@ try {
     $planningStatus = [];
     $brandPifStats = [];
     $brandPlanningSummary = [];
+    $pifTechnicians = [];
     if ($includePif) {
         $techOids = array_map(static function (array $row): ObjectId {
             return $row['_id'];
@@ -53,6 +55,7 @@ try {
         $planningStatus = $pif['planningStatus'];
         $brandPifStats = $pif['brandPifStats'];
         $brandPlanningSummary = $pif['brandPlanningSummary'] ?? [];
+        $pifTechnicians = $pif['pifTechnicians'] ?? [];
     }
 
     portalApiJson([
@@ -70,6 +73,7 @@ try {
         'planningStatus' => $planningStatus,
         'brandPifStats' => $brandPifStats,
         'brandPlanningSummary' => $brandPlanningSummary,
+        'pifTechnicians' => $pifTechnicians,
     ]);
 } catch (Throwable $e) {
     portalApiJson(['error' => 'Server error', 'message' => $e->getMessage()], 500);

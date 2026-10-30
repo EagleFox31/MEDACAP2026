@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Core Bootstrap File for Concours
  * Initializes core functionality and configurations for the competition platform
@@ -18,7 +19,7 @@ require_once CONCOURS_BASE_PATH . '/../vendor/autoload.php';
 
 // MongoDB Connection for Concours
 try {
-    $mongoClientConcours = new MongoDB\Client("mongodb://10.68.0.7:27017");
+    $mongoClientConcours = new MongoDB\Client(medacapMongoUri('mongodb://10.68.0.7:27017'));
     // Assuming the database name is "concours".
     $databaseConcours = $mongoClientConcours->concours; 
 } catch (Exception $e) {

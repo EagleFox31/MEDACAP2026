@@ -75,7 +75,8 @@ try {
 }
 
 // Récupération sécurisée des paramètres
-$technicianId = filter_input(INPUT_GET, 'technicianId', FILTER_SANITIZE_STRING);
+// Équivalent de FILTER_SANITIZE_STRING (déprécié en PHP 8.1) : balises retirées, guillemets encodés.
+$technicianId = str_replace(['"', "'"], ['&#34;', '&#39;'], strip_tags((string) filter_input(INPUT_GET, 'technicianId')));
 if ($technicianId) {
     // ➜ on le remet dans $_GET pour que getFilters() le voie tout de suite
     $_GET['technicianId'] = $technicianId;

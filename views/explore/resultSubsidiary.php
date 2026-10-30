@@ -1,4 +1,5 @@
 ﻿<?php
+require_once __DIR__ . '/../../core/medacap_config.php';
     session_start();
     include_once "../language.php";
     include_once "../partials/background-manager.php";
@@ -12,7 +13,7 @@
         date_default_timezone_set('Africa/Douala');
 
         // --- Connexion et Collections ---
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
         $academy = $conn->academy;
         $reports_collection = $academy->reports_subsidiary_results;
 
@@ -427,7 +428,7 @@
             <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 
             <!-- jQuery + Select2 -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
             <!-- Chart.js + Datalabels -->

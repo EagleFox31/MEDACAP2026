@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 
 include_once "../partials/background-manager.php"; // Système de gestion de fond d'écran
@@ -8,10 +9,15 @@ if (!isset($_SESSION["id"])) {
     header("Location: ../../");
     exit();
 } else {
+    // Manager : arrivée directe sur les notes ; l'avancement reste accessible via ?view=progress
+    if ($_SESSION['profile'] == "Manager" && !isset($_GET['view'])) {
+        header("Location: ./bilanTestNotes");
+        exit();
+    }
     require_once "../../vendor/autoload.php";
 
     // Create MongoDB connection and collections
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $users = $academy->users;
     $results = $academy->results;

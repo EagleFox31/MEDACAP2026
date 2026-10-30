@@ -1,0 +1,80 @@
+name: MEDACAP 8.4 - PR smoke checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'views/measure/userQuizFactuel.php'
+      - 'views/measure/includes/quiz_validator.php'
+      - 'views/measure/includes/quiz_factuel_engine.php'
+      - 'core/mongo_compat.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'docker/**'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+      - 'scripts/init-medacap84-copy.ps1'
+      - '.github/workflows/medacap84-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php-static:
+    name: PHP 8.4 syntax and class presence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Lint quiz and compatibility files
+        run: |
+          php -l views/measure/userQuizFactuel.php
+          php -l views/measure/userQuizFactuelNew.php
+          php -l views/measure/includes/quiz_validator.php
+          php -l views/measure/includes/quiz_factuel_engine.php
+          php -l core/mongo_compat.php
+      - name: Verify extracted classes are present
+        run: |
+          php -r '
+            require "views/measure/includes/quiz_validator.php";
+            require "views/measure/includes/quiz_factuel_engine.php";
+            $classes = ["QuizConstants","QuizValidator","QuizDataFetcher","QuizPercentageCalculator","QuizQuestionGenerator","QuizResultProcessor"];
+            foreach ($classes as $class) {
+              if (!class_exists($class)) {fwrite(STDERR, "Missing class: $class\n"); exit(1);}
+            }
+            echo "Quiz class declarations OK\n";
+          '
+
+  powershell-static:
+    name: Validate the guarded Mongo restore script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse PowerShell script without executing it
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            "scripts/init-medacap84-copy.ps1",
+            [ref]$tokens,
+            [ref]$parseErrors
+          ) | Out-Null
+          if ($parseErrors.Count -ne 0) {
+            $parseErrors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+
+  docker-build:
+    name: Build PHP 8.4 runtime with Composer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+      - name: Build the web image (includes composer install)
+        run: docker compose build web

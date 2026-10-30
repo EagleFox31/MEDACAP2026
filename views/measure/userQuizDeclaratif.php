@@ -1,9 +1,21 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
+// Réponses AJAX (POST) : JSON strict — aucune sortie parasite (warnings/deprecated) ne doit corrompre le corps.
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    @ini_set('display_errors', '0');
+    ob_start();
+}
 require "../sendMail.php";
-include_once "./includes/language.php";
+$lang = $_SESSION['lang'] ?? 'FR';
+if ($lang === 'EN') {
+    include_once "./includes/language_EN.php";
+} else {
+    include_once "./includes/language.php";
+}
 require_once "../../vendor/autoload.php";
 require_once "./components/ui/quiz.php";
+require_once __DIR__ . '/includes/quiz_validator.php';
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 
@@ -12,7 +24,7 @@ class MongoDBConnection {
     private $collections;
     public function __construct() {
         try {
-            $this->client = new Client("mongodb://localhost:27017");
+            $this->client = new Client(medacapMongoUri());
             $db = $this->client->academy;
             $this->collections = [
                 'users' => $db->users,
@@ -36,7 +48,8 @@ class MongoDBConnection {
     public function jsonResponse($success, $message, $redirect = null) {
         $response = ['success' => $success, 'message' => $message];
         if ($redirect) $response['redirect'] = $redirect;
-        header('Content-Type: application/json');
+        while (ob_get_level() > 0) { @ob_end_clean(); } // purge toute sortie parasite (warnings) avant le JSON
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($response);
         exit();
     }
@@ -85,33 +98,6 @@ class QuizConstants {
             if ($spec === $specialty) return $data[0];
         }
         return '';
-    }
-}
-
-class QuizValidator {
-    public static function validateSession() {
-        if (!isset($_SESSION["id"])) {
-            header("Location: ../../");
-            exit();
-        }
-    }
-    public static function validateParams($params) {
-        foreach (['id', 'level', 'test'] as $key) {
-            if (empty($params[$key])) {
-                self::jsonError('Missing parameters');
-            }
-        }
-        try {
-            new ObjectId($params['id']);
-            new ObjectId($params['test']);
-        } catch (Exception $e) {
-            self::jsonError('Invalid user or test ID');
-        }
-    }
-    private static function jsonError($message) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => $message]);
-        exit();
     }
 }
 
@@ -288,8 +274,10 @@ class QuizExamManager {
     }
     public function update($exam, $answers, $hr, $mn, $sc, $total) {
         try {
+            $examId = is_array($exam) ? ($exam['_id'] ?? null) : ($exam->_id ?? null);
+            if (!$examId) return false;
             $this->db->getCollection('exams')->updateOne(
-                ['_id' => $exam->_id],
+                ['_id' => $examId],
                 ['$set' => [
                     'answers' => $answers,
                     'hour' => $hr,
@@ -308,8 +296,10 @@ class QuizExamManager {
     public function deactivate($exam) {
         if (!$exam) return true;
         try {
+            $examId = is_array($exam) ? ($exam['_id'] ?? null) : ($exam->_id ?? null);
+            if (!$examId) return false;
             $this->db->getCollection('exams')->updateOne(
-                ['_id' => $exam->_id],
+                ['_id' => $examId],
                 ['$set' => ['active' => false]]
             );
             return true;
@@ -380,64 +370,83 @@ class QuizResultSaver {
                 'test' => new ObjectId($this->testId)
             ]);
             if ($alloc) {
-                $this->db->getCollection('allocations')->updateOne(
-                    ['_id' => $alloc->_id],
-                    ['$set' => ['active' => true]]
-                );
+                $allocId = is_array($alloc) ? ($alloc['_id'] ?? null) : ($alloc->_id ?? null);
+                if ($allocId) {
+                    $this->db->getCollection('allocations')->updateOne(
+                        ['_id' => $allocId],
+                        ['$set' => ['active' => true]]
+                    );
+                }
                 require_once __DIR__ . '/includes/allocation_progression.php';
                 allocationProgression_tryUnlockNextLevel(
                     $this->db->getCollection('allocations'),
                     new ObjectId($this->userId),
                     $this->level
                 );
+                allocationProgression_syncUnlockedLevels(
+                    $this->db->getCollection('allocations'),
+                    new ObjectId($this->userId)
+                );
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             error_log("Error updating allocation: " . $e->getMessage());
         }
     }
     private function saveManagerComparison($proposal, $total) {
         try {
             $results = $this->db->getCollection('results');
-            $managerResult = $results->findOne([
+            $managerResult = $results->findOne(array(
                 'user' => new ObjectId($this->userId),
                 'manager' => new ObjectId($this->userData['user']['manager']),
                 'test' => new ObjectId($this->testId),
-                'type' => "Declaratif",
-                'typeR' => "Managers",
-                'level' => $this->level
-            ]);
-            if ($managerResult) {
-                $scoreF = 0;
-                foreach ($proposal as $i => $p) {
-                    if ($p === "Oui" && $managerResult->answers[$i] === "Oui") $scoreF++;
-                }
-                $query = [
-                    'user' => new ObjectId($this->userId),
-                    'manager' => new ObjectId($managerResult->manager),
-                    'test' => new ObjectId($this->testId),
-                    'type' => "Declaratif",
-                    'typeR' => "Technicien - Manager",
-                    'level' => $this->level
-                ];
-                $existf = count($results->find($query)->toArray());
-                $resultData = [
-                    'user' => new ObjectId($this->userId),
-                    'manager' => new ObjectId($managerResult->manager),
-                    'test' => new ObjectId($this->testId),
-                    'score' => $scoreF,
-                    'level' => $this->level,
-                    'type' => "Declaratif",
-                    'subsidiary' => $this->userData['user']['subsidiary'],
-                    'typeR' => "Technicien - Manager",
-                    'total' => $total,
-                    'numberTest' => $existf + 1,
-                    'active' => true,
-                    'created' => date('d-m-Y H:i:s')
-                ];
-                $results->insertOne($resultData);
+                'type' => 'Declaratif',
+                'typeR' => 'Managers',
+                'level' => $this->level,
+                'active' => true,
+            ));
+            if (!$managerResult) {
+                return;
             }
+            $query = array(
+                'user' => new ObjectId($this->userId),
+                'manager' => new ObjectId($managerResult->manager),
+                'test' => new ObjectId($this->testId),
+                'type' => 'Declaratif',
+                'typeR' => 'Technicien - Manager',
+                'level' => $this->level,
+                'active' => true,
+            );
+            if ($results->findOne($query)) {
+                return;
+            }
+            $scoreF = 0;
+            $mgrAnswers = isset($managerResult['answers']) ? $managerResult['answers'] : array();
+            if ($mgrAnswers instanceof Traversable) {
+                $mgrAnswers = iterator_to_array($mgrAnswers);
+            }
+            foreach ($proposal as $i => $p) {
+                if ($p === 'Oui' && isset($mgrAnswers[$i]) && $mgrAnswers[$i] === 'Oui') {
+                    $scoreF++;
+                }
+            }
+            $existf = count($results->find($query)->toArray());
+            $resultData = array(
+                'user' => new ObjectId($this->userId),
+                'manager' => new ObjectId($managerResult->manager),
+                'test' => new ObjectId($this->testId),
+                'score' => $scoreF,
+                'level' => $this->level,
+                'type' => 'Declaratif',
+                'subsidiary' => $this->userData['user']['subsidiary'],
+                'typeR' => 'Technicien - Manager',
+                'total' => $total,
+                'numberTest' => $existf + 1,
+                'active' => true,
+                'created' => date('d-m-Y H:i:s'),
+            );
+            $results->insertOne($resultData);
         } catch (Exception $e) {
-            error_log("Error saving manager comparison: " . $e->getMessage());
+            error_log('Error saving manager comparison: ' . $e->getMessage());
         }
     }
     private function sendNotification() {
@@ -537,6 +546,14 @@ class QuizPostHandler {
             
             $this->processResults($userAnswer, $_POST['timer'] ?? '00:00:00', $exam);
             $this->examManager->deactivate($exam);
+            $this->db->getCollection('exams')->updateMany(
+                [
+                    'user' => new ObjectId($this->userId),
+                    'test' => new ObjectId((string) $this->testId),
+                    'active' => true,
+                ],
+                ['$set' => ['active' => false]]
+            );
             $percent = $totalQuestions > 0 ? round(($answeredCount / $totalQuestions) * 100) : 0;
             $this->db->jsonResponse(true, 'Evaluation completed', './congrat?p=' . $percent);
         } catch (Exception $e) {
@@ -621,8 +638,18 @@ class QuizPostHandler {
 
 // Bootstrap
 QuizValidator::validateSession();
+// Un technicien ne compose que son propre QCM : ?id= n'est accepté tel quel que pour le Super Admin.
+$quizUserId = (string) $_SESSION['id'];
+if (isset($_GET['id']) && (string) $_GET['id'] !== $quizUserId) {
+    if (($_SESSION['profile'] ?? '') !== 'Super Admin') {
+        error_log('[quizDeclaratif] id refusé : session=' . $quizUserId . ' demandé=' . (string) $_GET['id']);
+        header('Location: ./ListeDesQcm');
+        exit();
+    }
+    $quizUserId = (string) $_GET['id'];
+}
 $params = [
-    'id' => $_GET['id'] ?? '',
+    'id' => $quizUserId,
     'level' => $_GET['level'] ?? '',
     'test' => $_GET['test'] ?? '',
     'guide' => $_GET['guide'] ?? false,
@@ -630,6 +657,22 @@ $params = [
 ];
 QuizValidator::validateParams($params);
 $db = new MongoDBConnection();
+// Un QCM déjà terminé ne se repasse pas : sinon l'ouverture crée un nouvel examen vierge.
+if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['id']), 'test' => new ObjectId($params['test']), 'active' => true])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $db->jsonResponse(false, 'Ce QCM est déjà terminé.', './ListeDesQcm');
+    }
+    header('Location: ./ListeDesQcm');
+    exit();
+}
+// Niveau pas encore débloqué (Junior → Senior → Expert) : refusé même en tapant l'URL.
+if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['id']), 'test' => new ObjectId($params['test']), 'activeTest' => false])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $db->jsonResponse(false, 'Ce niveau n\'est pas encore débloqué.', './ListeDesQcm');
+    }
+    header('Location: ./ListeDesQcm');
+    exit();
+}
 $fetcher = new QuizDataFetcher($db);
 $data = $fetcher->fetchUserData($params['id'], new ObjectId($params['test']), $params['level']);
 if (!$data) {

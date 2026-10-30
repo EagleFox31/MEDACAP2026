@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -13,7 +14,7 @@ if (!$isLoggedIn) {
     exit();
 }
 
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 
 // Seuil "en ligne" : last_seen dans les 3 dernières minutes (heartbeat toutes les 60s)

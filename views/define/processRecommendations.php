@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require_once "../../vendor/autoload.php";
 include_once "../language.php";
 include_once "../userFilters.php";
@@ -7,7 +8,7 @@ include_once "scoreFunctions.php"; // Ce fichier contient maintenant la classe S
 include_once "trainingFunctions.php";
 
 // Connexion à MongoDB
-$mongoClient = new MongoDB\Client("mongodb://localhost:27017");
+$mongoClient = new MongoDB\Client(medacapMongoUri());
 $academy = $mongoClient->selectDatabase('academy'); // Assurez-vous que le nom de la base de données est correct
 
 // Charger la configuration

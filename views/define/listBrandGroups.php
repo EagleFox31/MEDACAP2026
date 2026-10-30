@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -11,7 +12,7 @@ if (!isset($_SESSION["id"]) || $_SESSION["profile"] != "Super Admin") {
 require_once "../../vendor/autoload.php";
 
 // Connexion MongoDB
-$client = new MongoDB\Client("mongodb://localhost:27017");
+$client = new MongoDB\Client(medacapMongoUri());
 $academy = $client->academy;
 $collection = $academy->nonSupportedGroupsByBrandLevel;
 
@@ -264,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <?php include_once "partials/footer.php"; ?>

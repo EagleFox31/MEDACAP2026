@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Resynchronise results PL depuis le dernier exam (quand exam > result).
  * Usage: php scripts/resync_pl2026_from_exam.php [--dry-run] [--user=machia]
@@ -17,7 +18,7 @@ foreach ($argv ?? [] as $a) {
 }
 
 $paperId = new ObjectId('6a452db87ae27d2cc30d8592');
-$client = new MongoDB\Client('mongodb://10.68.0.7:27017');
+$client = new MongoDB\Client(medacapMongoUri('mongodb://10.68.0.7:27017'));
 $db = $client->academy;
 
 function countAnsweredArr($arr): int {

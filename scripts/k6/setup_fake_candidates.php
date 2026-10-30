@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require __DIR__ . "/../../vendor/autoload.php";
 
 use MongoDB\Client;
@@ -17,7 +18,7 @@ function argValue(array $argv, string $name, ?string $default = null): ?string {
 $paperId = (string)(argValue($argv, "paper-id", ""));
 $count = max(1, (int)(argValue($argv, "count", "100")));
 $password = (string)(argValue($argv, "password", "0000"));
-$mongoUri = (string)(argValue($argv, "mongo-uri", "mongodb://10.68.0.7:27017"));
+$mongoUri = (string)(argValue($argv, "mongo-uri", medacapMongoUri('mongodb://10.68.0.7:27017')));
 $tag = (string)(argValue($argv, "tag", "lt_" . date("Ymd_His")));
 $country = (string)(argValue($argv, "country", "Cameroun"));
 

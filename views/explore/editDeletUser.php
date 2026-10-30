@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -73,7 +74,7 @@ if (!isset($_SESSION["profile"])) {
      ?>
 <?php
 require_once "../../vendor/autoload.php"; // Create connection
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 // Connexion à la base de donnée
 $academy = $conn->academy; 
 // Connexion aux collections
@@ -4216,9 +4217,7 @@ if (isset($_POST["retire-technician-manager"])) {
                                                                 [
                                                                     "_id" => [
                                                                         '$in' =>
-                                                                            $user[
-                                                                                "users"
-                                                                            ],
+                                                                            ($user["users"] ?? []),
                                                                     ],
                                                                 ]
                                                             );

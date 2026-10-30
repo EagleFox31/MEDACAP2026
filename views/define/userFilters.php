@@ -79,6 +79,11 @@ function filterUsersByProfile($academy, $profile, $country = null, $level = null
         $filter['manager'] = new ObjectId($managerId);
     }
 
+    // Un manager ne voit que ses collaborateurs, quel que soit le ?manager= reçu (le pays seul exposait tout le pays)
+    if ($profile === "Manager") {
+        $filter['manager'] = new ObjectId($_SESSION['id']);
+    }
+
     // // Si un `managerId` est spécifié, appliquer l'agrégation avec `$lookup`
     // if ($managerId && $managerId !== 'all') {
     //     try {

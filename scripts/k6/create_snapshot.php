@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require __DIR__ . "/../../vendor/autoload.php";
 
 use MongoDB\Client;
@@ -123,7 +124,7 @@ function parse_k6_summary_with_issues(string $summaryPath): array {
 }
 
 $tag = (string)argValue($argv, "tag", "");
-$mongoUri = (string)argValue($argv, "mongo-uri", "mongodb://10.68.0.7:27017");
+$mongoUri = (string)argValue($argv, "mongo-uri", medacapMongoUri('mongodb://10.68.0.7:27017'));
 $summaryPath = (string)argValue($argv, "summary", __DIR__ . "/out/{$tag}-summary.json");
 $statePath = (string)argValue($argv, "state", __DIR__ . "/out/{$tag}-state.json");
 $logPath = (string)argValue($argv, "log", __DIR__ . "/out/{$tag}-worker.log");

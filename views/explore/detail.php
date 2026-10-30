@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -10,7 +11,7 @@ if (!isset($_SESSION["id"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;
@@ -22,6 +23,8 @@ if (!isset($_SESSION["id"])) {
     $validations = $academy->validations;
 
     $id = $_GET["id"];
+    require_once __DIR__ . '/../../core/user_access.php';
+    medacapRequireUserAccess($users, $id);
     $niveau = $_GET["level"];
     $numberTest = $_GET["numberTest"];
 
@@ -202,9 +205,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["typeR" => "Managers"],
                                         ["level" => $niveau],
@@ -220,9 +221,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["typeR" => "Technicien - Manager"],
                                         ["level" => $niveau],
@@ -752,7 +751,7 @@ if (!isset($_SESSION["id"])) {
                                             style="width: 155.266px;">
                                         </th>
                                         <?php 
-                                        $percenttt = ceil(($groupeFac->score * 100) /  $groupeFac->total);
+                                        $percenttt = ceil(($groupeFac->score * 100) /  max(1, (float) $groupeFac->total));
                                         $bootstrapClass = getBootstrapClass($percenttt);
                                         ?>
                                         <th id="result-savoir"
@@ -770,7 +769,7 @@ if (!isset($_SESSION["id"])) {
                                             style="width: 155.266px;">
                                             <?php echo $result ?></th>
                                         <?php 
-                                            $percenttt1 = ceil(($groupeDecla->score * 100) /  $groupeDecla->total);
+                                            $percenttt1 = ceil(($groupeDecla->score * 100) /  max(1, (float) $groupeDecla->total));
                                             $bootstrapClass = getBootstrapClass($percenttt1);
                                         ?>
                                         <th id="result-n"
@@ -781,7 +780,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php echo $percenttt1; ?>%
                                         </th>
                                         <?php 
-                                            $percenttt2 = ceil(($groupeMa->score * 100) /  $groupeMa->total);
+                                            $percenttt2 = ceil(($groupeMa->score * 100) /  max(1, (float) $groupeMa->total));
                                             $bootstrapClass = getBootstrapClass($percenttt2);
                                         ?>
                                         <th id="result-n1"
@@ -792,7 +791,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php echo $percenttt2; ?>%
                                         </th>
                                         <?php 
-                                            $percenttt3 = ceil(($groupeTechMa->score * 100) /  $groupeTechMa->total);
+                                            $percenttt3 = ceil(($groupeTechMa->score * 100) /  max(1, (float) $groupeTechMa->total));
                                             $bootstrapClass = getBootstrapClass($percenttt3);
                                         ?>
                                         <th id="result-savoir-faire"
@@ -836,8 +835,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../public/js/main.js"></script>

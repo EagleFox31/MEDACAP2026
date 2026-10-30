@@ -1,0 +1,5 @@
+# Tâches planifiées du service cron (supercronic, fuseau TZ=Africa/Douala, utilisateur www-data).
+# Seuil 60 % des épreuves de recrutement : alerte mail au franchissement.
+*/15 * * * * php /var/www/html/cronjobs/check_paper_completion_threshold.php
+# Cache quotidien des résultats par filiale (resultSubsidiary.php).
+30 2 * * * php /var/www/html/cronjobs/generate_subsidiary_reports.php

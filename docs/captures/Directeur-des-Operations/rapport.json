@@ -1,0 +1,121 @@
+{
+  "profil": "Directeur des Opérations",
+  "pages": [
+    {
+      "url": "/views/portal",
+      "statut": 200,
+      "capture": "00-portal.jpg",
+      "titre": "Portail MEDACAP | CFAO Mobility Academy",
+      "depuis": "connexion"
+    },
+    {
+      "url": "/views/measure/dashboardAdmin",
+      "statut": 200,
+      "capture": "01-dashboardAdmin.jpg",
+      "titre": "Résultats des Techniciens par Niveau | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/explore/stateAgency",
+      "statut": 200,
+      "capture": "02-stateAgency.jpg",
+      "titre": "Etat d'Avancement Agence de <br /> <b>Warning</b>: Undefined array key \"agency\" in <b>/var/www/html/views/explore/stateAgency.php</b> on line <b>913</b><br /> | CFAO Mobility Academy",
+      "depuis": "/views/portal"
+    },
+    {
+      "url": "/views/define/dashboard",
+      "statut": 200,
+      "capture": "03-dashboard.jpg",
+      "titre": "Tableau de Bord Directeur | CFAO Mobility Academy",
+      "depuis": "/views/portal",
+      "erreur_php": "Warning:  Undefined variable $dop_space in /var/www/html/views/define/partials/header.php on line 347\n\n                                \n                                                                                    <span c"
+    },
+    {
+      "url": "/views/measure/dashboard",
+      "statut": 200,
+      "capture": "04-dashboard.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/measure/calendar",
+      "statut": 200,
+      "capture": "05-calendar.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/measure/profile.php?id=6639fa5efa77000054002664",
+      "statut": 200,
+      "capture": "06-profile-id-6639fa5efa77000054002664.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/dashboardAdmin"
+    },
+    {
+      "url": "/views/explore/stateAgency?agency=all",
+      "statut": 200,
+      "capture": "07-stateAgency-agency-all.jpg",
+      "titre": "Etat d'Avancement Agence de all | CFAO Mobility Academy",
+      "depuis": "/views/explore/stateAgency"
+    },
+    {
+      "url": "/views/explore/userSpeciality?level=Junior",
+      "statut": 200,
+      "capture": "08-userSpeciality-level-Junior.jpg",
+      "titre": "Taux de couverture des tâches professionnelles du niveau junior | CFAO Mobility Academy",
+      "depuis": "/views/explore/stateAgency"
+    },
+    {
+      "url": "/views/explore/results",
+      "statut": 200,
+      "capture": "09-results.jpg",
+      "titre": "Liste des résultats | CFAO Mobility Academy",
+      "depuis": "/views/explore/stateAgency"
+    },
+    {
+      "url": "/views/explore/userSubsidiaryResult?level=Junior&subsidiary=CFAO%20MOTORS%20RDC",
+      "statut": 200,
+      "capture": "10-userSubsidiaryResult-level-Junior-subsidiary-CFAO-20MOTORS-2.jpg",
+      "titre": "Résultat du Technicien | CFAO Mobility Academy",
+      "depuis": "/views/explore/stateAgency"
+    },
+    {
+      "url": "/views/explore/profile.php?id=6639fa5efa77000054002664",
+      "statut": 200,
+      "capture": "11-profile-id-6639fa5efa77000054002664.jpg",
+      "titre": "Mes Informations | CFAO Mobility Academy",
+      "depuis": "/views/explore/stateAgency"
+    },
+    {
+      "url": "/views/define/selectTraining?user=all&training=all&brand=all&level=all",
+      "statut": 200,
+      "capture": "12-selectTraining-user-all-training-all-brand-all-level-all.jpg",
+      "titre": "Validation des Plans de Formations | CFAO Mobility Academy",
+      "depuis": "/views/define/dashboard"
+    },
+    {
+      "url": "/views/define/recommandationTraining?country=RDC&agency=all&manager=all",
+      "statut": 200,
+      "capture": "13-recommandationTraining-country-RDC-agency-all-manager-all.jpg",
+      "titre": "Liste des Formations Proposées aux Collaborateurs | CFAO Mobility Academy",
+      "depuis": "/views/define/dashboard"
+    },
+    {
+      "url": "/views/define/planning",
+      "statut": 200,
+      "capture": "14-planning.jpg",
+      "titre": "Planning des formations | CFAO Mobility Academy",
+      "depuis": "/views/define/dashboard"
+    },
+    {
+      "url": "/views/define/profile.php?id=6639fa5efa77000054002664",
+      "statut": 200,
+      "capture": "15-profile-id-6639fa5efa77000054002664.jpg",
+      "titre": "3 - Définir les plans individuels et collectifs de formation | CFAO Mobility Academy",
+      "depuis": "/views/define/dashboard"
+    }
+  ],
+  "erreurs": 0,
+  "avertissements": 1,
+  "connexion": "ok"
+}

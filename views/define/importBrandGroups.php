@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -12,7 +13,7 @@ if (!isset($_SESSION["id"])) {
     if (isset($_POST["submit"])) {
         try {
             // 1) Connexion à MongoDB
-            $conn = new MongoDB\Client("mongodb://localhost:27017");
+            $conn = new MongoDB\Client(medacapMongoUri());
             $academy = $conn->academy;
 
             // 2) Choix de la collection

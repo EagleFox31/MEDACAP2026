@@ -1,0 +1,209 @@
+# MEDACAP — instructions agents
+
+> **IMPORTANT — cible unique depuis le 29/10/2026** : la stack Docker **MEDACAP 8.4 / version 2.9.4** (PHP 8.4, MongoDB 8.0, `mongodb/mongodb` 1.21.5) est la **seule cible**, à déployer sur le serveur **10.68.0.15** (`docker-compose.server.yml`). L'ancienne installation WAMP sur `10.68.0.7` (PHP 7.3, MongoDB 4.2, lib 1.0.0) est **abandonnée** : plus de compatibilité PHP 7.3 à préserver, plus de déploiement ni de requête vers .7. Dépendances : PHP 8.4 minimum, aucune bibliothèque obsolète ou non maintenue. Lire d'abord `README.md` et `PLAN.md`. Le code source et les dépendances du conteneur doivent être reproductibles à partir d'un clone Git, `vendor/` étant géré par le build et un volume dédié. La base `academy` ne se restaure que sur le volume isolé `medacap84` à partir d'une archive autorisée, validée pour MongoDB 8.0. Les tests métier sur copie restent obligatoires avant la fusion. Les commits/push restent conditionnés aux demandes explicites de l'utilisatrice.
+
+Ce fichier est la **mémoire projet** pour tout assistant de code et tout développeur, quel que soit l'outil. Le consulter avant d’écrire ou modifier du PHP MEDACAP.
+
+## Démarrage rapide (branche 8.4)
+
+- Runtime : conteneurs Docker (`docker compose up -d --build`), PHP 8.4, MongoDB 8.0, `mongodb/mongodb` 1.21.5. Local : site `http://127.0.0.1:8084/`, base `mongodb://127.0.0.1:27018`. Serveur : 10.68.0.15. Voir `README.md`.
+- Code **PHP 8.4** : la syntaxe moderne est autorisée (`fn`, `match`, propriétés typées, `str_contains()`…). Aucun avertissement ni `Deprecated` 8.4 toléré (ex. paramètre implicitement nullable → `?string`).
+- Lire l'URI Mongo et l'URL publique via `core/medacap_config.php` : jamais d'adresse en dur dans une page.
+- Vérifier avant de livrer : `docker compose exec -T web php -l <fichier>` puis `python tests/parcours/parcours_profils.py --accounts <comptes.json>` (lecture seule, rejouable). Aucun « c'est fait » sans cette preuve.
+- Scripts de données : toujours idempotents (relançables sans double effet), avec un mode `--dry-run` quand ils écrivent, et jamais exécutés contre la base du serveur .15 sans accord explicite.
+- Interdits dans le dépôt : identifiants, `.env`, dumps, exports Excel nominatifs, chemins propres à un poste (`C:\Users\…`). Les messages de commit décrivent uniquement le changement technique.
+
+## Runtime cible
+
+- **PHP 8.4** (image `php:8.4-apache`, extension `mongodb` 1.21) — serveur **10.68.0.15**
+- **MongoDB 8.0** — base `academy`, volume Docker dédié
+- `mongodb/mongodb` **1.21.5**, `phpoffice/phpspreadsheet` 1.30.x (voir `composer.lock`)
+- URI Mongo : variable d’env `MEDACAP_MONGO_URI` (lue par `core/medacap_config.php`)
+- `10.68.0.7` (WAMP, PHP 7.3, MongoDB 4.2) : **abandonné**, ne plus le cibler
+
+## MongoDB / BSON
+
+- Les documents MongoDB arrivent en `BSONDocument` / `BSONArray`, **pas** en `array` natif.
+- Ne **pas** typer `array` sur un paramètre qui reçoit un doc Mongo directement.
+- Helpers existants :
+  - `paperReportToArr($v)` dans `paper_candidate_report_lib.php`
+  - `bson_to_array($v)` dans certains cronjobs
+  - `json_decode(json_encode($v), true)` en dernier recours
+- Filtrer comptes `demo` / `loadtestTag` des stats recrutement.
+- `Collection::count()` est déprécié depuis la lib 1.4 (retiré en 2.0) : utiliser `countDocuments()` / `estimatedDocumentCount()`. Le helper historique `medacapCountDocuments()` (`core/mongo_compat.php`) reste valable.
+
+### `Error` n'est pas `Exception` — utiliser `catch (Throwable)`
+
+En PHP 7 et 8, `Error` (donc `TypeError`, « undefined method », « undefined function ») **n'hérite pas**
+de `Exception`. Un `catch (Exception $e)` le laisse passer.
+
+- Autour d'un appel à une lib externe ou à une fonction typée : `catch (Throwable $e)`.
+- Ne **jamais** avaler l'exception derrière un message générique sans `error_log()` du détail :
+  classe + message + fichier + ligne.
+- Un handler AJAX ne doit **jamais** répondre `success: true` depuis un `catch`.
+
+**Cas réel (2026-08-21)** — finalisation des QCM factuels techniciens cassée en prod :
+un `countDocuments()` introduit dans `QuizResultProcessor::processSpecialtyResult()` levait une
+`Error`, rattrapée par le `catch (Throwable)` final de `submit()` qui affichait
+« Server error during submission ». Trois couches masquaient la cause : `catch (Exception)` internes
+qui laissaient filer l'`Error`, `error_log()` commenté, et `save()` qui renvoyait `success: true`
+même en échec. Diagnostic impossible sans instrumenter d'abord.
+
+## Includes — pages `views/measure/*.php`
+
+Toujours préférer **`__DIR__`** pour les chemins relatifs (évite les erreurs selon le CWD).
+
+| Fichier | Chemin correct depuis `views/measure/` |
+|---|---|
+| Language Measure | `__DIR__ . '/includes/language.php'` |
+| Background manager | `__DIR__ . '/../partials/background-manager.php'` |
+| Header Measure | `__DIR__ . '/partials/header.php'` |
+| Footer Measure | `__DIR__ . '/partials/footer.php'` |
+| Vendor autoload | `__DIR__ . '/../../vendor/autoload.php'` |
+| sendMail | `__DIR__ . '/../sendMail.php'` |
+| Libs locales | `__DIR__ . '/includes/nom_lib.php'` |
+| Scripts CLI réutilisés | `__DIR__ . '/../../scripts/nom_script.php'` |
+
+**Erreurs typiques :**
+
+```
+include_once(partials/background-manager.php): failed to open stream
+Call to undefined function setPageBackground()
+```
+
+→ `background-manager.php` n’est **pas** dans `views/measure/partials/` mais dans **`views/partials/`**.
+
+```
+Warning: Illegal string offset 'enrolled' / 'threshold_pct'
+```
+
+→ `includes/language.php` écrase `$stats` avec `"Statistiques"`. Inclure `language.php` **en premier**, et utiliser un nom de variable métier distinct (`$completionStats`, pas `$stats`).
+
+**Layout pages avec `openBackgroundContainer()` :**
+
+- `.page-background-container { overflow: hidden }` peut couper le contenu — ajouter une classe scope (`rr-report-scope`) avec `overflow: visible; height: auto;` si besoin.
+- Ne pas utiliser `scrollIntoView({ block: 'start' })` sous un header fixe — compenser la hauteur de `#kt_header` avant `window.scrollTo`.
+- `#kt_header .title-banner` : centré dans le header (compact, sans `padding-left` fixe) ; titres longs en `clamp()` — ne pas remettre `p-4 mb-4` ni `overflow-hidden` sur le bandeau module.
+
+**Modèle minimal page Measure :**
+
+```php
+session_start();
+// garde session + profil…
+include_once __DIR__ . '/includes/language.php'; // AVANT les variables métier ($stats est réservé)
+require_once __DIR__ . '/../../vendor/autoload.php';
+include_once __DIR__ . '/../partials/background-manager.php';
+setPageBackground('bg-dashboard');
+$title = 'Mon titre';
+include_once __DIR__ . '/partials/header.php';
+openBackgroundContainer();
+// contenu…
+closeBackgroundContainer();
+include_once __DIR__ . '/partials/footer.php';
+```
+
+Variantes existantes dans le codebase (`../partials/`, `includes/background-manager.php`, `../core/background-manager.php`) — pour **nouveau code**, suivre le tableau ci-dessus.
+
+## Conventions projet
+
+- Pages Measure : session + garde profil (`Super Admin`, `Admin`, `Ressource Humaine`, etc.).
+- Mails : `views/sendMail.php` — `CC_STATIC` inclut `jakaa-ext@cfao.com`, `lgonin@cfao.com`, `aybokally@cfao.com`.
+- RH filiale Cameroun : `getRhAndDpsEmails('CFAO MOBILITY CAMEROON', $mongo)`.
+- Menu Measure : collection Mongo `functionalities` + profils ; scripts `views/measure/scripts/setup_*.php`.
+- Ne **pas** éditer les fichiers de plan `.cursor/plans/*.plan.md` sauf demande explicite.
+- Commits / push **uniquement** sur demande utilisateur.
+- Diff minimal — réutiliser l’existant, matcher le style du fichier.
+
+## Mails
+
+- Fonctions rapport recrutement : `sendPaperCompletionThresholdMail()`, `sendPaperManualReportToRh()` dans `sendMail.php`.
+- En local WAMP : `mail()` échoue souvent (`localhost:25` absent) — normal, tester sur prod.
+- Idempotence : champs `autoAlertSentAt` / `manualReportSentAt` dans `paper_campaign_status`.
+
+## Rapports recrutement PL (papers figés)
+
+### Fichiers clés
+
+| Fichier | Rôle |
+|---|---|
+| `views/measure/includes/paper_candidate_report_lib.php` | Cœur métier rapport |
+| `views/measure/includes/paper_macro_specialities.php` | Mapping macro-spécialités |
+| `views/measure/rapportRecrutement.php` | UI web |
+| `scripts/export_paper_scores.php` | Export Excel |
+| `scripts/report_pl2026_composers.php` | Rapport console CLI |
+| `cronjobs/check_paper_completion_threshold.php` | Cron alerte 60% |
+| `views/measure/scripts/setup_rapport_recrutement_menu.php` | Menu + backfill statuts |
+| `views/measure/userPaperQuiz.php` | Hook post-validation candidat |
+
+### Papers Août 2026 Cameroun
+
+| Épreuve | Paper ID |
+|---|---|
+| Recrutement Poids Lourds Aout 2026 | `6a82dbf45b3b2bb665098ec2` |
+| Recrutement PL Electricien Aout 2026 | `6a82dafa726d3580f703ecc2` |
+
+4 candidats composés en base (3 mécanique, 1 électricien).
+
+### Règles métier
+
+- Seuil alerte : **60% composés / inscrits par épreuve** (pas global).
+- Alerte mail **uniquement au franchissement** du seuil (pas rétroactive).
+- « Composé » = ≥ 1 réponse QCM **ou** statut allocation `Terminé`.
+- Temps écoulé = durée paper − chrono restant.
+- Vitesse = répondues / minutes écoulées (1 décimale).
+- Macro-spécialités : Électricité vs Mécanique (voir `paper_macro_specialities.php`).
+- **Maîtrise /20** : `(bonnes réponses ÷ questions répondues) × 20` — qualité sur ce qui a été traité.
+- **Complétude /20** : `(bonnes réponses ÷ total banque) × 20` — pénalise les non-réponses.
+- Pas de « note recrutement » côté MEDACAP : on transmet les notes de connaissances, le RH décide.
+- Champs legacy `note_recrutement*` encore calculés en interne (blend) mais non affichés par défaut.
+
+### Collection `paper_campaign_status`
+
+```javascript
+{ paper, enrolled, composed, completionPct, thresholdPct,
+  autoAlertSentAt, manualReportSentAt, updated }
+```
+
+### Accès UI
+
+- Lecture : Super Admin, Admin, Ressource Humaine
+- Envoi mail RH : Super Admin, Admin
+- URL : `views/measure/rapportRecrutement.php?paper=<id>&user=<id>`
+
+## Tests CLI utiles
+
+Dans le conteneur : `docker compose exec -T web <commande>` (l'URI interne est `mongodb://127.0.0.1:27017`).
+
+```bash
+php -l views/measure/rapportRecrutement.php
+php scripts/report_pl2026_composers.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://127.0.0.1:27017
+php scripts/export_paper_scores.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://127.0.0.1:27017
+php cronjobs/check_paper_completion_threshold.php
+php views/measure/scripts/setup_rapport_recrutement_menu.php
+# QCM offline brousse (export sur prod, import retour fichier)
+php scripts/export_offline_qcm.php --agency=Bertoua --mongo-uri=mongodb://127.0.0.1:27017
+php scripts/import_offline_qcm.php --file=exports/offline-qcm/Bertoua/Michel_BAYEMI_Junior_QCM.html
+```
+
+## QCM offline (brousse / hors réseau CFAO)
+
+- Export : `scripts/export_offline_qcm.php` → **1 fichier HTML par technicien/niveau** (`Prenom_NOM_Junior_QCM.html`) avec questions intégrées
+- Technicien : double-clic HTML → accueil (contexte épreuve) → saisie nom → compose → « Terminer » → télécharge `*_REPONSES.medacap.json`
+- Import retour RH : `scripts/import_offline_qcm.php --file=...` (HTML complété ou `.medacap.json` legacy)
+- Player dev / démo : `offline-qcm/player/` ; sample autonome : `php scripts/build_offline_sample_html.php` → `sample_QCM.html`
+- Format retour : réponses **dans le HTML** (`#medacap-quiz-data`, status `completed` puis `imported`) ; JSON legacy accepté à l'import
+- Moteur partagé web/offline : `views/measure/includes/quiz_factuel_engine.php` (requis par `userQuizFactuel.php`)
+
+Toujours lancer `php -l` sur les fichiers PHP modifiés avant livraison.
+
+## Déploiement prod
+
+- Cible : serveur **10.68.0.15**, `docker compose -f docker-compose.server.yml --env-file .env.server up -d --build` (`.env.server` hors dépôt, SMTP inclus).
+- Avant tout déploiement : parcours des profils rejoué sans erreur, lint PHP 8.4 des fichiers modifiés, sauvegarde Mongo récente vérifiée.
+- `deploy.ps1` (copie vers `Y:\` = ancien serveur `10.68.0.7`) est **obsolète** : ne plus l'utiliser.
+
+## Progression niveaux QCM (Junior → Senior → Expert)
+
+- Déverrouillage quand Factuel **et** Déclaratif du niveau ont `active=true` (`allocation_progression.php`).
+- **Automatique** : à la soumission Factuel/Déclaratif + à chaque ouverture de `ListeDesQcm.php` (`allocationProgression_syncUnlockedLevels`).
+- Rattrapage CLI : `php scripts/fix_stuck_level_unlock_cm.php` (dry-run avec `--dry-run`).

@@ -1,0 +1,114 @@
+{
+  "profil": "Manager",
+  "pages": [
+    {
+      "url": "/views/measure/userManagerList",
+      "statut": 200,
+      "capture": "00-userManagerList.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "connexion"
+    },
+    {
+      "url": "/views/portal.php",
+      "statut": 200,
+      "capture": "01-portal.jpg",
+      "titre": "Portail MEDACAP | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/dashboard",
+      "statut": 200,
+      "capture": "02-dashboard.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/dashboardAdmin",
+      "statut": 200,
+      "capture": "03-dashboardAdmin.jpg",
+      "titre": "Participation aux Tests | CFAO Mobility Academy | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/bilanTestNotes",
+      "statut": 200,
+      "capture": "04-bilanTestNotes.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/ListeDesQcm",
+      "statut": 200,
+      "capture": "05-ListeDesQcm.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/profile.php?id=66694d8b582300001b0058d9",
+      "statut": 200,
+      "capture": "06-profile-id-66694d8b582300001b0058d9.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/userEvaluation?test=6a4800cbc13f00006c005e89&level=Junior&id=66694d8b582300001b0058d9&user=6a4800cbc13f00006c005e86",
+      "statut": 200,
+      "capture": "07-userEvaluation-test-6a4800cbc13f00006c005e89-level-Junior-id.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/measure/userEvaluation?test=6a4800cbc13f00006c005e8b&level=Senior&id=66694d8b582300001b0058d9&user=6a4800cbc13f00006c005e86",
+      "statut": 200,
+      "capture": "08-userEvaluation-test-6a4800cbc13f00006c005e8b-level-Senior-id.jpg",
+      "titre": "",
+      "depuis": "/views/measure/userManagerList"
+    },
+    {
+      "url": "/views/define/dashboard",
+      "statut": 200,
+      "capture": "09-dashboard.jpg",
+      "titre": "Tableau de Bord | CFAO Mobility Academy",
+      "depuis": "/views/portal.php",
+      "erreur_php": "Warning:  Undefined variable $manager_space in /var/www/html/views/define/partials/header.php on line 355\n\n                                \n                                                                                    <sp"
+    },
+    {
+      "url": "/views/measure/bilanTestNotes",
+      "statut": 200,
+      "capture": "10-bilanTestNotes.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/bilanTestNotes"
+    },
+    {
+      "url": "/views/measure/bilanTest?view=progress",
+      "statut": 200,
+      "capture": "11-bilanTest-view-progress.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/bilanTestNotes"
+    },
+    {
+      "url": "/views/measure/detailTechnicien?user=66694d91582300001b0059f7",
+      "statut": 200,
+      "capture": "12-detailTechnicien-user-66694d91582300001b0059f7.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/bilanTestNotes"
+    },
+    {
+      "url": "/views/measure/detailTechnicien?user=66694d91582300001b005a00",
+      "statut": 200,
+      "capture": "13-detailTechnicien-user-66694d91582300001b005a00.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/bilanTestNotes"
+    },
+    {
+      "url": "/views/measure/detailTechnicien?user=6a4800cbc13f00006c005e86",
+      "statut": 200,
+      "capture": "14-detailTechnicien-user-6a4800cbc13f00006c005e86.jpg",
+      "titre": "1 - Mesurer les compétences des techniciens | CFAO Mobility Academy",
+      "depuis": "/views/measure/bilanTestNotes"
+    }
+  ],
+  "erreurs": 0,
+  "avertissements": 1,
+  "connexion": "ok"
+}

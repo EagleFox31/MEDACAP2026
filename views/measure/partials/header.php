@@ -1,7 +1,8 @@
     <?php
+require_once __DIR__ . '/../../../core/medacap_config.php';
     // Connexion à MongoDB
     require_once "../../vendor/autoload.php";
-    $client = new MongoDB\Client("mongodb://localhost:27017");
+    $client = new MongoDB\Client(medacapMongoUri());
     $academy = $client->academy;
     $profilesCollection = $academy->profiles;
     $functionalitiesCollection = $academy->functionalities;
@@ -18,6 +19,7 @@
     }
 
     require_once __DIR__.'/helpersMenu.php';
+    require_once __DIR__ . '/../../partials/medacap_topbar.php';
 
 
     // Récupérer le profil de l'utilisateur
@@ -216,38 +218,8 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
         .card {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-        
-.title-banner {
-    /* Fond blanc translucide */
-    background: rgba(255, 255, 255, 0.85);
-
-    /* Effet de flou en arrière-plan */
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(8px);
-
-    /* Léger contour + coins arrondis */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-
-    /* Ombre discrète */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-    /* Couleur du texte */
-    color: #333;
-    /* Ajuste en #fff si tu préfères un texte clair */
-    justify-content: center;
-    /* Centre verticalement */
-    align-items: center;
-    /* Centre horizontalement */
-    text-align: center;
-    /* Centre le texte */
-}
-
-    /* Hide header spinner when page-specific loader is active */
-    body.loading-active #spinner {
-        display: none !important;
-    }
     </style>
+    <?php medacapTopbarIncludeAssets(); ?>
 
     <head>
         <meta charset="utf-8" />
@@ -275,7 +247,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
         <meta property="og:url" content="https://themes.getbootstrap.com/product/craft-bootstrap-5-admin-dashboard-theme" />
         <meta property="og:site_name" content="Keenthemes | Craft" />
         <link rel="canonical" href="https://preview.keenthemes.com/craft" />
-        <link rel="shortcut icon" href="/images/logo-cfao.png" />
+        <link rel="shortcut icon" href="../../public/images/logo-cfao.png" />
         <!--begin::Fonts(mandatory for all pages)-->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
         <!--end::Fonts-->
@@ -288,13 +260,13 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
         <link href="../../public/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
         <link href="../../public/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet"
-            href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
+            href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/css/multi-select-tag.css">
             <link href="../../public/assets/css/ki-duotone-icons.css" rel="stylesheet" type="text/css" />
         <!--end::Global Stylesheets Bundle-->
         <!--Begin::Google Tag Manager -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.22/index.global.min.js'></script>
         <script>
         (function(w, d, s, l, i) {
             w[l] = w[l] || [];
@@ -318,8 +290,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
             window.top.location.replace(window.self.location.href);
         }
         </script>
-        <script src="https://code.jquery.com/jquery-3.6.3.js"
-            integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
         </script>
 
@@ -384,8 +355,10 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                         <!--begin::Brand-->
                         <div style="background:#e6e6e6;" class="aside-logo flex-column-auto px-10 pt-9 pb-5" id="kt_aside_logo">
                             <!--begin::Action-->
-                            <a href="../portal.php"
-                            class="btn btn-sm btn-light align-self-center"><?php echo $portal ?></a>
+                            <a href="../portal.php" class="btn btn-sm btn-light align-self-center">
+                                <span class="portal-text"><?php echo $portal; ?></span>
+                                <i class="ki-duotone ki-element-11 portal-icon fs-2 d-none"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                            </a>
                             <!--end::Action-->
                             <!--begin::Logo-->
                             <a href="./dashboard">
@@ -467,6 +440,10 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                 <?php
                                     $currentPageMeasure = pathinfo(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), PATHINFO_FILENAME);
                                     $isDashboardMeasure = ($currentPageMeasure === $dashboardBase);
+                                    $usersCollection = $academy->users;
+                                    $sessionUserId = new MongoDB\BSON\ObjectId($_SESSION['id']);
+                                    $hasCollaborators = menuCurrentUserHasCollaborators($usersCollection, $sessionUserId);
+                                    $isManagerTechnicien = ($_SESSION['profile'] === 'Manager' && !empty($_SESSION['test']));
                                 ?>
                                 <div class="menu-item show">
                                         <!-- begin:Menu link -->
@@ -520,10 +497,27 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
 
                                         /* ——— Manager ——— */
                                         elseif ($_SESSION['profile'] === 'Manager') {
+                                            /* Manager-technicien sans equipe : menu epure (comme Technicien) */
+                                            if ($isManagerTechnicien && !$hasCollaborators) {
+                                                foreach ($menuStructure as $groupName => $items) {
+                                                    if ($groupName === '') {
+                                                        foreach ($items as $item) {
+                                                            if (!menuIsSidebarExcludedKey($item['key'] ?? '')) {
+                                                                echoItem($item, $lang, '?id=' . $_SESSION['id']);
+                                                            }
+                                                        }
+                                                    } elseif (groupLabel($items, $lang) === $mesure_des_competences) {
+                                                        echoMesureCompetencesGroup($items, $lang, '');
+                                                    }
+                                                }
+                                            } else {
                                             foreach ($menuStructure as $groupName => $items) {
 
                                                 /* === MON ÉQUIPE ============================= */
                                                 if ($groupName === $mon_equipe) {
+                                                    if (!$hasCollaborators) {
+                                                        continue;
+                                                    }
                                                     /* titre de groupe */
                                                     echo '<div class="menu-content">';
                                                     echo '<span class="fw-bold text-black text-uppercase fs-70">'
@@ -539,7 +533,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                                 }
 
                                                 /* === ÉVALUER VOS COLLABORATEURS ============== */
-                                                if (conditionPourAfficherEvalCollab()) {
+                                                if ($hasCollaborators && conditionPourAfficherEvalCollab()) {
                                                     if ($groupName === $evaluer_vos_collaborateurs) {
 
                                                         echo '<div class="menu-content"><span class="fw-bold text-black text-uppercase fs-70">'
@@ -554,35 +548,41 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                                     }
                                                 }
 
-                                                /* === BILAN DES TESTS (NOUVEAU) ============== */
-                                                // Prendre le premier item pour vérifier le groupe
+                                                /* === BILAN DES TESTS / MESURE / AUTRES ====== */
                                                 $firstItem = reset($items);
                                                 $groupFR = $firstItem['group'] ?? '';
                                                 $groupEN = $firstItem['group_EN'] ?? '';
 
-                                                // Vérifier si c'est le bon groupe (FR ou EN)
+                                                if (!$hasCollaborators && menuIsBilanTestsGroup($items)) {
+                                                    continue;
+                                                }
+
+                                                if (groupLabel($items, $lang) === $mesure_des_competences) {
+                                                    echoMesureCompetencesGroup($items, $lang, '');
+                                                    continue;
+                                                }
+
                                                 $isKnownGroup = ($groupName === $mon_equipe)
                                                     || ($groupName === $evaluer_vos_collaborateurs)
-                                                    || strcasecmp($groupFR, 'Bilan des Tests') === 0
-                                                    || strcasecmp($groupEN, 'Assessment Status') === 0;
+                                                    || menuIsBilanTestsGroup($items);
 
-                                                if (strcasecmp($groupFR, 'Bilan des Tests') === 0 ||
-                                                    strcasecmp($groupEN, 'Assessment Status') === 0
-                                                    || !$isKnownGroup) {
+                                                if (menuIsBilanTestsGroup($items) || !$isKnownGroup) {
 
                                                     echo '<div class="menu-content"><span class="fw-bold text-black text-uppercase fs-70">'
                                                         . htmlspecialchars(groupLabel($items, $lang))
                                                         . '</span></div>';
 
                                                     foreach ($items as $item) {
+                                                        if (menuIsSidebarExcludedKey($item['key'] ?? '')) {
+                                                            continue;
+                                                        }
                                                         echoItem($item, $lang);
                                                     }
 
                                                     echo '<div class="menu-item"><div class="menu-content"></div></div>';
                                                 }
                                             }
-                                        
-                                        /* ——— Admin ——— */
+                                            }
                                         } elseif ($_SESSION['profile'] === 'Admin') {
                                             foreach ($menuStructure as $groupName => $items) {
                                                 /* Afficher le titre du groupe */
@@ -608,20 +608,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                                 }
                                                 /* groupe Mesure des compétences */
                                                 elseif (groupLabel($items, $lang) === $mesure_des_competences) {
-
-                                                    echo '<div class="menu-content"><span class="fw-bold text-black text-uppercase fs-70">'
-                                                        . htmlspecialchars(groupLabel($items, $lang))
-                                                        . '</span></div>';
-
-                                                    $allowed = ['list_qcm_connaissances', 'list_qcm_tache_pro'];
-
-                                                    foreach ($items as $item) {
-                                                        if (in_array($item['key'], $allowed, true)) {
-                                                            echoItem($item, $lang, '');      // echoItem gère déjà l'icône
-                                                        }
-                                                    }
-
-                                                    echo '<div class="menu-item"><div class="menu-content"></div></div>';
+                                                    echoMesureCompetencesGroup($items, $lang, '');
                                                 }
                                             }
 
@@ -647,7 +634,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'fix_username') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/fix_username.php">
+                                               href="../../fix_username.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-pencil fs-2">
                                                         <span class="path1"></span><span class="path2"></span>
@@ -658,7 +645,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'activation') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/views/explore/createUser.php">
+                                               href="../explore/createUser.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-user-tick fs-2">
                                                         <span class="path1"></span><span class="path2"></span><span class="path3"></span>
@@ -669,7 +656,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'create_fixed_paper') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/views/measure/create_fixed_paper.php">
+                                               href="./create_fixed_paper.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-notepad-edit fs-2">
                                                         <span class="path1"></span><span class="path2"></span>
@@ -680,7 +667,7 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                                         </div>
                                         <div class="menu-item">
                                             <a class="menu-link <?php echo (strpos($_SERVER['REQUEST_URI'], 'loadtest') !== false) ? 'active' : ''; ?>"
-                                               href="/medacap/views/measure/loadtest.php">
+                                               href="./loadtest.php">
                                                 <span class="menu-icon">
                                                     <i class="ki-duotone ki-rocket fs-2">
                                                         <span class="path1"></span><span class="path2"></span>
@@ -721,279 +708,16 @@ $allFunctionalities = iterator_to_array($functionalitiesCursor);
                 <!--begin::Wrapper-->
                 <div style="background:#e6e6e6;" class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
                     <!--begin::Header-->
-                    <div style="background:#e6e6e6;" id="kt_header" class="header " data-kt-sticky="true" data-kt-sticky-name="header"
-                        data-kt-sticky-offset="{default: '200px', lg: '300px'}">
-                        <!--begin::Container-->
-                        <div class=" container-fluid  d-flex align-items-stretch justify-content-between">
-                            <!--begin::Logo bar-->
-                            <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-                                <!--begin::Aside Toggle-->
-                                <div class="d-flex align-items-center d-lg-none">
-                                    <div class="btn btn-icon btn-active-color-primary ms-n2 me-1 " id="kt_aside_toggle">
-                                        <i class="ki-duotone ki-abstract-14 fs-1"><span class="path1"></span><span
-                                                class="path2"></span></i>
-                                    </div>
-                                </div>
-                                <!--end::Aside Toggle-->
-                                <!--begin::Logo-->
-                                <a href="./dashboard.php" class="d-lg-none">
-                                    <img alt="Logo" src="../../public/images/logo.png" class="mh-40px" />
-                                </a>
-                                <!--end::Logo-->
-                                <!--begin::Aside toggler-->
-                                <div class="btn btn-icon w-auto ps-0 btn-active-color-danger d-none d-lg-inline-flex me-2 me-lg-5 "
-                                    data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
-                                    data-kt-toggle-name="aside-minimize">
-                                    <i class="ki-duotone ki-black-left-line fs-1 rotate-180"><span
-                                            class="path1"></span><span class="path2"></span></i>
-                                </div>
-                                <!--end::Aside toggler-->
-                            </div>
-                            <!--end::Logo bar-->
-                            <!--begin::Topbar-->
-                            <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
-                                <!--begin::Search-->
-                                <div class="d-flex align-items-stretch me-1">
-                                    <!-- ICI on affiche le module s’il existe -->
-                                    <div class="d-flex align-items-center justify-content-center me-1" style="padding-left: 355px;">
-                                        <section
-                                            class="title-banner w-100 text-center p-4 mb-4 position-relative overflow-hidden mx-auto">
-                                            <div class="container">
-                                                <h1 class="text-uppercase fw-bold mb-0">
-                                                    <?php echo $displayModule; ?>
-                                                </h1>
-                                            </div>
-                                        </section>
-                                    </div>
-                                </div>
-                                <!--end::Search-->
-                                <!--begin::Toolbar wrapper-->
-                                <div class="d-flex align-items-stretch flex-shrink-0">
-                                    <!--begin::Language Toggle-->
-                                    <div class="d-flex align-items-center ms-2 ms-lg-3">
-                                        <form method="get" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>" class="d-flex align-items-center">
-
-                                            <!-- <input type="hidden" name="lang" value=""> -->
-                                            <button type="submit" name="lang" value="FR"
-                                                class="btn btn-sm px-3 py-2 me-1 <?php echo ($lang === 'FR') ? 'btn-primary' : 'btn-light'; ?>"
-                                                title="Passer en français">
-                                                <img src="../../public/assets/media/flags/france.svg" alt="FR" class="w-20px h-20px me-1" />
-                                                FR
-                                            </button>
-                                            <button type="submit" name="lang" value="EN"
-                                                class="btn btn-sm px-3 py-2 <?php echo ($lang === 'EN') ? 'btn-primary' : 'btn-light'; ?>"
-                                                title="Switch to English">
-                                                <img src="../../public/assets/media/flags/united-states.svg" alt="EN" class="w-20px h-20px me-1" />
-                                                EN
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <!--end::Language Toggle-->
-                                    <!--begin::User-->
-                                    <div class="d-flex align-items-center ms-2 ms-lg-3" id="kt_header_user_menu_toggle">
-                                        <!--begin::Menu wrapper-->
-                                        <div class="cursor-pointer symbol symbol-35px symbol-lg-35px"
-                                            data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                                            data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                                            <img alt="Pic" src="../../public/assets/media/avatars/300-1.png" />
-                                            <b>
-                                                <?php echo $_SESSION[
-                                                    "firstName"
-                                                ]; ?>
-                                                <?php echo $_SESSION["lastName"]; ?>
-                                            </b>
-                                        </div>
-                                        <!--begin::User account menu-->
-                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
-                                            data-kt-menu="true">
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-3">
-                                                <a href="./profile.php?id=<?php echo $_SESSION[
-                                                    "id"
-                                                ]; ?>">
-                                                    <div class="menu-content d-flex align-items-center px-3">
-                                                        <!--begin::Avatar-->
-                                                        <div class="symbol symbol-50px me-5">
-                                                            <img alt="Logo" src="../../public/assets/media/avatars/300-1.png"
-                                                                style="max-width:100%;height:auto;" />
-                                                        </div>
-                                                        <!--end::Avatar-->
-                                                        <span>
-                                                            <!--begin::Username-->
-                                                            <div class="d-flex flex-column">
-                                                                <div
-                                                                    class="fw-bolder d-flex align-items-center text-black fs-5">
-                                                                    <?php echo $salut ?>, <?php echo $_SESSION[
-                                                                        "firstName"
-                                                                    ]; ?>
-                                                                    <span
-                                                                        class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
-                                                                        <?php echo $_SESSION[
-                                                                            "profile"
-                                                                        ]; ?>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="fw-bold text-black text-hover-primary fs-7">
-                                                                    <?php echo $_SESSION[
-                                                                        "email"
-                                                                    ]; ?>
-                                                                </div>
-                                                            </div>
-                                                            <!--end::Username-->
-                                                        </span>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu separator-->
-                                            <div class="separator my-2"></div>
-                                            <!--end::Menu separator-->
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-5">
-                                                <a href="./profile.php?id=<?php echo $_SESSION[
-                                                    "id"
-                                                ]; ?>"
-                                                    class="menu-link px-5">
-                                                    <?php echo $my_info ?>
-                                                </a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu separator-->
-                                            <div class="separator my-2"></div>
-                                            <!--end::Menu separator-->
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-5"
-                                                data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                                                data-kt-menu-placement="left-start" data-kt-menu-offset="-15px, 0">
-                                                <a href="#" class="menu-link px-5">
-                                                    <span class="menu-title position-relative">
-                                                        <?php echo $langue ?>
-                                                        <span
-                                                            class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">
-                                                            <?php echo $francais ?> <img class="w-15px h-15px rounded-1 ms-2"
-                                                                src="../../public/assets/media/flags/france.svg" alt="" />
-                                                        </span>
-                                                    </span>
-                                                </a>
-                                                <!--begin::Menu sub-->
-                                                <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                                    <!--begin::Menu item-->
-                                                    <!-- <div class="menu-item px-3">
-                                                        <a href="account/settings.html"
-                                                            class="menu-link d-flex px-5 active">
-                                                            <span
-                                                                class="symbol symbol-20px me-4">
-                                                                <img class="rounded-1"
-                                                                    src="../../public/assets/media/flags/united-states.svg"
-                                                                    alt="" />
-                                                            </span>
-                                                            English
-                                                        </a>
-                                                    </div> -->
-                                                    <!--end::Menu item-->
-                                                    <!--begin::Menu item-->
-                                                    <div class="menu-item px-3">
-                                                        <a href="#" class="menu-link d-flex px-5">
-                                                            <span class="symbol symbol-20px me-4">
-                                                                <img class="rounded-1"
-                                                                    src="../../public/assets/media/flags/france.svg" alt="" />
-                                                            </span>
-                                                            <?php echo $francais ?>
-                                                        </a>
-                                                    </div>
-                                                    <!--end::Menu item-->
-                                                </div>
-                                                <!--end::Menu sub-->
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-5">
-                                                <a href="../portal.php" class="menu-link px-5">
-                                                    <?php echo 'Portail MEDACAP' ?>
-                                                </a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-5">
-                                                <a href="../logout.php" id="logout-button" class="menu-link px-5">
-                                                    <?php echo $deconnexion ?>
-                                                </a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                        </div>
-                                        <!--end::User account menu-->
-                                        <!--end::Menu wrapper-->
-                                    </div>
-                                    <!--end::User -->
-                                </div>
-                                <!--end::Toolbar wrapper-->
-                            </div>
-                            <!--end::Topbar-->
-                        </div>
-                        <!--end::Container-->
-                    </div>
+                    <?php
+                    medacapTopbarRenderHeader(array(
+                        'displayModule' => $displayModule,
+                        'lang' => $lang,
+                        'mobileLogoHref' => $DASHBOARD_FILE,
+                        'dashboardHref' => $DASHBOARD_FILE,
+                        'profileHref' => './profile.php?id=' . urlencode((string) ($_SESSION['id'] ?? '')),
+                        'portalHref' => '../portal.php',
+                        'logoutHref' => '../logout.php',
+                        'logoutRedirect' => './logout.php',
+                    ));
+                    ?>
                     <!--end::Header-->
-                                                            
-    <script>
-    // Function to clear specific cookies
-    function 
-    clearCookies() {
-
-        document.cookie =
-    'userFullName=; Max-Age=-99999999; path=/';
-
-        document.cookie =
-    'userObjectId=; Max-Age=-99999999; path=/';
-
-        document.cookie =
-    'chatExpanded=; Max-Age=-99999999; path=/';
-
-    }
-
-    // Add event listener to the logout button
-    document.getElementById('logout-button').addEventListener('click',
-    function(event) {
-
-        event.preventDefault();
-    // Prevent the default action (navigation)
-
-        // Clear the cookies
-
-        clearCookies();
-
-        // Redirect to the logout page
-
-        window.location.href =
-    './logout.php';
-
-    });
-    </script>
-
-<!-- Loading Management Script -->
-<script>
-// Add loading-active class to body to hide header spinner when page has its own loader
-document.body.classList.add('loading-active');
-
-// Hide the spinner element directly
-function hideSpinner() {
-    var el = document.getElementById('spinner');
-    if (el) {
-        el.classList.remove('show'); // retire la classe qui contrôle visibility/opacity
-        el.style.display = 'none';  // sécurité contre d-flex Bootstrap
-    }
-    document.body.classList.remove('loading-active');
-}
-
-// Fast path: hide after 100ms if page already loaded
-setTimeout(function() {
-    if (document.readyState === 'complete') {
-        hideSpinner();
-    }
-}, 100);
-
-// Main path: always hide after 1.5s max
-setTimeout(hideSpinner, 1500);
-
-// On full load: hide spinner
-window.addEventListener('load', hideSpinner);
-</script>

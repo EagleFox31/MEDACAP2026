@@ -15,11 +15,14 @@
  |--------------------------------------------------------------------------*/
  session_start();
  require_once __DIR__ . '/../../vendor/autoload.php';
+ require_once __DIR__ . '/../../core/medacap_config.php';
  
  /* ------------------------------------------------------------------
-  *  Connexion MongoDB (URI + nom de base) – adapter via .env si besoin
+  *  Connexion MongoDB (URI + nom de base)
   * -----------------------------------------------------------------*/
- const MONGO_URI = 'mongodb://localhost:27017';
+ if (!defined('MONGO_URI')) {
+     define('MONGO_URI', medacapMongoUri());
+ }
  const DB_NAME   = 'academy';
  
  /* ------------------------------------------------------------------
@@ -582,7 +585,7 @@ try {
     <!-- Scores Chart -->
     <canvas id="scoresChart"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <script>
         const ctx = document.getElementById('scoresChart');
         new Chart(ctx,{
@@ -636,7 +639,7 @@ try {
     <!-- Scores Chart -->
     <canvas id="scoresChart"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <script>
         const ctx = document.getElementById('scoresChart');
         new Chart(ctx,{

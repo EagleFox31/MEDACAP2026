@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Recharge les quiz refs depuis vehicles pour les tests vides.
  * Usage: php scripts/repopulate_empty_tests_cm.php [--dry-run] [--user="Wonepo DZOGNOU"]
@@ -7,7 +8,7 @@ require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/includes/mongo_quiz_helpers.php';
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
-$mongoUri = 'mongodb://10.68.0.7:27017';
+$mongoUri = medacapMongoUri('mongodb://10.68.0.7:27017');
 $onlyUser = null;
 foreach ($argv ?? [] as $a) {
     if (strpos($a, '--mongo=') === 0) {

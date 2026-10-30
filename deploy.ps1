@@ -1,5 +1,7 @@
 param(
-    [string[]]$SpecificFiles = @()
+    [string[]]$SpecificFiles = @(),
+    [ValidateSet("1","2","3","4","")]
+    [string]$Version = ""
 )
 
 # Script de déploiement automatique avec gestion de version SemVer
@@ -89,7 +91,12 @@ Write-Host "2. MINOR (Nouveau module, changements plusieurs dossiers) -> x.[y+1]
 Write-Host "3. MAJOR (Changement architecture, DB, Langage) -> [x+1].0.0"
 Write-Host "4. AUCUN (Garder la version actuelle)"
 
-$Choice = Read-Host "Entrez votre choix (1-4)"
+if ($Version) {
+    $Choice = $Version
+    Write-Host "Choix : $Choice"
+} else {
+    $Choice = Read-Host "Entrez votre choix (1-4)"
+}
 
 $v = $CurrentVersion.Split('.')
 [int]$major = $v[0]

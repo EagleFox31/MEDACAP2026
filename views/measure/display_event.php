@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 require_once "../../vendor/autoload.php";
 
@@ -57,12 +58,12 @@ function sanitizeEventData($event) {
         'name' => isset($event['name']) ? htmlspecialchars(trim($event['name']), ENT_QUOTES, 'UTF-8') : '',
         'description' => isset($event['description']) ? htmlspecialchars(trim($event['description']), ENT_QUOTES, 'UTF-8') : '',
         'location' => isset($event['location']) ? htmlspecialchars(trim($event['location']), ENT_QUOTES, 'UTF-8') : '',
-        'startDate' => isset($event['startDate']) ? filter_var($event['startDate'], FILTER_SANITIZE_STRING) : '',
-        'endDate' => isset($event['endDate']) ? filter_var($event['endDate'], FILTER_SANITIZE_STRING) : '',
-        'startTime' => isset($event['startTime']) ? filter_var($event['startTime'], FILTER_SANITIZE_STRING) : '',
-        'endTime' => isset($event['endTime']) ? filter_var($event['endTime'], FILTER_SANITIZE_STRING) : '',
+        'startDate' => isset($event['startDate']) ? htmlspecialchars(strip_tags((string) $event['startDate']), ENT_QUOTES, 'UTF-8') : '',
+        'endDate' => isset($event['endDate']) ? htmlspecialchars(strip_tags((string) $event['endDate']), ENT_QUOTES, 'UTF-8') : '',
+        'startTime' => isset($event['startTime']) ? htmlspecialchars(strip_tags((string) $event['startTime']), ENT_QUOTES, 'UTF-8') : '',
+        'endTime' => isset($event['endTime']) ? htmlspecialchars(strip_tags((string) $event['endTime']), ENT_QUOTES, 'UTF-8') : '',
         'allDay' => isset($event['allDay']) ? (bool)$event['allDay'] : false,
-        'status' => isset($event['status']) ? filter_var($event['status'], FILTER_SANITIZE_STRING) : 'scheduled'
+        'status' => isset($event['status']) ? htmlspecialchars(strip_tags((string) $event['status']), ENT_QUOTES, 'UTF-8') : 'scheduled'
     ];
 }
 
@@ -105,7 +106,7 @@ function processTechnicians($technicianIds, $users) {
                     $fullName = isset($tech['username']) ? trim($tech['username']) : 'Technicien inconnu';
                 }
                 
-                $level = isset($tech['level']) ? filter_var($tech['level'], FILTER_SANITIZE_STRING) : 'Non défini';
+                $level = isset($tech['level']) ? htmlspecialchars(strip_tags((string) $tech['level']), ENT_QUOTES, 'UTF-8') : 'Non défini';
                 
                 $technicians[] = [
                     'id' => (string)$tech['_id'],
@@ -141,7 +142,7 @@ $users = null;
 
 try {
     $conn = new MongoDB\Client(
-        "mongodb://localhost:27017",
+        medacapMongoUri(),
         [],
         ['typeMap' => ['root' => 'array', 'document' => 'array']]
     );

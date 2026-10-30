@@ -1,9 +1,10 @@
     <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
     // Connexion à MongoDB (autoload déjà chargé par le script appelant)
     if (!class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/../../vendor/autoload.php';
     }
-    $client = new MongoDB\Client("mongodb://localhost:27017");
+    $client = new MongoDB\Client(medacapMongoUri());
     $academy = $client->academy;
     $profilesCollection = $academy->profiles;
     $functionalitiesCollection = $academy->functionalities;
@@ -208,7 +209,7 @@ foreach ($menuStructure as $groupName => $items) {
     // Map countries to their respective subsidiary name
     $subsidiaries = [
         "CFAO MOTORS BURKINA",
-        "CAMEROON MOTORS INDUSTRIES",
+        "CFAO MOBILITY CAMEROON",
         "CFAO MOTORS CONGO",
         "CFAO MOTORS COTE D'IVOIRE",
         "CFAO MOTORS GABON",
@@ -296,13 +297,13 @@ foreach ($menuStructure as $groupName => $items) {
         <link href="../public/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
         <link href="../public/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet"
-            href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
+            href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/css/multi-select-tag.css">
             <link href="../public/assets/css/ki-duotone-icons.css" rel="stylesheet" type="text/css" />
         <!--end::Global Stylesheets Bundle-->
         <!--Begin::Google Tag Manager -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.22/index.global.min.js'></script>
         <script>
         (function(w, d, s, l, i) {
             w[l] = w[l] || [];

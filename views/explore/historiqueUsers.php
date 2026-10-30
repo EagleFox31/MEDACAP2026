@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -9,7 +10,7 @@ if (!isset($_SESSION["profile"])) {
      ?>
 <?php
 require_once "../../vendor/autoload.php"; // Create connection
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 // Connecting in database
 $academy = $conn->academy; // Connecting in collections
 $users = $academy->users;
@@ -24,7 +25,7 @@ if (isset($_POST["active"])) {
             ["_id" => new MongoDB\BSON\ObjectId($id)],
             ['$set' => $member]
         );
-        $users->updateOne(["_id" => new MongoDB\BSON\ObjectId($member->manager)], ['$push' => [ "users" => new MongoDB\BSON\ObjectId($id) ]]);
+        $users->updateOne(["_id" => (empty($member->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($member->manager))], ['$push' => [ "users" => new MongoDB\BSON\ObjectId($id) ]]);
     }
     $success_msg = $success_user_restore;
 }

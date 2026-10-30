@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../../core/medacap_config.php';
 //pipelineResults.php
 
 require_once "../../vendor/autoload.php";
@@ -8,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 
 // Connexion MongoDB
 try {
-    $mongoClient = new Client("mongodb://localhost:27017");
+    $mongoClient = new Client(medacapMongoUri());
     $academy = $mongoClient->selectDatabase("academy");
 } catch (\MongoDB\Exception\Exception $e) {
     header('Content-Type: application/json');

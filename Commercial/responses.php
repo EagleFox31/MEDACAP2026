@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -15,7 +16,7 @@ $allowedProfiles = ['Super Admin', 'Admin', 'Admin Commercial'];
 // Charger les emails autorisés : SUPER_ADMIN + admins commerciaux en BD
 $authorizedEmails = [strtolower(SUPER_ADMIN_EMAIL)];
 try {
-    $tmpAuthClient = new Client("mongodb://localhost:27017");
+    $tmpAuthClient = new Client(medacapMongoUri());
     $commAdminCursor = $tmpAuthClient->academy->commercial_admins->find(['active' => true]);
     foreach ($commAdminCursor as $ca) {
         $caEmail = isset($ca['email']) ? strtolower(trim((string)$ca['email'])) : '';
@@ -28,7 +29,7 @@ $isLoggedIn = isset($_SESSION['id']) && in_array($_SESSION['profile'] ?? '', $al
 function loginUserByEmail($email, $authorizedEmails) {
     $email = strtolower(trim($email));
     if (!in_array($email, $authorizedEmails)) return false;
-    $tmpClient = new Client("mongodb://localhost:27017");
+    $tmpClient = new Client(medacapMongoUri());
     $db = $tmpClient->academy;
 
     // Super Admin : session directe sans passer par users
@@ -115,7 +116,7 @@ if (!$isLoggedIn) {
     // KPI stats for login panel
     $kpiCountries = 0; $kpiEvals = 0; $kpiBrands = 0;
     try {
-        $kpiClient    = new Client("mongodb://localhost:27017");
+        $kpiClient    = new Client(medacapMongoUri());
         $kpiDb        = $kpiClient->academy;
         $kpiCountries = count($kpiDb->users->distinct('country', ['country' => ['$ne' => '']]));
         $kpiEvals     = (int)$kpiDb->results->count(['type' => ['$in' => ['Factuel', 'Declaratif']]])
@@ -587,7 +588,7 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'update_candidate'
         echo json_encode(['ok' => false, 'error' => 'Pays invalide']);
         exit();
     }
-    $tmpClient = new MongoDB\Client("mongodb://localhost:27017");
+    $tmpClient = new MongoDB\Client(medacapMongoUri());
     $tmpDb = $tmpClient->academy;
     $tmpDb->commercial_responses->updateOne(
         ['_id' => $objId],
@@ -606,7 +607,7 @@ if (isset($_GET['ajax_id'])) {
         exit();
     }
 
-    $client = new MongoDB\Client("mongodb://localhost:27017");
+    $client = new MongoDB\Client(medacapMongoUri());
     $db = $client->academy;
     
     $row = $db->commercial_responses->findOne(['_id' => $objId]);
@@ -702,7 +703,7 @@ if ($lang === 'EN') {
     include_once "language.php";
 }
 
-$client      = new Client("mongodb://localhost:27017");
+$client      = new Client(medacapMongoUri());
 $db          = $client->academy;
 $responses   = $db->commercial_responses;
 

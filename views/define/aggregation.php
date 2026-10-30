@@ -1,11 +1,12 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require_once "../../vendor/autoload.php";
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 
 // Connexion MongoDB
 try {
-    $mongoClient = new Client("mongodb://localhost:27017");
+    $mongoClient = new Client(medacapMongoUri());
     $academy = $mongoClient->selectDatabase("academy");
 } catch (\MongoDB\Exception\Exception $e) {
     die(json_encode(["error" => "Erreur de connexion à MongoDB: " . $e->getMessage()]));

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 require __DIR__ . '/../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -23,7 +24,7 @@ for ($r = 5; $r <= $ws->getHighestRow(); $r++) {
     echo "Row $r: raw=[$raw] => firstName=[$fn] lastName=[$ln]\n";
 }
 
-$client = new MongoDB\Client('mongodb://10.68.0.7:27017');
+$client = new MongoDB\Client(medacapMongoUri('mongodb://10.68.0.7:27017'));
 $users = $client->academy->users;
 echo "\n=== Users Cameroun avec MICHEL ===\n";
 foreach ($users->find(['country' => 'Cameroun', 'active' => true, 'username' => new MongoDB\BSON\Regex('MICHEL', 'i')]) as $u) {

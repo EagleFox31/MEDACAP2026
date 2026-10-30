@@ -346,6 +346,7 @@ $etat_avanacement_tests = "Test Progress Status";
 $etat_avanacement = "Progress Status";
 $completer_par_vous = "To be completed by you";
 $completer = "To be completed";
+$click_to_open_test = "Click to open the test";
 $result_brand = "Results by Vehicle Brands";
 $admin_space = "Subsidiary Administrator";
 $rh_space = "Human Resources";

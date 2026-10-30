@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Accorde du temps supplémentaire aux candidats PL (prorata / question QCM restante, plafonné).
  *
@@ -11,6 +12,7 @@
  *   --max-bonus-minutes=105       (défaut: plafond 1 h 45)
  */
 require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../core/mongo_compat.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
@@ -125,7 +127,7 @@ function resolve_q_total($paper, $questions): int
     if (empty($ids)) {
         return 0;
     }
-    return (int)$questions->countDocuments(['_id' => ['$in' => $ids], 'active' => true]);
+    return (int)medacapCountDocuments($questions, ['_id' => ['$in' => $ids], 'active' => true]);
 }
 
 function pick_exam($db, $userOid, $paperOid)
@@ -141,7 +143,7 @@ function pick_exam($db, $userOid, $paperOid)
 }
 
 $dryRun = hasFlag($argv, 'dry-run') || !hasFlag($argv, 'apply');
-$mongoUri = (string)(argValue($argv, 'mongo-uri', 'mongodb://10.68.0.7:27017') ?? 'mongodb://10.68.0.7:27017');
+$mongoUri = (string)(argValue($argv, 'mongo-uri', medacapMongoUri('mongodb://10.68.0.7:27017')) ?? medacapMongoUri('mongodb://10.68.0.7:27017'));
 $paperId = (string)(argValue($argv, 'paper-id', '6a452db87ae27d2cc30d8592') ?? '6a452db87ae27d2cc30d8592');
 $secondsPerQuestion = max(1, (int)(argValue($argv, 'seconds-per-question', '60') ?? 60));
 $maxBonusMinutes = max(1, (int)(argValue($argv, 'max-bonus-minutes', '105') ?? 105));

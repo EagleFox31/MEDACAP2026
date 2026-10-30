@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Attache le pack orientation recommandé au paper PL multi-marques.
  *
@@ -23,7 +24,7 @@ const ORIENTATION_IDS = [
     '6944563d72d68a2edb25d83a', // Prétention salariale
 ];
 
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://localhost:27017';
+$uri = medacapMongoUri();
 $db = (new Client($uri))->academy;
 
 $paper = $db->papers->findOne(

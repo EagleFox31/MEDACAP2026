@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Rattache les techniciens CM importés à leur manager (usernameManager legacy).
  * Usage: php scripts/link_imported_managers_cm.php [--dry-run] [--mongo=mongodb://localhost:27017]
@@ -8,7 +9,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
-$mongoUri = 'mongodb://localhost:27017';
+$mongoUri = medacapMongoUri();
 foreach ($argv ?? [] as $a) {
     if (strpos($a, '--mongo=') === 0) {
         $mongoUri = substr($a, 8);

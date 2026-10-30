@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 require "../sendMail.php";
@@ -11,7 +12,7 @@ if (!isset($_SESSION["id"])) {
 require_once "../../vendor/autoload.php";
 
 // Create connection
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 
 // Connecting to the database
 $academy = $conn->academy;
@@ -276,7 +277,7 @@ if (isset($_POST['submit'])) {
 <title><?php echo htmlspecialchars($register_training); ?> | CFAO Mobility Academy</title>
 <!--end::Title-->
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#user').change(function() {

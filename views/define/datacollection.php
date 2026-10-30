@@ -1,6 +1,8 @@
 <?php
 namespace MyApp\DataCollection;
 
+require_once __DIR__ . '/../../core/medacap_config.php';
+
 use MongoDB\Client;
 use MongoDB\Exception\Exception;
 
@@ -17,8 +19,11 @@ class DataCollection
      * @param string $uri   URI de connexion MongoDB
      * @param string $dbName Nom de la base de données
      */
-    public function __construct($uri = "mongodb://localhost:27017", $dbName = "academy")
+    public function __construct($uri = null, $dbName = "academy")
     {
+        if (!is_string($uri) || $uri === '') {
+            $uri = medacapMongoUri();
+        }
         try {
             $this->client = new Client($uri);
             $this->database = $this->client->$dbName;

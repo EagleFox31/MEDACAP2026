@@ -1,0 +1,15 @@
+{
+  "profil": "Candidat",
+  "pages": [
+    {
+      "url": "/views/measure/candidatePaperHome",
+      "statut": 200,
+      "capture": "00-candidatePaperHome.jpg",
+      "titre": "ACADEMY | CFAO Mobility Academy",
+      "depuis": "connexion"
+    }
+  ],
+  "erreurs": 0,
+  "avertissements": 0,
+  "connexion": "ok"
+}

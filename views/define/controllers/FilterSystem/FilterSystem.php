@@ -1,7 +1,7 @@
 <?php
 /**
  * FilterSystem.php
- * PHP 7.3 — MongoDB 4.2
+ * PHP 8.4 — MongoDB 8.0
  *
  * Rôle :
  * - Orchestrer l’ensemble des filtres (construction, validation, application).

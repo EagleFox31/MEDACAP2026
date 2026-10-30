@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../core/medacap_config.php';
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
@@ -61,6 +62,11 @@ function generateEmailTemplate(array $emailData): string
     $additionalInfo  = $emailData['additionalInfo']  ?? '';
     $supportEmail    = $emailData['supportEmail']    ?? SUPER_ADMIN_EMAIL;
     $currentYear     = date('Y');
+    $isEn            = isset($emailData['lang']) && $emailData['lang'] === 'en';
+    $hello           = $isEn ? 'Hello' : 'Bonjour';
+    $regards         = $isEn ? 'Best regards,' : 'Cordialement,';
+    $teamLabel       = $isEn ? 'The ' . $teamName . ' team' : 'L\'équipe ' . $teamName;
+    $helpLabel       = $isEn ? 'Need help? Support:' : 'Besoin d\'aide ? Support :';
 
     // Tableau des détails (premium)
     $detailsHtml = '';
@@ -114,7 +120,7 @@ function generateEmailTemplate(array $emailData): string
 
     // Template email premium
     $html = '<!DOCTYPE html>
-<html lang="fr">
+<html lang="'.($isEn ? 'en' : 'fr').'">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -143,7 +149,7 @@ function generateEmailTemplate(array $emailData): string
                             </table>
                             
                             <!-- Greeting -->
-                            <p style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">Bonjour '.htmlspecialchars($userName, ENT_QUOTES, 'UTF-8').',</p>
+                            <p style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#111827;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.$hello.' '.htmlspecialchars($userName, ENT_QUOTES, 'UTF-8').',</p>
                             
                             <!-- Message -->
                             <div style="margin:16px 0;font-size:15px;color:#374151;line-height:1.7;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">'.$message.'</div>
@@ -159,8 +165,8 @@ function generateEmailTemplate(array $emailData): string
                             
                             <!-- Closing Signature -->
                             <p style="margin:32px 0 0 0;padding-top:20px;border-top:1px solid #E5E7EB;font-size:14px;color:#4B5563;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">
-                                Cordialement,<br>
-                                <strong style="color:#111827;">L\'équipe '.htmlspecialchars($teamName, ENT_QUOTES, 'UTF-8').'</strong>
+                                '.$regards.'<br>
+                                <strong style="color:#111827;">'.htmlspecialchars($teamLabel, ENT_QUOTES, 'UTF-8').'</strong>
                             </p>
                         </td>
                     </tr>
@@ -168,7 +174,7 @@ function generateEmailTemplate(array $emailData): string
                     <tr>
                         <td style="padding:24px 32px;background-color:#F9FAFB;border-top:1px solid #E5E7EB;text-align:center;font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">
                             <p style="margin:0 0 8px 0;font-size:12px;font-weight:500;color:#6B7280;">
-                                Besoin d\'aide ? Support : <a href="mailto:'.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'" style="color:#D70006;text-decoration:none;font-weight:600;">'.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'</a>
+                                '.$helpLabel.' <a href="mailto:'.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'" style="color:#D70006;text-decoration:none;font-weight:600;">'.htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8').'</a>
                             </p>
                             <p style="margin:0;font-size:11px;color:#9CA3AF;line-height:1.4;">
                                 © '.$currentYear.' '.htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8').' - '.htmlspecialchars($companyTagline, ENT_QUOTES, 'UTF-8').'
@@ -378,36 +384,70 @@ function getAdminsDocs($collab, Client $mongo): array
 function getRhAndDpsEmails(string $subsidiary, Client $mongo): array
 {
     $users  = $mongo->academy->users;
+    require_once __DIR__ . '/../core/subsidiary_aliases.php';
     $cursor = $users->find([
         'profile'    => ['$in' => ['Ressource Humaine', 'Directeur Pièce et Service']],
-        'subsidiary' => $subsidiary,
+        'subsidiary' => medacapResolveSubsidiaryMongoFilter($subsidiary),
     ]);
     return array_values(array_unique(array_filter(array_column(iterator_to_array($cursor), 'email'))));
 }
 
-function buildAdminSalutation(array $adminDocs): string
+/**
+ * Nom d'adresse pour le template (qui préfixe déjà "Bonjour ").
+ * Homme → "M. NOM", femme → "Mme NOM". Pas d'échappement HTML (fait par le template).
+ */
+function buildAdminGreetingName(array $adminDocs): string
 {
     $nb = count($adminDocs);
-    if ($nb === 0) return 'Bonjour,';
+    if ($nb === 0) {
+        return 'Admin';
+    }
 
     $isEnglish = false;
-    if (!empty($adminDocs[0]['language']) && strtolower((string)$adminDocs[0]['language']) === 'en') {
+    if (!empty($adminDocs[0]['language']) && strtolower((string) $adminDocs[0]['language']) === 'en') {
         $isEnglish = true;
     } elseif (!empty($adminDocs[0]['subsidiary']) && $adminDocs[0]['subsidiary'] === 'CFAO MOTORS RWANDA') {
         $isEnglish = true;
     }
 
-    if ($nb > 1) return $isEnglish ? 'Hello everyone,' : 'Bonjour à tous,';
+    if ($nb > 1) {
+        return $isEnglish ? 'everyone' : 'à tous';
+    }
 
-    $admin  = $adminDocs[0];
-    $gender = strtolower((string)($admin['gender'] ?? ''));
+    $admin = $adminDocs[0];
+    $gender = strtolower((string) ($admin['gender'] ?? ''));
+    $lastName = trim((string) ($admin['lastName'] ?? ''));
+    if ($lastName === '') {
+        return trim((string) ($admin['firstName'] ?? 'Admin'));
+    }
 
     if ($isEnglish) {
-        $prefix = ($gender === 'feminin') ? 'Ms.' : (($gender === 'masculin') ? 'Mr.' : 'Mr.');
-        return 'Hello ' . $prefix . ' ' . htmlspecialchars((string)$admin['lastName'], ENT_QUOTES, 'UTF-8') . ',';
+        $prefix = ($gender === 'feminin') ? 'Ms.' : 'Mr.';
+        return $prefix . ' ' . $lastName;
     }
-    $prefix = ($gender === 'feminin') ? 'Mme' : (($gender === 'masculin') ? 'M.' : 'M.');
-    return 'Bonjour ' . $prefix . ' ' . htmlspecialchars((string)$admin['lastName'], ENT_QUOTES, 'UTF-8') . ',';
+    $prefix = ($gender === 'feminin') ? 'Mme' : 'M.';
+    return $prefix . ' ' . $lastName;
+}
+
+function buildAdminSalutation(array $adminDocs): string
+{
+    $nb = count($adminDocs);
+    if ($nb === 0) {
+        return 'Bonjour,';
+    }
+
+    $isEnglish = false;
+    if (!empty($adminDocs[0]['language']) && strtolower((string) $adminDocs[0]['language']) === 'en') {
+        $isEnglish = true;
+    } elseif (!empty($adminDocs[0]['subsidiary']) && $adminDocs[0]['subsidiary'] === 'CFAO MOTORS RWANDA') {
+        $isEnglish = true;
+    }
+
+    $name = buildAdminGreetingName($adminDocs);
+    if ($isEnglish) {
+        return 'Hello ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . ',';
+    }
+    return 'Bonjour ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . ',';
 }
 
 /* =========================================================================
@@ -466,7 +506,7 @@ function sendMailQcmFinalized(
     if (empty($adminDocs)) return false;
 
     $emailData = [
-        'userName' => $adminDocs[0]['firstName'] ?? 'Admin',
+        'userName' => buildAdminGreetingName($adminDocs),
         'title' => 'Évaluation terminée',
         'message' => $bodyWithoutSignature,
         'ctaText' => 'Voir les résultats',
@@ -530,7 +570,7 @@ function fetchDemoAccountsForImportMail(?array $usernames = null): array
             require_once __DIR__ . '/../vendor/autoload.php';
         }
 
-        $uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://localhost:27017';
+        $uri = medacapMongoUri();
         $users = (new Client($uri))->academy->users;
 
         $filter = ['active' => true];
@@ -968,7 +1008,225 @@ function getTechnicianDocs(array $technicianIds, Client $mongo): array
    ========================================================================= */
 function medacapLinkForCountry(?string $country): string
 {
-    return ($country === 'Cameroun' || $country === 'Cameroon')
-        ? 'http://10.68.0.7/medacap/'
-        : 'http://129.0.64.34/medacap';
+    return medacapAppBaseUrl($country);
+}
+
+function medacapReportRecruitmentUrl(string $paperIdStr): string
+{
+    return rtrim(medacapLinkForCountry('Cameroun'), '/') . '/views/measure/rapportRecrutement.php?paper=' . rawurlencode($paperIdStr);
+}
+
+function sendMedacapEmailWithAttachment(
+    string $to,
+    string $subject,
+    string $htmlBody,
+    string $filePath,
+    string $fileName,
+    array $extraCc = [],
+    bool $includeStaticCc = true
+): bool {
+    if ($to === '' || !is_readable($filePath)) {
+        return false;
+    }
+
+    $cc = $includeStaticCc
+        ? array_values(array_unique(array_filter(array_merge(CC_STATIC, $extraCc))))
+        : array_values(array_unique(array_filter($extraCc)));
+
+    $boundary = '=_Medacap_' . md5((string) microtime(true));
+    $encoded = chunk_split(base64_encode((string) file_get_contents($filePath)));
+    $safeName = preg_replace('/[^A-Za-z0-9._-]+/', '_', $fileName) ?: 'rapport.xlsx';
+
+    $headers = [
+        'From: ' . FROM_NAME . ' <' . FROM_EMAIL . '>',
+        'Reply-To: ' . FROM_EMAIL,
+        empty($cc) ? '' : 'Cc: ' . implode(', ', $cc),
+        'MIME-Version: 1.0',
+        'Content-Type: multipart/mixed; boundary="' . $boundary . '"',
+        'X-Mailer: PHP/' . phpversion(),
+    ];
+
+    $body = "--{$boundary}\r\n";
+    $body .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+    $body .= $htmlBody . "\r\n\r\n";
+    $body .= "--{$boundary}\r\n";
+    $body .= 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; name="' . $safeName . "\"\r\n";
+    $body .= "Content-Transfer-Encoding: base64\r\n";
+    $body .= 'Content-Disposition: attachment; filename="' . $safeName . "\"\r\n\r\n";
+    $body .= $encoded . "\r\n";
+    $body .= "--{$boundary}--";
+
+    return mail($to, $subject, $body, implode("\r\n", array_values(array_filter($headers))));
+}
+
+function sendPaperCompletionThresholdMail(
+    Client $mongo,
+    string $paperLabel,
+    string $paperIdStr,
+    array $stats,
+    string $subsidiary = 'CFAO MOBILITY CAMEROON'
+): bool {
+    $rhEmails = getRhAndDpsEmails($subsidiary, $mongo);
+    $toList = array_values(array_unique(array_filter(array_merge($rhEmails, [SUPER_ADMIN_EMAIL]))));
+    if ($toList === []) {
+        $toList = [SUPER_ADMIN_EMAIL];
+    }
+
+    $thresholdPct = (float) ($stats['threshold_pct'] ?? 60);
+    $subject = 'MEDACAP — ' . round($thresholdPct) . '% composé : ' . $paperLabel;
+
+    $emailData = [
+        'title' => 'Seuil de complétion atteint',
+        'message' => sprintf(
+            'L\'épreuve <strong>%s</strong> a atteint le seuil de %.0f%% de candidats composés.',
+            htmlspecialchars($paperLabel, ENT_QUOTES, 'UTF-8'),
+            $thresholdPct
+        ),
+        'details' => [
+            ['label' => 'Inscrits', 'value' => (string) ($stats['enrolled'] ?? 0)],
+            ['label' => 'Composés', 'value' => (string) ($stats['composed'] ?? 0)],
+            ['label' => 'Complétion', 'value' => ($stats['completion_pct'] ?? 0) . '%', 'highlight' => true],
+        ],
+        'ctaText' => 'Consulter le rapport',
+        'ctaLink' => medacapReportRecruitmentUrl($paperIdStr),
+    ];
+
+    return sendTemplatedMedacapEmail(implode(', ', $toList), $subject, $emailData);
+}
+
+function sendPaperManualReportToRh(
+    Client $mongo,
+    string $paperLabel,
+    string $paperIdStr,
+    array $stats,
+    string $excelPath,
+    string $subsidiary = 'CFAO MOBILITY CAMEROON'
+): bool {
+    $rhEmails = getRhAndDpsEmails($subsidiary, $mongo);
+    $toList = array_values(array_unique(array_filter($rhEmails)));
+    if ($toList === []) {
+        $toList = [SUPER_ADMIN_EMAIL];
+    }
+
+    $subject = 'MEDACAP — Rapport recrutement : ' . $paperLabel;
+    $emailData = [
+        'title' => 'Rapport recrutement',
+        'message' => sprintf(
+            'Veuillez trouver ci-joint le rapport Excel de l\'épreuve <strong>%s</strong>.',
+            htmlspecialchars($paperLabel, ENT_QUOTES, 'UTF-8')
+        ),
+        'details' => [
+            ['label' => 'Inscrits', 'value' => (string) ($stats['enrolled'] ?? 0)],
+            ['label' => 'Composés', 'value' => (string) ($stats['composed'] ?? 0)],
+            ['label' => 'Complétion', 'value' => ($stats['completion_pct'] ?? 0) . '%'],
+        ],
+        'ctaText' => 'Ouvrir le rapport en ligne',
+        'ctaLink' => medacapReportRecruitmentUrl($paperIdStr),
+    ];
+
+    $html = generateEmailTemplate($emailData);
+    $fileName = preg_replace('/[^A-Za-z0-9_-]+/', '_', $paperLabel) . '_rapport.xlsx';
+
+    return sendMedacapEmailWithAttachment(
+        implode(', ', $toList),
+        $subject,
+        $html,
+        $excelPath,
+        $fileName
+    );
+}
+
+/**
+ * Lien de connexion sans mot de passe. Aucune copie.
+ */
+function sendLoginLinkEmail(string $to, string $greetingName, string $link, string $lang = 'fr'): bool
+{
+    $isEn = $lang === 'en';
+    $title = $isEn ? 'Your sign-in link' : 'Votre lien de connexion';
+    $emailData = array(
+        'lang' => $isEn ? 'en' : 'fr',
+        'userName' => $greetingName,
+        'title' => $title,
+        'message' => $isEn
+            ? '<p>Click the button to open your MEDACAP session. This link is valid for 30 minutes and can only be used once.</p>'
+            : '<p>Cliquez sur le bouton pour ouvrir votre session MEDACAP. Ce lien est valable 30 minutes et ne peut servir qu\'une fois.</p>',
+        'ctaText' => $isEn ? 'Open my session' : 'Ouvrir ma session',
+        'ctaLink' => $link,
+    );
+    $html = quoted_printable_encode(generateEmailTemplate($emailData));
+    $headers = buildHeaders(array(), null, false);
+    $headers .= "\r\nContent-Transfer-Encoding: quoted-printable";
+    $subject = '=?UTF-8?B?' . base64_encode('MEDACAP - ' . $title) . '?=';
+    return mail($to, $subject, $html, $headers);
+}
+
+/**
+ * Prévient le support quand une demande de lien de connexion n'aboutit pas.
+ * Au plus une alerte par adresse toutes les 30 minutes, et 20 par heure au total.
+ *
+ * @param MongoDB\Database $academy
+ * @param string $motif    mdp (mot de passe oublié) | mail (connexion par mail)
+ * @param string $cause    none | shared | send_failed
+ * @param array  $accounts Comptes actifs trouvés pour l'adresse
+ * @param string $lang     Langue de la page au moment de la demande (fr | en)
+ */
+function sendLoginSupportAlert($academy, string $email, string $motif, string $cause, array $accounts, string $lang = 'fr'): bool
+{
+    try {
+        $alerts = $academy->login_support_alerts;
+        $now = time();
+        $sinceAddress = new MongoDB\BSON\UTCDateTime(($now - 30 * 60) * 1000);
+        $sinceGlobal = new MongoDB\BSON\UTCDateTime(($now - 3600) * 1000);
+        if ($alerts->count(array('email' => $email, 'created' => array('$gte' => $sinceAddress))) > 0
+            || $alerts->count(array('created' => array('$gte' => $sinceGlobal))) >= 20) {
+            return false;
+        }
+        $alerts->insertOne(array(
+            'email' => $email,
+            'motif' => $motif,
+            'cause' => $cause,
+            'created' => new MongoDB\BSON\UTCDateTime(),
+        ));
+
+        $names = array();
+        foreach ($accounts as $acc) {
+            $names[] = (string) $acc['username'] . ' (' . (isset($acc['profile']) ? (string) $acc['profile'] : '?') . ')';
+        }
+        if ($cause === 'shared') {
+            $problem = 'Plusieurs comptes actifs partagent cette adresse : ' . implode(', ', $names);
+        } elseif ($cause === 'send_failed') {
+            $problem = 'Compte trouvé (' . implode(', ', $names) . '), mais l\'envoi du lien a échoué';
+        } else {
+            $inactive = $academy->users->count(array(
+                'email' => new Regex('^' . preg_quote($email, '/') . '$', 'i'),
+            ));
+            $problem = $inactive > 0
+                ? 'Aucun compte actif ; ' . $inactive . ' compte(s) inactif(s) avec cette adresse'
+                : 'Aucun compte avec cette adresse';
+        }
+
+        $emailData = array(
+            'userName' => 'Support MEDACAP',
+            'title' => 'Demande de connexion sans suite',
+            'message' => '<p>Une demande de lien de connexion n\'a pas abouti. Répondre à ce mail écrit directement à l\'adresse saisie.</p>',
+            'details' => array(
+                array('label' => 'Adresse saisie', 'value' => $email, 'highlight' => true),
+                array('label' => 'Demande', 'value' => $motif === 'mdp' ? 'Mot de passe oublié' : 'Connexion par mail'),
+                array('label' => 'Problème', 'value' => $problem),
+                array('label' => 'Langue', 'value' => $lang === 'en' ? 'Anglais' : 'Français'),
+                array('label' => 'Date', 'value' => date('d/m/Y H:i')),
+                array('label' => 'IP', 'value' => isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : ''),
+                array('label' => 'Navigateur', 'value' => isset($_SERVER['HTTP_USER_AGENT']) ? substr((string) $_SERVER['HTTP_USER_AGENT'], 0, 200) : ''),
+            ),
+        );
+        $html = quoted_printable_encode(generateEmailTemplate($emailData));
+        $headers = buildHeaders(array(), $email, false);
+        $headers .= "\r\nContent-Transfer-Encoding: quoted-printable";
+        $subject = '=?UTF-8?B?' . base64_encode('MEDACAP - Connexion sans suite : ' . $email) . '?=';
+        return mail(SUPER_ADMIN_EMAIL, $subject, $html, $headers);
+    } catch (Throwable $e) {
+        error_log('sendLoginSupportAlert: ' . get_class($e) . ' ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        return false;
+    }
 }

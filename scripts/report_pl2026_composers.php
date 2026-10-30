@@ -1,144 +1,118 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
- * Rapport console — épreuve PL 2026, candidats ayant composé.
- * Usage: php scripts/report_pl2026_composers.php [--paper-id=6a452db87ae27d2cc30d8592]
+ * Rapport console — candidats ayant composé une épreuve figée.
+ *
+ * Usage:
+ *   php scripts/report_pl2026_composers.php --paper-id=6a82dbf45b3b2bb665098ec2
+ *   php scripts/report_pl2026_composers.php --paper-id=6a82dafa726d3580f703ecc2
  */
-require __DIR__ . '/export_paper_scores.php';
+require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../views/measure/includes/paper_candidate_report_lib.php';
+
+use MongoDB\Client;
+use MongoDB\BSON\ObjectId;
+
+function argValue(array $argv, string $name, ?string $default = null): ?string
+{
+    $prefix = "--{$name}=";
+    foreach ($argv as $arg) {
+        if (strpos($arg, $prefix) === 0) {
+            return substr($arg, strlen($prefix));
+        }
+    }
+    return $default;
+}
 
 if (php_sapi_name() === 'cli' && realpath($argv[0] ?? '') === realpath(__FILE__)) {
-$paperIdStr = (string) argValue($argv, 'paper-id', '6a452db87ae27d2cc30d8592');
-$mongoUri = (string) argValue($argv, 'mongo-uri', 'mongodb://10.68.0.7:27017');
+    $paperIdStr = (string) argValue($argv, 'paper-id', '6a82dbf45b3b2bb665098ec2');
+    $mongoUri = (string) argValue($argv, 'mongo-uri', medacapMongoUri('mongodb://10.68.0.7:27017'));
 
-if (!preg_match('/^[0-9a-f]{24}$/i', $paperIdStr)) {
-    fwrite(STDERR, "ERROR: invalid paper-id\n");
-    exit(1);
-}
-
-$client = new MongoDB\Client($mongoUri);
-$db = $client->academy;
-$paperId = new MongoDB\BSON\ObjectId($paperIdStr);
-$paper = $db->papers->findOne(['_id' => $paperId]);
-if (!$paper) {
-    fwrite(STDERR, "Paper not found\n");
-    exit(1);
-}
-
-$paperLabel = toStr($paper['label'] ?? 'Paper');
-$paperRatios = toArr($paper['ratios'] ?? []);
-$recruitmentWeights = [
-    'Junior' => (float) ($paperRatios['Junior'] ?? 50),
-    'Senior' => (float) ($paperRatios['Senior'] ?? 50),
-];
-$minCompletionPct = 70.0;
-
-$qOids = [];
-foreach (toArr($paper['questions'] ?? []) as $x) {
-    $qOids[] = $x instanceof MongoDB\BSON\ObjectId ? $x : new MongoDB\BSON\ObjectId((string) $x);
-}
-
-$qmap = [];
-if ($qOids) {
-    foreach ($db->questions->find(['_id' => ['$in' => $qOids]]) as $qd) {
-        $qmap[(string) $qd['_id']] = $qd;
+    if (!preg_match('/^[0-9a-f]{24}$/i', $paperIdStr)) {
+        fwrite(STDERR, "ERROR: invalid paper-id\n");
+        exit(1);
     }
-}
 
-$paperQuestions = [];
-$specialtyTotals = [];
-$levelTotals = ['Junior' => 0, 'Senior' => 0, 'Expert' => 0];
-$specialtyList = [];
-
-foreach ($qOids as $i => $oid) {
-    $k = (string) $oid;
-    if (!isset($qmap[$k])) continue;
-    $qd = $qmap[$k];
-    $spec = toStr($qd['speciality'] ?? '') ?: '(Sans spécialité)';
-    $level = toStr($qd['level'] ?? 'Autre');
-    if (!isset($levelTotals[$level])) $levelTotals[$level] = 0;
-    $levelTotals[$level]++;
-    $paperQuestions[] = [
-        'index' => $i, 'num' => $i + 1, 'id' => $k,
-        'ref' => toStr($qd['ref'] ?? ''), 'label' => toStr($qd['label'] ?? ''),
-        'level' => $level, 'speciality' => $spec, 'groupe_fonctionnel' => $spec,
-        'answer' => toStr($qd['answer'] ?? ''),
-    ];
-    $specialtyTotals[$spec] = ($specialtyTotals[$spec] ?? 0) + 1;
-}
-$specialtyList = array_keys($specialtyTotals);
-sort($specialtyList);
-
-$expected = [];
-foreach ($db->users->find([
-    'active' => true,
-    '$or' => [
-        ['papers' => $paperId],
-        ['role' => $paperLabel],
-        ['roles' => $paperLabel],
-    ],
-]) as $u) {
-    $profile = strtoupper(trim(toStr($u['profile'] ?? $u['typeR'] ?? '')));
-    $country = strtoupper(trim(toStr($u['country'] ?? '')));
-    if (!in_array($profile, ['CANDIDAT', 'CANDIDATE'], true)) continue;
-    if (!in_array($country, ['CAMEROUN', 'CAMEROON'], true)) continue;
-    if (!empty($u['loadtestTag'])) continue;
-    $uname = strtolower(toStr($u['username'] ?? ''));
-    if (strpos($uname, 'demo') !== false) continue;
-    $expected[(string) $u['_id']] = $u;
-}
-
-$composers = [];
-foreach ($expected as $u) {
-    $c = buildCandidateData($db, $u, $paperId, $paperQuestions, $specialtyList, $specialtyTotals, $levelTotals, $recruitmentWeights, $minCompletionPct);
-    $answered = (int) ($c['global']['answered'] ?? 0);
-    if ($answered <= 0 && $c['status'] !== 'Terminé') {
-        continue;
+    $client = new Client($mongoUri);
+    $db = $client->academy;
+    $paperId = new ObjectId($paperIdStr);
+    $ctx = paperReportLoadPaperContext($db, $paperId);
+    if (!$ctx) {
+        fwrite(STDERR, "Paper not found\n");
+        exit(1);
     }
-    $composers[] = $c;
-}
-usort($composers, fn($a, $b) => strcmp($a['name'], $b['name']));
 
-echo "Épreuve : $paperLabel\n";
-echo "Paper ID : $paperIdStr\n";
-echo "Banque : Junior {$levelTotals['Junior']} | Senior {$levelTotals['Senior']} | Expert {$levelTotals['Expert']} questions\n";
-echo "Candidats inscrits : " . count($expected) . " | Ayant composé : " . count($composers) . "\n\n";
+    $candidates = paperReportBuildAllCandidates($db, $ctx);
+    $stats = paperReportGetCompletionStats($candidates, (float) $ctx['threshold_pct']);
+    $composers = array_values(array_filter($candidates, fn($c) => !empty($c['has_composed'])));
 
-$fmt = function ($v) {
-    return $v === null ? '—' : (is_float($v) ? number_format($v, 2, ',', '') : (string) $v);
-};
+    $paperLabel = $ctx['paper_label'];
+    $levelTotals = $ctx['level_totals'];
 
-foreach ($composers as $c) {
-    echo str_repeat('=', 72) . "\n";
-    echo $c['name'] . " (" . $c['username'] . ")\n";
-    echo "Statut : " . $c['status'] . " | Filiale : " . $c['subsidiary'] . "\n";
-    if ($c['finished_at'] !== '') echo "Fin : " . $c['finished_at'] . "\n";
-    if ($c['time_spent'] !== '') echo "Temps : " . $c['time_spent'] . "\n";
+    echo "Épreuve : {$paperLabel}\n";
+    echo "Paper ID : {$paperIdStr}\n";
+    echo "Banque : Junior " . ($levelTotals['Junior'] ?? 0)
+        . " | Senior " . ($levelTotals['Senior'] ?? 0)
+        . " | Expert " . ($levelTotals['Expert'] ?? 0) . " questions\n";
+    echo "Inscrits : {$stats['enrolled']} | Composés : {$stats['composed']}"
+        . " | Complétion : {$stats['completion_pct']}%"
+        . " | Seuil {$stats['threshold_pct']}% : " . ($stats['threshold_reached'] ? 'ATTEINT' : 'non') . "\n\n";
 
-    $g = $c['global'];
-    echo "\nGLOBAL : " . $g['answered'] . "/" . $g['total'] . " répondues"
-        . " | couverture " . ($g['pct_completion'] ?? 0) . "%"
-        . " | note maîtrise " . $fmt($g['note_maitrise']) . "/20"
-        . " | note complétude " . $fmt($g['note_completude']) . "/20\n";
+    $fmt = function ($v) {
+        return $v === null ? '—' : (is_float($v) ? number_format($v, 2, ',', '') : (string) $v);
+    };
 
-    echo "Note recrutement (J+S maîtrise) : " . $fmt($c['note_recrutement']) . "/20"
-        . " | Valide : " . ($c['recrutement_valide'] ? 'Oui' : 'Non') . "\n\n";
+    foreach ($composers as $c) {
+        echo str_repeat('=', 72) . "\n";
+        echo $c['name'] . ' (' . $c['username'] . ")\n";
+        echo 'Statut : ' . $c['status'] . ' | Filiale : ' . $c['subsidiary'] . "\n";
+        if ($c['finished_at'] !== '') {
+            echo 'Fin : ' . $c['finished_at'] . "\n";
+        }
+        echo 'Temps écoulé : ' . ($c['time_elapsed'] ?: '—')
+            . ' | Chrono restant : ' . ($c['time_remaining'] ?: '—')
+            . ' | Vitesse : ' . ($c['avg_speed_per_min'] ?? '—') . " q/min\n";
 
-    printf("%-8s %-12s %-14s %-18s %-18s\n", 'Niveau', 'Répondues', 'Couverture', 'Note maîtrise/20', 'Note complétude/20');
-    foreach (['Junior', 'Senior', 'Expert'] as $lv) {
-        if (!isset($c['levels'][$lv]) || ($c['levels'][$lv]['total'] ?? 0) <= 0) continue;
-        $lb = $c['levels'][$lv];
-        printf(
-            "%-8s %-12s %-14s %-18s %-18s\n",
-            $lv,
-            $lb['answered'] . '/' . $lb['total'],
-            ($lb['pct_completion'] ?? 0) . '%',
-            $fmt($lb['note_maitrise']),
-            $fmt($lb['note_completude'])
-        );
+        $g = $c['global'];
+        echo "\nGLOBAL : " . $g['answered'] . '/' . $g['total'] . ' répondues'
+            . ' | couverture ' . ($g['pct_completion'] ?? 0) . '%'
+            . ' | note maîtrise ' . $fmt($g['note_maitrise']) . '/20'
+            . ' | note complétude ' . $fmt($g['note_completude']) . "/20\n";
+
+        echo 'Maîtrise globale : ' . $fmt($g['note_maitrise']) . '/20'
+            . ' | Complétude globale : ' . $fmt($g['note_completude']) . '/20'
+            . ' | Orientation : ' . ($c['orientation_done'] ? 'Oui' : 'Non') . "\n\n";
+
+        if (!empty($c['macro_notes'])) {
+            echo "MACRO-SPÉCIALITÉS\n";
+            printf("%-28s %-12s %-14s %-18s\n", 'Macro', 'Répondues', 'Couverture', 'Maîtrise /20');
+            foreach ($c['macro_notes'] as $macro => $mn) {
+                printf(
+                    "%-28s %-12s %-14s %-18s\n",
+                    $macro,
+                    $mn['answered'] . '/' . $mn['total'],
+                    ($mn['pct_completion'] ?? 0) . '%',
+                    $fmt($mn['note_maitrise'])
+                );
+            }
+            echo "\n";
+        }
+
+        echo "SPÉCIALITÉS\n";
+        printf("%-32s %-12s %-14s %-18s\n", 'Spécialité', 'Répondues', 'Couverture', 'Maîtrise /20');
+        foreach ($c['specialty_notes'] as $spec => $sn) {
+            printf(
+                "%-32s %-12s %-14s %-18s\n",
+                mb_substr($spec, 0, 32),
+                $sn['answered'] . '/' . $sn['total'],
+                ($sn['pct_completion'] ?? 0) . '%',
+                $fmt($sn['note_maitrise'])
+            );
+        }
+        echo "\n";
     }
-    echo "\n";
-}
 
-if (!$composers) {
-    echo "Aucun candidat n'a composé pour le moment.\n";
-}
+    if (!$composers) {
+        echo "Aucun candidat n'a composé pour le moment.\n";
+    }
 }

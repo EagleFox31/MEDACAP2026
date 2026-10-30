@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 ob_start();
 error_reporting(E_ALL);
@@ -17,7 +18,7 @@ class MongoDBConnection {
     private $collections;
     public function __construct() {
         try {
-            $this->client = new Client("mongodb://localhost:27017");
+            $this->client = new Client(medacapMongoUri());
             $db = $this->client->academy;
             $this->collections = [
                 'users' => $db->users,
@@ -578,7 +579,6 @@ class ManagerQuizResultSaver {
             $adminDocs = getAdminsDocs($technician, $client);
             if (!$adminDocs) return;
             $rhDpsEmails = getRhAndDpsEmails($technician['subsidiary'], $client);
-            $salutation = buildAdminSalutation($adminDocs);
             $isRwanda = $technician['subsidiary'] === "CFAO MOTORS RWANDA";
             $subject = sprintf(
                 $isRwanda ? 'Professional Task MCQ finalized by Manager %s %s for collaborator %s %s – Level %s' : 'QCM Tâche Professionnelle finalisé par le Manageur %s %s pour son collaborateur %s %s – Niveau %s',
@@ -586,11 +586,11 @@ class ManagerQuizResultSaver {
                 htmlspecialchars($technician['firstName']), htmlspecialchars($technician['lastName']),
                 htmlspecialchars($this->level)
             );
+            // Pas de salutation dans le body : generateEmailTemplate ajoute déjà "Bonjour {M./Mme NOM},"
             $body = sprintf(
                 $isRwanda ?
-                    "<p>%s</p><p>Manager <strong>%s&nbsp;%s</strong> has just finalized the <strong>Professional Task MCQ</strong> for their collaborator <strong>%s&nbsp;%s</strong> at level <strong>%s</strong>. You can view the result in the <em>Technician Results by Level</em> section of the platform.</p>" :
-                    "<p>%s</p><p>Le Manageur <strong>%s&nbsp;%s</strong> vient de finaliser le <strong>QCM Tâche Professionnelle</strong> de son collaborateur <strong>%s&nbsp;%s</strong> au niveau <strong>%s</strong>. Vous pouvez consulter le résultat dans l'espace <em>Résultats des Techniciens par niveau</em> sur la plateforme.</p>",
-                $salutation,
+                    "<p>Manager <strong>%s&nbsp;%s</strong> has just finalized the <strong>Professional Task MCQ</strong> for their collaborator <strong>%s&nbsp;%s</strong> at level <strong>%s</strong>. You can view the result in the <em>Technician Results by Level</em> section of the platform.</p>" :
+                    "<p>Le Manageur <strong>%s&nbsp;%s</strong> vient de finaliser le <strong>QCM Tâche Professionnelle</strong> de son collaborateur <strong>%s&nbsp;%s</strong> au niveau <strong>%s</strong>. Vous pouvez consulter le résultat dans l'espace <em>Résultats des Techniciens par niveau</em> sur la plateforme.</p>",
                 htmlspecialchars($manager['firstName']), htmlspecialchars($manager['lastName']),
                 htmlspecialchars($technician['firstName']), htmlspecialchars($technician['lastName']),
                 htmlspecialchars($this->level)
@@ -696,6 +696,27 @@ $params = [
 ];
 ManagerQuizValidator::validateParams($params);
 $db = new MongoDBConnection();
+// Seul le manager connecté évalue, et uniquement ses collaborateurs : ?id= et ?user= ne sont pas des preuves.
+if (($_SESSION['profile'] ?? '') !== 'Super Admin') {
+    $evalTech = $db->getCollection('users')->findOne(['_id' => new ObjectId($params['technician'])]);
+    if ((string) $params['manager'] !== (string) $_SESSION['id']
+        || !$evalTech || empty($evalTech['manager']) || (string) $evalTech['manager'] !== (string) $_SESSION['id']) {
+        error_log('[userEvaluation] accès refusé : session=' . $_SESSION['id'] . ' manager=' . $params['manager'] . ' tech=' . $params['technician']);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $db->jsonResponse(false, 'Accès refusé.', './userManagerList');
+        }
+        header('Location: ./userManagerList');
+        exit();
+    }
+}
+// Une évaluation terminée ne se repasse pas : sinon une nouvelle soumission duplique les résultats.
+if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['technician']), 'test' => new ObjectId($params['test']), 'type' => 'Declaratif', 'activeManager' => true])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $db->jsonResponse(false, 'Cette évaluation est déjà terminée.', './userManagerList');
+    }
+    header('Location: ./userManagerList');
+    exit();
+}
 $fetcher = new ManagerQuizDataFetcher($db);
 $data = $fetcher->fetchData($params['technician'], $params['manager'], new ObjectId($params['test']), $params['level']);
 if (!$data) {
@@ -728,7 +749,7 @@ $labels = [
     <link rel="stylesheet" href="../../public/css/modules/quiz.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css">
 <?php
-renderQuizComponent($allQuestions, $technician, $params, $exam, isset($evaluer_tache_pro) ? $evaluer_tache_pro : 'Évaluation Tâche Professionnelle', $level_label, 'declaratif', $labels);
+renderQuizComponent($allQuestions, $technician, $params, $exam, isset($evaluer_tache_pro) ? $evaluer_tache_pro : 'Évaluation Tâche Professionnelle', isset($level_label) ? $level_label : 'Niveau', 'declaratif', $labels);
 ?>
 <?php include_once "partials/footer.php"; ?>
 <?php include_once "chat.php"; ?>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /*******************************************************
  * managers_info.php
  * Exemple de récupération des données agrégées MongoDB
@@ -14,7 +15,7 @@ use MongoDB\Client;
 try {
     // 3. Créer une instance de Client pour se connecter à Mongo
     //    Remplacez la chaîne de connexion selon vos paramètres (host, user, pass, etc.)
-    $client = new Client("mongodb://localhost:27017");
+    $client = new Client(medacapMongoUri());
 
     // 4. Sélection de la base de données et de la collection
     $db = $client->selectDatabase("ma_base"); // Nom de votre base

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require_once "../../vendor/autoload.php"; // Charger les dépendances nécessaires
 
 function getValidatedResults($level = "Junior") {
@@ -12,7 +13,7 @@ function getValidatedResults($level = "Junior") {
     }
 
     try {
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
     } catch (Exception $e) {
         die("Erreur de connexion à MongoDB: " . $e->getMessage());
     }

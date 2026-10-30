@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -20,7 +21,7 @@ if (!$email) {
 }
 
 $now = date('d-m-Y H:i:s');
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 
 // Super Admin ou Admin MEDACAP → upsert dans commercial_admins avec flag is_medacap_admin

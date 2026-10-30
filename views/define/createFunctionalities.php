@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 //createFunctionalities.php
 session_start();
 include_once "../language.php";
@@ -13,7 +14,7 @@ if (!isset($_SESSION["id"]) || $_SESSION["profile"] != "Super Admin") {
 require_once "../../vendor/autoload.php";
 
 // Connexion à MongoDB
-$client = new MongoDB\Client("mongodb://localhost:27017");
+$client = new MongoDB\Client(medacapMongoUri());
 $academy = $client->academy;
 $functionalitiesCollection = $academy->functionalities;
 $profilesCollection = $academy->profiles; // Pour récupérer les profils disponibles
@@ -264,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <!-- Inclusion des scripts nécessaires -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <!-- Script pour gérer les icônes -->
 <script>

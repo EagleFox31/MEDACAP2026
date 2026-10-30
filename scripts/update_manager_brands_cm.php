@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Met à jour brandJunior/Senior/Expert des managers CM depuis le Excel CFAO.
  * Usage: php scripts/update_manager_brands_cm.php [--dry-run]
@@ -8,7 +9,9 @@ require __DIR__ . '/../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 const SOURCE = __DIR__ . '/../Copie de Copie de Liste_techniciens_marques_CFAO (1) - Copie.xlsx';
-const MONGO_URI = 'mongodb://10.68.0.7:27017';
+if (!defined('MONGO_URI')) {
+    define('MONGO_URI', medacapMongoUri('mongodb://10.68.0.7:27017'));
+}
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
 

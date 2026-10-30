@@ -75,7 +75,7 @@ try {
 }
 
 // Récupération sécurisée des paramètres
-$technicianId = filter_input(INPUT_GET, 'technicianId', FILTER_SANITIZE_STRING);
+$technicianId = isset($_GET['technicianId']) ? strip_tags((string) $_GET['technicianId']) : null;
 if ($technicianId) {
     // ➜ on le remet dans $_GET pour que getFilters() le voie tout de suite
     $_GET['technicianId'] = $technicianId;

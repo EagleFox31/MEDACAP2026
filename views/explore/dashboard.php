@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 include_once "getValidatedResults.php";
@@ -15,7 +16,7 @@ if (!isset($_SESSION["profile"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;
@@ -3239,7 +3240,7 @@ if (!isset($_SESSION["profile"])) {
 }
 ?>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.50.0/apexcharts.min.js"
     integrity="sha512-h3DSSmgtvmOo5gm3pA/YcDNxtlAZORKVNAcMQhFi3JJgY41j9G06WsepipL7+l38tn9Awc5wgMzJGrUWaeUEGA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
@@ -3484,8 +3485,8 @@ if (!isset($_SESSION["profile"])) {
                                         level = 'Total';
                                     }
 
-                                    var country = '<?php echo urlencode($selectedCountry); ?>'; // Le pays sélectionné
-                                    var agency = '<?php echo urlencode($selectedAgency); ?>'; // L'agence sélectionnée
+                                    var country = '<?php echo urlencode((string) $selectedCountry); ?>'; // Le pays sélectionné
+                                    var agency = '<?php echo urlencode((string) $selectedAgency); ?>'; // L'agence sélectionnée
 
                                     // Utilisation de AJAX pour charger le contenu du modal
                                     $.ajax({

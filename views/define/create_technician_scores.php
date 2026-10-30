@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // create_technician_scores.php
 require_once "ScoreFunctions.php";
 require_once "../../vendor/autoload.php"; 
@@ -8,7 +9,7 @@ use MongoDB\Client;
 
 try {
     // Connexion à MongoDB
-    $mongoUri = "mongodb://localhost:27017"; 
+    $mongoUri = medacapMongoUri(); 
     $databaseName = "academy"; 
     $client = new Client($mongoUri);
     $academy = $client->$databaseName;

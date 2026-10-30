@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 /**
  * Ajoute les tests Expert manquants pour Clovis FORBANG (ex-cl4fo).
  * Usage: php scripts/fix_clovis_expert_tests_cm.php [--dry-run]
@@ -9,7 +10,7 @@ require __DIR__ . '/includes/mongo_quiz_helpers.php';
 use MongoDB\BSON\ObjectId;
 
 $dryRun = in_array('--dry-run', $argv ?? [], true);
-$mongoUri = 'mongodb://10.68.0.7:27017';
+$mongoUri = medacapMongoUri('mongodb://10.68.0.7:27017');
 
 $client = new MongoDB\Client($mongoUri);
 $users = $client->academy->users;

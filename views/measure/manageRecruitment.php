@@ -16,7 +16,7 @@ if (!in_array($profile, $allowed)) {
 
 require_once "../../vendor/autoload.php";
 include_once "includes/language.php"; 
-include_once "partials/background-manager.php";
+include_once __DIR__ . "/../partials/background-manager.php";
 setPageBackground("bg-dashboard");
 
 $title = "Gestion de Campagne de Recrutement";

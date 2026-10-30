@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * SCRIPT DE RATTRAPAGE - Renvoi email import candidats
  * Usage : accéder à cette page via le navigateur WAMP
@@ -18,7 +19,7 @@ use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 $users  = $db->users;
 
@@ -27,7 +28,7 @@ $CAMPAIGN_ROLE = "Recrutement Techniciens Senior Chariots Elevateurs";
 $FIXED_COUNTRY = "Cameroun";
 
 // Lien portail
-$link = 'http://10.68.0.7/medacap/';
+$link = medacapAppBaseUrl('Cameroun');
 
 $log = [];
 $sent = false;

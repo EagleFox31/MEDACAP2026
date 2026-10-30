@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -10,7 +11,7 @@ if (!isset($_SESSION["id"])) {
     require_once "../../vendor/autoload.php";
 
     // Create connection
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
 
     // Connecting in database
     $academy = $conn->academy;
@@ -21,6 +22,8 @@ if (!isset($_SESSION["id"])) {
     $results = $academy->results;
 
     $user = $_GET["user"];
+    require_once __DIR__ . '/../../core/user_access.php';
+    medacapRequireUserAccess($users, $user);
     $level = $_GET["level"];
     $speciality = $_GET["speciality"];
     $numberTest = $_GET["numberTest"];
@@ -45,7 +48,7 @@ if (!isset($_SESSION["id"])) {
     }
 
     function getclasses($grp){
-        $percent  = round(($grp->score * 100) / ($grp->total));
+        $percent  = round(($grp->score * 100) / (max(1, (float) $grp->total)));
         $bootstrapclass = getBootstrapClass($percent);
         return $bootstrapclass;                                    
     }
@@ -178,9 +181,7 @@ if (!isset($_SESSION["id"])) {
                                                 ),
                                             ],
                                             [
-                                                "manager" => new MongoDB\BSON\ObjectId(
-                                                    $technician->manager
-                                                ),
+                                                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                             ],
                                             ["level" => $level],
                                             ["speciality" => $speciality],
@@ -477,7 +478,7 @@ if (!isset($_SESSION["id"])) {
                                             style="width: 155.266px;">
                                             <?php echo ceil(
                                                 ($groupeFac->score * 100) /
-                                                    $groupeFac->total
+                                                    max(1, (float) $groupeFac->total)
                                             ); ?>%
                                         </th>
                                         <th id=""
@@ -493,7 +494,7 @@ if (!isset($_SESSION["id"])) {
                                             style="width: 155.266px;">
                                             <?php echo ceil(
                                                 ($groupeDecla->score * 100) /
-                                                    $groupeDecla->total
+                                                    max(1, (float) $groupeDecla->total)
                                             ); ?>%
                                         </th>
                                         <th id="result-n1"
@@ -503,7 +504,7 @@ if (!isset($_SESSION["id"])) {
                                             style="width: 155.266px;">
                                             <?php echo ceil(
                                                 ($groupeMa->score * 100) /
-                                                    $groupeMa->total
+                                                    max(1, (float) $groupeMa->total)
                                             ); ?>%
                                         </th>
                                         <th id="result-savoir-faire"
@@ -545,8 +546,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -16,7 +17,7 @@ update_navigation_history();
 require_once "../../vendor/autoload.php";
 
 // Connect to MongoDB
-$client = new MongoDB\Client("mongodb://localhost:27017");
+$client = new MongoDB\Client(medacapMongoUri());
 $academy = $client->academy;
 $profilesCollection = $academy->profiles;
 $functionalitiesCollection = $academy->functionalities;

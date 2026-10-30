@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 include_once "../partials/background-manager.php"; // Système de gestion de fond d'écran
@@ -63,7 +64,7 @@ if (!isset($_SESSION["id"])) {
     if ($mongoAvailable) {
         try {
             // We already verified MongoDB availability, now attempt connection
-            $conn = new \MongoDB\Client("mongodb://localhost:27017");
+            $conn = new \MongoDB\Client(medacapMongoUri());
             
             // Connecting in database
             $academy = $conn->academy;
@@ -424,7 +425,7 @@ $eventList = [];
 if ($mongoAvailable) {
     try {
         // Create connection
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
         
         // Connecting in database
         $academy = $conn->academy;

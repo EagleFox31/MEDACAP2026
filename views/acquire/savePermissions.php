@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 // savePermissions.php
 session_start();
 ob_start();
@@ -80,7 +81,7 @@ try {
     $currentModule = $inputData['currentModule']; // Récupération de currentModule depuis la requête
 
     // Connexion à MongoDB
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $functionalitiesCollection = $academy->functionalities;
     $profilesCollection = $academy->profiles;

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -51,7 +52,7 @@ if (!isset($_SESSION["id"])) {
 
     if (isset($_POST["submit"])) {
         // Create connection
-        $conn = new MongoDB\Client("mongodb://localhost:27017");
+        $conn = new MongoDB\Client(medacapMongoUri());
 
         // Connecting in database
         $academy = $conn->academy;
@@ -2929,12 +2930,7 @@ if (!isset($_SESSION["id"])) {
                 ];
                 $user = $users->insertOne($personM);
 
-                if ($country == 'Cameroun') {
-                    $link = 'http://10.68.0.7/medacap/';
-                } 
-                else {
-                    $link = 'http://129.0.64.34/medacap';
-                }   
+                $link = medacapAppBaseUrl($country); 
             
                 // Assurez-vous que les variables sont définies et valides
                 if (isset($email, $lastName)) {
@@ -3007,12 +3003,7 @@ if (!isset($_SESSION["id"])) {
                 ];
                 $users->insertOne($personRh);
                 
-                if ($country == 'Cameroun') {
-                    $link = 'http://10.68.0.7/medacap/';
-                } 
-                else {
-                    $link = 'http://129.0.64.34/medacap';
-                }   
+                $link = medacapAppBaseUrl($country); 
             
                 // Assurez-vous que les variables sont définies et valides
                 // Assurez-vous que les variables sont définies et valides
@@ -3086,12 +3077,7 @@ if (!isset($_SESSION["id"])) {
                 ];
                 $users->insertOne($personA);
                 
-                if ($country == 'Cameroun') {
-                    $link = 'http://10.68.0.7/medacap/';
-                } 
-                else {
-                    $link = 'http://129.0.64.34/medacap';
-                }   
+                $link = medacapAppBaseUrl($country); 
             
                 // Assurez-vous que les variables sont définies et valides
                 if (isset($email, $lastName)) {
@@ -3164,12 +3150,7 @@ if (!isset($_SESSION["id"])) {
                 ];
                 $users->insertOne($personD);
                 
-                if ($country == 'Cameroun') {
-                    $link = 'http://10.68.0.7/medacap/';
-                } 
-                else {
-                    $link = 'http://129.0.64.34/medacap';
-                }   
+                $link = medacapAppBaseUrl($country); 
             
                // Assurez-vous que les variables sont définies et valides
                 if (isset($email, $lastName)) {

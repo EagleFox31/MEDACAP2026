@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Correction du groupe de la fonctionnalité bilanTestNotes.
  * Passe de "Consulter" → "Bilan des Tests" pour qu'elle apparaisse
@@ -14,7 +15,7 @@ if (!isset($_SESSION["id"]) || !in_array($_SESSION["profile"], ["Super Admin", "
 }
 
 require_once "../../vendor/autoload.php";
-$db    = (new MongoDB\Client("mongodb://localhost:27017"))->academy;
+$db    = (new MongoDB\Client(medacapMongoUri()))->academy;
 $funcs = $db->functionalities;
 
 // Chercher le bon group_order pour "Bilan des Tests"

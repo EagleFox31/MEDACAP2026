@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../core/medacap_config.php';
 /**
  * Gestion de la connexion à la base de données MongoDB
  * 
@@ -19,7 +20,7 @@ function connectToDatabase() {
         $dbName = defined('DB_NAME') ? DB_NAME : 'academy';
         
         // Construction de l'URI de connexion
-        $uri = "mongodb://{$host}:{$port}";
+        $uri = medacapMongoUri('mongodb://' . $host . ':' . $port);
         
         // Création du client MongoDB et retour de la base de données
         $client = new MongoDB\Client($uri);

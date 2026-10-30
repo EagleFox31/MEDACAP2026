@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../../core/medacap_config.php';
 /**
  * Dashboard unifié pour participation et résultats aux quizzes/tests
  * Affichage conditionnel basé sur le profil utilisateur.
@@ -43,7 +44,7 @@ if (isset($_GET['subsidiary']) && $_GET['subsidiary'] == "Toutes les filiales") 
 }
 
 // ===== CONNEXION MONGODB ET COLLECTIONS COMMUNES =====
-$conn = new MongoDB\Client("mongodb://localhost:27017");
+$conn = new MongoDB\Client(medacapMongoUri());
 $academy = $conn->academy;
 $users = $academy->users;
 $allocations = $academy->allocations;
@@ -80,7 +81,7 @@ if ($isQCMProfile) {
 
         private function __construct()
         {
-            $this->conn = new MongoDB\Client("mongodb://localhost:27017");
+            $this->conn = new MongoDB\Client(medacapMongoUri());
             $academy = $this->conn->academy;
             $this->collections = [
                 'users' => $academy->users,
@@ -379,6 +380,8 @@ if ($isQCMProfile) {
     include_once "../explore/getValidatedResults.php";
     include_once "../explore/score_decla.php";
     include_once "../explore/score_fact.php";
+    require_once __DIR__ . '/includes/dashboard_admin_scope.php';
+    require_once __DIR__ . '/includes/subsidiaryHelper.php';
 
     // ===== CLASSES POUR LE TABLEAU (ADMIN) =====
     /**
@@ -391,7 +394,7 @@ if ($isQCMProfile) {
 
         private function __construct()
         {
-            $this->conn = new MongoDB\Client("mongodb://localhost:27017");
+            $this->conn = new MongoDB\Client(medacapMongoUri());
             $academy = $this->conn->academy;
             $this->collections = [
                 'users' => $academy->users,
@@ -502,7 +505,10 @@ if ($isQCMProfile) {
         {
             $query = ["active" => true];
             if ($subsidiaryFilter && $subsidiaryFilter !== 'all' && $subsidiaryFilter !== null) {
-                $query['subsidiary'] = is_array($subsidiaryFilter) ? ['$in' => $subsidiaryFilter] : $subsidiaryFilter;
+                $subsidiaryClause = medacapSubsidiaryFilterToMongoClause($subsidiaryFilter);
+                if ($subsidiaryClause !== null) {
+                    $query['subsidiary'] = $subsidiaryClause;
+                }
             }
             $this->addDepartmentFilter($query, $userSession);
             $brandOr = null;
@@ -532,10 +538,15 @@ if ($isQCMProfile) {
          */
         private function getRegularAdminTechnicians($userSession, $subsidiaryFilter, $brand)
         {
-            $query = [
-                "subsidiary" => $subsidiaryFilter ?? $userSession['subsidiary'],
-                "active" => true
-            ];
+            $query = array(
+                'active' => true,
+            );
+            $subsidiaryClause = medacapSubsidiaryFilterToMongoClause(
+                $subsidiaryFilter !== null ? $subsidiaryFilter : (isset($userSession['subsidiary']) ? $userSession['subsidiary'] : null)
+            );
+            if ($subsidiaryClause !== null) {
+                $query['subsidiary'] = $subsidiaryClause;
+            }
             $this->addDepartmentFilter($query, $userSession);
             $brandOr = null;
             if ($brand !== '') {
@@ -564,19 +575,7 @@ if ($isQCMProfile) {
          */
         private function addDepartmentFilter(&$query, $userSession)
         {
-            $userDoc = $this->collections['users']->findOne(["_id" => new MongoDB\BSON\ObjectId($userSession['id'])]);
-            $department = $userDoc['department'] ?? $userSession['department'] ?? null;
-            if ($department && $department !== 'null' && trim($department) !== '') {
-                $departements = explode(' & ', $department);
-                if (!empty($departements)) {
-                    $orConditions = array_map(function ($dep) {
-                        return ['department' => new MongoDB\BSON\Regex('^' . preg_quote(trim($dep)) . '$', 'i')];
-                    }, $departements);
-                    $query['$or'] = $orConditions;
-                }
-            } elseif ($userSession["department"] != 'Equipment & Motors') {
-                $query['department'] = $userSession["department"];
-            }
+            dashboardAdminApplyDepartmentScope($query, $this->collections['users']);
         }
 
         /**
@@ -584,9 +583,12 @@ if ($isQCMProfile) {
          */
         private function filterTechnicians($query)
         {
-            $query['isCandidat'] = ['$ne' => true];
-            $techIds = [];
+            dashboardAdminApplyTechnicianScope($query, $this->collections['users']);
+            $techIds = array();
             foreach ($this->collections['users']->find($query) as $tech) {
+                if (dashboardAdminIsDemoUserDoc($tech)) {
+                    continue;
+                }
                 if ($tech["profile"] == "Technicien" || ($tech["profile"] == "Manager" && $tech["test"] == true)) {
                     try {
                         $techIds[] = new MongoDB\BSON\ObjectId($tech['_id']);
@@ -1085,29 +1087,7 @@ if ($isQCMProfile) {
      */
     function getDepartmentClauses($users)
     {
-        static $deptClauses = null;
-        if ($deptClauses !== null) {
-            return $deptClauses;
-        }
-
-        $deptClauses = [];
-        if (!isset($_SESSION['id'])) {
-            return $deptClauses;
-        }
-
-        $userDoc = $users->findOne(["_id" => new MongoDB\BSON\ObjectId($_SESSION['id'])]);
-        $department = $userDoc['department'] ?? ($_SESSION['department'] ?? null);
-        if ($department && $department !== 'null' && trim($department) !== '') {
-            $parts = preg_split('/\\s*&\\s*/', $department);
-            foreach ($parts as $dep) {
-                $dep = trim($dep);
-                if ($dep === '') {
-                    continue;
-                }
-                $deptClauses[] = ['department' => new MongoDB\BSON\Regex($dep, 'i')];
-            }
-        }
-        return $deptClauses;
+        return dashboardAdminGetDepartmentClauses($users);
     }
 
     /**
@@ -1115,41 +1095,48 @@ if ($isQCMProfile) {
      */
     function getUsersByLevel($users, $level = null, $brand = '', $subsidiaryFilter = null)
     {
-        $simpleFilter = ['active' => true, 'isCandidat' => ['$ne' => true]];
+        $simpleFilter = array('active' => true, 'isCandidat' => array('$ne' => true));
         if ($level !== null) {
             $simpleFilter['level'] = $level;
         }
         if ($subsidiaryFilter !== null) {
-            $simpleFilter['subsidiary'] = is_array($subsidiaryFilter) ? ['$in' => $subsidiaryFilter] : $subsidiaryFilter;
+            $subsidiaryClause = medacapSubsidiaryFilterToMongoClause($subsidiaryFilter);
+            if ($subsidiaryClause !== null) {
+                $simpleFilter['subsidiary'] = $subsidiaryClause;
+            }
         }
 
-        $andClauses = [
-            ['$or' => [
-                ['profile' => 'Technicien'],
-                ['profile' => 'Manager', 'test' => true]
-            ]]
-        ];
+        $andClauses = array(
+            array('$or' => array(
+                array('profile' => 'Technicien'),
+                array('profile' => 'Manager', 'test' => true),
+            )),
+        );
 
-        $isGroupScope = in_array($_SESSION['profile'] ?? '', ['Super Admin', 'Directeur Groupe']);
-        if (!$isGroupScope) {
+        if (!dashboardAdminIsGroupScope()) {
             $deptClauses = getDepartmentClauses($users);
             if (!empty($deptClauses)) {
-                $andClauses[] = ['$or' => $deptClauses];
+                $andClauses[] = array('$or' => $deptClauses);
             } elseif (isset($_SESSION['department']) && $_SESSION['department'] !== 'Equipment & Motors') {
                 $simpleFilter['department'] = $_SESSION['department'];
             }
         }
 
+        $demoClause = dashboardAdminDemoExcludeClause();
+        if ($demoClause !== null) {
+            $andClauses[] = $demoClause;
+        }
+
         if ($brand !== '') {
             $brandField = $level ? "brand{$level}" : null;
             if ($brandField) {
-                $simpleFilter[$brandField] = ['$in' => [$brand]];
+                $simpleFilter[$brandField] = array('$in' => array($brand));
             } else {
-                $andClauses[] = ['$or' => [
-                    ['brandJunior' => ['$in' => [$brand]]],
-                    ['brandSenior' => ['$in' => [$brand]]],
-                    ['brandExpert' => ['$in' => [$brand]]]
-                ]];
+                $andClauses[] = array('$or' => array(
+                    array('brandJunior' => array('$in' => array($brand))),
+                    array('brandSenior' => array('$in' => array($brand))),
+                    array('brandExpert' => array('$in' => array($brand))),
+                ));
             }
         }
 
@@ -1160,8 +1147,8 @@ if ($isQCMProfile) {
             $query['$and'] = $andClauses;
         }
 
-        $ids = [];
-        foreach ($users->find($query, ['projection' => ['_id' => 1]]) as $doc) {
+        $ids = array();
+        foreach ($users->find($query, array('projection' => array('_id' => 1))) as $doc) {
             $ids[] = $doc->_id;
         }
         return $ids;
@@ -1523,14 +1510,22 @@ if ($isQCMProfile) {
     }
 
     // ===== FILTRES POUR L'INTERFACE ADMIN =====
-    $baseFilter = ['active' => true, '$or' => [['profile' => 'Technicien'], ['profile' => 'Manager', 'test' => true]]];
+    $baseFilter = array(
+        'active' => true,
+        'isCandidat' => array('$ne' => true),
+        '$or' => array(
+            array('profile' => 'Technicien'),
+            array('profile' => 'Manager', 'test' => true),
+        ),
+    );
     if ($subsidiaryFilter !== null) {
-        if (is_array($subsidiaryFilter)) {
-            $baseFilter['subsidiary'] = ['$in' => $subsidiaryFilter];
-        } else {
-            $baseFilter['subsidiary'] = $subsidiaryFilter;
+        $subsidiaryClause = medacapSubsidiaryFilterToMongoClause($subsidiaryFilter);
+        if ($subsidiaryClause !== null) {
+            $baseFilter['subsidiary'] = $subsidiaryClause;
         }
     }
+    dashboardAdminApplyDepartmentScope($baseFilter, $users);
+    dashboardAdminMergeQueryClause($baseFilter, dashboardAdminDemoExcludeClause());
 
     $brandPipeline = [
         ['$match' => $baseFilter],
@@ -1588,6 +1583,7 @@ if ($isQCMProfile) {
             'iconColor' => 'text-info',
             'selected' => $selectedBrand ?: 'all',
             'value' => array_merge(['all' => 'Toutes les marques'], $uniqueBrands ?? []),
+            'useLogos' => true,
         ]
     ];
 
@@ -1702,7 +1698,7 @@ if ($isQCMProfile) {
     $mainTitle = $participation_aux_tests ;
     $chartContainerId = 'chartTestFiliale';
     $chartDataVar = $chartDataFiliale ?? [];
-    $colClassChartsVar = 'col-md-6 col-lg-3 col-xl-2.5';
+    $colClassChartsVar = 'col-6 col-md-6 col-lg-3 col-xl-3';
     $cardsVar = [
         ['techniciansByLevel', 'Junior', 'Junior'],
         ['techniciansByLevel', 'Senior', 'Senior'],
@@ -1729,6 +1725,7 @@ if ($isQCMProfile) {
 <link rel="stylesheet" href="../../public/css/modules/skeleton-loader.css">
 <link rel="stylesheet" href="../../public/css/modules/training-plan.css">
 <link rel="stylesheet" href="../../public/css/measure/dashboard-admin.css">
+<link rel="stylesheet" href="../../public/css/measure/user-list.css">
 <style>
     .dropdown-content,
     .dropdown-content1,
@@ -1884,23 +1881,28 @@ if ($isQCMProfile) {
 
             <?php if ($isQCM): ?>
                 <?php if (AuthorizationManager::isAuthorized($_SESSION["profile"])) { ?>
-                    <div class="row g-6 mb-5 justify-content-center">
-                        <?php foreach ($cardsVar as $card): ?>
-                            <div class="<?php echo $colClassCards; ?>">
-                                <div class="card h-auto glassmorphism">
-                                    <div class="card-body text-center py-3 px-3">
-                                        <div class="fs-2x fw-bold text-gray-800" data-kt-countup="true" data-kt-countup-value="<?= $card['value'] ?>">
+                    <!-- col-12 intermediaire : une .row imbriquee directement dans une .row recoit
+                         une marge haute fantome (.row > * { margin-top: var(--bs-gutter-y) }) qui
+                         varie selon ses propres gutters, d'ou des ecarts verticaux incoherents. -->
+                    <div class="col-12 mt-0">
+                        <div class="row g-6 mb-5 justify-content-center">
+                            <?php foreach ($cardsVar as $card): ?>
+                                <div class="<?php echo $colClassCards; ?>">
+                                    <div class="card h-100 glassmorphism">
+                                        <div class="card-body text-center py-3 px-3 d-flex flex-column">
+                                            <div class="fs-2x fw-bold text-gray-800" data-kt-countup="true" data-kt-countup-value="<?= $card['value'] ?>">
+                                            </div>
+                                            <div class="fw-semibold mt-2 flex-grow-1 d-flex align-items-center justify-content-center"><?= $card['label'] ?></div>
                                         </div>
-                                        <div class="fw-semibold mt-2"><?= $card['label'] ?></div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <?php renderTitleSection($titleIconVar, 2, $secondaryTitleVar); ?>
+
+                        <div id="<?php echo $chartContainerId; ?>" class="row mb-4 justify-content-center"></div>
                     </div>
-
-                    <?php renderTitleSection($titleIconVar, 2, $secondaryTitleVar); ?>
-
-                    <div id="<?php echo $chartContainerId; ?>" class="row mb-4 justify-content-center"></div>
                 <?php } ?>
             <?php else: ?>
                 <?php if (in_array($_SESSION["profile"], ['Super Admin', 'Admin', 'Ressource Humaine', 'Directeur Pièce et Service', 'Directeur des Opérations', 'Directeur Général', 'Directeur Groupe'])) { ?>
@@ -1915,7 +1917,10 @@ if ($isQCMProfile) {
                         </div>
                     </div>
 
-                    <div class="row">
+                    <!-- col-12 : évite les .row imbriquées directement dans .row (gutter-y fantôme → chevauchements). -->
+                    <div class="col-12 mt-0 dashboard-admin-stack">
+
+                    <div class="row mb-4">
                         <div class="col-12">
                             <div class="card p-3 text-center glassmorphism filter-card">
                                 <div class="d-flex justify-content-center align-items-center text-center">
@@ -1926,17 +1931,17 @@ if ($isQCMProfile) {
                     </div>
 
                     <?php if (in_array($_SESSION["profile"], $profilesForCards)) { ?>
-                        <div class="row row-cols-xxl-4 row-cols-lg-4 row-cols-md-2 g-6 mb-5">
+                        <div class="row row-cols-xxl-4 row-cols-lg-4 row-cols-md-2 g-6 mb-4">
                             <?php
                             foreach ($cardsVar as $data) {
                                 list($var, $key, $label) = $data;
                             ?>
                                 <div class="col">
-                                    <div class="card h-auto glassmorphism">
-                                        <div class="card-body text-center py-3 px-3">
+                                    <div class="card h-100 glassmorphism">
+                                        <div class="card-body text-center py-3 px-3 d-flex flex-column">
                                             <div class="fs-2x fw-bold text-gray-800" data-kt-countup="true" data-kt-countup-value="<?= count($$var[$key] ?? []) ?>">
                                             </div>
-                                            <div class="fw-semibold mt-2"><?= $technicienss . ' ' . $Level . ' ' . $label ?></div>
+                                            <div class="fw-semibold mt-2 flex-grow-1 d-flex align-items-center justify-content-center"><?= $technicienss . ' ' . $Level . ' ' . $label ?></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1945,10 +1950,10 @@ if ($isQCMProfile) {
 
                         <?php if (in_array($_SESSION['profile'], ['Super Admin', 'Directeur des Opérations', 'Directeur Pièce et Service', 'Directeur Général', 'Admin', 'Ressource Humaine', 'Directeur Groupe'])) { ?>
                             <?php renderTitleSection('ki-duotone ki-chart-pie fs-2 me-3', 2, 'Taux de participation aux tests'); ?>
-                            <div id="<?php echo $chartContainerId; ?>" class="row mb-4"></div>
+                            <div id="<?php echo $chartContainerId; ?>" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 mb-4 dashboard-chart-grid"></div>
 
                             <?php renderTitleSection('ki-duotone ki-chart-bar fs-2 me-3', 2, 'Taux de participation aux tests par type de QCM'); ?>
-                            <div class="row mb-4">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 mb-4 dashboard-chart-grid">
                                 <?php
                                 $qcmCharts = [
                                     ['junior', $test_niveau_junior],
@@ -1959,13 +1964,13 @@ if ($isQCMProfile) {
                                 foreach ($qcmCharts as $chart) {
                                     list($id, $title) = $chart;
                                 ?>
-                                    <div class="col-xl-3">
-                                        <div class="card glassmorphism chart-card">
-                                            <div class="text-center">
-                                                <h5 class="mt-2" style="margin-top: 18px !important;"><?= $title ?></h5>
+                                    <div class="col">
+                                        <div class="card glassmorphism chart-card h-100">
+                                            <div class="chart-card-head text-center">
+                                                <h5 class="chart-card-title mb-0"><?= $title ?></h5>
                                             </div>
-                                            <div class="d-flex align-items-center justify-content-center flex-grow-1">
-                                                <div id="qcm_<?= $id ?>_filiale" class="chart-container"></div>
+                                            <div class="chart-card-body">
+                                                <div id="qcm_<?= $id ?>_filiale" class="chart-container qcm-bar-chart"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -1998,6 +2003,8 @@ if ($isQCMProfile) {
                         <?php } ?>
                     <?php } ?>
 
+                    </div><!-- /.dashboard-admin-stack -->
+
                     <div class="my-5"></div>
 
                     <!-- ===== SECTION RÉSULTATS DE LA MESURE DES COMPÉTENCES ===== -->
@@ -2026,43 +2033,43 @@ if ($isQCMProfile) {
                         <!-- Section Résultats par Type -->
                         <?php renderTitleSection('ki-duotone ki-users fs-2 me-3', 2, 'Résultats aux tests par type de tests'); ?>
 
-                        <div class="row">
-                            <div class="col-xl-3">
-                                <div class="card result-card">
-                                    <div class="text-center">
-                                        <h5 class="mt-2" style="margin-top: 18px !important;">Résultats Niveau Junior</h5>
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 mb-4 dashboard-chart-grid">
+                            <div class="col">
+                                <div class="card result-card h-100">
+                                    <div class="chart-card-head text-center">
+                                        <h5 class="chart-card-title mb-0">Résultats Niveau Junior</h5>
                                     </div>
-                                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                                    <div class="chart-card-body">
                                         <div id="result_junior" class="result-chart"></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-3">
-                                <div class="card result-card">
-                                    <div class="text-center">
-                                        <h5 class="mt-2" style="margin-top: 18px !important;">Résultats Niveau Senior</h5>
+                            <div class="col">
+                                <div class="card result-card h-100">
+                                    <div class="chart-card-head text-center">
+                                        <h5 class="chart-card-title mb-0">Résultats Niveau Senior</h5>
                                     </div>
-                                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                                    <div class="chart-card-body">
                                         <div id="result_senior" class="result-chart"></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-3">
-                                <div class="card result-card">
-                                    <div class="text-center">
-                                        <h5 class="mt-2" style="margin-top: 18px !important;">Résultats Niveau Expert</h5>
+                            <div class="col">
+                                <div class="card result-card h-100">
+                                    <div class="chart-card-head text-center">
+                                        <h5 class="chart-card-title mb-0">Résultats Niveau Expert</h5>
                                     </div>
-                                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                                    <div class="chart-card-body">
                                         <div id="result_expert" class="result-chart"></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-3">
-                                <div class="card result-card">
-                                    <div class="text-center">
-                                        <h5 class="mt-2" style="margin-top: 18px !important;">Total : 03 Niveaux</h5>
+                            <div class="col">
+                                <div class="card result-card h-100">
+                                    <div class="chart-card-head text-center">
+                                        <h5 class="chart-card-title mb-0">Total : 03 Niveaux</h5>
                                     </div>
-                                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                                    <div class="chart-card-body">
                                         <div id="result_total" class="result-chart"></div>
                                     </div>
                                 </div>
@@ -2131,7 +2138,7 @@ if ($isQCMProfile) {
 <script src="../../public/js/core/animations.js"></script>
 <script src="../../public/js/applyFilters.js" defer></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
 <?php if ($isQCM): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -2146,9 +2153,9 @@ if ($isQCMProfile) {
                     <div class="glass-effect card h-100">
                         <div class="card-body d-flex justify-content-center text-center flex-column p-4">
                             <h5 class="mb-4">${data.title}</h5>
-                            <div style="position: relative; display: flex; justify-content: center; align-items: center;">
+                            <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
                                 <canvas id="doughnutChart${index}" width="200" height="200"></canvas>
-                                <div style="position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
                                     <span class="fs-2hx fw-bold text-dark">${completedPercentage}%</span>
                                 </div>
                             </div>
@@ -2196,9 +2203,9 @@ if ($isQCMProfile) {
         });
     </script>
 <?php else: ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.50.0/apexcharts.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
 
     <!-- Styles CSS pour l'animation de chargement fluide -->
     <style>
@@ -2282,17 +2289,17 @@ if ($isQCMProfile) {
                 chartDataFiliale.forEach(function(data, index) {
                     const completedPercentage = data.total == 0 ? 0 : Math.round((data.completed / data.total) * 100);
                     const cardHtml = `
-                    <div class="<?php echo $colClassChartsVar; ?> mb-4">
-                        <div class="card h-100 glassmorphism">
+                    <div class="col">
+                        <div class="card h-100 glassmorphism dashboard-doughnut-card">
                             <div class="card-body d-flex justify-content-center text-center flex-column p-4">
-                                <h5 class="mb-4">${data.title}</h5>
-                                <div style="position: relative; display: flex; justify-content: center; align-items: center;">
+                                <h5 class="chart-card-title mb-3">${data.title}</h5>
+                                <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
                                     <canvas id="doughnutChart${index}" width="150" height="150"></canvas>
-                                    <div style="position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; pointer-events: none;">
                                         <span class="fs-2 fw-bold text-dark">${completedPercentage}%</span>
                                     </div>
                                 </div>
-                                <h6 class="mt-4 text-gray-600"><?= $total_tests_realiser ?>: ${data.total}</h6>
+                                <h6 class="mt-3 mb-0 text-gray-600"><?= $total_tests_realiser ?>: ${data.total}</h6>
                             </div>
                         </div>
                     </div>
@@ -2328,6 +2335,7 @@ if ($isQCMProfile) {
                         options: {
                             cutout: '60%',
                             responsive: true,
+                            maintainAspectRatio: true,
                             plugins: {
                                 legend: {
                                     display: false
@@ -2353,7 +2361,37 @@ if ($isQCMProfile) {
             }
 
             // ===== GRAPHIQUES QCM CORRIGÉS =====
-            const labelQF = ['Connaissances', 'Tâches Professionnelles', 'Compétences'];
+            const labelQF = ['Connaissances', 'Taches\nPro', 'Compétences'];
+            const qcmChartsRendered = [];
+
+            function getQcmChartHeight() {
+                if (window.innerWidth < 576) {
+                    return 300;
+                }
+                if (window.innerWidth < 1200) {
+                    return 320;
+                }
+                return 340;
+            }
+
+            function getQcmChartLabels() {
+                return labelQF;
+            }
+
+            function getQcmXAxisLabelOptions() {
+                const narrow = window.innerWidth < 768;
+                return {
+                    rotate: 0,
+                    rotateAlways: false,
+                    hideOverlappingLabels: false,
+                    trim: false,
+                    maxHeight: 56,
+                    style: {
+                        fontSize: window.innerWidth < 576 ? '10px' : '11px',
+                        fontWeight: 600
+                    }
+                };
+            }
 
             /**
              * Rendu d'un graphique QCM avec ApexCharts
@@ -2369,33 +2407,28 @@ if ($isQCMProfile) {
                     const chart = new ApexCharts(container, {
                         chart: {
                             type: 'bar',
-                            height: 350,
-                            width: 300,
+                            height: getQcmChartHeight(),
+                            width: '100%',
+                            redrawOnParentResize: true,
                             toolbar: {
                                 show: false
-                            }
+                            },
+                            fontFamily: 'inherit'
                         },
                         series: [{
                             name: "Taux de participation",
                             data: data
                         }],
                         xaxis: {
-                            categories: labelQF,
-                            labels: {
-                                rotate: -45,
-                                rotateAlways: true,
-                                style: {
-                                    fontSize: '12px',
-                                    fontWeight: 600
-                                }
-                            }
+                            categories: getQcmChartLabels(),
+                            labels: getQcmXAxisLabelOptions()
                         },
                         plotOptions: {
                             bar: {
                                 distributed: true,
                                 horizontal: false,
                                 borderRadius: 4,
-                                columnWidth: '60%'
+                                columnWidth: window.innerWidth < 576 ? '55%' : '60%'
                             }
                         },
                         colors: ['#82CDFF', '#039FFE', '#4303EC'],
@@ -2406,7 +2439,7 @@ if ($isQCMProfile) {
                             },
                             style: {
                                 colors: ['#fff'],
-                                fontSize: '12px',
+                                fontSize: window.innerWidth < 576 ? '10px' : '12px',
                                 fontWeight: 'bold'
                             }
                         },
@@ -2423,24 +2456,58 @@ if ($isQCMProfile) {
                             labels: {
                                 formatter: function(val) {
                                     return val + '%';
+                                },
+                                style: {
+                                    fontSize: '11px'
                                 }
                             }
                         },
-                        title: {
-                            text: title,
-                            align: 'center',
-                            style: {
-                                fontSize: '14px',
-                                fontWeight: 'bold'
+                        grid: {
+                            padding: {
+                                left: 8,
+                                right: 8,
+                                bottom: 12
                             }
+                        },
+                        legend: {
+                            show: false
                         }
                     });
 
                     chart.render();
+                    qcmChartsRendered.push({ chart: chart, data: data });
                 } catch (error) {
                     console.error(`Error rendering chart ${chartId}:`, error);
                 }
             }
+
+            let qcmResizeTimer = null;
+            window.addEventListener('resize', function() {
+                clearTimeout(qcmResizeTimer);
+                qcmResizeTimer = setTimeout(function() {
+                    qcmChartsRendered.forEach(function(item) {
+                        item.chart.updateOptions({
+                            chart: {
+                                height: getQcmChartHeight()
+                            },
+                            xaxis: {
+                                categories: getQcmChartLabels(),
+                                labels: getQcmXAxisLabelOptions()
+                            },
+                            plotOptions: {
+                                bar: {
+                                    columnWidth: window.innerWidth < 576 ? '55%' : '60%'
+                                }
+                            },
+                            dataLabels: {
+                                style: {
+                                    fontSize: window.innerWidth < 576 ? '10px' : '12px'
+                                }
+                            }
+                        });
+                    });
+                }, 180);
+            });
 
             // Rendu des graphiques QCM avec données corrigées
             if (dataQcm.Junior) renderQCMChart('qcm_junior_filiale', dataQcm.Junior, '<?= $test_niveau_junior ?>');
@@ -2596,22 +2663,21 @@ if ($isQCMProfile) {
                 const chartOptions = {
                     chart: {
                         type: 'bar',
-                        height: 350,
+                        height: getQcmChartHeight(),
+                        width: '100%',
+                        redrawOnParentResize: true,
                         toolbar: {
                             show: false
-                        }
+                        },
+                        fontFamily: 'inherit'
                     },
                     series: [{
                         name: "Taux d'acquisition des compétences",
                         data: data
                     }],
                     xaxis: {
-                        categories: labels,
-                        labels: {
-                            style: {
-                                fontSize: '12px'
-                            }
-                        }
+                        categories: getQcmChartLabels(),
+                        labels: getQcmXAxisLabelOptions()
                     },
                     plotOptions: {
                         bar: {
@@ -2637,6 +2703,13 @@ if ($isQCMProfile) {
                             formatter: (value) => value + '%'
                         }
                     },
+                    grid: {
+                        padding: {
+                            left: 8,
+                            right: 8,
+                            bottom: 12
+                        }
+                    },
                     legend: {
                         show: false
                     },
@@ -2647,7 +2720,9 @@ if ($isQCMProfile) {
                     }
                 };
 
-                new ApexCharts(chartContainer, chartOptions).render();
+                const chart = new ApexCharts(chartContainer, chartOptions);
+                chart.render();
+                qcmChartsRendered.push({ chart: chart });
             }
 
             // Créer les graphiques ApexCharts
@@ -2706,6 +2781,17 @@ if ($isQCMProfile) {
 
         // ===== GESTION DES FILTRES =====
         $(document).ready(function() {
+            $('.brand-filter-option').on('click', function(e) {
+                e.preventDefault();
+                const value = $(this).data('brand-value');
+                const $select = $(this).closest('.brand-filter-dropdown').find('.brand-filter-native');
+                if (!$select.length) {
+                    return;
+                }
+                $select.val(value);
+                $select.trigger('change');
+            });
+
             $('.ajax-filter').on('change', function() {
                 // Affichage du chargement lors du changement de filtre
                 toggleLoading(true);

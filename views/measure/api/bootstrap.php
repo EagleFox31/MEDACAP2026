@@ -317,6 +317,29 @@ function portalApiUserCompetencyEvaluations(
                 'level' => $level,
             ]);
             if (!$allocate || !isset($allocate['test'])) {
+                $tier = portalApiTierFromLevel($level);
+                $modality = portalApiModalityFromType($type);
+                $evalId = 'medacap-' . $userIdHex . '-' . $tier . '-' . ($modality === 'theory' ? 't' : 'p');
+                $brandSlugs = portalApiBrandSlugsForTier($userDoc, $tier);
+                $evaluations[] = [
+                    'id' => $evalId,
+                    'kind' => 'competency',
+                    'competencyTier' => $tier,
+                    'modality' => $modality,
+                    'certLevel' => strtoupper($tier),
+                    'status' => 'todo',
+                    'date' => '—',
+                    'score' => null,
+                    'passMark' => 60,
+                    'questions' => null,
+                    'questionsAnswered' => null,
+                    'attempts' => 0,
+                    'feedback' => null,
+                    'brand' => $brandSlugs[0] ?? null,
+                    'brands' => $brandSlugs,
+                    'medacapCreated' => null,
+                    'medacap' => null,
+                ];
                 continue;
             }
 
@@ -354,13 +377,15 @@ function portalApiUserCompetencyEvaluations(
                 ['sort' => ['_id' => -1]]
             );
 
-            if (!$latestResult) {
-                $latestResult = $results->findOne(
+            $technicienDeclResult = null;
+            if ($type === 'Declaratif') {
+                $technicienDeclResult = $results->findOne(
                     [
                         'user' => $userOid,
                         'test' => $testId,
                         'level' => $level,
                         'type' => $type,
+                        'typeR' => 'Techniciens',
                     ],
                     ['sort' => ['_id' => -1]]
                 );
@@ -378,8 +403,42 @@ function portalApiUserCompetencyEvaluations(
             $questionsAnswered = null;
             $date = '—';
             $createdRaw = null;
+            $managerPending = isset($allocate['activeManager']) && $allocate['activeManager'] === true;
 
-            if ($completedExam || ($score !== null && !$activeExam)) {
+            if ($type === 'Declaratif') {
+                if (!$latestResult) {
+                    $score = null;
+                }
+
+                if ($latestResult && ($completedExam || ($score !== null && !$activeExam))) {
+                    $status = 'done';
+                    $createdRaw = isset($latestResult['created']) ? (string) $latestResult['created'] : null;
+                    $date = $createdRaw ?? '—';
+                } elseif (
+                    $activeExam
+                    || $managerPending
+                    || ($technicienDeclResult && !$latestResult)
+                ) {
+                    $status = 'progress';
+                    $score = null;
+                    if ($activeExam) {
+                        $questionsRaw = $activeExam['questions'] ?? [];
+                        if ($questionsRaw instanceof \MongoDB\Model\BSONArray) {
+                            $questionsRaw = $questionsRaw->getArrayCopy();
+                        }
+                        $questions = is_array($questionsRaw) ? count($questionsRaw) : null;
+                        $answeredRaw = $activeExam['answers'] ?? [];
+                        if ($answeredRaw instanceof \MongoDB\Model\BSONArray) {
+                            $answeredRaw = $answeredRaw->getArrayCopy();
+                        }
+                        if (is_array($answeredRaw)) {
+                            $questionsAnswered = count(array_filter($answeredRaw, static fn($v) => $v !== null && $v !== ''));
+                        }
+                    }
+                } elseif (!$isAvailable) {
+                    continue;
+                }
+            } elseif ($completedExam || ($score !== null && !$activeExam)) {
                 $status = 'done';
                 $createdRaw = isset($latestResult['created']) ? (string) $latestResult['created'] : null;
                 $date = $createdRaw ?? '—';
@@ -399,6 +458,17 @@ function portalApiUserCompetencyEvaluations(
                 }
             } elseif (!$isAvailable) {
                 continue;
+            }
+
+            $declarativeStage = null;
+            if ($type === 'Declaratif' && $status !== 'done') {
+                if ($managerPending || ($technicienDeclResult && !$latestResult)) {
+                    $declarativeStage = 'awaiting_manager';
+                } elseif ($activeExam) {
+                    $declarativeStage = 'technician_in_progress';
+                } else {
+                    $declarativeStage = 'awaiting_technician';
+                }
             }
 
             $row = [
@@ -439,6 +509,9 @@ function portalApiUserCompetencyEvaluations(
             }
             if ($agency) {
                 $row['agency'] = $agency;
+            }
+            if ($declarativeStage !== null) {
+                $row['declarativeStage'] = $declarativeStage;
             }
 
             $evaluations[] = $row;
@@ -502,6 +575,454 @@ function portalApiActivityTimeMeta(?string $createdRaw): array
     ];
 }
 
+/** @param mixed $value @return list<string> */
+function portalApiGfStringList($value): array
+{
+    if ($value instanceof \MongoDB\Model\BSONArray) {
+        $value = $value->getArrayCopy();
+    }
+    if (!is_array($value)) {
+        return [];
+    }
+    return array_values(array_filter(array_map(
+        static fn ($v) => trim((string) $v),
+        $value
+    ), static fn ($v) => $v !== ''));
+}
+
+function portalApiNormalizeSpeciality(string $value): string
+{
+    return trim(preg_replace('/\s+/', ' ', $value) ?? $value);
+}
+
+function portalApiSpecialityMatches(string $resultSpec, string $supportedSpec): bool
+{
+    $a = mb_strtoupper(portalApiNormalizeSpeciality($resultSpec), 'UTF-8');
+    $b = mb_strtoupper(portalApiNormalizeSpeciality($supportedSpec), 'UTF-8');
+    if ($a === $b) {
+        return true;
+    }
+    $lenB = strlen($b);
+    $lenA = strlen($a);
+    if ($lenB > 0 && strncmp($a, $b, $lenB) === 0) {
+        return true;
+    }
+    if ($lenA > 0 && strncmp($b, $a, $lenA) === 0) {
+        return true;
+    }
+    return false;
+}
+
+/** @return array<string, array<string, list<string>>> brand → level → GF[] */
+function portalApiLoadSupportedGroupsCache($db): array
+{
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+
+    $cache = [];
+    $refJunior = [];
+
+    foreach ($db->nonSupportedGroupsByBrandLevel->find([]) as $doc) {
+        $arr = $doc instanceof \MongoDB\Model\BSONDocument ? $doc->getArrayCopy() : (array) $doc;
+        $brand = trim((string) ($arr['brand'] ?? ''));
+        if ($brand === '') {
+            $refJunior = portalApiGfStringList($arr['supportedGroups'] ?? []);
+            continue;
+        }
+        if (!isset($cache[$brand])) {
+            $cache[$brand] = [];
+        }
+        foreach ($arr['levels'] ?? [] as $lvl) {
+            $lvlArr = $lvl instanceof \MongoDB\Model\BSONDocument ? $lvl->getArrayCopy() : (array) $lvl;
+            $level = (string) ($lvlArr['level'] ?? '');
+            if ($level === '') {
+                continue;
+            }
+            $supported = portalApiGfStringList($lvlArr['supportedGroups'] ?? []);
+            if ($supported) {
+                $cache[$brand][$level] = $supported;
+            }
+        }
+    }
+
+    if ($refJunior) {
+        $configPath = dirname(__DIR__, 2) . '/define/configGF.php';
+        $cfg = is_file($configPath) ? require $configPath : [];
+        $excludedByBrand = is_array($cfg) ? ($cfg['nonSupportedGroupsByBrand'] ?? []) : [];
+        foreach ($excludedByBrand as $brand => $excluded) {
+            if (!isset($cache[$brand]['Junior'])) {
+                $excludedList = portalApiGfStringList($excluded);
+                $cache[$brand]['Junior'] = array_values(array_filter(
+                    $refJunior,
+                    static fn (string $gf) => !in_array($gf, $excludedList, true)
+                ));
+            }
+        }
+    }
+
+    return $cache;
+}
+
+/** @return list<string> */
+function portalApiSupportedGroupsForBrandLevel(array $cache, string $brandMongo, string $level): array
+{
+    return $cache[$brandMongo][$level] ?? [];
+}
+
+/**
+ * Indexe les résultats GF d'un technicien pour un palier.
+ *
+ * @return array<string, array<string, array<string, mixed>>>
+ */
+function portalApiBuildUserGfResultIndex($results, ObjectId $userOid, string $level): array
+{
+    $index = [];
+    $cursor = $results->find(
+        [
+            'user' => $userOid,
+            'level' => $level,
+            'speciality' => ['$exists' => true],
+        ],
+        ['sort' => ['_id' => -1]]
+    );
+
+    foreach ($cursor as $doc) {
+        $row = $doc instanceof \MongoDB\Model\BSONDocument ? $doc->getArrayCopy() : (array) $doc;
+        $spec = portalApiNormalizeSpeciality((string) ($row['speciality'] ?? ''));
+        if ($spec === '') {
+            continue;
+        }
+        $type = (string) ($row['type'] ?? '');
+        $typeR = (string) ($row['typeR'] ?? '');
+        $slot = $type . '|' . $typeR;
+        if (!isset($index[$spec])) {
+            $index[$spec] = [];
+        }
+        if (!isset($index[$spec][$slot])) {
+            $index[$spec][$slot] = $row;
+        }
+    }
+
+    return $index;
+}
+
+function portalApiFindGfResult(array $index, string $gf, string $type, string $typeR): ?array
+{
+    foreach ($index as $spec => $bySlot) {
+        if (!portalApiSpecialityMatches($spec, $gf)) {
+            continue;
+        }
+        $slot = $type . '|' . $typeR;
+        return $bySlot[$slot] ?? null;
+    }
+    return null;
+}
+
+function portalApiFindGfFactuelResult(array $index, string $gf): ?array
+{
+    foreach (['Technicien', ''] as $typeR) {
+        $row = portalApiFindGfResult($index, $gf, 'Factuel', $typeR);
+        if ($row) {
+            return $row;
+        }
+    }
+    return null;
+}
+
+function portalApiFindGfDeclaratifTechnicienResult(array $index, string $gf): ?array
+{
+    return portalApiFindGfResult($index, $gf, 'Declaratif', 'Technicien')
+        ?? portalApiFindGfResult($index, $gf, 'Declaratif', 'Techniciens');
+}
+
+function portalApiFindGfDeclaratifManagerResult(array $index, string $gf): ?array
+{
+    return portalApiFindGfResult($index, $gf, 'Declaratif', 'Manager');
+}
+
+/** @param mixed $value @return array<string, mixed>|list<mixed> */
+function portalApiDeepArray($value): array
+{
+    if ($value instanceof \MongoDB\Model\BSONDocument || $value instanceof \MongoDB\Model\BSONArray) {
+        $value = $value->getArrayCopy();
+    }
+    if (!is_array($value)) {
+        return [];
+    }
+    foreach ($value as $key => $item) {
+        if ($item instanceof \MongoDB\Model\BSONDocument || $item instanceof \MongoDB\Model\BSONArray) {
+            $value[$key] = portalApiDeepArray($item);
+        }
+    }
+    return $value;
+}
+
+/** @return array<string, array<string, array<string, mixed>>>|null level → brand → scores */
+function portalApiLoadTechnicianBrandScoresDoc($db, ObjectId $userOid): ?array
+{
+    $doc = $db->technicianBrandScores->findOne(['userId' => $userOid]);
+    if (!$doc) {
+        return null;
+    }
+    $arr = $doc instanceof \MongoDB\Model\BSONDocument ? $doc->getArrayCopy() : (array) $doc;
+    if (!isset($arr['scores'])) {
+        return null;
+    }
+    $scores = portalApiDeepArray($arr['scores']);
+    return $scores ?: null;
+}
+
+/** @return array{theory: ?int, practical: ?int, score: ?int, gfEvaluated: int, gfTotal: int, inProgress: bool, declarativeStage: ?string}|null */
+function portalApiBrandTierScoresFromPrecomputed(?array $scoresDoc, string $brandMongo, string $level): ?array
+{
+    if (!$scoresDoc || !isset($scoresDoc[$level][$brandMongo])) {
+        return null;
+    }
+    $row = $scoresDoc[$level][$brandMongo];
+    if (!is_array($row)) {
+        return null;
+    }
+
+    $theory = isset($row['averageFactuel']) ? (int) round((float) $row['averageFactuel']) : null;
+    $practical = isset($row['averageDeclaratif']) ? (int) round((float) $row['averageDeclaratif']) : null;
+    $score = null;
+    if (isset($row['averageTotalWithPenalty'])) {
+        $score = (int) round((float) $row['averageTotalWithPenalty']);
+    } elseif (isset($row['averageTotal'])) {
+        $score = (int) round((float) $row['averageTotal']);
+    } else {
+        $score = portalApiDpsPersonModalityAverage($theory, $practical);
+    }
+
+    $declarativeStage = null;
+    $inProgress = false;
+    if ($theory !== null && $practical === null) {
+        $inProgress = true;
+        $declarativeStage = 'awaiting_technician';
+    } elseif ($theory === null && $practical === null) {
+        return null;
+    }
+
+    return [
+        'theory' => $theory,
+        'practical' => $practical,
+        'score' => $score,
+        'gfEvaluated' => 0,
+        'gfTotal' => 0,
+        'inProgress' => $inProgress && $score === null,
+        'declarativeStage' => $declarativeStage,
+    ];
+}
+
+/**
+ * Score marque × palier = moyenne des moyennes GF (Factuel + concordance Déclaratif).
+ *
+ * @return array{
+ *   theory: ?int,
+ *   practical: ?int,
+ *   score: ?int,
+ *   gfEvaluated: int,
+ *   gfTotal: int,
+ *   inProgress: bool,
+ *   declarativeStage: ?string
+ * }
+ */
+function portalApiBrandGfTierBreakdown(
+    array $gfIndex,
+    array $supportedGroups
+): array {
+    $factuelScores = [];
+    $practicalScores = [];
+    $gfAvgs = [];
+    $awaitingManager = false;
+    $awaitingTechnician = false;
+    $hasPartial = false;
+
+    foreach ($supportedGroups as $gf) {
+        $factuel = portalApiFindGfFactuelResult($gfIndex, $gf);
+        $technicienDecl = portalApiFindGfDeclaratifTechnicienResult($gfIndex, $gf);
+        $managerDecl = portalApiFindGfDeclaratifManagerResult($gfIndex, $gf);
+
+        $factuelPct = portalApiPercentScore($factuel);
+        $practicalPct = null;
+        if ($technicienDecl && $managerDecl) {
+            $techPct = portalApiPercentScore($technicienDecl);
+            $mgrPct = portalApiPercentScore($managerDecl);
+            if ($techPct !== null && $mgrPct !== null) {
+                $practicalPct = (int) round(($techPct + $mgrPct) / 2);
+            }
+        }
+
+        if ($factuelPct !== null) {
+            $factuelScores[] = $factuelPct;
+        }
+        if ($practicalPct !== null) {
+            $practicalScores[] = $practicalPct;
+        }
+
+        $gfParts = array_values(array_filter(
+            [$factuelPct, $practicalPct],
+            static fn ($v) => $v !== null
+        ));
+        if ($gfParts) {
+            $gfAvgs[] = (int) round(array_sum($gfParts) / count($gfParts));
+        }
+
+        if ($factuelPct !== null && $practicalPct === null) {
+            $hasPartial = true;
+            if ($technicienDecl && !$managerDecl) {
+                $awaitingManager = true;
+            } else {
+                $awaitingTechnician = true;
+            }
+        }
+    }
+
+    $theory = $factuelScores
+        ? (int) round(array_sum($factuelScores) / count($factuelScores))
+        : null;
+    $practical = $practicalScores
+        ? (int) round(array_sum($practicalScores) / count($practicalScores))
+        : null;
+    $score = portalApiDpsPersonModalityAverage($theory, $practical);
+
+    $declarativeStage = null;
+    if ($awaitingManager) {
+        $declarativeStage = 'awaiting_manager';
+    } elseif ($awaitingTechnician) {
+        $declarativeStage = 'technician_in_progress';
+    } elseif ($theory !== null && $practical === null && !$hasPartial) {
+        $declarativeStage = 'awaiting_technician';
+    }
+
+    return [
+        'theory' => $theory,
+        'practical' => $practical,
+        'score' => $score,
+        'gfEvaluated' => count($gfAvgs),
+        'gfTotal' => count($supportedGroups),
+        'inProgress' => $hasPartial && $score === null,
+        'declarativeStage' => $declarativeStage,
+    ];
+}
+
+/**
+ * Évaluations compétence agrégées par marque (GF / speciality).
+ *
+ * @return list<array<string, mixed>>
+ */
+function portalApiUserBrandGfEvaluations(
+    $db,
+    $results,
+    ObjectId $userOid,
+    array $userDoc,
+    array $supportedGroupsCache,
+    ?string $collaboratorName = null,
+    ?string $agency = null
+): array {
+    $userIdHex = (string) $userOid;
+    $evaluations = [];
+    $levels = ['Junior', 'Senior', 'Expert'];
+    $precomputed = portalApiLoadTechnicianBrandScoresDoc($db, $userOid);
+
+    foreach ($levels as $level) {
+        $tier = portalApiTierFromLevel($level);
+        $brands = portalApiBrandsForTier($userDoc, $tier);
+        if (!$brands) {
+            continue;
+        }
+
+        $gfIndex = portalApiBuildUserGfResultIndex($results, $userOid, $level);
+
+        foreach ($brands as $brandMongo) {
+            $brandSlug = portalApiBrandToSlug($brandMongo);
+            $breakdown = portalApiBrandTierScoresFromPrecomputed($precomputed, $brandMongo, $level);
+
+            if ($breakdown === null) {
+                $supported = portalApiSupportedGroupsForBrandLevel($supportedGroupsCache, $brandMongo, $level);
+                if (!$supported) {
+                    continue;
+                }
+                $breakdown = portalApiBrandGfTierBreakdown($gfIndex, $supported);
+            }
+
+            if (
+                $breakdown['theory'] === null
+                && $breakdown['practical'] === null
+                && !$breakdown['inProgress']
+                && !$breakdown['declarativeStage']
+            ) {
+                continue;
+            }
+
+            $base = [
+                'kind' => 'competency',
+                'competencyTier' => $tier,
+                'certLevel' => portalApiCertLevelFromTier($tier),
+                'passMark' => 60,
+                'brand' => $brandSlug,
+                'brands' => [$brandSlug],
+                'scoreSource' => $precomputed ? 'technicianBrandScores' : 'gf',
+                'gfEvaluated' => $breakdown['gfEvaluated'],
+                'gfTotal' => $breakdown['gfTotal'],
+                'medacap' => ['userId' => $userIdHex, 'level' => $level, 'brandMongo' => $brandMongo],
+            ];
+            if ($collaboratorName) {
+                $base['collaboratorName'] = $collaboratorName;
+            }
+            if ($agency) {
+                $base['agency'] = $agency;
+            }
+
+            if ($breakdown['theory'] !== null) {
+                $evaluations[] = array_merge($base, [
+                    'id' => 'medacap-gf-' . $userIdHex . '-' . $brandSlug . '-' . $tier . '-t',
+                    'modality' => 'theory',
+                    'status' => 'done',
+                    'date' => '—',
+                    'score' => $breakdown['theory'],
+                ]);
+            }
+
+            if ($breakdown['practical'] !== null) {
+                $evaluations[] = array_merge($base, [
+                    'id' => 'medacap-gf-' . $userIdHex . '-' . $brandSlug . '-' . $tier . '-p',
+                    'modality' => 'practical',
+                    'status' => 'done',
+                    'date' => '—',
+                    'score' => $breakdown['practical'],
+                ]);
+            } elseif ($breakdown['inProgress'] || $breakdown['declarativeStage']) {
+                $row = array_merge($base, [
+                    'id' => 'medacap-gf-' . $userIdHex . '-' . $brandSlug . '-' . $tier . '-p',
+                    'modality' => 'practical',
+                    'status' => 'progress',
+                    'date' => '—',
+                    'score' => null,
+                ]);
+                if ($breakdown['declarativeStage']) {
+                    $row['declarativeStage'] = $breakdown['declarativeStage'];
+                }
+                $evaluations[] = $row;
+            }
+
+            if ($breakdown['theory'] === null && $breakdown['inProgress']) {
+                $evaluations[] = array_merge($base, [
+                    'id' => 'medacap-gf-' . $userIdHex . '-' . $brandSlug . '-' . $tier . '-t',
+                    'modality' => 'theory',
+                    'status' => 'progress',
+                    'date' => '—',
+                    'score' => null,
+                ]);
+            }
+        }
+    }
+
+    return $evaluations;
+}
+
 /**
  * Agrège évaluations filiale → brandStats, collaboratorEvaluations, recentLogs.
  *
@@ -510,11 +1031,13 @@ function portalApiActivityTimeMeta(?string $createdRaw): array
  */
 function portalApiDpsFilialeInsights(
     array $technicianDocs,
+    $db,
     $allocations,
     $exams,
     $results,
     string $portalBridgeKey
 ): array {
+    $supportedGroupsCache = portalApiLoadSupportedGroupsCache($db);
     $collaboratorEvaluations = [];
     $recentCandidates = [];
 
@@ -525,7 +1048,20 @@ function portalApiDpsFilialeInsights(
         $agency = trim((string) ($userArr['agency'] ?? ''));
         $agency = ($agency !== '' && $agency !== '—') ? $agency : null;
 
-        $rows = portalApiUserCompetencyEvaluations(
+        $gfRows = portalApiUserBrandGfEvaluations(
+            $db,
+            $results,
+            $userOid,
+            $userArr,
+            $supportedGroupsCache,
+            $name,
+            $agency
+        );
+        foreach ($gfRows as $row) {
+            $collaboratorEvaluations[] = $row;
+        }
+
+        $legacyRows = portalApiUserCompetencyEvaluations(
             $userOid,
             $userArr,
             $allocations,
@@ -536,8 +1072,7 @@ function portalApiDpsFilialeInsights(
             $agency
         );
 
-        foreach ($rows as $row) {
-            $collaboratorEvaluations[] = $row;
+        foreach ($legacyRows as $row) {
             if ($row['status'] === 'done' && !empty($row['medacapCreated'])) {
                 $recentCandidates[] = $row;
             }
@@ -585,11 +1120,11 @@ function portalApiDpsFilialeInsights(
  */
 function portalApiDpsPersonModalityAverage(?int $theory, ?int $practical): ?int
 {
-    $parts = array_values(array_filter([$theory, $practical], static fn ($v) => $v !== null));
-    if (!$parts) {
+    if ($theory === null || $practical === null) {
         return null;
     }
-    return (int) round(array_sum($parts) / count($parts));
+
+    return min($theory, $practical);
 }
 
 /**
@@ -768,7 +1303,10 @@ function portalApiTechnicianDepartmentFilter(string $department)
     if ($normalized === 'EQUIPMENT') {
         return 'Equipment';
     }
-    if (str_contains($normalized, 'EQUIPMENT') && str_contains($normalized, 'MOTOR')) {
+    // strpos() plutot que str_contains() : Apache tourne en PHP 7.4, ou str_contains()
+    // n'existe pas (PHP 8.0+). Tout departement != 'Equipment' atteignait cette ligne
+    // et renvoyait une 500 — le portail DPS ne le voyait pas car 'Equipment' sort avant.
+    if (strpos($normalized, 'EQUIPMENT') !== false && strpos($normalized, 'MOTOR') !== false) {
         return ['Equipment', 'Motors'];
     }
     if ($normalized !== '') {
@@ -796,6 +1334,16 @@ function portalApiAuthorizePortalRequest(): void
     if ($providedKey !== $portalBridgeKey) {
         portalApiJson(['error' => 'Unauthorized'], 401);
     }
+}
+
+/** Comptes démo / test — exclus du périmètre DPS filiale. */
+function portalApiIsExcludedDemoTechnician(array $doc): bool
+{
+    if (!empty($doc['demoTechnicien'])) {
+        return true;
+    }
+    $username = trim((string) ($doc['username'] ?? ''));
+    return stripos($username, 'DEMO Technicien') === 0;
 }
 
 /**
@@ -842,6 +1390,7 @@ function portalApiResolveDpsFilialeContext($db, ?string $userIdParam, ?string $u
             'active' => true,
             'department' => $techDepartment,
             'subsidiary' => ['$in' => $subsidiaries],
+            'demoTechnicien' => ['$ne' => true],
         ],
         [
             'projection' => [
@@ -863,8 +1412,11 @@ function portalApiResolveDpsFilialeContext($db, ?string $userIdParam, ?string $u
     $total = 0;
 
     foreach ($cursor as $tech) {
-        $total++;
         $techArr = $tech instanceof \MongoDB\Model\BSONDocument ? $tech->getArrayCopy() : (array) $tech;
+        if (portalApiIsExcludedDemoTechnician($techArr)) {
+            continue;
+        }
+        $total++;
         $techOid = $techArr['_id'] ?? null;
         if ($techOid instanceof \MongoDB\BSON\ObjectId) {
             $technicianDocs[] = ['_id' => $techOid, 'doc' => $techArr];
@@ -1007,8 +1559,14 @@ function portalApiTrainingAllocationAnnualStatus(?array $allocation, ?array $app
  */
 function portalApiDpsPifPayload($db, array $techOids): array
 {
+    $empty = [
+        'planningStatus' => [],
+        'brandPifStats' => [],
+        'brandPlanningSummary' => [],
+        'pifTechnicians' => [],
+    ];
     if (!$techOids) {
-        return ['planningStatus' => [], 'brandPifStats' => [], 'brandPlanningSummary' => []];
+        return $empty;
     }
 
     $allocations = $db->allocations;
@@ -1033,7 +1591,7 @@ function portalApiDpsPifPayload($db, array $techOids): array
     }
 
     if (!$allAllocs) {
-        return ['planningStatus' => [], 'brandPifStats' => [], 'brandPlanningSummary' => []];
+        return $empty;
     }
 
     $trainingMap = [];
@@ -1072,6 +1630,8 @@ function portalApiDpsPifPayload($db, array $techOids): array
     $planningStatus = [];
     $brandPif = [];
     $brandPlanningSummary = [];
+    /** @var array<string, array{codesByBrand: array<string, array<string, true>>, byBrand: array<string, int>, planningStatus: array<string, string>}> */
+    $byUser = [];
 
     foreach ($allAllocs as $alloc) {
         $trainingId = (string) $alloc['training'];
@@ -1137,6 +1697,30 @@ function portalApiDpsPifPayload($db, array $techOids): array
                 $brandPlanningSummary[$brandSlug]['byYear'][$yearKey]['done']++;
             }
         }
+
+        if (!isset($byUser[$userKey])) {
+            $byUser[$userKey] = [
+                'codesByBrand' => [],
+                'byBrand' => [],
+                'planningStatus' => [],
+            ];
+        }
+        if (!isset($byUser[$userKey]['codesByBrand'][$brandSlug])) {
+            $byUser[$userKey]['codesByBrand'][$brandSlug] = [];
+        }
+        $codeKey = strtoupper($code);
+        if (!isset($byUser[$userKey]['codesByBrand'][$brandSlug][$codeKey])) {
+            $byUser[$userKey]['codesByBrand'][$brandSlug][$codeKey] = true;
+            $byUser[$userKey]['byBrand'][$brandSlug] = ($byUser[$userKey]['byBrand'][$brandSlug] ?? 0) + 1;
+        }
+        if (isset($byUser[$userKey]['planningStatus'][$planKey])) {
+            $byUser[$userKey]['planningStatus'][$planKey] = portalApiMergeAnnualStatus(
+                $byUser[$userKey]['planningStatus'][$planKey],
+                $status
+            );
+        } else {
+            $byUser[$userKey]['planningStatus'][$planKey] = $status;
+        }
     }
 
     foreach ($brandPlanningSummary as $slug => $row) {
@@ -1152,10 +1736,90 @@ function portalApiDpsPifPayload($db, array $techOids): array
             ?: strcmp($a['brand'], $b['brand']);
     });
 
+    $userDocs = [];
+    if ($byUser) {
+        $userOids = [];
+        foreach (array_keys($byUser) as $uid) {
+            try {
+                $userOids[] = new ObjectId($uid);
+            } catch (Throwable $e) {
+                // ignore invalid id
+            }
+        }
+        if ($userOids) {
+            foreach ($db->users->find(['_id' => ['$in' => $userOids]]) as $doc) {
+                $arr = $doc instanceof \MongoDB\Model\BSONDocument ? $doc->getArrayCopy() : (array) $doc;
+                $userDocs[(string) $arr['_id']] = $arr;
+            }
+        }
+    }
+
+    $pifTechnicians = [];
+    foreach ($byUser as $userKey => $agg) {
+        $doc = $userDocs[$userKey] ?? null;
+        $codesByBrand = [];
+        $pifCodes = [];
+        foreach ($agg['codesByBrand'] as $slug => $codeMap) {
+            $list = array_keys($codeMap);
+            sort($list);
+            $codesByBrand[$slug] = $list;
+            foreach ($list as $code) {
+                $pifCodes[$code] = true;
+            }
+        }
+        ksort($codesByBrand);
+        $pifCodesList = array_keys($pifCodes);
+        sort($pifCodesList);
+
+        $level = strtoupper(trim((string) (($doc['level'] ?? '') )));
+        if ($level === 'EXPERT') {
+            $primaryTier = 'expert';
+        } elseif ($level === 'SENIOR') {
+            $primaryTier = 'senior';
+        } else {
+            $primaryTier = 'junior';
+        }
+
+        $assignedBrands = [];
+        if ($doc) {
+            foreach (portalApiExtractUserBrands($doc) as $brand) {
+                $slug = portalApiBrandToSlug((string) $brand);
+                if ($slug !== '') {
+                    $assignedBrands[$slug] = true;
+                }
+            }
+        }
+        foreach (array_keys($codesByBrand) as $slug) {
+            $assignedBrands[$slug] = true;
+        }
+
+        $pifTechnicians[] = [
+            'id' => $userKey,
+            'name' => $doc ? portalApiTechnicianDisplayName($doc) : $userKey,
+            'username' => $doc ? (string) ($doc['username'] ?? '') : '',
+            'agency' => $doc ? (trim((string) ($doc['agency'] ?? '')) ?: null) : null,
+            'level' => $doc ? (trim((string) ($doc['level'] ?? '')) ?: null) : null,
+            'primaryTier' => $primaryTier,
+            'assignedBrands' => array_keys($assignedBrands),
+            'brands' => array_keys($assignedBrands),
+            'byBrand' => $agg['byBrand'],
+            'codesByBrand' => $codesByBrand,
+            'pifCodes' => $pifCodesList,
+            'pifTotal' => count($pifCodesList),
+            'total' => count($pifCodesList),
+            'planningStatus' => $agg['planningStatus'],
+        ];
+    }
+
+    usort($pifTechnicians, static function (array $a, array $b): int {
+        return strcmp((string) $a['name'], (string) $b['name']);
+    });
+
     return [
         'planningStatus' => $planningStatus,
         'brandPifStats' => $brandPifStats,
         'brandPlanningSummary' => $brandPlanningSummary,
+        'pifTechnicians' => $pifTechnicians,
     ];
 }
 

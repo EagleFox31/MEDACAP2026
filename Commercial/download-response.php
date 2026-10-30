@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 require_once "../vendor/autoload.php";
 
 use MongoDB\Client;
@@ -13,7 +14,7 @@ if (empty($token)) {
     exit('Token manquant.');
 }
 
-$client   = new Client("mongodb://localhost:27017");
+$client   = new Client(medacapMongoUri());
 $db       = $client->academy;
 $response = $db->commercial_responses->findOne(['download_token' => $token]);
 

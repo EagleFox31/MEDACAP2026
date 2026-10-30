@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 session_start();
 include_once "../language.php";
 
@@ -10,7 +11,7 @@ if (!isset($_SESSION["id"])) {
     require_once "../../vendor/autoload.php";
 
     // Create MongoDB connection and collections
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $users = $academy->users;
     $results = $academy->results;
@@ -114,7 +115,7 @@ if (!isset($_SESSION["id"])) {
     // Helper function to calculate percentage
     function calculatePercentage($result) {
         if (isset($result) && isset($result["score"]) && isset($result["total"]) && $result["total"] > 0) {
-            return ceil(($result["score"] * 100) / $result["total"]);
+            return ceil(($result["score"] * 100) / max(1, (float) $result["total"]));
         }
         return null;
     }

@@ -132,7 +132,6 @@
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-        <script src="path/to/vanilla.js"></script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>
@@ -301,7 +300,8 @@
     var paginate = document.querySelector("#kt_customers_table_paginate");
     var table_size = document.querySelector("#kt_customers_table_length");
     var table = document.querySelector("tbody")
-    var tr = table.querySelectorAll("tr")
+    var hasPager = !!(paginate && table_size && table);
+    var tr = table ? table.querySelectorAll("tr") : [];
     var emptyTable = [];
     var index = 1;
     let itemPerTable = 100;
@@ -311,7 +311,7 @@
         emptyTable.push(tr[i]);
     }
 
-    table_size.onchange = giveTrPerPage;
+    if (hasPager) table_size.onchange = giveTrPerPage;
 
     function giveTrPerPage() {
         itemPerTable = Number(this.value);
@@ -322,7 +322,7 @@
 
     function displayPage(limit) {
         table.innerHTML = "";
-        for (let i = 0; i < limit; i++) {
+        for (let i = 0; i < limit && i < emptyTable.length; i++) {
             table.appendChild(emptyTable[i]);
             const pageNum = paginate.querySelectorAll(
                 "li[class='paginate_button page-item']");
@@ -331,7 +331,7 @@
             })
         }
     }
-    displayPage(itemPerTable);
+    if (hasPager) displayPage(itemPerTable);
 
     function pageGenerator(getem) {
         const number = emptyTable.length;
@@ -362,9 +362,9 @@
             }
         }
     }
-    pageGenerator(itemPerTable)
+    if (hasPager) pageGenerator(itemPerTable)
 
-    let pageLink = paginate.querySelectorAll("a");
+    let pageLink = hasPager ? paginate.querySelectorAll("a") : [];
     let lastPage = pageLink.length - 2;
 
     function pageRunner(page, items, lastPage, active) {
@@ -393,10 +393,12 @@
             }
         }
     }
-    var pageLi = paginate.querySelectorAll(
-        "li[class='paginate_button page-item']");
-    pageLi[0].classList.add("active");
-    pageRunner(pageLink, itemPerTable, lastPage, pageLi);
+    var pageLi = hasPager ? paginate.querySelectorAll(
+        "li[class='paginate_button page-item']") : [];
+    if (pageLi.length) {
+        pageLi[0].classList.add("active");
+        pageRunner(pageLink, itemPerTable, lastPage, pageLi);
+    }
 
     function getElement(val) {
         let pagelink = paginate.querySelectorAll("a");

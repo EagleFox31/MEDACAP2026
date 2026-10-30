@@ -1,12 +1,14 @@
 <?php
+require_once __DIR__ . '/../../core/medacap_config.php';
 require_once "../../vendor/autoload.php";
 require_once __DIR__ . "/ScoreFunctions.php"; // Assurez-vous que ce chemin est correct
+require_once __DIR__ . '/../../core/mongo_compat.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 
 try {
-    $mongo   = new Client("mongodb://localhost:27017");
+    $mongo   = new Client(medacapMongoUri());
     $academy = $mongo->selectDatabase('academy');
 } catch (MongoDB\Exception\Exception $e) {
     echo "Erreur de connexion : " . htmlspecialchars($e->getMessage());
@@ -19,7 +21,10 @@ class TechnicianService {
     private $trainingsColl;
     private $scoreCalc;
 
-    public function __construct($mongoUri = "mongodb://localhost:27017", $dbName = "academy") {
+    public function __construct($mongoUri = null, $dbName = "academy") {
+        if (!is_string($mongoUri) || $mongoUri === '') {
+            $mongoUri = medacapMongoUri();
+        }
         try {
             $mongo = new Client($mongoUri);
             $this->academy = $mongo->selectDatabase($dbName);
@@ -231,7 +236,7 @@ class TechnicianService {
             'users'    => $technicianObjId,
             'brand'    => ['$ne' => '']
         ];
-        return $this->trainingsColl->countDocuments($query);
+        return medacapCountDocuments($this->trainingsColl, $query);
     }
 
     /**
@@ -249,7 +254,7 @@ class TechnicianService {
             'users'  => $technicianObjId,
             'brand'  => ['$ne' => '']
         ];
-        return $this->trainingsColl->countDocuments($query);
+        return medacapCountDocuments($this->trainingsColl, $query);
     }
 
     /**

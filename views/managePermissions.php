@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 // managePermissions.php
 session_start();
 include_once "../language.php";
@@ -12,7 +13,7 @@ if (!isset($_SESSION["id"]) || $_SESSION["profile"] != "Super Admin") {
     require_once "groupFunctions.php"; 
 
     // Connexion à MongoDB
-    $conn = new MongoDB\Client("mongodb://localhost:27017");
+    $conn = new MongoDB\Client(medacapMongoUri());
     $academy = $conn->academy;
     $functionalitiesCollection = $academy->functionalities;
     $profilesCollection = $academy->profiles;
@@ -453,7 +454,7 @@ if (!isset($_SESSION["id"]) || $_SESSION["profile"] != "Super Admin") {
 </div>
 <!-- Inclure Bootstrap JS et Font Awesome pour les icônes -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <!-- Script JavaScript pour gérer le Drag-and-Drop -->
 <script>

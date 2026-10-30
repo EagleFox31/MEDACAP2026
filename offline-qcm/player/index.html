@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#24235c">
+  <meta name="description" content="MEDACAP — Lecteur QCM hors ligne pour techniciens CFAO">
+  <title>MEDACAP QCM Offline</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%2324235c' width='32' height='32' rx='6'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%23e62244' font-size='14' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Landing -->
+    <section id="screen-landing" class="screen screen-active">
+      <div class="glass-card landing-card">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">M</div>
+          <h1>MEDACAP QCM</h1>
+          <p class="brand-sub">Mode hors ligne — CFAO Mobility</p>
+        </div>
+
+        <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Déposer un fichier QCM">
+          <div class="drop-icon" aria-hidden="true">📋</div>
+          <p class="drop-title">Charger votre épreuve</p>
+          <p class="drop-hint">Glissez un fichier <strong>.medacap.json</strong> ici<br>ou utilisez le bouton ci-dessous</p>
+          <button type="button" id="btn-pick-file" class="btn btn-primary">Choisir un fichier</button>
+          <input type="file" id="file-input" accept=".json,.medacap.json,application/json" hidden>
+        </div>
+
+        <div id="resume-list-wrap" class="resume-wrap hidden">
+          <h2>Reprendre une session</h2>
+          <ul id="resume-list" class="resume-list"></ul>
+        </div>
+
+        <p id="landing-error" class="error-msg hidden" role="alert"></p>
+      </div>
+      <footer class="landing-footer">
+        <span>v1 · medacap-offline-qcm</span>
+      </footer>
+    </section>
+
+    <!-- Accueil kit technicien (épreuve embarquée) -->
+    <section id="screen-welcome" class="screen">
+      <div class="glass-card landing-card welcome-card">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">M</div>
+          <h1>MEDACAP QCM</h1>
+          <p class="brand-sub">Épreuve hors ligne — CFAO Mobility</p>
+        </div>
+
+        <div class="welcome-context">
+          <h2 class="welcome-title">Votre épreuve</h2>
+          <ul id="welcome-info-list" class="info-list"></ul>
+        </div>
+
+        <p class="welcome-note">
+          Vous composez <strong>sans connexion Internet</strong>.
+          À la fin, un fichier de réponses sera téléchargé à remettre au RH.
+        </p>
+
+        <div class="welcome-actions">
+          <button type="button" id="btn-welcome-resume" class="btn btn-accent hidden">Reprendre ma session</button>
+          <button type="button" id="btn-welcome-continue" class="btn btn-primary">Continuer</button>
+        </div>
+      </div>
+      <footer class="landing-footer">
+        <span id="welcome-footer-meta">MEDACAP · QCM offline</span>
+      </footer>
+    </section>
+
+    <!-- Identification candidat -->
+    <section id="screen-identify" class="screen">
+      <div class="glass-card landing-card identify-card">
+        <div class="brand brand-compact">
+          <div class="brand-logo brand-logo-sm" aria-hidden="true">M</div>
+          <h1>Identification</h1>
+        </div>
+
+        <p class="identify-lead">
+          Saisissez votre <strong>nom et prénom</strong> pour confirmer que vous composez la bonne épreuve.
+        </p>
+
+        <label class="field-label" for="input-candidate-name">Nom complet</label>
+        <input
+          type="text"
+          id="input-candidate-name"
+          class="input-field"
+          autocomplete="name"
+          autocapitalize="words"
+          placeholder="Ex. Jean Dupont"
+          maxlength="120"
+        >
+        <p id="identify-hint" class="identify-hint"></p>
+        <p id="identify-error" class="error-msg hidden" role="alert"></p>
+
+        <div class="identify-actions">
+          <button type="button" id="btn-identify-back" class="btn btn-ghost">Retour</button>
+          <button type="button" id="btn-identify-start" class="btn btn-primary">Commencer l'épreuve</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="screen-quiz" class="screen">
+      <header class="quiz-header glass-bar">
+        <div class="header-top">
+          <div class="header-user">
+            <span id="display-username" class="user-name">—</span>
+            <div class="user-meta-line">
+              <span id="display-meta" class="user-meta">—</span>
+              <span id="quiz-step-badge" class="badge badge-step">Étape 1/2</span>
+            </div>
+          </div>
+          <div id="timer" class="timer" aria-live="polite">
+            <span class="timer-icon" aria-hidden="true">⏱</span>
+            <span id="timer-display">00:00:00</span>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span id="progress-text">0 / 0</span>
+            <span id="status-badge" class="badge badge-progress">En cours</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+      </header>
+
+      <main class="quiz-main">
+        <article id="question-card" class="glass-card question-card">
+          <div class="question-head">
+            <span id="question-index" class="q-index">Q 1</span>
+            <span id="question-specialty" class="q-specialty"></span>
+          </div>
+          <div id="question-image-wrap" class="q-image-wrap hidden">
+            <img id="question-image" src="" alt="Illustration question">
+          </div>
+          <p id="question-label" class="q-label">—</p>
+          <ul id="proposals-list" class="proposals" role="radiogroup" aria-labelledby="question-label"></ul>
+        </article>
+
+        <nav class="quiz-nav" aria-label="Navigation questions">
+          <button type="button" id="btn-prev" class="btn btn-ghost" disabled>
+            <span aria-hidden="true">←</span> Préc.
+          </button>
+          <button type="button" id="btn-grid" class="btn btn-ghost btn-grid" aria-haspopup="dialog">
+            <span aria-hidden="true">▦</span> Grille
+          </button>
+          <button type="button" id="btn-next" class="btn btn-primary">
+            Suiv. <span aria-hidden="true">→</span>
+          </button>
+        </nav>
+      </main>
+
+      <footer class="quiz-footer glass-bar">
+        <button type="button" id="btn-save" class="btn btn-ghost btn-sm">Sauvegarder</button>
+        <span id="save-status" class="save-status" aria-live="polite"></span>
+        <button type="button" id="btn-finalize" class="btn btn-accent btn-sm">Terminer l'épreuve</button>
+      </footer>
+    </section>
+
+    <!-- Transition entre Factuel et Déclaratif -->
+    <section id="screen-transition" class="screen">
+      <div class="glass-card landing-card transition-card">
+        <div class="transition-icon" aria-hidden="true">✓</div>
+        <span class="badge badge-step-done">Partie 1 terminée</span>
+        <h2>QCM Théorique validé !</h2>
+        <p class="transition-lead">
+          Vous avez terminé la partie théorique. Vos réponses sont bien enregistrées.
+        </p>
+
+        <div class="transition-box">
+          <div class="transition-box-head">
+            <span class="badge badge-step">Étape 2 / 2</span>
+            <h3>Évaluation Pratique (Déclaratif)</h3>
+          </div>
+          <p class="transition-box-desc">
+            Vous allez maintenant vous auto-évaluer sur <strong id="transition-task-count">les tâches</strong> professionnelles du métier.
+          </p>
+          <ul class="transition-guide">
+            <li class="guide-item guide-master">
+              <span class="guide-bullet">🟢</span>
+              <div class="guide-content">
+                <strong>Je maîtrise</strong>
+                <p>Je sais réaliser cette tâche technique seul en totale autonomie.</p>
+              </div>
+            </li>
+            <li class="guide-item guide-partial">
+              <span class="guide-bullet">🟡</span>
+              <div class="guide-content">
+                <strong>Je ne maîtrise pas</strong>
+                <p>J'ai besoin d'une assistance ou d'un complément de formation.</p>
+              </div>
+            </li>
+            <li class="guide-item guide-never">
+              <span class="guide-bullet">⚪</span>
+              <div class="guide-content">
+                <strong>J'ai jamais fait</strong>
+                <p>Je n'ai pas encore eu l'occasion d'effectuer cette tâche en atelier.</p>
+              </div>
+            </li>
+          </ul>
+          <p class="transition-tip">
+            <em>💡 Prenez votre temps, évaluez vos compétences en toute franchise.</em>
+          </p>
+        </div>
+
+        <div class="transition-actions">
+          <button type="button" id="btn-start-declaratif" class="btn btn-primary btn-lg">
+            Démarrer l'évaluation pratique →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Completed -->
+    <section id="screen-done" class="screen">
+      <div class="glass-card done-card">
+        <div class="done-icon" aria-hidden="true">✓</div>
+        <h2>Épreuve terminée</h2>
+        <p id="done-message">Vos réponses ont été enregistrées.</p>
+        <div id="done-breakdown" class="done-breakdown">
+          <div id="done-factuel-box" class="done-box hidden">
+            <span class="done-box-title">QCM Théorique (Factuel)</span>
+            <span id="done-factuel-val" class="done-box-val">—</span>
+          </div>
+          <div id="done-decla-box" class="done-box hidden">
+            <span class="done-box-title">Auto-évaluation (Déclaratif)</span>
+            <span id="done-decla-val" class="done-box-val">—</span>
+          </div>
+        </div>
+        <p id="done-stats" class="done-stats"></p>
+        <div class="done-actions">
+          <button type="button" id="btn-download" class="btn btn-primary">Télécharger le fichier complété</button>
+          <button type="button" id="btn-new" class="btn btn-ghost">Nouvelle épreuve</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Question grid modal -->
+  <dialog id="grid-modal" class="grid-modal">
+    <div class="grid-modal-inner glass-card">
+      <header class="grid-modal-head">
+        <h3>Grille des questions</h3>
+        <button type="button" id="btn-close-grid" class="btn-icon" aria-label="Fermer">✕</button>
+      </header>
+      <div id="question-grid" class="question-grid" role="list"></div>
+      <div class="grid-legend">
+        <span><i class="dot dot-current"></i> Actuelle</span>
+        <span><i class="dot dot-answered"></i> Répondue</span>
+        <span><i class="dot dot-empty"></i> Non répondue</span>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Finalize confirm -->
+  <dialog id="finalize-modal" class="confirm-modal">
+    <div class="confirm-inner glass-card">
+      <h3>Terminer l'épreuve ?</h3>
+      <p>Vous ne pourrez plus modifier vos réponses après validation.</p>
+      <p id="finalize-summary" class="finalize-summary"></p>
+      <div class="confirm-actions">
+        <button type="button" id="btn-cancel-finalize" class="btn btn-ghost">Continuer</button>
+        <button type="button" id="btn-confirm-finalize" class="btn btn-accent">Confirmer</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>

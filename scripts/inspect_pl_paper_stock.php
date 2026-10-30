@@ -1,7 +1,8 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 require __DIR__ . '/../vendor/autoload.php';
 
-$uri = getenv('MEDACAP_MONGO_URI') ?: 'mongodb://10.68.0.7:27017';
+$uri = medacapMongoUri('mongodb://10.68.0.7:27017');
 $db = (new MongoDB\Client($uri))->academy;
 
 function poolBrandQuizzes(MongoDB\Database $db, array $brands): array

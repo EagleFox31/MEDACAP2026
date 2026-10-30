@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../core/medacap_config.php';
 session_start();
 require_once "../vendor/autoload.php";
 require_once "../views/sendMail.php";
@@ -21,7 +22,7 @@ if (strtolower($_SESSION['email'] ?? '') !== strtolower(SUPER_ADMIN_EMAIL)) {
     exit('<p style="font-family:sans-serif;text-align:center;margin-top:4rem;color:#b91c1c;">Accès refusé.</p>');
 }
 
-$client = new Client("mongodb://localhost:27017");
+$client = new Client(medacapMongoUri());
 $db     = $client->academy;
 
 $message = '';
