@@ -1,2 +1,4 @@
 # Scripts exécutés dans les conteneurs Linux : toujours en LF, même sur un checkout Windows.
 *.sh text eol=lf
+docker/server/crontab text eol=lf
+docker/migrations/*.js text eol=lf

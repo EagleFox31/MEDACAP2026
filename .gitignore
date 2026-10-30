@@ -99,3 +99,7 @@ Thumbs.db
 **/*copy2.php
 **/*copy.php
 /backups/
+
+# Déploiement serveur (deploy.sh)
+/.deploy/
+/seed/

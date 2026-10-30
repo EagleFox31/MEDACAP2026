@@ -46,7 +46,8 @@ apply() {
   export MEDACAP_TAG=$tag
   if ! docker image inspect "$IMAGE:$tag" >/dev/null 2>&1; then
     log "construction de $IMAGE:$tag"
-    compose build web || return 1
+    # --pull : chaque nouvelle version reprend le dernier correctif de sécurité de php:8.4-apache.
+    compose build --pull web || return 1
   fi
   compose up -d --remove-orphans && wait_healthy
 }
@@ -74,6 +75,12 @@ main() {
   target=$(git rev-parse --verify "${1:-origin/$branch}^{commit}")
   current=$(cat "$STATE/current" 2>/dev/null || true)
 
+  # Commit déjà annulé : une relance sans argument ne le retente pas (site en erreur à chaque essai).
+  if [ -z "${1:-}" ] && [ -n "$current" ] && [ "$target" = "$(cat "$STATE/failed" 2>/dev/null || true)" ]; then
+    log "$(git rev-parse --short=12 "$target") déjà en échec, ignoré (pousser un correctif, ou ./deploy.sh <commit> pour forcer)"
+    target=$current
+  fi
+
   if [ "$target" = "$current" ]; then
     log "déjà sur $(git rev-parse --short=12 "$target"), vérification de la stack"
     apply "$target" || die "stack en échec sur la version courante"
@@ -81,11 +88,17 @@ main() {
   fi
 
   log "déploiement ${current:0:12} -> ${target:0:12} ($(git log -1 --format=%s "$target"))"
-  if [ -n "$(compose ps -q --status running backup 2>/dev/null)" ]; then
-    local dump="/backups/academy-predeploy-$(date +%Y%m%d-%H%M%S).archive.gz"
-    compose exec -T backup mongodump --host mongo --db academy --archive="$dump" --gzip --quiet \
-      && log "sauvegarde avant déploiement : $dump" \
-      || die "sauvegarde avant déploiement en échec, rien n'a été changé"
+  if [ -n "$current" ]; then
+    # Le compose exige MEDACAP_TAG même pour ps/exec : celui de la version en service.
+    export MEDACAP_TAG=$(git rev-parse --short=12 "$current")
+    if [ -n "$(compose ps -q --status running backup)" ]; then
+      local dump="/backups/academy-predeploy-$(date +%Y%m%d-%H%M%S).archive.gz"
+      compose exec -T backup mongodump --host mongo --db academy --archive="$dump" --gzip --quiet \
+        && log "sauvegarde avant déploiement : $dump" \
+        || die "sauvegarde avant déploiement en échec, rien n'a été changé"
+    else
+      log "service backup arrêté : pas de sauvegarde avant déploiement"
+    fi
   fi
 
   if apply "$target"; then
@@ -101,6 +114,7 @@ main() {
   fi
   log "retour à la version précédente ${current:0:12}"
   apply "$current" || die "retour arrière en échec aussi : intervention manuelle"
+  echo "$target" > "$STATE/failed"
   echo "$(date -Is) ${current} -> $target ÉCHEC, revenu à $current" >> "$STATE/history"
   die "déploiement de ${target:0:12} annulé, ${current:0:12} remis en service"
 }

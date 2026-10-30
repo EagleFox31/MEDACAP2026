@@ -32,4 +32,20 @@ printf 'sendmail_path = "/usr/bin/msmtp -t --host=%s --port=%s --from=%s --auth=
   "$SMTP_HOST" "$SMTP_PORT" "$MAIL_FROM" \
   > /usr/local/etc/php/conf.d/medacap-mail.ini
 
-exec docker-php-entrypoint apache2-foreground
+# Image serveur : fichiers écrits par l'application, sur le volume de données.
+# Ajoute les fichiers versionnés nouveaux, ne remplace jamais ceux déjà présents.
+# Verrou : web et cron démarrent ensemble sur le même volume, deux cp simultanés échouent (File exists).
+if [ -d /opt/medacap-seed ]; then
+  mkdir -p /var/lib/medacap/data
+  flock /var/lib/medacap/data/.seed.lock sh -ec '
+    cp -an /opt/medacap-seed/. /var/lib/medacap/data/
+    chown -R www-data:www-data /var/lib/medacap/data
+  '
+fi
+
+# Service cron : les tâches tournent sous www-data, comme le site.
+if [ "${MEDACAP_RUN_AS:-}" = "www-data" ]; then
+  exec setpriv --reuid=www-data --regid=www-data --init-groups docker-php-entrypoint "$@"
+fi
+
+exec docker-php-entrypoint "$@"

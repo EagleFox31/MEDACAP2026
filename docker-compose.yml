@@ -37,6 +37,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      target: base
     network_mode: "service:mongo"
     restart: on-failure:5
     environment:

@@ -1,8 +1,18 @@
 # Version serveur. Autonome : ne pas la fusionner avec docker-compose.yml.
-#   docker compose -f docker-compose.server.yml --env-file .env.server up -d --build
-# Différences avec la version PC : site joignable sur le réseau, URL publique
-# réglable, redémarrage automatique après reboot, aucun port MongoDB publié,
-# erreurs PHP non affichées, dossiers internes et scripts de la racine refusés par Apache.
+# Ne pas lancer à la main : ./deploy.sh (construit l'image du commit, fixe MEDACAP_TAG, vérifie, revient en arrière si besoin).
+# Différences avec la version PC : site joignable sur le réseau, code dans l'image (aucun dossier
+# de code monté), base restaurée seule si le volume est vide, migrations et cron intégrés,
+# redémarrage automatique après reboot, aucun port MongoDB publié.
+name: medacap84
+
+x-app-env: &app-env
+  TZ: Africa/Douala
+  MEDACAP_MONGO_URI: mongodb://127.0.0.1:27017
+  MEDACAP_PUBLIC_URL: ${MEDACAP_PUBLIC_URL:?définir MEDACAP_PUBLIC_URL dans .env.server}
+  MEDACAP_SMTP_HOST: ${MEDACAP_SMTP_HOST:-smtp.cfao.corp}
+  MEDACAP_SMTP_PORT: ${MEDACAP_SMTP_PORT:-25}
+  MEDACAP_ERROR_MAIL: ${MEDACAP_ERROR_MAIL:-}
+
 services:
   mongo:
     image: mongo:8.0
@@ -16,32 +26,62 @@ services:
     cpu_shares: 512
     pids_limit: 128
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      # Pendant une restauration, l'image lance un mongod temporaire sur 127.0.0.1 puis l'arrête :
+      # sain seulement quand le vrai mongod est le PID 1, sinon migrate et web s'y connectent trop tôt.
+      test: ["CMD-SHELL", "grep -qx mongod /proc/1/comm && mongosh --quiet --eval 'db.adminCommand(\"ping\")'"]
       interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      # mongosh met déjà ~7 s à démarrer au repos sur 1 CPU ; pendant une construction d'image, 10 s ne suffisent
+      # plus et un mongo « unhealthy » bloque le déploiement comme le retour arrière (depends_on service_healthy).
+      timeout: 30s
+      retries: 5
+      # Laisse le temps de restaurer une sauvegarde prod complète sur un volume vide.
+      start_period: 15m
     ports:
       # Le PHP partage cette pile réseau : seul le HTTP est publié, MongoDB reste interne.
-      - "${HTTP_PORT:-80}:80"
+      # 8010 : bloc 8010-8019 réservé à MEDACAP dans la convention de ports de la .15.
+      - "${HTTP_PORT:-8010}:80"
     volumes:
       - medacap84:/data/db
+      # Exécuté par l'image mongo uniquement quand /data/db est vide : restaure la dernière sauvegarde, sinon la graine.
+      - ./docker/mongo-init:/docker-entrypoint-initdb.d:ro
+      - ${BACKUP_DIR:-./backups}:/backups:ro
+      - ${SEED_DIR:-./seed}:/seed:ro
 
-  web:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
+  # Migrations de base, rejouées à chaque déploiement ; chacune n'est appliquée qu'une fois (collection _migrations).
+  migrate:
+    image: mongo:8.0
     network_mode: "service:mongo"
-    restart: unless-stopped
+    restart: "no"
     environment:
       TZ: Africa/Douala
-      MEDACAP_MONGO_URI: mongodb://127.0.0.1:27017
-      MEDACAP_PUBLIC_URL: ${MEDACAP_PUBLIC_URL:?définir MEDACAP_PUBLIC_URL dans .env.server}
-      MEDACAP_SMTP_HOST: ${MEDACAP_SMTP_HOST:-smtp.cfao.corp}
-      MEDACAP_SMTP_PORT: ${MEDACAP_SMTP_PORT:-25}
     depends_on:
       mongo:
         condition: service_healthy
+    entrypoint: ["sh", "/migrations/run.sh"]
+    volumes:
+      - ./docker/migrations:/migrations:ro
+
+  web:
+    image: medacap84-web:${MEDACAP_TAG:?lancer ./deploy.sh}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: server
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+        NO_PROXY: ${NO_PROXY:-}
+        http_proxy: ${HTTP_PROXY:-}
+        https_proxy: ${HTTPS_PROXY:-}
+        no_proxy: ${NO_PROXY:-}
+    network_mode: "service:mongo"
+    restart: unless-stopped
+    environment: *app-env
+    depends_on:
+      mongo:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     mem_limit: 1024m
     memswap_limit: 1024m
     cpus: "1.0"
@@ -54,11 +94,29 @@ services:
       retries: 3
       start_period: 20s
     volumes:
-      - .:/var/www/html
+      - medacap84-data:/var/lib/medacap/data
       - medacap84-sessions:/var/lib/medacap/sessions
-      - medacap84-vendor:/var/www/html/vendor
-      - ./docker/server/php-server.ini:/usr/local/etc/php/conf.d/zz-medacap-server.ini:ro
-      - ./docker/server/medacap-server.conf:/etc/apache2/conf-enabled/zz-medacap-server.conf:ro
+
+  # Tâches planifiées (docker/server/crontab), même image que le site.
+  cron:
+    image: medacap84-web:${MEDACAP_TAG:?lancer ./deploy.sh}
+    network_mode: "service:mongo"
+    restart: unless-stopped
+    environment:
+      <<: *app-env
+      MEDACAP_RUN_AS: www-data
+    # Chemin absolu : en PID 1, supercronic se relance via argv[0] pour récolter les processus zombies.
+    command: ["/usr/local/bin/supercronic", "/etc/medacap/crontab"]
+    depends_on:
+      web:
+        condition: service_started
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    cpus: "0.5"
+    cpu_shares: 256
+    pids_limit: 64
+    volumes:
+      - medacap84-data:/var/lib/medacap/data
 
   backup:
     image: mongo:8.0
@@ -87,5 +145,5 @@ services:
 
 volumes:
   medacap84:
+  medacap84-data:
   medacap84-sessions:
-  medacap84-vendor:

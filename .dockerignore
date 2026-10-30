@@ -1,7 +1,24 @@
-# L'image n'a besoin que des manifests Composer et de l'entrypoint.
-# Le code de l'application reste monté explicitement par Docker Compose.
-**
-!composer.json
-!composer.lock
-!docker/
-!docker/entrypoint.sh
+# Cible base : seuls composer.json/lock et docker/ sont lus (BuildKit n'envoie que ce que COPY demande).
+# Cible server : tout le code du commit, sauf ce qui suit (secrets, données, outillage).
+.git
+.github
+.claude
+.cursor
+.vscode
+.idea
+.env
+.env.*
+.deploy
+backups
+seed
+vendor
+node_modules
+docs
+tests
+scratch
+exports
+public/uploads
+public/previews
+logs
+*.log
+docker-compose*.yml
