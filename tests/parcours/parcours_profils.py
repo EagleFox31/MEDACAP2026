@@ -69,7 +69,10 @@ def run_profile(browser, base, profile, creds, max_pages):
         old.unlink()
     ctx = browser.new_context(viewport={"width": 1440, "height": 900}, locale="fr-FR")
     page = ctx.new_page()
-    report = {"profil": profile, "pages": [], "erreurs": 0, "avertissements": 0}
+    # Sans délai par défaut, une page figée bloque tout le parcours ; un alert() aussi
+    page.set_default_timeout(60000)
+    page.on("dialog", lambda d: d.dismiss())
+    report ={"profil": profile, "pages": [], "erreurs": 0, "avertissements": 0}
     base_host = urlparse(base).netloc
 
     page.goto(base + "/", wait_until="domcontentloaded")

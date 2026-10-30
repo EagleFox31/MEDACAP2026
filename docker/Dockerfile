@@ -6,6 +6,7 @@ RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/debian.sources \
     && apt-get install -y --no-install-recommends \
        libssl-dev pkg-config libonig-dev \
        libpng-dev libjpeg62-turbo-dev libfreetype6-dev libzip-dev \
+       msmtp \
     && pecl install mongodb-1.21.0 \
     && docker-php-ext-enable mongodb \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -35,7 +36,10 @@ RUN printf '%s\n' \
     > /usr/local/etc/php/conf.d/medacap.ini
 
 # Les liens sans extension .php sont conservés.
+# Le code contient des URL absolues /MEDACAP/... (et les favoris /medacap/ de l'ancienne prod) :
+# ce préfixe est servi depuis la racine.
 RUN printf '%s\n' \
+    'AliasMatch "(?i)^/medacap(/.*)?$" "/var/www/html$1"' \
     '<Directory /var/www/html>' \
     'AllowOverride All' \
     'RewriteEngine On' \

@@ -1,47 +1,25 @@
 # MEDACAP — instructions agents
 
-> **IMPORTANT — contexte de cette branche (26/10/2026)** : `fix/quiz-factuel-countdocuments` est la copie de migration **MEDACAP 8.4 / version 2.9.4**, avec PHP 8.4, MongoDB 8.0 et `mongodb/mongodb` 1.21.5 dans Docker. Les règles ci-dessous sur PHP 7.3, MongoDB 4.2 et la bibliothèque 1.0.0 décrivent **l'installation WAMP historique encore en service**. Elles ne doivent PAS servir à dégrader les dépendances ni le runtime Docker de cette branche. Ne pas déployer depuis cette branche ni modifier la production. Lire d'abord `README.md` et `PLAN.md`. Le code source et les dépendances du conteneur doivent être reproductibles à partir d'un clone Git, `vendor/` étant géré par le build et un volume dédié. La base `academy` ne se restaure que sur le volume isolé `medacap84` à partir d'une archive autorisée, validée pour MongoDB 8.0. Les tests métier sur copie restent obligatoires avant la fusion. Les commits/push restent conditionnés aux demandes explicites de l'utilisatrice.
+> **IMPORTANT — cible unique depuis le 29/10/2026** : la stack Docker **MEDACAP 8.4 / version 2.9.4** (PHP 8.4, MongoDB 8.0, `mongodb/mongodb` 1.21.5) est la **seule cible**, à déployer sur le serveur **10.68.0.15** (`docker-compose.server.yml`). L'ancienne installation WAMP sur `10.68.0.7` (PHP 7.3, MongoDB 4.2, lib 1.0.0) est **abandonnée** : plus de compatibilité PHP 7.3 à préserver, plus de déploiement ni de requête vers .7. Dépendances : PHP 8.4 minimum, aucune bibliothèque obsolète ou non maintenue. Lire d'abord `README.md` et `PLAN.md`. Le code source et les dépendances du conteneur doivent être reproductibles à partir d'un clone Git, `vendor/` étant géré par le build et un volume dédié. La base `academy` ne se restaure que sur le volume isolé `medacap84` à partir d'une archive autorisée, validée pour MongoDB 8.0. Les tests métier sur copie restent obligatoires avant la fusion. Les commits/push restent conditionnés aux demandes explicites de l'utilisatrice.
 
 Ce fichier est la **mémoire projet** pour tout assistant de code et tout développeur, quel que soit l'outil. Le consulter avant d’écrire ou modifier du PHP MEDACAP.
 
 ## Démarrage rapide (branche 8.4)
 
-- Runtime : conteneurs Docker (`docker compose up -d --build`), PHP 8.4, MongoDB 8.0, `mongodb/mongodb` 1.21.5. Site `http://127.0.0.1:8084/`, base de la copie `mongodb://127.0.0.1:27018`. Voir `README.md`.
-- Le code reste **compatible PHP 7.3** tant que le WAMP historique est en service (les deux tournent sur le même code) : pas d'arrow functions, pas de `match`, pas de propriétés typées, pas de `str_contains()`.
-- Compter avec `medacapCountDocuments()` (`core/mongo_compat.php`), lire l'URI Mongo et l'URL publique via `core/medacap_config.php` : jamais d'adresse en dur dans une page.
+- Runtime : conteneurs Docker (`docker compose up -d --build`), PHP 8.4, MongoDB 8.0, `mongodb/mongodb` 1.21.5. Local : site `http://127.0.0.1:8084/`, base `mongodb://127.0.0.1:27018`. Serveur : 10.68.0.15. Voir `README.md`.
+- Code **PHP 8.4** : la syntaxe moderne est autorisée (`fn`, `match`, propriétés typées, `str_contains()`…). Aucun avertissement ni `Deprecated` 8.4 toléré (ex. paramètre implicitement nullable → `?string`).
+- Lire l'URI Mongo et l'URL publique via `core/medacap_config.php` : jamais d'adresse en dur dans une page.
 - Vérifier avant de livrer : `docker compose exec -T web php -l <fichier>` puis `python tests/parcours/parcours_profils.py --accounts <comptes.json>` (lecture seule, rejouable). Aucun « c'est fait » sans cette preuve.
-- Scripts de données : toujours idempotents (relançables sans double effet), avec un mode `--dry-run` quand ils écrivent, et jamais exécutés contre `10.68.0.7` sans accord explicite.
+- Scripts de données : toujours idempotents (relançables sans double effet), avec un mode `--dry-run` quand ils écrivent, et jamais exécutés contre la base du serveur .15 sans accord explicite.
 - Interdits dans le dépôt : identifiants, `.env`, dumps, exports Excel nominatifs, chemins propres à un poste (`C:\Users\…`). Les messages de commit décrivent uniquement le changement technique.
 
 ## Runtime cible
 
-- **Cible PHP 7.3** (serveur prod) — **jamais** supposer PHP 7.4+ ou 8+
-- ⚠ Le WAMP local tourne **PHP 7.4.33** (`bin/php/php7.4.33`, chargé par Apache) : `php -l` en local ne détecte donc **pas** les incompatibilités 7.4 → 7.3. Rester 7.3-compatible à la main.
-- **MongoDB 4.2** — base `academy`
-- URI prod : `mongodb://10.68.0.7:27017`
-- URI local WAMP : souvent `mongodb://localhost:27017` (Mongo parfois indisponible en local)
-- Variable d’env optionnelle : `MEDACAP_MONGO_URI`
-- URL prod Cameroun : `http://10.68.0.7/medacap/`
-
-## PHP 7.3 — interdictions fréquentes
-
-Ne **pas** utiliser de syntaxe PHP 8+ :
-
-| Interdit (PHP 8+) | Alternative PHP 7.3 |
-|---|---|
-| Arrow functions `fn($x) => …` | `function ($x) { return …; }` |
-| `match` | `switch` |
-| Propriétés typées dans les classes | Docblocks ou pas de type sur la propriété |
-| Named arguments | Arguments positionnels |
-| Union types `string\|null` | Docblocks `@param` / `@return` |
-| Constructor property promotion | Assignation manuelle dans le constructeur |
-| `str_contains()` | `strpos($haystack, $needle) !== false` |
-| Nullsafe `?->` | Vérifications `isset()` / ternaires |
-
-**Erreurs typiques :**
-
-- `Parse error: unexpected '=>' (T_DOUBLE_ARROW)` → arrow function `fn()` interdite en PHP 7.3
-- `TypeError: Argument must be array, BSONDocument given` → convertir le doc Mongo avant usage
+- **PHP 8.4** (image `php:8.4-apache`, extension `mongodb` 1.21) — serveur **10.68.0.15**
+- **MongoDB 8.0** — base `academy`, volume Docker dédié
+- `mongodb/mongodb` **1.21.5**, `phpoffice/phpspreadsheet` 1.30.x (voir `composer.lock`)
+- URI Mongo : variable d’env `MEDACAP_MONGO_URI` (lue par `core/medacap_config.php`)
+- `10.68.0.7` (WAMP, PHP 7.3, MongoDB 4.2) : **abandonné**, ne plus le cibler
 
 ## MongoDB / BSON
 
@@ -52,29 +30,11 @@ Ne **pas** utiliser de syntaxe PHP 8+ :
   - `bson_to_array($v)` dans certains cronjobs
   - `json_decode(json_encode($v), true)` en dernier recours
 - Filtrer comptes `demo` / `loadtestTag` des stats recrutement.
-
-### Lib `mongodb/mongodb` figée en **1.0.0** — `countDocuments()` interdit
-
-`composer.json` verrouille `mongodb/mongodb` en `1.0.0`. `MongoDB\Collection` n'y expose que
-`count($filter, $options)` : **`countDocuments()` et `estimatedDocumentCount()` n'existent pas**
-(ajoutés en 1.4.0). Tout appel direct lève :
-
-```
-Error: Call to undefined method MongoDB\Collection::countDocuments()
-```
-
-**Toujours passer par le helper** `core/mongo_compat.php` :
-
-```php
-require_once __DIR__ . '/../../core/mongo_compat.php'; // ajuster la profondeur
-$n = medacapCountDocuments($collection, $filter);      // countDocuments() si dispo, sinon count()
-```
-
-Ne jamais écrire `$collection->countDocuments(...)` en dur, même « juste pour un script ».
+- `Collection::count()` est déprécié depuis la lib 1.4 (retiré en 2.0) : utiliser `countDocuments()` / `estimatedDocumentCount()`. Le helper historique `medacapCountDocuments()` (`core/mongo_compat.php`) reste valable.
 
 ### `Error` n'est pas `Exception` — utiliser `catch (Throwable)`
 
-En PHP 7, `Error` (donc `TypeError`, « undefined method », « undefined function ») **n'hérite pas**
+En PHP 7 et 8, `Error` (donc `TypeError`, « undefined method », « undefined function ») **n'hérite pas**
 de `Exception`. Un `catch (Exception $e)` le laisse passer.
 
 - Autour d'un appel à une lib externe ou à une fonction typée : `catch (Throwable $e)`.
@@ -212,14 +172,16 @@ Variantes existantes dans le codebase (`../partials/`, `includes/background-mana
 
 ## Tests CLI utiles
 
+Dans le conteneur : `docker compose exec -T web <commande>` (l'URI interne est `mongodb://127.0.0.1:27017`).
+
 ```bash
 php -l views/measure/rapportRecrutement.php
-php scripts/report_pl2026_composers.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://10.68.0.7:27017
-php scripts/export_paper_scores.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://10.68.0.7:27017
+php scripts/report_pl2026_composers.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://127.0.0.1:27017
+php scripts/export_paper_scores.php --paper-id=6a82dbf45b3b2bb665098ec2 --mongo-uri=mongodb://127.0.0.1:27017
 php cronjobs/check_paper_completion_threshold.php
 php views/measure/scripts/setup_rapport_recrutement_menu.php
 # QCM offline brousse (export sur prod, import retour fichier)
-php scripts/export_offline_qcm.php --agency=Bertoua --mongo-uri=mongodb://10.68.0.7:27017
+php scripts/export_offline_qcm.php --agency=Bertoua --mongo-uri=mongodb://127.0.0.1:27017
 php scripts/import_offline_qcm.php --file=exports/offline-qcm/Bertoua/Michel_BAYEMI_Junior_QCM.html
 ```
 
@@ -236,15 +198,9 @@ Toujours lancer `php -l` sur les fichiers PHP modifiés avant livraison.
 
 ## Déploiement prod
 
-L'utilisateur lance lui-même (copie vers `Y:\` = `http://10.68.0.7/medacap/`) :
-
-```powershell
-.\deploy.ps1 -Version 4 -SpecificFiles "views\measure\X.php","views\language.php"
-```
-
-- `-Version` : `1` PATCH, `2` MINOR, `3` MAJOR, `4` version inchangée (sans le paramètre → prompt interactif).
-- Toujours fournir la commande complète avec la liste des fichiers modifiés ; `-Version 4` par défaut (bump uniquement sur demande).
-- Exclusions : `deploy.exclude`.
+- Cible : serveur **10.68.0.15**, `docker compose -f docker-compose.server.yml --env-file .env.server up -d --build` (`.env.server` hors dépôt, SMTP inclus).
+- Avant tout déploiement : parcours des profils rejoué sans erreur, lint PHP 8.4 des fichiers modifiés, sauvegarde Mongo récente vérifiée.
+- `deploy.ps1` (copie vers `Y:\` = ancien serveur `10.68.0.7`) est **obsolète** : ne plus l'utiliser.
 
 ## Progression niveaux QCM (Junior → Senior → Expert)
 

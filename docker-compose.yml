@@ -43,6 +43,8 @@ services:
       TZ: Africa/Douala
       MEDACAP_MONGO_URI: mongodb://127.0.0.1:27017
       MEDACAP_PUBLIC_URL: http://127.0.0.1:8084
+      MEDACAP_SMTP_HOST: ${MEDACAP_SMTP_HOST:-smtp.cfao.corp}
+      MEDACAP_SMTP_PORT: ${MEDACAP_SMTP_PORT:-25}
     depends_on:
       mongo:
         condition: service_healthy

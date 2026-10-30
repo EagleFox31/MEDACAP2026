@@ -23,4 +23,13 @@ if [ ! -f "$TARGET/autoload.php" ]; then
   exit 1
 fi
 
+# mail() passe par msmtp vers le relais SMTP (sans authentification, comme
+# l'ancien serveur avec SMTP = smtp.cfao.corp dans php.ini).
+SMTP_HOST=${MEDACAP_SMTP_HOST:-smtp.cfao.corp}
+SMTP_PORT=${MEDACAP_SMTP_PORT:-25}
+MAIL_FROM=${MEDACAP_MAIL_FROM:-helpdeskcm@cfao.com}
+printf 'sendmail_path = "/usr/bin/msmtp -t --host=%s --port=%s --from=%s --auth=off --tls=off"\n' \
+  "$SMTP_HOST" "$SMTP_PORT" "$MAIL_FROM" \
+  > /usr/local/etc/php/conf.d/medacap-mail.ini
+
 exec docker-php-entrypoint apache2-foreground
