@@ -696,6 +696,27 @@ $params = [
 ];
 ManagerQuizValidator::validateParams($params);
 $db = new MongoDBConnection();
+// Seul le manager connecté évalue, et uniquement ses collaborateurs : ?id= et ?user= ne sont pas des preuves.
+if (($_SESSION['profile'] ?? '') !== 'Super Admin') {
+    $evalTech = $db->getCollection('users')->findOne(['_id' => new ObjectId($params['technician'])]);
+    if ((string) $params['manager'] !== (string) $_SESSION['id']
+        || !$evalTech || empty($evalTech['manager']) || (string) $evalTech['manager'] !== (string) $_SESSION['id']) {
+        error_log('[userEvaluation] accès refusé : session=' . $_SESSION['id'] . ' manager=' . $params['manager'] . ' tech=' . $params['technician']);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $db->jsonResponse(false, 'Accès refusé.', './userManagerList');
+        }
+        header('Location: ./userManagerList');
+        exit();
+    }
+}
+// Une évaluation terminée ne se repasse pas : sinon une nouvelle soumission duplique les résultats.
+if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['technician']), 'test' => new ObjectId($params['test']), 'type' => 'Declaratif', 'activeManager' => true])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $db->jsonResponse(false, 'Cette évaluation est déjà terminée.', './userManagerList');
+    }
+    header('Location: ./userManagerList');
+    exit();
+}
 $fetcher = new ManagerQuizDataFetcher($db);
 $data = $fetcher->fetchData($params['technician'], $params['manager'], new ObjectId($params['test']), $params['level']);
 if (!$data) {

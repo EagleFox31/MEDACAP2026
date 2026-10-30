@@ -665,6 +665,14 @@ if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['
     header('Location: ./ListeDesQcm');
     exit();
 }
+// Niveau pas encore débloqué (Junior → Senior → Expert) : refusé même en tapant l'URL.
+if ($db->getCollection('allocations')->findOne(['user' => new ObjectId($params['id']), 'test' => new ObjectId($params['test']), 'activeTest' => false])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $db->jsonResponse(false, 'Ce niveau n\'est pas encore débloqué.', './ListeDesQcm');
+    }
+    header('Location: ./ListeDesQcm');
+    exit();
+}
 $fetcher = new QuizDataFetcher($db);
 $data = $fetcher->fetchUserData($params['id'], new ObjectId($params['test']), $params['level']);
 if (!$data) {

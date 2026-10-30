@@ -188,11 +188,13 @@ if ($showPersonal) {
                     'progress' => 0,
                 );
             } else {
+                // L'évaluation du manager porte sur le même test : ses examens et résultats ne comptent pas ici.
                 $exam = $exams->findOne([
                     '$and' => [
                         ["user" => new MongoDB\BSON\ObjectId($id)],
                         ["test" => new MongoDB\BSON\ObjectId($allocate["test"])],
                         ["active" => true],
+                        ["type" => ['$ne' => 'Manager']],
                     ],
                 ], ['sort' => ['_id' => -1]]);
                 $completedExam = $exams->findOne([
@@ -200,6 +202,7 @@ if ($showPersonal) {
                         ["user" => new MongoDB\BSON\ObjectId($id)],
                         ["test" => new MongoDB\BSON\ObjectId($allocate["test"])],
                         ["active" => false],
+                        ["type" => ['$ne' => 'Manager']],
                     ],
                 ], ['sort' => ['_id' => -1]]);
                 $hasCompletedResult = $results->findOne([
@@ -207,6 +210,7 @@ if ($showPersonal) {
                     'test' => new MongoDB\BSON\ObjectId($allocate['test']),
                     'type' => $type,
                     'level' => $levelKey,
+                    'typeR' => ['$nin' => ['Manager', 'Managers', 'Technicien - Manager']],
                     'active' => true,
                 ]);
                 $progress = 0;

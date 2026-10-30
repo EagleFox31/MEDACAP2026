@@ -454,7 +454,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                     ],
                                                 ]);
-                                                $techManagerId = isset($tech->manager) ? $tech->manager : null;
+                                                $techManagerId = !empty($tech->manager) ? $tech->manager : '000000000000000000000000';
                                                 $transmissionFac = $results->findOne([
                                                     '$and' => [
                                                         [
@@ -496,9 +496,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -549,9 +547,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -596,9 +592,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Boite de Transfert"],
@@ -640,9 +634,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Boite de Vitesse"],
@@ -690,9 +682,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -743,9 +733,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -796,9 +784,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -843,9 +829,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Climatisation"],
@@ -887,9 +871,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Demi Arbre de Roue"],
@@ -931,9 +913,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Direction"],
@@ -981,9 +961,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1028,9 +1006,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Freinage"],
@@ -1078,9 +1054,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1131,9 +1105,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1184,9 +1156,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1231,9 +1201,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Hydraulique"],
@@ -1275,9 +1243,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Diesel"],
@@ -1319,9 +1285,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Electrique"],
@@ -1363,9 +1327,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Essence"],
@@ -1407,9 +1369,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Moteur Thermique"],
@@ -1451,9 +1411,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Réseaux de Communication"],
@@ -1495,9 +1453,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Pneumatique"],
@@ -1539,9 +1495,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Pont"],
@@ -1583,9 +1537,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Reducteur"],
@@ -1627,9 +1579,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Suspension"],
@@ -1671,9 +1621,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Suspension à Lame"],
@@ -1715,9 +1663,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Suspension Ressort"],
@@ -1767,9 +1713,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         [
@@ -1815,9 +1759,7 @@ if (!isset($_SESSION["id"])) {
                                                             ),
                                                         ],
                                                         [
-                                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                                $managerTech->manager
-                                                            ),
+                                                            "manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager)),
                                                         ],
                                                         ["level" => $selectedLevel],
                                                         ["speciality" => "Transversale"],
@@ -1845,7 +1787,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($managerTechnician)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($managerTech->manager)],
+                                                        ["manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager))],
                                                         ["typeR" => "Managers"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -1854,7 +1796,7 @@ if (!isset($_SESSION["id"])) {
                                                 $resultTechMa = $results->findOne([
                                                     '$and' => [
                                                         ["user" => new MongoDB\BSON\ObjectId($managerTechnician)],
-                                                        ["manager" => new MongoDB\BSON\ObjectId($managerTech->manager)],
+                                                        ["manager" => (empty($managerTech->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($managerTech->manager))],
                                                         ["typeR" => "Technicien - Manager"],
                                                         ["level" => $selectedLevel],
                                                         ["active" => true],
@@ -3099,7 +3041,7 @@ if (!isset($_SESSION["id"])) {
                                                         ],
                                                     ],
                                                 ]);
-                                                $techManagerId = isset($tech->manager) ? $tech->manager : null;
+                                                $techManagerId = !empty($tech->manager) ? $tech->manager : '000000000000000000000000';
                                                 $transmissionFac = $results->findOne([
                                                     '$and' => [
                                                         [

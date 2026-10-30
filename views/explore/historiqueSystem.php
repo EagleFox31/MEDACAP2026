@@ -218,9 +218,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["level" => $level],
                                         ["speciality" => $speciality],

@@ -230,9 +230,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["typeR" => "Managers"],
                                         ["level" => $level],
@@ -248,9 +246,7 @@ if (!isset($_SESSION["id"])) {
                                             ),
                                         ],
                                         [
-                                            "manager" => new MongoDB\BSON\ObjectId(
-                                                $technician->manager
-                                            ),
+                                            "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
                                         ],
                                         ["typeR" => "Technicien - Manager"],
                                         ["level" => $level],

@@ -29,11 +29,14 @@ if (!isset($_SESSION["id"])) {
         '$and' => [
             [
                 "_id" => new MongoDB\BSON\ObjectId($user),
-                "department" => $_SESSION["department"],
                 "active" => true,
             ],
         ],
     ]);
+    if (!$technician) {
+        header('Location: ../portal.php');
+        exit();
+    }
 
     if ($niveau == "Junior") {
         $brand = $technician['brandJunior'];
@@ -160,9 +163,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -216,9 +217,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -266,9 +265,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -313,9 +310,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -366,9 +361,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -422,9 +415,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -478,9 +469,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -528,9 +517,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -575,9 +562,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -622,9 +607,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -675,9 +658,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -725,9 +706,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -778,9 +757,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -834,9 +811,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -890,9 +865,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -940,9 +913,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -987,9 +958,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1034,9 +1003,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1081,9 +1048,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1128,9 +1093,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1175,9 +1138,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1222,9 +1183,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1269,9 +1228,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1316,9 +1273,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1363,9 +1318,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1411,9 +1364,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1459,9 +1410,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1514,9 +1463,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1564,9 +1511,7 @@ if (!isset($_SESSION["id"])) {
                 ),
             ],
             [
-                "manager" => new MongoDB\BSON\ObjectId(
-                    $technician->manager
-                ),
+                "manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager)),
             ],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1597,7 +1542,7 @@ if (!isset($_SESSION["id"])) {
     $resultMa = $results->findOne([
         '$and' => [
             ["user" => new MongoDB\BSON\ObjectId($user)],
-            ["manager" => new MongoDB\BSON\ObjectId($technician->manager)],
+            ["manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager))],
             ["typeR" => "Managers"],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
@@ -1607,7 +1552,7 @@ if (!isset($_SESSION["id"])) {
     $resultTechMa = $results->findOne([
         '$and' => [
             ["user" => new MongoDB\BSON\ObjectId($user)],
-            ["manager" => new MongoDB\BSON\ObjectId($technician->manager)],
+            ["manager" => (empty($technician->manager) ? new MongoDB\BSON\ObjectId('000000000000000000000000') : new MongoDB\BSON\ObjectId($technician->manager))],
             ["typeR" => "Technicien - Manager"],
             ["numberTest" => +$numberTest],
             ["level" => $niveau],
