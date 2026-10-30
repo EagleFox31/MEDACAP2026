@@ -62,7 +62,7 @@ def collect_links(page, base_host):
     return links
 
 
-def run_profile(browser, base, profile, creds, max_pages):
+def run_profile(browser, base, profile, creds, max_pages, skip=None):
     folder = OUT / slug(profile)
     folder.mkdir(parents=True, exist_ok=True)
     for old in folder.glob("*.jpg"):
@@ -102,6 +102,9 @@ def run_profile(browser, base, profile, creds, max_pages):
         if key in seen:
             continue
         seen.add(key)
+        if skip and re.search(skip, url):
+            report["pages"].append({"url": url.replace(base, ""), "statut": "exclue (--skip)"})
+            continue
         try:
             resp = page.goto(url, wait_until="domcontentloaded", timeout=120000)
             try:
@@ -149,6 +152,7 @@ def main():
     ap.add_argument("--base", default="http://127.0.0.1:8084")
     ap.add_argument("--max", type=int, default=40)
     ap.add_argument("--only", help="profils à passer, séparés par des virgules")
+    ap.add_argument("--skip", help="regex d'URL à ne pas ouvrir (pages trop lourdes pour le navigateur)")
     args = ap.parse_args()
     accounts = json.loads(Path(args.accounts).read_text(encoding="utf-8"))
     results = []
@@ -167,7 +171,7 @@ def main():
             if args.only and profile not in args.only.split(","):
                 continue
             try:
-                r = run_profile(browser, args.base.rstrip("/"), profile, creds, args.max)
+                r = run_profile(browser, args.base.rstrip("/"), profile, creds, args.max, args.skip)
             except Exception as exc:
                 r = {"profil": profile, "connexion": "exception", "pages": [], "erreurs": 1, "detail": str(exc)[:300]}
                 (OUT / slug(profile)).mkdir(parents=True, exist_ok=True)
