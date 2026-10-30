@@ -432,7 +432,7 @@ if ($_SESSION['profile'] == 'Directeur Groupe' || $_SESSION['profile'] == 'Super
 <?php include "./partials/footer.php"; ?>
 
 <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
 <script>
     $(document).ready(function() {
         $('.dropdown-toggle').click(function() {

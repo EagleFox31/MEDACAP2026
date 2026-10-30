@@ -392,7 +392,7 @@ function renderQuizComponent($allQuestions, $user, $params, $exam = null, $test_
     <input type="hidden" id="timer_mn" value="<?php echo htmlspecialchars($timer_mn); ?>">
     <input type="hidden" id="timer_sc" value="<?php echo htmlspecialchars($timer_sc); ?>">
     <input type="hidden" id="quiz_type" value="<?php echo $quizType; ?>">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js" defer></script>
     <script defer>
         const QUIZ_L = <?php echo json_encode($L, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>; let tour; let tourActive = false; const totalQuestions = <?php echo $totalQuestions; ?>; const quizPostUrl = document.getElementById('quiz_post_url')?.value || window.location.href; const quizType = document.getElementById('quiz_type').value; const isDeclaratif = quizType === 'declaratif'; const hasSaveBtn = false; const keydownMax = isDeclaratif ? 3 : 4; const tourChoicesText = isDeclaratif ? QUIZ_L.tour_choices_declaratif : QUIZ_L.tour_choices_factuel; const tourNavText = hasSaveBtn ? QUIZ_L.tour_nav_with_save : QUIZ_L.tour_nav_no_save; const debugMode = <?php echo json_encode($debugMode); ?>;

@@ -2138,7 +2138,7 @@ if ($isQCMProfile) {
 <script src="../../public/js/core/animations.js"></script>
 <script src="../../public/js/applyFilters.js" defer></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
 <?php if ($isQCM): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -2203,9 +2203,9 @@ if ($isQCMProfile) {
         });
     </script>
 <?php else: ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.50.0/apexcharts.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
 
     <!-- Styles CSS pour l'animation de chargement fluide -->
     <style>

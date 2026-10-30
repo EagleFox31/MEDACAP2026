@@ -80,7 +80,7 @@
         </div>
         <!--end::Scrolltop-->
         <!--begin::Javascript-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
         <script>
         var hostUrl = "../../public/assets/index.php";
         </script>
@@ -129,10 +129,10 @@
         <script src="../../public/assets/js/custom/utilities/modals/users-search.js">
         </script>
         <!-- begin::charts -->
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-        <script src="https://code.highcharts.com/modules/export-data.js"></script>
-        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/highcharts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/exporting.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/export-data.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/accessibility.js"></script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>

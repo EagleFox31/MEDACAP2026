@@ -1,4 +1,4 @@
 <?php include_once "../core/background-manager.php"; setPageBackground("bg-welcome-tech"); ?>
 <html>
-<?php openBackgroundContainer(); include ("D:/Program/wamp64/www/MEDACAP/views/managePermissions.php"); closeBackgroundContainer(); ?>
+<?php openBackgroundContainer(); include __DIR__ . "/../managePermissions.php"; closeBackgroundContainer(); ?>
 </html>

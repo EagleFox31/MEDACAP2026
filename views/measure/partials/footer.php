@@ -134,10 +134,10 @@ if (($_SESSION['profile'] ?? '') === 'Candidat') {
         <script src="../../public/assets/js/custom/utilities/modals/users-search.js">
         </script>
         <!-- begin::charts -->
-        <script src="https://code.highcharts.com/highcharts.js" defer></script>
-        <script src="https://code.highcharts.com/modules/exporting.js" defer></script>
-        <script src="https://code.highcharts.com/modules/export-data.js" defer></script>
-        <script src="https://code.highcharts.com/modules/accessibility.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/highcharts.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/exporting.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/export-data.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/accessibility.js" defer></script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>

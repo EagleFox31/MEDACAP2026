@@ -25,7 +25,7 @@
     <meta charset="UTF-8" />
     <title>Etat d'avancement des PIF</title>
     <!-- Inclure Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <style>
     body {
         font-family: Arial, sans-serif;

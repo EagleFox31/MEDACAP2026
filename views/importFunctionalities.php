@@ -192,7 +192,7 @@ if (!isset($_SESSION["id"])) {
     </div>
 
     <!-- Inclusion des scripts nécessaires -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Script pour afficher le nom du fichier sélectionné -->
     <script>
         $('.custom-file-input').on('change', function() {

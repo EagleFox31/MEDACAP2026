@@ -475,7 +475,7 @@ require_once __DIR__ . '/../../components/widgets/histogram-row.php';
 </div><!-- /.container-fluid -->
 </div><!-- /#kt_content -->
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@8.6.0"></script>
 
 <script id="dashboard-data" type="application/json">
     <?php echo json_encode($dashboardData); ?>

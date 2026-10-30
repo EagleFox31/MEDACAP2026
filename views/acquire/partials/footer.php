@@ -128,10 +128,10 @@
         <script src="../../public/assets/js/custom/utilities/modals/users-search.js">
         </script>
         <!-- begin::charts -->
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-        <script src="https://code.highcharts.com/modules/export-data.js"></script>
-        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/highcharts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/exporting.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/export-data.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highcharts@12.4.0/modules/accessibility.js"></script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>

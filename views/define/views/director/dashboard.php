@@ -210,10 +210,10 @@ $validatedPercentage     = calculatePercentage((int)($globalStats['validatedTrai
 <!-- CountUp.js (existant) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.8/countUp.umd.min.js"></script>
 <!-- ApexCharts (existant) -->
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@8.6.0"></script>
 <!-- Chart.js + datalabels (existant) -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
 <!--begin::Content-->
 <div class="content fs-6 d-flex flex-column flex-column-fluid" id="kt_content"

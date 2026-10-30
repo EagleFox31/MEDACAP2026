@@ -585,7 +585,7 @@ try {
     <!-- Scores Chart -->
     <canvas id="scoresChart"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <script>
         const ctx = document.getElementById('scoresChart');
         new Chart(ctx,{
@@ -639,7 +639,7 @@ try {
     <!-- Scores Chart -->
     <canvas id="scoresChart"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <script>
         const ctx = document.getElementById('scoresChart');
         new Chart(ctx,{
