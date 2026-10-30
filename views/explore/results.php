@@ -356,7 +356,7 @@ if (!isset($_SESSION["id"])) {
                                     // Helper function to calculate percentage
                                     function calculatePercentage($result) {
                                         if (isset($result) && isset($result["score"]) && isset($result["total"]) && $result["total"] > 0) {
-                                            return ceil(($result["score"] * 100) / $result["total"]);
+                                            return ceil(($result["score"] * 100) / max(1, (float) $result["total"]));
                                         }
                                         return null;
                                     }

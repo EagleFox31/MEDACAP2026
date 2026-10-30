@@ -326,7 +326,7 @@ if (!isset($_SESSION["id"])) {
                                                  $percentageFacJu =
                                                      ceil(($resultFacJu["score"] *
                                                          100) /
-                                                    $resultFacJu["total"]);
+                                                    max(1, (float) $resultFacJu["total"]));
                                              }
                                             if (isset($resultDeclaJu)) {
                                                 $percentageDeclaJu =
@@ -334,7 +334,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaJu["total"]);
+                                                    max(1, (float) $resultDeclaJu["total"]));
                                             }
                                             if (isset($resultDeclaJuTech)) {
                                                 $percentageDeclaJuTech =
@@ -342,7 +342,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaJuTech["total"]);
+                                                    max(1, (float) $resultDeclaJuTech["total"]));
                                             }
                                             if (isset($resultDeclaJuMa)) {
                                                 $percentageDeclaJuMa =
@@ -350,13 +350,13 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaJuMa["total"]);
+                                                    max(1, (float) $resultDeclaJuMa["total"]));
                                             }
                                             if (isset($resultFacSe)) {
                                                 $percentageFacSe =
                                                     ceil(($resultFacSe["score"] *
                                                         100) /
-                                                    $resultFacSe["total"]);
+                                                    max(1, (float) $resultFacSe["total"]));
                                             }
                                             if (isset($resultDeclaSe)) {
                                                 $percentageDeclaSe =
@@ -364,7 +364,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaSe["total"]);
+                                                    max(1, (float) $resultDeclaSe["total"]));
                                             }
                                             if (isset($resultDeclaSeTech)) {
                                                 $percentageDeclaSeTech =
@@ -372,7 +372,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaSeTech["total"]);
+                                                    max(1, (float) $resultDeclaSeTech["total"]));
                                             }
                                             if (isset($resultDeclaSeMa)) {
                                                 $percentageDeclaSeMa =
@@ -380,13 +380,13 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaSeMa["total"]);
+                                                    max(1, (float) $resultDeclaSeMa["total"]));
                                             }
                                             if (isset($resultFacEx)) {
                                                 $percentageFacEx =
                                                     ceil(($resultFacEx["score"] *
                                                         100) /
-                                                    $resultFacEx["total"]);
+                                                    max(1, (float) $resultFacEx["total"]));
                                             }
                                             if (isset($resultDeclaEx)) {
                                                 $percentageDeclaEx =
@@ -394,7 +394,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaEx["total"]);
+                                                    max(1, (float) $resultDeclaEx["total"]));
                                             }
                                             if (isset($resultDeclaExTech)) {
                                                 $percentageDeclaExTech =
@@ -402,7 +402,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaExTech["total"]);
+                                                    max(1, (float) $resultDeclaExTech["total"]));
                                             }
                                             if (isset($resultDeclaExMa)) {
                                                 $percentageDeclaExMa =
@@ -410,7 +410,7 @@ if (!isset($_SESSION["id"])) {
                                                         "score"
                                                     ] *
                                                         100) /
-                                                    $resultDeclaExMa["total"]);
+                                                    max(1, (float) $resultDeclaExMa["total"]));
                                             }
                                             if (isset($resultDeclaJu) && isset($resultFacJu)) {
                                                 $junior = ceil(($percentageFacJu + $percentageDeclaJu) / 2);

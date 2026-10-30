@@ -22,6 +22,8 @@ if (!isset($_SESSION["id"])) {
     $seuils = $academy->seuils;
 
     $user = $_GET["user"];
+    require_once __DIR__ . '/../../core/user_access.php';
+    medacapRequireUserAccess($users, $user);
     $levelfilter = $_GET["level"];
     $numberTest = $_GET["numberTest"];
 
@@ -286,19 +288,19 @@ if (!isset($_SESSION["id"])) {
                                         </td>
                                         <td class="text-center <?php echo getclasses($transmissionFac); ?>">
                                             <?php 
-                                                $percentTransmissionFac = round(($transmissionFac->score * 100) / $transmissionFac->total);
+                                                $percentTransmissionFac = round(($transmissionFac->score * 100) / max(1, (float) $transmissionFac->total));
                                                 echo $percentTransmissionFac?>%
                                         </td>
 
                                         <td class="text-center <?php echo getclasses($transmissionDecla); ?>">
                                             <?php echo round(
                                             ($transmissionDecla->score * 100) /
-                                                $transmissionDecla->total); ?>%
+                                                max(1, (float) $transmissionDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($transmissionMa); ?>">
                                             <?php echo round(
                                             ($transmissionMa->score * 100) /
-                                                $transmissionMa->total); ?>%
+                                                max(1, (float) $transmissionMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -443,20 +445,20 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($assistanceConduiteFac); ?>">
                                             <?php 
                                             
-                                            $percentassistanceConduiteFac = round(($assistanceConduiteFac->score * 100) / $assistanceConduiteFac->total);
+                                            $percentassistanceConduiteFac = round(($assistanceConduiteFac->score * 100) / max(1, (float) $assistanceConduiteFac->total));
                                             echo $percentassistanceConduiteFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($assistanceConduiteDecla); ?>">
                                             <?php echo round(
                                             ($assistanceConduiteDecla->score *
                                                 100) /
-                                                $assistanceConduiteDecla->total); ?>%
+                                                max(1, (float) $assistanceConduiteDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($assistanceConduiteMa); ?>">
                                             <?php echo round(
                                             ($assistanceConduiteMa->score *
                                                 100) /
-                                                $assistanceConduiteMa->total); ?>%
+                                                max(1, (float) $assistanceConduiteMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -596,18 +598,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($transfertFac); ?>">
                                             <?php $percentTransfertFac =round(
                                             ($transfertFac->score * 100) /
-                                                $transfertFac->total); 
+                                                max(1, (float) $transfertFac->total)); 
                                                 echo $percentTransfertFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($transfertDecla); ?>">
                                             <?php echo round(
                                             ($transfertDecla->score * 100) /
-                                                $transfertDecla->total); ?>%
+                                                max(1, (float) $transfertDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($transfertMa); ?>">
                                             <?php echo round(
                                             ($transfertMa->score * 100) /
-                                                $transfertMa->total); ?>%
+                                                max(1, (float) $transfertMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -739,18 +741,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($boiteFac); ?>">
                                             <?php $percentBoiteFac  = round(
                                             ($boiteFac->score * 100) /
-                                                $boiteFac->total); 
+                                                max(1, (float) $boiteFac->total)); 
                                                 echo $percentBoiteFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteDecla); ?>">
                                             <?php echo round(
                                             ($boiteDecla->score * 100) /
-                                                $boiteDecla->total); ?>%
+                                                max(1, (float) $boiteDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteMa); ?>">
                                             <?php echo round(
                                             ($boiteMa->score * 100) /
-                                                $boiteMa->total); ?>%
+                                                max(1, (float) $boiteMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -892,18 +894,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($boiteAutoFac); ?>">
                                             <?php $percentBoiteAutoFac = round(
                                             ($boiteAutoFac->score * 100) /
-                                                $boiteAutoFac->total);
+                                                max(1, (float) $boiteAutoFac->total));
                                                 echo $percentBoiteAutoFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteAutoDecla); ?>">
                                             <?php echo round(
                                             ($boiteAutoDecla->score * 100) /
-                                                $boiteAutoDecla->total); ?>%
+                                                max(1, (float) $boiteAutoDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteAutoMa); ?>">
                                             <?php echo round(
                                             ($boiteAutoMa->score * 100) /
-                                                $boiteAutoMa->total); ?>%
+                                                max(1, (float) $boiteAutoMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1046,18 +1048,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($boiteManFac); ?>">
                                             <?php $percentBoiteManFac = round(
                                             ($boiteManFac->score * 100) /
-                                                $boiteManFac->total); 
+                                                max(1, (float) $boiteManFac->total)); 
                                                 echo $percentBoiteManFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteManDecla); ?>">
                                             <?php echo round(
                                             ($boiteManDecla->score * 100) /
-                                                $boiteManDecla->total); ?>%
+                                                max(1, (float) $boiteManDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteManMa); ?>">
                                             <?php echo round(
                                             ($boiteManMa->score * 100) /
-                                                $boiteManMa->total); ?>%
+                                                max(1, (float) $boiteManMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1198,18 +1200,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($boiteVaCoFac); ?>">
                                             <?php $percentBoiteVacoFac= round(
                                             ($boiteVaCoFac->score * 100) /
-                                                $boiteVaCoFac->total); 
+                                                max(1, (float) $boiteVaCoFac->total)); 
                                                 echo $percentBoiteVacoFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteVaCoDecla); ?>">
                                             <?php echo round(
                                             ($boiteVaCoDecla->score * 100) /
-                                                $boiteVaCoDecla->total); ?>%
+                                                max(1, (float) $boiteVaCoDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($boiteVaCoMa); ?>">
                                             <?php echo round(
                                             ($boiteVaCoMa->score * 100) /
-                                                $boiteVaCoMa->total); ?>%
+                                                max(1, (float) $boiteVaCoMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1341,18 +1343,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($climatisationFac); ?>">
                                             <?php $percentClimFac= round(
                                             ($climatisationFac->score * 100) /
-                                                $climatisationFac->total); 
+                                                max(1, (float) $climatisationFac->total)); 
                                                 echo $percentClimFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($climatisationDecla); ?>">
                                             <?php echo round(
                                             ($climatisationDecla->score * 100) /
-                                                $climatisationDecla->total); ?>%
+                                                max(1, (float) $climatisationDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($climatisationMa); ?>">
                                             <?php echo round(
                                             ($climatisationMa->score * 100) /
-                                                $climatisationMa->total); ?>%
+                                                max(1, (float) $climatisationMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1488,18 +1490,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($demiFac); ?>">
                                             <?php $percentDemiFac = round(
                                             ($demiFac->score * 100) /
-                                                $demiFac->total);
+                                                max(1, (float) $demiFac->total));
                                                 echo $percentDemiFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($demiDecla); ?>">
                                             <?php echo round(
                                             ($demiDecla->score * 100) /
-                                                $demiDecla->total); ?>%
+                                                max(1, (float) $demiDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($demiMa); ?>">
                                             <?php echo round(
                                             ($demiMa->score * 100) /
-                                                $demiMa->total); ?>%
+                                                max(1, (float) $demiMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1632,18 +1634,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($directionFac); ?>">
                                             <?php $percentDirectionFac = round(
                                             ($directionFac->score * 100) /
-                                                $directionFac->total); 
+                                                max(1, (float) $directionFac->total)); 
                                                 echo $percentDirectionFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($directionDecla); ?>">
                                             <?php echo round(
                                             ($directionDecla->score * 100) /
-                                                $directionDecla->total); ?>%
+                                                max(1, (float) $directionDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($directionMa); ?>">
                                             <?php echo round(
                                             ($directionMa->score * 100) /
-                                                $directionMa->total); ?>%
+                                                max(1, (float) $directionMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1785,18 +1787,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($electriciteFac); ?>">
                                             <?php $percentElectriciteFac = round(
                                             ($electriciteFac->score * 100) /
-                                                $electriciteFac->total); 
+                                                max(1, (float) $electriciteFac->total)); 
                                                 echo $percentElectriciteFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($electriciteDecla); ?>">
                                             <?php echo round(
                                             ($electriciteDecla->score * 100) /
-                                                $electriciteDecla->total); ?>%
+                                                max(1, (float) $electriciteDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($electriciteMa); ?>">
                                             <?php echo round(
                                             ($electriciteMa->score * 100) /
-                                                $electriciteMa->total); ?>%
+                                                max(1, (float) $electriciteMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -1932,18 +1934,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($freiFac); ?>">
                                             <?php $percentFreiFac = round(
                                             ($freiFac->score * 100) /
-                                                $freiFac->total);
+                                                max(1, (float) $freiFac->total));
                                                 echo $percentFreiFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freiDecla); ?>">
                                             <?php echo round(
                                             ($freiDecla->score * 100) /
-                                                $freiDecla->total); ?>%
+                                                max(1, (float) $freiDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freiMa); ?>">
                                             <?php echo round(
                                             ($freiMa->score * 100) /
-                                                $freiMa->total); ?>%
+                                                max(1, (float) $freiMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2085,18 +2087,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($freinageElecFac); ?>">
                                             <?php $percentFreinageElecFac = round(
                                             ($freinageElecFac->score * 100) /
-                                                $freinageElecFac->total); 
+                                                max(1, (float) $freinageElecFac->total)); 
                                                 echo $percentFreinageElecFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freinageElecDecla); ?>">
                                             <?php echo round(
                                             ($freinageElecDecla->score * 100) /
-                                                $freinageElecDecla->total); ?>%
+                                                max(1, (float) $freinageElecDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freinageElecMa); ?>">
                                             <?php echo round(
                                             ($freinageElecMa->score * 100) /
-                                                $freinageElecMa->total); ?>%
+                                                max(1, (float) $freinageElecMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2241,18 +2243,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($freinageFac); ?>">
                                             <?php $percentFreinageFac = round(
                                             ($freinageFac->score * 100) /
-                                                $freinageFac->total); 
+                                                max(1, (float) $freinageFac->total)); 
                                                 echo $percentFreinageFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freinageDecla); ?>">
                                             <?php echo round(
                                             ($freinageDecla->score * 100) /
-                                                $freinageDecla->total); ?>%
+                                                max(1, (float) $freinageDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freinageMa); ?>">
                                             <?php echo round(
                                             ($freinageMa->score * 100) /
-                                                $freinageMa->total); ?>%
+                                                max(1, (float) $freinageMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2394,18 +2396,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($freinFac); ?>">
                                             <?php $percentFreinFac = round(
                                             ($freinFac->score * 100) /
-                                                $freinFac->total);
+                                                max(1, (float) $freinFac->total));
                                                 echo $percentFreinFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freinDecla); ?>">
                                             <?php echo round(
                                             ($freinDecla->score * 100) /
-                                                $freinDecla->total); ?>%
+                                                max(1, (float) $freinDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($freinMa); ?>">
                                             <?php echo round(
                                             ($freinMa->score * 100) /
-                                                $freinMa->total); ?>%
+                                                max(1, (float) $freinMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2538,18 +2540,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($hydrauliqueFac); ?>">
                                             <?php $percentHydrauliqueFac =  round(
                                             ($hydrauliqueFac->score * 100) /
-                                                $hydrauliqueFac->total);
+                                                max(1, (float) $hydrauliqueFac->total));
                                                 echo $percentHydrauliqueFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($hydrauliqueDecla); ?>">
                                             <?php echo round(
                                             ($hydrauliqueDecla->score * 100) /
-                                                $hydrauliqueDecla->total); ?>%
+                                                max(1, (float) $hydrauliqueDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($hydrauliqueMa); ?>">
                                             <?php echo round(
                                             ($hydrauliqueMa->score * 100) /
-                                                $hydrauliqueMa->total); ?>%
+                                                max(1, (float) $hydrauliqueMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2685,18 +2687,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($moteurDieselFac); ?>">
                                             <?php $percentMoteurDieselFac = round(
                                             ($moteurDieselFac->score * 100) /
-                                                $moteurDieselFac->total); 
+                                                max(1, (float) $moteurDieselFac->total)); 
                                                 echo $percentMoteurDieselFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurDieselDecla); ?>">
                                             <?php echo round(
                                             ($moteurDieselDecla->score * 100) /
-                                                $moteurDieselDecla->total); ?>%
+                                                max(1, (float) $moteurDieselDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurDieselMa); ?>">
                                             <?php echo round(
                                             ($moteurDieselMa->score * 100) /
-                                                $moteurDieselMa->total); ?>%
+                                                max(1, (float) $moteurDieselMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2833,18 +2835,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($moteurElecFac); ?>">
                                             <?php $percentMoteurElecFac = round(
                                             ($moteurElecFac->score * 100) /
-                                                $moteurElecFac->total);
+                                                max(1, (float) $moteurElecFac->total));
                                                 echo $percentMoteurElecFac ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurElecDecla); ?>">
                                             <?php echo round(
                                             ($moteurElecDecla->score * 100) /
-                                                $moteurElecDecla->total); ?>%
+                                                max(1, (float) $moteurElecDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurElecMa); ?>">
                                             <?php echo round(
                                             ($moteurElecMa->score * 100) /
-                                                $moteurElecMa->total); ?>%
+                                                max(1, (float) $moteurElecMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -2979,18 +2981,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($moteurEssenceFac); ?>">
                                             <?php $percentMoteurEssenceFac = round(
                                             ($moteurEssenceFac->score * 100) /
-                                                $moteurEssenceFac->total); 
+                                                max(1, (float) $moteurEssenceFac->total)); 
                                                 echo $percentMoteurEssenceFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurEssenceDecla); ?>">
                                             <?php echo round(
                                             ($moteurEssenceDecla->score * 100) /
-                                                $moteurEssenceDecla->total); ?>%
+                                                max(1, (float) $moteurEssenceDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurEssenceMa); ?>">
                                             <?php echo round(
                                             ($moteurEssenceMa->score * 100) /
-                                                $moteurEssenceMa->total); ?>%
+                                                max(1, (float) $moteurEssenceMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3126,19 +3128,19 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($moteurThermiqueFac); ?>">
                                             <?php $percentMoteurThermiqueFac = round(
                                             ($moteurThermiqueFac->score * 100) /
-                                                $moteurThermiqueFac->total); 
+                                                max(1, (float) $moteurThermiqueFac->total)); 
                                                 echo $percentMoteurThermiqueFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurThermiqueDecla); ?>">
                                             <?php echo round(
                                             ($moteurThermiqueDecla->score *
                                                 100) /
-                                                $moteurThermiqueDecla->total); ?>%
+                                                max(1, (float) $moteurThermiqueDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($moteurThermiqueMa); ?>">
                                             <?php echo round(
                                             ($moteurThermiqueMa->score * 100) /
-                                                $moteurThermiqueMa->total); ?>%
+                                                max(1, (float) $moteurThermiqueMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3273,18 +3275,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($multiplexageFac); ?>">
                                             <?php $percentMultiplexageFac = round(
                                             ($multiplexageFac->score * 100) /
-                                                $multiplexageFac->total); 
+                                                max(1, (float) $multiplexageFac->total)); 
                                                 echo $percentMultiplexageFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($multiplexageDecla); ?>">
                                             <?php echo round(
                                             ($multiplexageDecla->score * 100) /
-                                                $multiplexageDecla->total); ?>%
+                                                max(1, (float) $multiplexageDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($multiplexageMa); ?>">
                                             <?php echo round(
                                             ($multiplexageMa->score * 100) /
-                                                $multiplexageMa->total); ?>%
+                                                max(1, (float) $multiplexageMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3420,18 +3422,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($pneuFac); ?>">
                                             <?php $percentPneuFac = round(
                                             ($pneuFac->score * 100) /
-                                                $pneuFac->total); 
+                                                max(1, (float) $pneuFac->total)); 
                                                 echo  $percentPneuFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($pneuDecla); ?>">
                                             <?php echo round(
                                             ($pneuDecla->score * 100) /
-                                                $pneuDecla->total); ?>%
+                                                max(1, (float) $pneuDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($pneuMa); ?>">
                                             <?php echo round(
                                             ($pneuMa->score * 100) /
-                                                $pneuMa->total); ?>%
+                                                max(1, (float) $pneuMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3564,18 +3566,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($pontFac); ?>">
                                             <?php $percentPontFac = round(
                                             ($pontFac->score * 100) /
-                                                $pontFac->total); 
+                                                max(1, (float) $pontFac->total)); 
                                                 echo $percentPontFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($pontDecla); ?>">
                                             <?php echo round(
                                             ($pontDecla->score * 100) /
-                                                $pontDecla->total); ?>%
+                                                max(1, (float) $pontDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($pontMa); ?>">
                                             <?php echo round(
                                             ($pontMa->score * 100) /
-                                                $pontMa->total); ?>%
+                                                max(1, (float) $pontMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3708,18 +3710,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($reducteurFac); ?>">
                                             <?php $percentReducteurFac = round(
                                             ($reducteurFac->score * 100) /
-                                                $reducteurFac->total); 
+                                                max(1, (float) $reducteurFac->total)); 
                                                 echo $percentReducteurFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($reducteurDecla); ?>">
                                             <?php echo round(
                                             ($reducteurDecla->score * 100) /
-                                                $reducteurDecla->total); ?>%
+                                                max(1, (float) $reducteurDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($reducteurMa); ?>">
                                             <?php echo round(
                                             ($reducteurMa->score * 100) /
-                                                $reducteurMa->total); ?>%
+                                                max(1, (float) $reducteurMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3852,18 +3854,18 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($suspensionFac); ?>">
                                             <?php $percentSuspensionFac = round(
                                             ($suspensionFac->score * 100) /
-                                                $suspensionFac->total); 
+                                                max(1, (float) $suspensionFac->total)); 
                                                 echo $percentSuspensionFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionDecla); ?>">
                                             <?php echo round(
                                             ($suspensionDecla->score * 100) /
-                                                $suspensionDecla->total); ?>%
+                                                max(1, (float) $suspensionDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionMa); ?>">
                                             <?php echo round(
                                             ($suspensionMa->score * 100) /
-                                                $suspensionMa->total); ?>%
+                                                max(1, (float) $suspensionMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -3997,19 +3999,19 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($suspensionLameFac); ?>">
                                             <?php $percentSuspensionLameFac = round(
                                             ($suspensionLameFac->score * 100) /
-                                                $suspensionLameFac->total); 
+                                                max(1, (float) $suspensionLameFac->total)); 
                                                 echo $percentSuspensionLameFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionLameDecla); ?>">
                                             <?php echo round(
                                             ($suspensionLameDecla->score *
                                                 100) /
-                                                $suspensionLameDecla->total); ?>%
+                                                max(1, (float) $suspensionLameDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionLameMa); ?>">
                                             <?php echo round(
                                             ($suspensionLameMa->score * 100) /
-                                                $suspensionLameMa->total); ?>%
+                                                max(1, (float) $suspensionLameMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -4146,20 +4148,20 @@ if (!isset($_SESSION["id"])) {
                                             <?php $percentSuspensionRessortFac = round(
                                             ($suspensionRessortFac->score *
                                                 100) /
-                                                $suspensionRessortFac->total); 
+                                                max(1, (float) $suspensionRessortFac->total)); 
                                                 echo $percentSuspensionRessortFac?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionRessortDecla); ?>">
                                             <?php echo round(
                                             ($suspensionRessortDecla->score *
                                                 100) /
-                                                $suspensionRessortDecla->total); ?>%
+                                                max(1, (float) $suspensionRessortDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionRessortMa); ?>">
                                             <?php echo round(
                                             ($suspensionRessortMa->score *
                                                 100) /
-                                                $suspensionRessortMa->total); ?>%
+                                                max(1, (float) $suspensionRessortMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -4311,19 +4313,19 @@ if (!isset($_SESSION["id"])) {
                                             <?php echo $percentSuspensionPneumatiqueFac = round(
                                             ($suspensionPneumatiqueFac->score *
                                                 100) /
-                                                $suspensionPneumatiqueFac->total); ?>%
+                                                max(1, (float) $suspensionPneumatiqueFac->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionPneumatiqueDecla); ?>">
                                             <?php echo round(
                                             ($suspensionPneumatiqueDecla->score *
                                                 100) /
-                                                $suspensionPneumatiqueDecla->total); ?>%
+                                                max(1, (float) $suspensionPneumatiqueDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($suspensionPneumatiqueMa); ?>">
                                             <?php echo round(
                                             ($suspensionPneumatiqueMa->score *
                                                 100) /
-                                                $suspensionPneumatiqueMa->total); ?>%
+                                                max(1, (float) $suspensionPneumatiqueMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -4470,7 +4472,7 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($transversaleFac); ?>">
                                             <?php $percentTransversaleFac =round(
                                             ($transversaleFac->score * 100) /
-                                                $transversaleFac->total); 
+                                                max(1, (float) $transversaleFac->total)); 
                                                 
                                                 echo $percentTransversaleFac;?>%
 
@@ -4479,12 +4481,12 @@ if (!isset($_SESSION["id"])) {
                                         <td class="text-center <?php echo getclasses($transversaleDecla); ?>">
                                             <?php echo round(
                                             ($transversaleDecla->score * 100) /
-                                                $transversaleDecla->total); ?>%
+                                                max(1, (float) $transversaleDecla->total)); ?>%
                                         </td>
                                         <td class="text-center <?php echo getclasses($transversaleMa); ?>">
                                             <?php echo round(
                                             ($transversaleMa->score * 100) /
-                                                $transversaleMa->total); ?>%
+                                                max(1, (float) $transversaleMa->total)); ?>%
                                         </td>
                                         <?php for (
                                         $i = 0;
@@ -4554,7 +4556,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php 
                                     
                                     // function getclasses($grp){
-                                    //     $percent  = round(($grp->score * 100) / ($grp->total));
+                                    //     $percent  = round(($grp->score * 100) / (max(1, (float) $grp->total)));
                                     //     $bootstrapclass = getBootstrapClass($percent);
                                     //     return $bootstrapclass;                                    
                                     // }
@@ -4572,7 +4574,7 @@ if (!isset($_SESSION["id"])) {
                                             aria-label="Email: activate to sort column ascending" style="width: 100px;">
                                             
                                             
-                                            <?php echo round(($resultFac->score * 100) / $resultFac->total); ?>%
+                                            <?php echo (!empty($resultFac->total) ? round(($resultFac->score * 100) / $resultFac->total) : 0); ?>%
 
                                         </th>
                                         <!-- <th id="decision-savoir"
@@ -4647,8 +4649,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>

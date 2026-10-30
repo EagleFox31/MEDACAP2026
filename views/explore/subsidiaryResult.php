@@ -1984,10 +1984,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -2887,7 +2887,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Beresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -4572,10 +4572,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -5476,7 +5476,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Buresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -7161,10 +7161,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -8045,7 +8045,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Caresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -9730,10 +9730,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -10634,7 +10634,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Coresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -12319,10 +12319,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -13223,7 +13223,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Rciresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -14908,10 +14908,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -15812,7 +15812,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Garesult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -17497,10 +17497,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -18401,7 +18401,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Gamresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -20086,10 +20086,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -20990,7 +20990,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Ghresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -22675,10 +22675,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -23579,7 +23579,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Guresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -25264,10 +25264,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -26168,7 +26168,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Biresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -27853,10 +27853,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -28757,7 +28757,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Eqresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -30442,10 +30442,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -31346,7 +31346,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Madresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -33031,10 +33031,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -33935,7 +33935,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Maliresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -35621,10 +35621,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -36525,7 +36525,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Mauresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -38210,10 +38210,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -39114,7 +39114,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Nigerresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -40799,10 +40799,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -41703,7 +41703,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Nigeriaresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -43388,10 +43388,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -44292,7 +44292,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Rcaresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -45977,10 +45977,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -46881,7 +46881,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Rdcresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -48566,10 +48566,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -49470,7 +49470,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Seresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -51155,10 +51155,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -52059,7 +52059,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Tcresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -53744,10 +53744,10 @@ if (!isset($_SESSION["id"])) {
                                                 $transversaleScoreMa = $transversaleMa->score ?? 0;
                                             
                                                 if (isset($resultFac)) {
-                                                    $percentageFac = ($resultFac['score'] * 100) / $resultFac['total'];
+                                                    $percentageFac = ($resultFac['score'] * 100) / max(1, (float) $resultFac['total']);
                                                 }
                                                 if (isset($resultTechMa)) {
-                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / $resultTechMa['total'];
+                                                    $percentageTechMa = ($resultTechMa['score'] * 100) / max(1, (float) $resultTechMa['total']);
                                                 }
                                             
                                                 $scoreTransmission = 0;
@@ -54648,7 +54648,7 @@ if (!isset($_SESSION["id"])) {
                                             <?php if ($allocateFac['active'] == true && $allocateDecla['active'] == true && $allocateDecla['activeManager'] == true) { ?> 
                                             <td class="text-center hidden" id="Toresult">
                                                 <?php echo
-                                                    round((($resultFac->score * 100) / $resultFac->total + ($resultTechMa->score * 100) / $resultTechMa->total ) / 2)
+                                                    round((($resultFac->score * 100) / max(1, (float) $resultFac->total) + ($resultTechMa->score * 100) / max(1, (float) $resultTechMa->total) ) / 2)
                                                 ?>%
                                             </td>
                                             <?php } else { ?>
@@ -54894,8 +54894,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>

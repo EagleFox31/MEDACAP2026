@@ -20,6 +20,8 @@ if (!isset($_SESSION["id"])) {
     $results = $academy->results;
 
     $user       = $_GET["user"]       ?? '';
+    require_once __DIR__ . '/../../core/user_access.php';
+    medacapRequireUserAccess($users, $user);
     $level      = $_GET["level"]      ?? '';
     $numberTest = $_GET["numberTest"] ?? 0;
 
@@ -38,7 +40,7 @@ if (!isset($_SESSION["id"])) {
     function safeAvgPct($fac, $decla, $declScore) {
         if (!$fac   || ($fac->total   ?? 0) == 0) return 0;
         if (!$decla || ($decla->total ?? 0) == 0) return 0;
-        return ceil((($fac->score * 100 / $fac->total) + ($declScore * 100 / $decla->total)) / 2);
+        return ceil((($fac->score * 100 / max(1, (float) $fac->total)) + ($declScore * 100 / max(1, (float) $decla->total))) / 2);
     }
 
     $managerStr = ($technician && !empty($technician->manager)) ? (string)$technician->manager : '000000000000000000000000';
@@ -1575,8 +1577,8 @@ if (!isset($_SESSION["id"])) {
     $suspensionPneumatiqueScoreMa = $suspensionPneumatiqueMa->score ?? 0;
     $transversaleScoreMa = $transversaleMa->score ?? 0;
 
-    $percentageFac    = ($resultFac['total']    ?? 0) > 0 ? (($resultFac['score']    ?? 0) * 100) / $resultFac['total']    : 0;
-    $percentageTechMa = ($resultTechMa['total'] ?? 0) > 0 ? (($resultTechMa['score'] ?? 0) * 100) / $resultTechMa['total'] : 0;
+    $percentageFac    = ($resultFac['total']    ?? 0) > 0 ? (($resultFac['score']    ?? 0) * 100) / max(1, (float) $resultFac['total'])    : 0;
+    $percentageTechMa = ($resultTechMa['total'] ?? 0) > 0 ? (($resultTechMa['score'] ?? 0) * 100) / max(1, (float) $resultTechMa['total']) : 0;
 
     $scoreTransmission = 0;
     if (isset($transmissionDecla)) {
@@ -7341,7 +7343,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($kingLongScoreFac * 100) / $kingLongFac + ($kingLongScore * 100) / $kingLongDecla) / 2)
+                                            ceil((($kingLongScoreFac * 100) / max(1, (float) $kingLongFac) + ($kingLongScore * 100) / max(1, (float) $kingLongDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7358,7 +7360,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($fusoScoreFac * 100) / $fusoFac + ($fusoScore * 100) / $fusoDecla) / 2)
+                                            ceil((($fusoScoreFac * 100) / max(1, (float) $fusoFac) + ($fusoScore * 100) / max(1, (float) $fusoDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7375,7 +7377,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($hinoScoreFac * 100) / $hinoFac + ($hinoScore * 100) / $hinoDecla) / 2)
+                                            ceil((($hinoScoreFac * 100) / max(1, (float) $hinoFac) + ($hinoScore * 100) / max(1, (float) $hinoDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7392,7 +7394,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($mercedesTruckScoreFac * 100) / $mercedesTruckFac + ($mercedesTruckScore * 100) / $mercedesTruckDecla) / 2)
+                                            ceil((($mercedesTruckScoreFac * 100) / max(1, (float) $mercedesTruckFac) + ($mercedesTruckScore * 100) / max(1, (float) $mercedesTruckDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7409,7 +7411,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($renaultTruckScoreFac * 100) / $renaultTruckFac + ($renaultTruckScore * 100) / $renaultTruckDecla) / 2)
+                                            ceil((($renaultTruckScoreFac * 100) / max(1, (float) $renaultTruckFac) + ($renaultTruckScore * 100) / max(1, (float) $renaultTruckDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7426,7 +7428,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($sinotrukFac * 100) / $sinotrukFac + ($sinotrukScore * 100) / $sinotrukDecla) / 2)
+                                            ceil((($sinotrukFac * 100) / max(1, (float) $sinotrukFac) + ($sinotrukScore * 100) / max(1, (float) $sinotrukDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7443,7 +7445,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($toyotaBtScoreFac * 100) / $toyotaBtFac + ($toyotaBtScore * 100) / $toyotaBtDecla) / 2)
+                                            ceil((($toyotaBtScoreFac * 100) / max(1, (float) $toyotaBtFac) + ($toyotaBtScore * 100) / max(1, (float) $toyotaBtDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7460,7 +7462,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($toyotaForfliftScoreFac * 100) / $toyotaForfliftFac + ($toyotaForfliftScore * 100) / $toyotaForfliftDecla) / 2)
+                                            ceil((($toyotaForfliftScoreFac * 100) / max(1, (float) $toyotaForfliftFac) + ($toyotaForfliftScore * 100) / max(1, (float) $toyotaForfliftDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7477,7 +7479,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($jcbScoreFac * 100) / $jcbFac + ($jcbScore * 100) / $jcbDecla) / 2)
+                                            ceil((($jcbScoreFac * 100) / max(1, (float) $jcbFac) + ($jcbScore * 100) / max(1, (float) $jcbDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7494,7 +7496,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($lovolScoreFac * 100) / $lovolFac + ($lovolScore * 100) / $lovolDecla) / 2)
+                                            ceil((($lovolScoreFac * 100) / max(1, (float) $lovolFac) + ($lovolScore * 100) / max(1, (float) $lovolDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7511,7 +7513,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($citroenScoreFac * 100) / $citroenFac + ($citroenScore * 100) / $citroenDecla) / 2)
+                                            ceil((($citroenScoreFac * 100) / max(1, (float) $citroenFac) + ($citroenScore * 100) / max(1, (float) $citroenDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7528,7 +7530,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($mercedesScoreFac * 100) / $mercedesFac + ($mercedesScore * 100) / $mercedesDecla) / 2)
+                                            ceil((($mercedesScoreFac * 100) / max(1, (float) $mercedesFac) + ($mercedesScore * 100) / max(1, (float) $mercedesDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7545,7 +7547,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($peugeotScoreFac * 100) / $peugeotFac + ($peugeotScore * 100) / $peugeotDecla) / 2)
+                                            ceil((($peugeotScoreFac * 100) / max(1, (float) $peugeotFac) + ($peugeotScore * 100) / max(1, (float) $peugeotDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7562,7 +7564,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($suzukiScoreFac * 100) / $suzukiFac + ($suzukiScore * 100) / $suzukiDecla) / 2)
+                                            ceil((($suzukiScoreFac * 100) / max(1, (float) $suzukiFac) + ($suzukiScore * 100) / max(1, (float) $suzukiDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>
@@ -7579,7 +7581,7 @@ if (!isset($_SESSION["id"])) {
                                             tabindex="0" colspan="1" aria-controls="kt_customers_table"
                                             aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                             <?php echo
-                                            ceil((($toyotaScoreFac * 100) / $toyotaFac + ($toyotaScore * 100) / $toyotaDecla) / 2)
+                                            ceil((($toyotaScoreFac * 100) / max(1, (float) $toyotaFac) + ($toyotaScore * 100) / max(1, (float) $toyotaDecla)) / 2)
                                             ?>%
                                         </th>
                                     <?php } else { ?>

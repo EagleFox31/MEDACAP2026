@@ -40,6 +40,11 @@ if (!isset($_SESSION["profile"])) {
     $academy = $conn->academy;
     $questionsCol = $academy->questions;
 
+    require_once __DIR__ . '/../../core/user_access.php';
+    if ($selectedUser !== null) {
+        medacapRequireUserAccess($academy->users, $selectedUser);
+    }
+
     // =========================
     // Pays / agences disponibles selon profil
     // =========================
@@ -1181,7 +1186,7 @@ if ($countryContext) {
     </div>
 
     <!-- Scripts (une seule fois) -->
-    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
     <script src="../public/js/main.js"></script>

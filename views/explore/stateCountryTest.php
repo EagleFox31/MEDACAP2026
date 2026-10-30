@@ -1697,7 +1697,7 @@ if (!isset($_SESSION["id"])) {
                                     <?php
 // Function to calculate percentage
 function calculatePercentage($numerator, $denominator) {
-    return ($denominator > 0) ? ceil(($numerator * 100) / $denominator) . '%' : '0%';
+    return ($denominator > 0) ? ceil(($numerator * 100) / max(1, (float) $denominator)) . '%' : '0%';
 }
 
 // Function to generate a table row
@@ -1918,8 +1918,7 @@ echo generateGrandTotalRow($grandTotals);
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../public/js/main.js"></script>

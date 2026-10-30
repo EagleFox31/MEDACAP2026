@@ -23,6 +23,8 @@ if (!isset($_SESSION["id"])) {
     $validations = $academy->validations;
 
     $id = $_GET["id"];
+    require_once __DIR__ . '/../../core/user_access.php';
+    medacapRequireUserAccess($users, $id);
     $level = $_GET["level"];
     $numberTest = $_GET["numberTest"];
 
@@ -61,13 +63,12 @@ if (!isset($_SESSION["id"])) {
 <!--begin::Vendor Stylesheets(used for this page only)-->
 <link href="../../public/assets/plugins/custom/leaflet/leaflet.bundle.css" rel="stylesheet" type="text/css" />
 <link href="../../public/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <!--end::Vendor Stylesheets-->
 <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
 <link href="../../public/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 <link href="../../public/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/css/multi-select-tag.css">
 <!--end::Global Stylesheets Bundle-->
 
 <!--begin::Body-->
@@ -894,7 +895,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($groupeFac->score * 100) /
-                                                $groupeFac->total); ?>%
+                                                max(1, (float) $groupeFac->total)); ?>%
                                     </th>
                                     <th id=""
                                         class="min-w-125px sorting bg-primary text-white text-center table-light fw-bold text-uppercase gs-0"
@@ -907,7 +908,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($groupeDecla->score * 100) /
-                                                $groupeDecla->total); ?>%
+                                                max(1, (float) $groupeDecla->total)); ?>%
                                     </th>
                                     <th id="result-n1"
                                         class="min-w-120px sorting bg-primary text-white text-center table-light fw-bold text-uppercase gs-0"
@@ -915,7 +916,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($groupeMa->score * 100) /
-                                                $groupeMa->total); ?>%
+                                                max(1, (float) $groupeMa->total)); ?>%
                                     </th>
                                     <th id="result-savoir-faire"
                                         class="min-w-125px sorting bg-primary text-white text-center table-light fw-bold text-uppercase gs-0"
@@ -923,7 +924,7 @@ if (!isset($_SESSION["id"])) {
                                         aria-label="Email: activate to sort column ascending" style="width: 155.266px;">
                                         <?php echo ceil(
                                             ($groupeTechMa->score * 100) /
-                                                $groupeTechMa->total); ?>%
+                                                max(1, (float) $groupeTechMa->total)); ?>%
                                     </th>
                                     <th id="result-synt"
                                         class="min-w-125px sorting bg-primary text-white text-center table-light fw-bold text-uppercase gs-0"
@@ -945,8 +946,7 @@ if (!isset($_SESSION["id"])) {
     <!--end::Post-->
 </div>
 <!--end::Body-->
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
-    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js">
 </script>
 <script src="../../public/js/main.js"></script>
