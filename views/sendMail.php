@@ -1273,3 +1273,30 @@ function sendLoginSupportAlert($academy, string $email, string $motif, string $c
         return false;
     }
 }
+
+/**
+ * Code de vérification de l'adresse ajoutée à la connexion (views/addEmail.php). Aucune copie.
+ */
+function sendEmailVerifyCodeEmail(string $to, string $greetingName, string $code, string $lang = 'fr', int $codeMinutes = 10): bool
+{
+    $isEn = $lang === 'en';
+    $title = $isEn ? 'Confirm your email address' : 'Confirmez votre adresse mail';
+    $message = ($isEn
+            ? '<p>To link this address to your MEDACAP account, type this code on the page that asked for it:</p>'
+            : '<p>Pour associer cette adresse à votre compte MEDACAP, tapez ce code sur la page qui vous l\'a demandé :</p>')
+        . medacapLoginCodeBlockHtml($code, $codeMinutes, $lang)
+        . ($isEn
+            ? '<p>You can then sign in with this address, without a password. Didn\'t ask? Ignore this email: nothing will change.</p>'
+            : '<p>Vous pourrez ensuite vous connecter avec cette adresse, sans mot de passe. Vous n\'avez rien demandé ? Ignorez ce mail : rien ne sera modifié.</p>');
+    $emailData = array(
+        'lang' => $isEn ? 'en' : 'fr',
+        'userName' => $greetingName,
+        'title' => $title,
+        'message' => $message,
+    );
+    $html = quoted_printable_encode(generateEmailTemplate($emailData));
+    $headers = buildHeaders(array(), null, false);
+    $headers .= "\r\nContent-Transfer-Encoding: quoted-printable";
+    $subject = '=?UTF-8?B?' . base64_encode('MEDACAP - ' . $title) . '?=';
+    return mail($to, $subject, $html, $headers);
+}
