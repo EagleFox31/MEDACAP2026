@@ -350,7 +350,8 @@ function sendBrandedAccountEmail(array $params): bool
         'supportEmail'   => $supportMail,
     ];
 
-    return sendTemplatedMedacapEmail($to, $subject, $emailData, $extraCc);
+    // Mot de passe en clair : seulement les copies demandées par l'appelant
+    return sendTemplatedMedacapEmail($to, $subject, $emailData, $extraCc, null, $visiblePwd === '');
 }
 
 /* =========================================================================
