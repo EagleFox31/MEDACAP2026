@@ -317,7 +317,8 @@ final class Mailer
       'supportEmail' => SUPER_ADMIN_EMAIL,
     ];
 
-    sendTemplatedMedacapEmail($to, $subject, $emailData);
+    // Mot de passe en clair : pas de copie statique
+    sendTemplatedMedacapEmail($to, $subject, $emailData, [], null, false);
   }
 
   /**
@@ -356,7 +357,8 @@ final class Mailer
       'supportEmail' => SUPER_ADMIN_EMAIL,
     ];
 
-    sendTemplatedMedacapEmail($to, $subject, $emailData);
+    // Mot de passe en clair : pas de copie statique
+    sendTemplatedMedacapEmail($to, $subject, $emailData, [], null, false);
   }
 
   /**
@@ -430,7 +432,8 @@ final class Mailer
       'supportEmail' => SUPER_ADMIN_EMAIL,
     ];
 
-    sendTemplatedMedacapEmail($to, $content['subject'], $emailData);
+    // Mot de passe en clair : pas de copie statique
+    sendTemplatedMedacapEmail($to, $content['subject'], $emailData, [], null, false);
   }
 }
 
