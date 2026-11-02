@@ -45,6 +45,8 @@ PowerShell, avec le compte qui déploiera :
    $env:GIT_SSH_COMMAND = "ssh -i ~/.ssh/medacap_deploy -o StrictHostKeyChecking=accept-new"
    git clone -c core.autocrlf=false ssh://git@ssh.github.com:443/EagleFox31/MEDACAP2026.git E:\medacap84
    cd E:\medacap84
+   # Docker Desktop écrit avec les droits non élevés du compte : droits explicites, sinon « Permission denied »
+   icacls E:\medacap84 /grant "${env:USERNAME}:(OI)(CI)F" /T /Q
    Copy-Item .env.server.example .env.server; notepad .env.server
    New-Item -ItemType Directory seed; Copy-Item C:\chemin\academy.archive.gz seed\
    .\deploy-server.ps1
