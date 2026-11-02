@@ -118,24 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
                 $_SESSION['login_code_email'] = $email;
             } else {
                 $issued = medacapIssueLoginLink($links, $account['_id'], 30 * 60, 10 * 60);
-                $token = $issued['token'];
-                $country = isset($account['country']) ? (string) $account['country'] : '';
-                $subsidiary = isset($account['subsidiary']) ? (string) $account['subsidiary'] : '';
-                if ($country === '' && stripos($subsidiary, 'CAMEROON') !== false) {
-                    $country = 'Cameroun';
-                }
-                // MEDACAP_PUBLIC_URL si elle est posée. Sinon, même hôte que la demande
-                // quand il est dans la liste fermée, pour ne pas suivre un Host forgé.
-                $configured = medacapPublicUrl();
-                if ($configured !== '') {
-                    $base = $configured;
-                } else {
-                    $host = isset($_SERVER['HTTP_HOST']) ? strtolower((string) $_SERVER['HTTP_HOST']) : '';
-                    $base = in_array($host, array('10.68.0.7', '129.0.64.34'), true)
-                        ? 'http://' . $host . '/medacap'
-                        : medacapLinkForCountry($country);
-                }
-                $link = rtrim($base, '/') . '/views/loginLink.php?t=' . $token;
+                $link = medacapLoginLinkBase($account) . '/views/loginLink.php?t=' . $issued['token'];
                 $gender = strtolower(trim((string) (isset($account['gender']) ? $account['gender'] : '')));
                 $isFemale = ($gender === 'feminin' || $gender === 'féminin');
                 $prefix = $lang === 'en' ? ($isFemale ? 'Ms' : 'Mr') : ($isFemale ? 'Mme' : 'M.');
