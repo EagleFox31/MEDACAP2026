@@ -1145,9 +1145,11 @@ function medacapLoginCodeBlockHtml(string $code, int $minutes, string $lang = 'f
 {
     $isEn = $lang === 'en';
     $display = htmlspecialchars(substr($code, 0, 3) . ' ' . substr($code, 3), ENT_QUOTES, 'UTF-8');
+    // Au-delà de 2 h, en heures : "72 heures" plutôt que "4320 minutes"
+    $hours = ($minutes >= 120 && $minutes % 60 === 0) ? intdiv($minutes, 60) : 0;
     $validity = $isEn
-        ? 'Valid for ' . $minutes . ' minutes, single use.'
-        : 'Valable ' . $minutes . ' minutes, une seule fois.';
+        ? 'Valid for ' . ($hours ? $hours . ' hours' : $minutes . ' minutes') . ', single use.'
+        : 'Valable ' . ($hours ? $hours . ' heures' : $minutes . ' minutes') . ', une seule fois.';
     return '<div style="margin:16px 0;padding:16px;background:#F4F6F8;border-radius:8px;text-align:center;">'
         . '<div style="font-family:\'Courier New\',monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#1F2937;">' . $display . '</div>'
         . '<div style="margin-top:6px;font-size:13px;color:#6B7280;">' . $validity . '</div>'
@@ -1219,6 +1221,7 @@ function sendLoginSupportAlert($academy, string $email, string $motif, string $c
             'created' => new MongoDB\BSON\UTCDateTime(),
         ));
 
+        $createLink = '';
         $names = array();
         foreach ($accounts as $acc) {
             $names[] = (string) $acc['username'] . ' (' . (isset($acc['profile']) ? (string) $acc['profile'] : '?') . ')';
@@ -1234,6 +1237,11 @@ function sendLoginSupportAlert($academy, string $email, string $motif, string $c
             $problem = $inactive > 0
                 ? 'Aucun compte actif ; ' . $inactive . ' compte(s) inactif(s) avec cette adresse'
                 : 'Aucun compte avec cette adresse';
+            // Compte inactif : le réactiver plutôt qu'en créer un second
+            if ($inactive === 0) {
+                require_once __DIR__ . '/../core/login_links.php';
+                $createLink = medacapLoginLinkBase(array()) . '/views/explore/createUser.php?email=' . rawurlencode($email);
+            }
         }
 
         $emailData = array(
@@ -1250,6 +1258,11 @@ function sendLoginSupportAlert($academy, string $email, string $motif, string $c
                 array('label' => 'Navigateur', 'value' => isset($_SERVER['HTTP_USER_AGENT']) ? substr((string) $_SERVER['HTTP_USER_AGENT'], 0, 200) : ''),
             ),
         );
+        if ($createLink !== '') {
+            $emailData['ctaText'] = 'Créer le compte';
+            $emailData['ctaLink'] = $createLink;
+            $emailData['additionalInfo'] = 'Le formulaire s\'ouvre avec l\'adresse déjà saisie. Laissez cochée la case « code et lien de connexion directe » : la personne pourra se connecter dès réception du mail.';
+        }
         $html = quoted_printable_encode(generateEmailTemplate($emailData));
         $headers = buildHeaders(array(), $email, false);
         $headers .= "\r\nContent-Transfer-Encoding: quoted-printable";

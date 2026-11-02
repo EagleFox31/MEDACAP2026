@@ -76,7 +76,16 @@ Le mail est souvent lu sur un téléphone hors réseau CFAO, où le lien ne s'ou
 - Même message d'erreur dans tous les cas (code faux, expiré, compte inconnu). Même suite de requêtes que le compte existe ou non ; comparaison par `hash_equals`.
 - Le code n'est jamais dans l'objet du mail (écran verrouillé du téléphone) ni dans les logs.
 
-Fonctions partagées : `core/login_links.php` (`medacapIssueLoginLink()`, `medacapConsumeLoginCode()`, `medacapRevokeOtherLoginLinks()`), `medacapLoginCodeBlockHtml()` dans `views/sendMail.php`.
+Fonctions partagées : `core/login_links.php` (`medacapIssueLoginLink()`, `medacapConsumeLoginCode()`, `medacapRevokeOtherLoginLinks()`, `medacapLoginLinkBase()`), `medacapLoginCodeBlockHtml()` dans `views/sendMail.php`.
+
+## Compte à la demande
+
+Quand quelqu'un demande un lien sans avoir de compte :
+
+- L'alerte support (cause « aucun compte », sans compte inactif sur l'adresse) porte un bouton « Créer le compte » vers `views/explore/createUser.php?email=<adresse>`. Le formulaire s'ouvre avec l'adresse remplie. S'il existe un compte inactif, pas de bouton : le réactiver plutôt qu'en créer un second.
+- Case « code et lien de connexion directe (72 h) », cochée par défaut, dans `createUser.php`. Elle s'applique aux mails envoyés au titulaire (Manager sans manager rattaché, Admin, RH, Direction). Le mail garde l'identifiant et le mot de passe, et ajoute un code et un lien valables 72 heures (`login_links`, `purpose: account_created`). Le code se saisit via « J'ai déjà un code » sur la page de connexion.
+- Si l'envoi échoue, le document `login_links` est supprimé.
+- Le créateur du compte reçoit une trace, avec le support en copie : titulaire, profil, identifiant, adresse, date. Elle ne contient ni mot de passe, ni code, ni lien.
 
 ## Fichiers
 

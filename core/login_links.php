@@ -30,6 +30,30 @@ function medacapFindActiveUsersByEmail($users, $email)
 }
 
 /**
+ * Base des liens envoyés par mail : MEDACAP_PUBLIC_URL si elle est posée. Sinon,
+ * même hôte que la demande quand il est dans la liste fermée, pour ne pas suivre un Host forgé.
+ *
+ * @param mixed $account compte destinataire (pays / filiale), ou array() s'il n'y en a pas
+ */
+function medacapLoginLinkBase($account)
+{
+    $configured = medacapPublicUrl();
+    if ($configured !== '') {
+        return rtrim($configured, '/');
+    }
+    $host = isset($_SERVER['HTTP_HOST']) ? strtolower((string) $_SERVER['HTTP_HOST']) : '';
+    if (in_array($host, array('10.68.0.7', '129.0.64.34'), true)) {
+        return 'http://' . $host . '/medacap';
+    }
+    $country = isset($account['country']) ? (string) $account['country'] : '';
+    $subsidiary = isset($account['subsidiary']) ? (string) $account['subsidiary'] : '';
+    if ($country === '' && stripos($subsidiary, 'CAMEROON') !== false) {
+        $country = 'Cameroun';
+    }
+    return rtrim(medacapAppBaseUrl($country), '/');
+}
+
+/**
  * Lié au compte et au document : un hash ne sert pas d'un document à l'autre.
  */
 function medacapLoginCodeHash($userId, $linkId, $code)

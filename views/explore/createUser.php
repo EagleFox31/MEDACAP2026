@@ -126,6 +126,7 @@ final class Db
   public static $allocations;
   public static $profiles;
   public static $specialities;
+  public static $links;
 
   public static function init(): void
   {
@@ -139,6 +140,7 @@ final class Db
     self::$allocations = $db->allocations;
     self::$profiles = $db->profiles;
     self::$specialities = $db->specialities;
+    self::$links = $db->login_links;
   }
 }
 Db::init();
@@ -361,11 +363,17 @@ final class Mailer
     sendTemplatedMedacapEmail($to, $subject, $emailData, [], null, false);
   }
 
+  /** Vrai si le dernier notifySelfAccess a envoyé un lien et un code de connexion directe. */
+  public static $directLoginSent = false;
+
   /**
    * Notification à un utilisateur (Manager, Admin, RH, Directeur) avec ses propres identifiants.
+   * $directLogin : ajoute un code et un lien de connexion (72 h, usage unique), puis prévient
+   * le créateur et le support sans aucun secret.
    */
-  public static function notifySelfAccess(string $email, string $lastName, string $firstName, string $username, string $visiblePwd, ?string $country, string $profileFlavor): void
+  public static function notifySelfAccess(string $email, string $lastName, string $firstName, string $username, string $visiblePwd, ?string $country, string $profileFlavor, ?ObjectId $userId = null, bool $directLogin = false): void
   {
+    self::$directLoginSent = false;
     if (!$email)
       return;
 
@@ -432,8 +440,57 @@ final class Mailer
       'supportEmail' => SUPER_ADMIN_EMAIL,
     ];
 
+    $issued = null;
+    if ($directLogin && $userId) {
+      require_once __DIR__ . '/../../core/login_links.php';
+      $hours = 72;
+      $issued = medacapIssueLoginLink(Db::$links, $userId, $hours * 3600, $hours * 3600, 'account_created');
+      $emailData['message'] .= "<br><br>Pour ouvrir votre session sans mot de passe : sur la page de connexion, cliquez « Connectez-vous avec votre mail », puis « J'ai déjà un code », et saisissez votre adresse avec ce code :"
+        . medacapLoginCodeBlockHtml($issued['code'], $hours * 60);
+      $emailData['ctaText'] = 'Ouvrir ma session';
+      $emailData['ctaLink'] = medacapLoginLinkBase(['country' => (string) $country]) . '/views/loginLink.php?t=' . $issued['token'];
+      $emailData['additionalInfo'] = "Sur un poste du réseau CFAO, le bouton ouvre directement votre session (valable {$hours} heures). Une fois le code ou le lien utilisé, l'autre ne fonctionne plus : connectez-vous ensuite avec l'identifiant et le mot de passe ci-dessus.";
+    }
+
     // Mot de passe en clair : pas de copie statique
-    sendTemplatedMedacapEmail($to, $content['subject'], $emailData, [], null, false);
+    $sent = sendTemplatedMedacapEmail($to, $content['subject'], $emailData, [], null, false);
+    if ($issued) {
+      if (!$sent) {
+        Db::$links->deleteOne(['_id' => $issued['id']]);
+        return;
+      }
+      self::$directLoginSent = true;
+      self::notifyCreatorOfDirectLogin($to, $firstName . ' ' . $lastName, $username, $profileFlavor);
+    }
+  }
+
+  /**
+   * Trace pour le créateur du compte, support en copie : ni mot de passe, ni code, ni lien.
+   */
+  private static function notifyCreatorOfDirectLogin(string $recipient, string $fullName, string $username, string $profileFlavor): void
+  {
+    $creator = isset($_SESSION['email']) ? trim((string) $_SESSION['email']) : '';
+    $to = $creator !== '' ? $creator : SUPER_ADMIN_EMAIL;
+    $cc = strcasecmp($to, SUPER_ADMIN_EMAIL) === 0 ? [] : [SUPER_ADMIN_EMAIL];
+    $creatorName = trim((isset($_SESSION['firstName']) ? (string) $_SESSION['firstName'] : '') . ' ' . (isset($_SESSION['lastName']) ? (string) $_SESSION['lastName'] : ''));
+    $h = function ($s) {
+      return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
+    };
+    $emailData = [
+      'userName' => $h($creatorName !== '' ? $creatorName : 'Support MEDACAP'),
+      'title' => 'Compte créé avec connexion directe',
+      'message' => "Le compte ci-dessous a été créé. Son titulaire a reçu ses identifiants, un code et un lien de connexion directe valables 72 heures.",
+      'details' => [
+        ['label' => 'Titulaire', 'value' => $h($fullName), 'highlight' => true],
+        ['label' => 'Profil', 'value' => $h($profileFlavor)],
+        ['label' => 'Identifiant', 'value' => $h($username)],
+        ['label' => 'Envoyé à', 'value' => $h($recipient)],
+        ['label' => 'Créé par', 'value' => $h($creatorName !== '' ? $creatorName : '-')],
+        ['label' => 'Date', 'value' => date('d/m/Y H:i')],
+      ],
+      'supportEmail' => SUPER_ADMIN_EMAIL,
+    ];
+    sendTemplatedMedacapEmail($to, 'MEDACAP — Compte créé : ' . $fullName, $emailData, $cc, null, false);
   }
 }
 
@@ -871,7 +928,9 @@ class ManagerStrategy implements UserCreationStrategy
         $payload['username'],
         $payload['visiblePassword'],
         $payload['country'],
-        'Manager'
+        'Manager',
+        $userId,
+        $payload['directLogin']
       );
     }
     return ['success' => true, 'message' => $this->isTestable ? "Manager testable créé." : "Manager créé."];
@@ -893,8 +952,8 @@ class AdminStrategy implements UserCreationStrategy
   }
   public function create(array $payload, ?string $managerId): array
   {
-    UserService::createUser($payload, null, "Admin", false, false);
-    Mailer::notifySelfAccess($payload['email'], $payload['lastName'], $payload['firstName'], $payload['username'], $payload['visiblePassword'], $payload['country'], 'Admin');
+    $userId = UserService::createUser($payload, null, "Admin", false, false);
+    Mailer::notifySelfAccess($payload['email'], $payload['lastName'], $payload['firstName'], $payload['username'], $payload['visiblePassword'], $payload['country'], 'Admin', $userId, $payload['directLogin']);
     return ['success' => true, 'message' => "Admin créé."];
   }
 }
@@ -914,8 +973,8 @@ class HRStrategy implements UserCreationStrategy
   }
   public function create(array $payload, ?string $managerId): array
   {
-    UserService::createUser($payload, null, "Ressource Humaine", false, false);
-    Mailer::notifySelfAccess($payload['email'], $payload['lastName'], $payload['firstName'], $payload['username'], $payload['visiblePassword'], $payload['country'], 'RH');
+    $userId = UserService::createUser($payload, null, "Ressource Humaine", false, false);
+    Mailer::notifySelfAccess($payload['email'], $payload['lastName'], $payload['firstName'], $payload['username'], $payload['visiblePassword'], $payload['country'], 'RH', $userId, $payload['directLogin']);
     return ['success' => true, 'message' => "RH créé."];
   }
 }
@@ -940,8 +999,8 @@ class DirectorStrategy implements UserCreationStrategy
   }
   public function create(array $payload, ?string $managerId): array
   {
-    UserService::createUser($payload, null, $this->profileName, false, false);
-    Mailer::notifySelfAccess($payload['email'], $payload['lastName'], $payload['firstName'], $payload['username'], $payload['visiblePassword'], $payload['country'], 'Direction');
+    $userId = UserService::createUser($payload, null, $this->profileName, false, false);
+    Mailer::notifySelfAccess($payload['email'], $payload['lastName'], $payload['firstName'], $payload['username'], $payload['visiblePassword'], $payload['country'], 'Direction', $userId, $payload['directLogin']);
     return ['success' => true, 'message' => "Compte direction créé."];
   }
 }
@@ -1030,6 +1089,7 @@ final class UserController
       'brandExpert' => isset($input['brandEx']) ? $input['brandEx'] : [],
       'specialitySenior' => isset($input['specialitySenior']) ? $input['specialitySenior'] : [],
       'specialityExpert' => isset($input['specialityExpert']) ? $input['specialityExpert'] : [],
+      'directLogin' => !empty($input['directLogin']),
     ];
   }
   public static function handleRequest(): array
@@ -1060,7 +1120,8 @@ final class UserController
       'specialitySenior' => Input::post("specialitySenior", []),
       'specialityExpert' => Input::post("specialityExpert", []),
       'manager' => Input::post("manager"),
-      'isManagerTestable' => Input::post("isManagerTestable") === '1'
+      'isManagerTestable' => Input::post("isManagerTestable") === '1',
+      'directLogin' => Input::post("directLogin") === '1'
     ];
 
     $errors = self::validateInput($input);
@@ -1073,6 +1134,7 @@ final class UserController
       $result = $strategy->create($payload, $input['manager'] ? $input['manager'] : null);
       if ($result['success']) {
         $result['data'] = $payload; // Pour le récap
+        $result['data']['directLoginSent'] = Mailer::$directLoginSent;
       }
       return $result;
     } catch (Throwable $e) {
@@ -1184,6 +1246,9 @@ if (Input::isPost() && !isset($_POST['reset_form'])) {
 
 // Conserver les valeurs saisies en cas d'erreur de validation
 $old = ($error_msg || $email_error) ? $_POST : [];
+// ?email= : lien « Créer le compte » de l'alerte support (connexion sans suite)
+$prefillEmail = (isset($_GET['email']) && filter_var((string) $_GET['email'], FILTER_VALIDATE_EMAIL)) ? (string) $_GET['email'] : '';
+$directLoginChecked = empty($old) || !empty($old['directLogin']);
 function old(string $key, string $default = ''): string {
   global $old;
   return htmlspecialchars(isset($old[$key]) ? (string)$old[$key] : $default, ENT_QUOTES, 'UTF-8');
@@ -1336,7 +1401,7 @@ openBackgroundContainer();
                       class="path4"></span><span class="path5"></span></i>
                   <div class="d-flex flex-column pe-0 pe-sm-10">
                     <h4 class="fw-bold">Email envoyé</h4>
-                    <span>Un email de bienvenue contenant ces identifiants a été envoyé à
+                    <span>Un email de bienvenue contenant ces identifiants<?php echo !empty($recapData['directLoginSent']) ? ', un code et un lien de connexion directe (72 h)' : ''; ?> a été envoyé à
                       <strong><?php echo htmlspecialchars($recapData['email']); ?></strong>.</span>
                   </div>
                 </div>
@@ -1464,9 +1529,13 @@ openBackgroundContainer();
                     <!-- Email -->
                     <div class='fv-row mb-7'>
                       <label class='form-label fw-bolder text-dark fs-6'><?php echo $email ?></label>
-                      <input type='email' class='form-control form-control-solid' name='email' value="<?php echo old('email'); ?>" />
+                      <input type='email' class='form-control form-control-solid' name='email' value="<?php echo old('email', $prefillEmail); ?>" />
                       <?php if ($email_error): ?><span
                             class='text-danger'><?php echo htmlspecialchars($email_error); ?></span><?php endif; ?>
+                      <div class='form-check form-check-custom form-check-solid mt-3'>
+                        <input class='form-check-input' type='checkbox' name='directLogin' value='1' id='directLogin' <?php echo $directLoginChecked ? 'checked' : ''; ?> />
+                        <label class='form-check-label text-gray-700' for='directLogin'>Joindre un code et un lien de connexion directe (72 h) au mail du titulaire — Manager, Admin, RH, Direction</label>
+                      </div>
                     </div>
                     <!-- Téléphone -->
                     <div class='fv-row mb-7'>
