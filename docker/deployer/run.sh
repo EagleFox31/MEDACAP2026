@@ -8,6 +8,9 @@ mkdir -p .deploy
 export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$PWD/.deploy/known_hosts"
 
 # .env.server édité sous Windows : sans ça, bash garde un \r à la fin de chaque valeur.
-[ -f .env.server ] && sed -i 's/\r$//' .env.server
+# Réécrit sur place (pas sed -i) : le renommage par-dessus ce fichier est refusé sur le disque E: de la .15.
+if [ -f .env.server ] && grep -q $'\r' .env.server; then
+  tr -d '\r' < .env.server > /tmp/env.server && cat /tmp/env.server > .env.server
+fi
 
 exec bash ./deploy.sh "$@"
