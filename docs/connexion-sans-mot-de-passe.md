@@ -29,14 +29,21 @@ Collection `login_links` :
 | Champ | Rôle |
 |---|---|
 | `user` | ObjectId du compte |
+| `purpose` | `login` (demande depuis la page de connexion) |
 | `tokenHash` | SHA-256 du jeton. Le jeton en clair n'est pas stocké. |
-| `expiresAt` | Date UTC, création + 30 minutes |
-| `usedAt` | Vide tant que le lien n'a pas été ouvert |
+| `expiresAt` | Date UTC, création + la plus longue des deux durées (lien 30 min, code 10 min) ; porte le TTL |
+| `usedAt` | Vide tant que ni le lien ni le code n'a servi |
+| `usedVia` | `link`, `code`, ou `revoked` (fermé par une autre connexion réussie du compte) |
 | `created` | Date de la demande |
+| `codeHash` | HMAC-SHA256 du code, clé liée au compte et au document (+ `MEDACAP_LOGIN_CODE_PEPPER` si posée) |
+| `codeExpiresAt` | Date UTC, création + 10 minutes. Un nouvel envoi la ramène à maintenant sur les codes précédents. |
+| `codeAttempts` | Essais de code sur ce document (5 maximum) |
 
-Le jeton fait 32 octets aléatoires (`random_bytes`), encodé en hexadécimal dans l'URL.
+Le jeton fait 32 octets aléatoires (`random_bytes`), encodé en hexadécimal dans l'URL. Le code fait 6 chiffres (`random_int`).
 
-Index créés en prod le 21/10/2026 (le TTL supprime les liens expirés) :
+Collection `login_code_failures` : `{ user, created }`, un document par code faux, purgé après 24 h.
+
+Index : `docker/migrations/002-login-links-indexes.js` (compare les clés, ne recrée pas un index déjà présent sous un autre nom). Index créés à la main en prod le 21/10/2026 :
 
 ```js
 db.login_links.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
@@ -58,6 +65,19 @@ db.login_support_alerts.createIndex({ created: 1 }, { expireAfterSeconds: 259200
 
 URL du lien : même hôte que la demande s'il fait partie de la liste fermée (`10.68.0.7` interne, `129.0.64.34` externe), par exemple `http://10.68.0.7/medacap/views/loginLink.php?t=<jeton>`. Sinon, `medacapLinkForCountry()` selon le pays du compte. La liste fermée empêche qu'un en-tête `Host` forgé envoie le jeton vers un autre site.
 
+## Code à 6 chiffres
+
+Le mail est souvent lu sur un téléphone hors réseau CFAO, où le lien ne s'ouvre pas. Le même mail porte donc un code à taper sur le PC.
+
+- Après l'envoi, l'écran « Vérifiez votre boîte mail » affiche le champ du code. L'adresse est gardée en session (`login_code_email`), posée sur toutes les réponses « envoyé » (y compris compte inconnu ou limite atteinte). Sans session (autre navigateur, lien « J'ai déjà un code » = `?code=1`), le formulaire demande aussi l'adresse.
+- Code valable 10 minutes, une seule fois. Seul le dernier code envoyé est valable. Utiliser le code ferme le lien du même mail, et inversement ; une connexion réussie ferme aussi les autres envois en cours du compte.
+- 5 essais par code (compteur incrémenté avant la comparaison), 15 échecs par compte sur 24 h. Au-delà, le code est refusé ; le lien reste utilisable.
+- Saisie acceptée : `123456`, `123 456`, `123-456`. Une saisie qui n'a pas 6 chiffres ne consomme pas d'essai.
+- Même message d'erreur dans tous les cas (code faux, expiré, compte inconnu). Même suite de requêtes que le compte existe ou non ; comparaison par `hash_equals`.
+- Le code n'est jamais dans l'objet du mail (écran verrouillé du téléphone) ni dans les logs.
+
+Fonctions partagées : `core/login_links.php` (`medacapIssueLoginLink()`, `medacapConsumeLoginCode()`, `medacapRevokeOtherLoginLinks()`), `medacapLoginCodeBlockHtml()` dans `views/sendMail.php`.
+
 ## Fichiers
 
 | Fichier | Rôle |
@@ -71,7 +91,6 @@ La pose de session est dans `core/login_session.php`. Le mot de passe et le lien
 
 ## Hors périmètre
 
-- Pas de code à 6 chiffres.
 - Pas d'écran « choisir un mot de passe ».
 - Pas de suppression des mots de passe existants.
 - Les comptes sans adresse passent par le helpdesk.

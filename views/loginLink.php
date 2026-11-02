@@ -75,7 +75,7 @@ try {
             'usedAt' => null,
             'expiresAt' => array('$gt' => $now),
         ),
-        array('$set' => array('usedAt' => $now))
+        array('$set' => array('usedAt' => $now, 'usedVia' => 'link'))
     );
     $modified = $result->getModifiedCount();
     $consumed = ($modified === 1 || ($modified === null && $result->getMatchedCount() === 1));
@@ -87,6 +87,8 @@ try {
 if (!$consumed) {
     loginLinkRefuse();
 }
+require_once __DIR__ . '/../core/login_links.php';
+medacapRevokeOtherLoginLinks($academy->login_links, $linkDoc['user'], $linkDoc['_id']);
 
 $user = $academy->users->findOne(array('_id' => $linkDoc['user'], 'active' => true));
 if (!$user) {

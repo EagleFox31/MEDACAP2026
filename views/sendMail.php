@@ -1138,19 +1138,48 @@ function sendPaperManualReportToRh(
 }
 
 /**
- * Lien de connexion sans mot de passe. Aucune copie.
+ * Code à 6 chiffres affiché "123 456", lisible sur téléphone.
  */
-function sendLoginLinkEmail(string $to, string $greetingName, string $link, string $lang = 'fr'): bool
+function medacapLoginCodeBlockHtml(string $code, int $minutes, string $lang = 'fr'): string
 {
     $isEn = $lang === 'en';
-    $title = $isEn ? 'Your sign-in link' : 'Votre lien de connexion';
+    $display = htmlspecialchars(substr($code, 0, 3) . ' ' . substr($code, 3), ENT_QUOTES, 'UTF-8');
+    $validity = $isEn
+        ? 'Valid for ' . $minutes . ' minutes, single use.'
+        : 'Valable ' . $minutes . ' minutes, une seule fois.';
+    return '<div style="margin:16px 0;padding:16px;background:#F4F6F8;border-radius:8px;text-align:center;">'
+        . '<div style="font-family:\'Courier New\',monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#1F2937;">' . $display . '</div>'
+        . '<div style="margin-top:6px;font-size:13px;color:#6B7280;">' . $validity . '</div>'
+        . '</div>';
+}
+
+/**
+ * Connexion sans mot de passe : code (à taper sur le PC) puis lien. Aucune copie.
+ * Le code n'est jamais dans l'objet (écran verrouillé du téléphone).
+ */
+function sendLoginLinkEmail(string $to, string $greetingName, string $link, string $lang = 'fr', string $code = '', int $linkMinutes = 30, int $codeMinutes = 10): bool
+{
+    $isEn = $lang === 'en';
+    if ($code === '') {
+        $title = $isEn ? 'Your sign-in link' : 'Votre lien de connexion';
+        $message = $isEn
+            ? '<p>Click the button to open your MEDACAP session. This link is valid for ' . $linkMinutes . ' minutes and can only be used once.</p>'
+            : '<p>Cliquez sur le bouton pour ouvrir votre session MEDACAP. Ce lien est valable ' . $linkMinutes . ' minutes et ne peut servir qu\'une fois.</p>';
+    } else {
+        $title = $isEn ? 'Your sign-in code' : 'Votre code de connexion';
+        $message = ($isEn
+                ? '<p>On the computer where you asked to sign in, type this code:</p>'
+                : '<p>Sur l\'ordinateur où vous avez demandé la connexion, tapez ce code :</p>')
+            . medacapLoginCodeBlockHtml($code, $codeMinutes, $lang)
+            . ($isEn
+                ? '<p>If you are reading this on a CFAO network computer, you can also click the button (valid for ' . $linkMinutes . ' minutes). Once one is used, the other stops working.</p><p>Didn\'t ask? Ignore this email.</p>'
+                : '<p>Si vous lisez ce mail sur un poste du réseau CFAO, vous pouvez aussi cliquer sur le bouton (valable ' . $linkMinutes . ' minutes). Une fois l\'un utilisé, l\'autre ne fonctionne plus.</p><p>Vous n\'avez rien demandé ? Ignorez ce mail.</p>');
+    }
     $emailData = array(
         'lang' => $isEn ? 'en' : 'fr',
         'userName' => $greetingName,
         'title' => $title,
-        'message' => $isEn
-            ? '<p>Click the button to open your MEDACAP session. This link is valid for 30 minutes and can only be used once.</p>'
-            : '<p>Cliquez sur le bouton pour ouvrir votre session MEDACAP. Ce lien est valable 30 minutes et ne peut servir qu\'une fois.</p>',
+        'message' => $message,
         'ctaText' => $isEn ? 'Open my session' : 'Ouvrir ma session',
         'ctaLink' => $link,
     );
