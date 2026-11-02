@@ -4,7 +4,7 @@
 #   .\deploy-server.ps1 <commit>   déploie un commit précis
 # Voir docs/deploiement-serveur.md.
 param([string]$Commit = "")
-$ErrorActionPreference = "Stop"
+# Pas de $ErrorActionPreference = "Stop" : PowerShell 5.1 prendrait la progression de docker (stderr) pour une erreur.
 
 $root = $PSScriptRoot
 # compose passe au démon les chemins de ses bind mounts : le dépôt est monté au chemin où la VM
