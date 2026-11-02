@@ -1,7 +1,7 @@
 <?php
 $title="ACADEMY";
 $greeting="Please enter your username and password to log in";
-$usernamePlaceholder = "Enter your username";
+$usernamePlaceholder = "Username or email address";
 $passwordPlaceholder = "Enter your password";
 $footer = "© " . date('Y') . " CFAO Academy. All rights reserved.";
 $title_activation = "Test Activation";

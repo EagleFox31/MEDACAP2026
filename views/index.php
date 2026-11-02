@@ -159,6 +159,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
 
     $login = $users->findOne($data);
 
+    // Identifiant introuvable : accepter l'adresse e-mail, si un seul compte la porte avec ce mot de passe
+    if (empty($login) && strpos($userName, '@') !== false) {
+        $byEmail = iterator_to_array($users->find(
+            array(
+                'email' => new MongoDB\BSON\Regex('^' . preg_quote($userName, '/') . '$', 'i'),
+                'password' => sha1($_POST["password"]),
+            ),
+            array('limit' => 2)
+        ));
+        if (count($byEmail) === 1) {
+            $login = reset($byEmail);
+        } elseif (count($byEmail) > 1) {
+            error_log('login: ' . count($byEmail) . ' accounts share email and password for ' . $userName);
+        }
+    }
+
     if (empty($login)) {
         $error_msg = $error_username_pass;
     } elseif ($login->active == false) {
