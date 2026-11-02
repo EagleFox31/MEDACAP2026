@@ -24,7 +24,7 @@ if (isset($_GET['lang']) && in_array($_GET['lang'], ['en','fr'])) {
 $lang = $_SESSION['lang'] ?? ($_COOKIE['lang'] ?? 'fr');
 
 if ($lang === 'en') {
-    include_once "language_en.php";
+    include_once "language_EN.php";
 } else {
     include_once "language.php";
 }
@@ -42,35 +42,51 @@ if ($lang === 'en') {
     $magic_forgot_label = 'Forgot your password?';
     $magic_or = 'or';
     $magic_title = 'Sign in with your email';
-    $magic_intro = 'Get a sign-in link valid for 30 minutes. No password needed.';
+    $magic_intro = 'Get a 6-digit code (10 min) and a sign-in link (30 min). No password needed.';
     $magic_email_placeholder = 'Your email address';
-    $magic_submit_label = 'Send me the link';
+    $magic_submit_label = 'Send me the code';
     $magic_back_label = 'Back to password sign-in';
     $magic_sent_title = 'Check your inbox';
     $magic_sent_to = 'Request received for';
     $magic_resend_label = 'Send again';
-    $magic_ok_text = 'If an active account matches this address, you will receive a link valid for 30 minutes (check your junk folder too). Nothing after 5 minutes? Write to jakaa-ext@cfao.com.';
+    $magic_ok_text = 'If an active account matches this address, you will receive an email with a 6-digit code and a link (check your junk folder too). Nothing after 5 minutes? Write to jakaa-ext@cfao.com.';
     $magic_invalid_text = 'Enter a valid email address.';
     $magic_fail_text = 'The message could not be sent. Try again or write to jakaa-ext@cfao.com.';
+    $code_label = 'Code from the email';
+    $code_hint = 'Reading the email on your phone? Type the code here. Only the latest code works, for 10 minutes.';
+    $code_submit_label = 'Verify code';
+    $code_error_text = 'Incorrect or expired code. Check the latest email, or request a new code.';
+    $code_have_label = 'I already have a code';
 } else {
     $magic_link_label = 'Connectez-vous avec votre mail';
     $magic_forgot_label = 'Mot de passe oublié ?';
     $magic_or = 'ou';
     $magic_title = 'Connectez-vous avec votre mail';
-    $magic_intro = 'Recevez un lien de connexion valable 30 minutes, sans mot de passe.';
+    $magic_intro = 'Recevez un code à 6 chiffres (10 min) et un lien (30 min), sans mot de passe.';
     $magic_email_placeholder = 'Votre adresse mail';
-    $magic_submit_label = 'Recevoir le lien';
+    $magic_submit_label = 'Recevoir le code';
     $magic_back_label = 'Retour à la connexion par mot de passe';
     $magic_sent_title = 'Vérifiez votre boîte mail';
     $magic_sent_to = 'Demande enregistrée pour';
     $magic_resend_label = 'Renvoyer';
-    $magic_ok_text = 'Si un compte actif correspond à cette adresse, vous recevrez un lien valable 30 minutes (pensez aux courriers indésirables). Rien reçu sous 5 minutes ? Écrivez à jakaa-ext@cfao.com.';
+    $magic_ok_text = 'Si un compte actif correspond à cette adresse, vous recevrez un mail avec un code à 6 chiffres et un lien (pensez aux courriers indésirables). Rien reçu sous 5 minutes ? Écrivez à jakaa-ext@cfao.com.';
     $magic_invalid_text = 'Indiquez une adresse mail valide.';
     $magic_fail_text = 'L\'envoi a échoué. Réessayez, ou écrivez à jakaa-ext@cfao.com.';
+    $code_label = 'Code reçu par mail';
+    $code_hint = 'Mail lu sur votre téléphone ? Tapez le code ici. Seul le dernier code reçu est valable, 10 minutes.';
+    $code_submit_label = 'Valider le code';
+    $code_error_text = 'Code incorrect ou expiré. Vérifiez le dernier mail reçu, ou demandez un nouveau code.';
+    $code_have_label = 'J\'ai déjà un code';
+}
+// ?code=1 : saisie d'un code reçu, depuis un navigateur qui n'a pas fait la demande
+if (isset($_GET['code'])) {
+    $magic_ok = true;
+    $show_magic = true;
 }
 if ($magic_ok) {
     $magic_msg = $magic_ok_text;
 }
+$code_error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
     $show_magic = true;
@@ -79,19 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
         $magic_msg = $magic_invalid_text;
     } else {
         require_once __DIR__ . '/sendMail.php';
-        $matches = iterator_to_array($users->find(
-            array(
-                'active' => true,
-                'email' => new MongoDB\BSON\Regex('^' . preg_quote($email, '/') . '$', 'i'),
-            ),
-            array('limit' => 2)
-        ));
+        require_once __DIR__ . '/../core/login_links.php';
+        $matches = medacapFindActiveUsersByEmail($users, $email);
         if (count($matches) !== 1) {
             // Même réponse qu'un envoi réussi : ne pas révéler l'existence du compte
             error_log('login link: ' . count($matches) . ' active account(s) for ' . $email);
             sendLoginSupportAlert($academy, $email, $magic_motif, count($matches) === 0 ? 'none' : 'shared', $matches, $lang === 'en' ? 'en' : 'fr');
             $magic_msg = $magic_ok_text;
             $magic_ok = true;
+            $_SESSION['login_code_email'] = $email;
         } else {
             $account = $matches[0];
             $links = $academy->login_links;
@@ -103,16 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
             if ($recent >= 3) {
                 $magic_msg = $magic_ok_text;
                 $magic_ok = true;
+                $_SESSION['login_code_email'] = $email;
             } else {
-                $token = bin2hex(random_bytes(32));
-                $now = new MongoDB\BSON\UTCDateTime();
-                $insert = $links->insertOne(array(
-                    'user' => $account['_id'],
-                    'tokenHash' => hash('sha256', $token),
-                    'expiresAt' => new MongoDB\BSON\UTCDateTime((time() + 30 * 60) * 1000),
-                    'usedAt' => null,
-                    'created' => $now,
-                ));
+                $issued = medacapIssueLoginLink($links, $account['_id'], 30 * 60, 10 * 60);
+                $token = $issued['token'];
                 $country = isset($account['country']) ? (string) $account['country'] : '';
                 $subsidiary = isset($account['subsidiary']) ? (string) $account['subsidiary'] : '';
                 if ($country === '' && stripos($subsidiary, 'CAMEROON') !== false) {
@@ -135,17 +141,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
                 $prefix = $lang === 'en' ? ($isFemale ? 'Ms' : 'Mr') : ($isFemale ? 'Mme' : 'M.');
                 $lastName = trim((string) (isset($account['lastName']) ? $account['lastName'] : ''));
                 $greetingName = $lastName !== '' ? $prefix . ' ' . $lastName : trim((string) $account['firstName']);
-                $sent = sendLoginLinkEmail($email, $greetingName, $link, $lang === 'en' ? 'en' : 'fr');
+                $sent = sendLoginLinkEmail($email, $greetingName, $link, $lang === 'en' ? 'en' : 'fr', $issued['code']);
                 if ($sent) {
                     $magic_msg = $magic_ok_text;
                     $magic_ok = true;
+                    $_SESSION['login_code_email'] = $email;
                 } else {
-                    $links->deleteOne(array('_id' => $insert->getInsertedId()));
+                    $links->deleteOne(array('_id' => $issued['id']));
                     sendLoginSupportAlert($academy, $email, $magic_motif, 'send_failed', array($account), $lang === 'en' ? 'en' : 'fr');
                     $magic_msg = $magic_fail_text;
                 }
             }
         }
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code_submit'])) {
+    require_once __DIR__ . '/../core/login_links.php';
+    $show_magic = true;
+    $magic_ok = true;
+    $magic_msg = $magic_ok_text;
+    $email = isset($_SESSION['login_code_email'])
+        ? (string) $_SESSION['login_code_email']
+        : strtolower(trim((string) (isset($_POST['code_email']) ? $_POST['code_email'] : '')));
+    $code = medacapNormalizeLoginCode(isset($_POST['login_code']) ? $_POST['login_code'] : '');
+    // Saisie mal formée : refusée sans consommer d'essai
+    $login = ($code !== null && filter_var($email, FILTER_VALIDATE_EMAIL)) ? medacapConsumeLoginCode($academy, $email, $code) : null;
+    if (!$login) {
+        $code_error = $code_error_text;
+    } else {
+        unset($_SESSION['login_code_email']);
+        require_once __DIR__ . '/../core/login_session.php';
+        medacapOpenLoginSession($login, $connections);
+        $landing = medacapLoginLandingPath($login, $academy);
+        if (basename(dirname($_SERVER['SCRIPT_NAME'] ?? '')) === 'views' && strpos($landing, 'views/') === 0) {
+            $landing = substr($landing, strlen('views/'));
+        }
+        header('Location: ' . $landing);
+        exit;
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userName = trim($_POST["username"]);
@@ -208,9 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
 }
 
 $magic_email_value = (isset($_POST['magic_submit']) && isset($email)) ? (string) $email : '';
+$code_session_email = isset($_SESSION['login_code_email']) ? (string) $_SESSION['login_code_email'] : '';
 $magic_sent_email = '';
-if ($magic_ok && $magic_email_value !== '' && strpos($magic_email_value, '@') !== false) {
-    $magic_sent_email = substr($magic_email_value, 0, 1) . '•••' . substr($magic_email_value, strpos($magic_email_value, '@'));
+$masked_source = $magic_email_value !== '' ? $magic_email_value : $code_session_email;
+if ($magic_ok && $masked_source !== '' && strpos($masked_source, '@') !== false) {
+    $magic_sent_email = substr($masked_source, 0, 1) . '•••' . substr($masked_source, strpos($masked_source, '@'));
 }
 ?>
 <!DOCTYPE html>
@@ -559,6 +592,23 @@ if ($magic_ok && $magic_email_value !== '' && strpos($magic_email_value, '@') !=
                     <?php endif; ?>
                     <p><?php echo htmlspecialchars($magic_ok_text); ?></p>
                 </div>
+                <?php if ($code_error): ?>
+                    <div class="error">
+                        <p><?php echo htmlspecialchars($code_error); ?></p>
+                    </div>
+                <?php endif; ?>
+                <form method="POST" id="codeForm">
+                    <p class="magic-intro"><?php echo htmlspecialchars($code_hint); ?></p>
+                    <?php if ($code_session_email === ''): ?>
+                    <div class="form-group">
+                        <input id="code_email" name="code_email" type="email" autocomplete="email" required placeholder="<?php echo htmlspecialchars($magic_email_placeholder); ?>" value="<?php echo htmlspecialchars(isset($_POST['code_email']) ? (string) $_POST['code_email'] : ''); ?>">
+                    </div>
+                    <?php endif; ?>
+                    <div class="form-group">
+                        <input id="login_code" name="login_code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required autofocus placeholder="<?php echo htmlspecialchars($code_label); ?>">
+                    </div>
+                    <button type="submit" name="code_submit" class="submit-btn" value="1"><?php echo htmlspecialchars($code_submit_label); ?></button>
+                </form>
                 <p class="magic-links">
                     <a href="?lien=1&motif=<?php echo $magic_motif; ?>&lang=<?php echo $lang_q; ?>"><?php echo htmlspecialchars($magic_resend_label); ?></a>
                     <a href="?lang=<?php echo $lang_q; ?>"><?php echo htmlspecialchars($magic_back_label); ?></a>
@@ -578,6 +628,9 @@ if ($magic_ok && $magic_email_value !== '' && strpos($magic_email_value, '@') !=
                     </div>
                     <button type="submit" name="magic_submit" class="submit-btn" value="1"><?php echo htmlspecialchars($magic_submit_label); ?></button>
                 </form>
+                <p class="magic-links">
+                    <a href="?code=1&motif=<?php echo $magic_motif; ?>&lang=<?php echo $lang_q; ?>"><?php echo htmlspecialchars($code_have_label); ?></a>
+                </p>
                 <a class="magic-back" href="?lang=<?php echo $lang_q; ?>">&larr; <?php echo htmlspecialchars($magic_back_label); ?></a>
             <?php endif; ?>
         </div>
