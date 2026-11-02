@@ -226,6 +226,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['magic_submit'])) {
                 $login = $profileLogin;
             }
         }
+        require_once __DIR__ . '/../core/email_gate.php';
+        if (medacapEmailGateNeeded($login)) {
+            // Pas de session tant que l'adresse n'est pas ajoutée (ou « Plus tard »)
+            session_regenerate_id(true);
+            unset($_SESSION['id']);
+            $_SESSION['email_gate'] = array('user' => (string) $login['_id'], 'since' => time());
+            $gate = basename(dirname($_SERVER['SCRIPT_NAME'] ?? '')) === 'views' ? 'addEmail.php' : 'views/addEmail.php';
+            header('Location: ' . $gate);
+            exit;
+        }
         require_once __DIR__ . '/../core/login_session.php';
         medacapOpenLoginSession($login, $connections);
         $landing = medacapLoginLandingPath($login, $academy);

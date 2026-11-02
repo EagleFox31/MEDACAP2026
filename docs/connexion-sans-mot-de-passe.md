@@ -89,11 +89,25 @@ Fonctions partagées : `core/login_links.php` (`medacapIssueLoginLink()`, `medac
 
 La pose de session est dans `core/login_session.php`. Le mot de passe et le lien écrivent les mêmes clés : `username`, `profile`, `lastName`, `firstName`, `email`, `test`, `id`, `subsidiary`, `agency`, `department`, `country`, `lang`. `session_regenerate_id(true)` est appelé au début.
 
+## Comptes sans adresse
+
+À la connexion par mot de passe, un compte actif sans adresse valide (tous profils sauf Candidat) n'obtient pas de session : il est envoyé sur `views/addEmail.php`.
+
+1. L'utilisateur saisit une adresse. Seules les adresses `@cfao.com` sont acceptées, et l'adresse ne doit être portée par aucun autre compte actif.
+2. Un code à 6 chiffres part sur cette adresse (`login_links`, `purpose: email_verify`, champ `email`, 10 minutes). Le mail n'a pas de copie.
+3. Le code saisi est vérifié avec les mêmes limites que le code de connexion. L'adresse est alors écrite dans `users.email` et la session s'ouvre.
+4. L'unicité de l'adresse est contrôlée une seconde fois juste avant l'écriture.
+
+- Le technicien peut passer avec « Plus tard » : il est le plus nombreux sans adresse et doit pouvoir composer. Les autres profils n'ont pas ce bouton.
+- L'étape expire 30 minutes après la saisie du mot de passe. Ouvrir la page sans être passé par la connexion renvoie à l'accueil.
+- Maximum 3 codes par 15 minutes.
+- Fichiers : `core/email_gate.php` (règles), `views/addEmail.php` (page), `sendEmailVerifyCodeEmail()` dans `views/sendMail.php`.
+
 ## Hors périmètre
 
 - Pas d'écran « choisir un mot de passe ».
 - Pas de suppression des mots de passe existants.
-- Les comptes sans adresse passent par le helpdesk.
+- Le candidat sans adresse passe par le helpdesk.
 
 ## Vérification
 
