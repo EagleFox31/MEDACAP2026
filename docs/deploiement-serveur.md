@@ -36,6 +36,7 @@ PowerShell, avec le compte qui déploiera :
 
 1. Clé de déploiement GitHub, lecture seule, limitée à ce dépôt :
    ```powershell
+   New-Item -ItemType Directory -Force $HOME\.ssh | Out-Null
    ssh-keygen -t ed25519 -N '""' -f $HOME\.ssh\medacap_deploy -C medacap-015
    Get-Content $HOME\.ssh\medacap_deploy.pub   # GitHub > dépôt > Settings > Deploy keys > Add (sans écriture)
    ```
