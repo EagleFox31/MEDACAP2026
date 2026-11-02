@@ -1,7 +1,7 @@
 <?php
 $title="ACADEMY";
 $greeting="Veuillez saisir votre identifiant et votre mot de passe pour vous connecter";
-$usernamePlaceholder = "Entrez votre nom d'utilisateur";
+$usernamePlaceholder = "Nom d'utilisateur ou adresse e-mail";
 $passwordPlaceholder = "Entrez votre mot de passe";
 $footer = "© " . date('Y') . " CFAO Academy. Tous droits réservés.";
 $title_activation = "Activation des Tests";
