@@ -5,69 +5,128 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MEDACAP - Sign in to MEDACAP</title>
 <style>
-  :root { --red: #D7000F; --ink: #1F2937; --muted: #4B5563; --line: #9CA3AF; --mark: #FFC400; --ok: #047857; }
+  :root { --red: #D7000F; --ink: #1F2937; --muted: #4B5563; --line: #D1D5DB; --mark: #FFC400; --ok: #047857; }
   * { box-sizing: border-box; }
   body { margin: 0; background: #F4F6F8; color: var(--ink); font: 16px/1.5 "Segoe UI", Arial, sans-serif; }
-  main { max-width: 680px; margin: 0 auto; padding: 20px 16px 48px; }
-  h1 { margin: 0 0 6px; font-size: 26px; }
-  h2 { margin: 36px 0 12px; padding: 10px 14px; font-size: 19px; color: #fff; background: var(--red); border-radius: 8px; scroll-margin-top: 12px; }
+  main { max-width: 1040px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { margin: 0 0 4px; font-size: 26px; }
   a { color: #1F5FBF; font-weight: 600; }
-  .addr { margin: 4px 0 0; color: var(--muted); }
-  .addr a { font-size: 20px; }
-  .q { margin: 24px 0 0; padding: 16px; background: #fff; border: 2px solid var(--ink); border-radius: 10px; text-align: center; font-weight: 700; font-size: 18px; }
-  .fork { display: flex; gap: 12px; margin-top: 12px; }
-  .fork a { flex: 1; display: block; padding: 12px; background: #fff; border: 2px solid var(--line); border-radius: 10px; text-align: center; color: var(--ink); font-weight: 400; text-decoration: none; }
-  .fork a span { display: block; margin-top: 6px; color: var(--red); font-weight: 700; }
+  .addr { margin: 0 0 20px; color: var(--muted); }
+  .addr a { font-size: 18px; }
+  .prog { display: flex; align-items: center; margin: 0 0 16px; padding: 0; list-style: none; }
+  .prog li { display: flex; align-items: center; flex: 1; min-width: 0; }
+  .prog li:last-child { flex: 0 0 auto; }
+  .prog li::after { content: ""; flex: 1; height: 4px; margin: 0 8px; background: var(--line); border-radius: 2px; }
+  .prog li:last-child::after { display: none; }
+  .prog li.past::after { background: var(--ok); }
+  .prog a { display: flex; align-items: center; gap: 8px; color: var(--muted); font-weight: 600; font-size: 14px; text-decoration: none; white-space: nowrap; }
+  .prog a i { display: inline-block; flex: none; width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 3px solid var(--line); font-style: normal; text-align: center; line-height: 24px; color: var(--muted); }
+  .prog li.past a i { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .prog li.now a { color: var(--ink); }
+  .prog li.now a i { background: var(--red); border-color: var(--red); color: #fff; }
+  .slide { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+  [hidden] { display: none !important; }
+  html:not(.js) .prog { display: none; }
+  .slide + .slide { margin-top: 20px; }
+  .then { display: inline-block; margin: 0 0 10px; padding: 4px 12px; border-radius: 14px; background: #EEF2F7; color: var(--muted); font-size: 14px; font-weight: 600; }
+  .slide h2 { margin: 0 0 12px; font-size: 22px; }
+  .slide h2 small { display: block; color: var(--red); font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
+  .txt p { margin: 0 0 12px; font-size: 17px; line-height: 2; }
+  .shot img { display: block; width: 100%; max-width: 620px; height: auto; margin: 0 auto; border-radius: 8px; }
+  .n { display: inline-block; min-width: 26px; height: 26px; margin-right: 6px; padding: 0 6px; border-radius: 13px; background: var(--mark); color: #111; font-weight: 700; font-size: 14px; line-height: 26px; text-align: center; }
+  .alt { margin: 4px 0 12px; padding: 10px 12px; border: 2px dashed var(--mark); border-radius: 8px; background: #FFFBEB; }
+  .alt p { margin: 0 0 6px; font-size: 15px; line-height: 1.6; }
+  .nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .btn { display: inline-block; padding: 12px 18px; border-radius: 10px; border: 2px solid var(--line); background: #fff; color: var(--ink); font-weight: 700; text-decoration: none; }
+  .btn.go { flex: 1; min-width: 200px; background: var(--red); border-color: var(--red); color: #fff; text-align: center; }
+  .q { margin: 0 0 16px; font-size: 22px; font-weight: 700; text-align: center; }
+  .fork { display: flex; gap: 16px; }
+  .fork a { position: relative; flex: 1; display: block; padding: 22px 16px; border: 3px solid var(--line); border-radius: 12px; text-align: center; color: var(--ink); font-weight: 400; font-size: 18px; text-decoration: none; }
   .fork a:hover { border-color: var(--red); }
-  .step { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-  .step p { margin: 0 0 10px; }
-  .step img { display: block; width: 100%; height: auto; border-radius: 8px; }
-  .n { display: inline-block; min-width: 26px; height: 26px; margin: 0 4px 0 6px; padding: 0 6px; border-radius: 13px; background: var(--mark); color: #111; font-weight: 700; font-size: 14px; line-height: 26px; text-align: center; }
-  .step p .n:first-child { margin-left: 0; }
-  .alt { margin-top: 10px; padding: 10px 12px; border: 2px dashed var(--mark); border-radius: 8px; background: #FFFBEB; }
-  .arrow { position: relative; display: flex; justify-content: center; padding: 10px 0 22px; }
-  .arrow::before { content: ""; position: absolute; top: 0; bottom: 10px; left: 50%; width: 4px; margin-left: -2px; background: var(--line); }
-  .arrow::after { content: ""; position: absolute; bottom: 0; left: 50%; margin-left: -12px; border: 12px solid transparent; border-top: 14px solid var(--line); border-bottom: 0; }
-  .arrow span { position: relative; padding: 4px 12px; background: #F4F6F8; border: 2px solid var(--line); border-radius: 16px; font-size: 14px; font-weight: 600; color: var(--muted); }
-  .arrow.short { padding: 0; height: 34px; }
-  .done { padding: 14px; border-radius: 10px; background: #ECFDF5; border: 2px solid var(--ok); color: var(--ok); font-weight: 700; font-size: 18px; text-align: center; }
-  .ko { margin-top: 10px; color: var(--muted); font-size: 15px; }
-  ul { padding-left: 20px; }
-  li { margin-bottom: 8px; }
-  @media (max-width: 480px) { .fork { flex-direction: column; } }
+  .fork a em { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 0 10px; border-radius: 10px; background: var(--red); color: #fff; font-size: 13px; font-style: normal; font-weight: 700; white-space: nowrap; }
+  .fork a span { display: block; margin-top: 8px; color: var(--red); font-size: 26px; }
+  .hint { margin: 16px 0 0; text-align: center; color: var(--muted); }
+  .done { text-align: center; }
+  .done b { display: block; margin: 8px 0 4px; color: var(--ok); font-size: 26px; }
+  .done .big { font-size: 56px; line-height: 1; }
+  .done .nav { justify-content: center; }
+  .help { margin-top: 28px; padding: 16px 20px; border-radius: 12px; background: #fff; border-left: 6px solid var(--red); }
+  .help h2 { margin: 0 0 8px; font-size: 18px; }
+  .help ul { margin: 0; padding-left: 20px; }
+  .help li { margin-bottom: 6px; }
+  @media (min-width: 860px) {
+    .step { display: grid; grid-template-columns: 340px 1fr; grid-template-areas: "txt shot" "nav shot"; grid-template-rows: auto 1fr; column-gap: 28px; }
+    .step .txt { grid-area: txt; }
+    .step .shot { grid-area: shot; }
+    .step .nav { grid-area: nav; align-self: start; flex-direction: column; }
+    .step .nav .btn { text-align: center; }
+    .step .nav .go { order: -1; flex: none; }
+  }
+  @media (max-width: 640px) {
+    .prog a b { display: none; }
+    .prog li.now a b { display: inline; white-space: normal; }
+    .fork { flex-direction: column; gap: 22px; }
+  }
 </style>
+<script>
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', function () {
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var progs = [].slice.call(document.querySelectorAll('.prog'));
+  function show() {
+    var id = location.hash.slice(1), cur = null;
+    slides.forEach(function (s) { if (s.id === id) cur = s; });
+    if (!cur) cur = slides[0];
+    slides.forEach(function (s) { s.hidden = s !== cur; });
+    var path = cur.getAttribute('data-path'), pos = +cur.getAttribute('data-pos');
+    progs.forEach(function (p) {
+      p.hidden = p.getAttribute('data-path') !== path;
+      [].slice.call(p.children).forEach(function (li, i) {
+        li.className = i < pos ? 'past' : (i === pos ? 'now' : '');
+      });
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', show);
+  document.addEventListener('keydown', function (e) {
+    var cur = slides.filter(function (s) { return !s.hidden; })[0];
+    var a = cur && cur.querySelector(e.key === 'ArrowRight' ? '.go' : (e.key === 'ArrowLeft' ? '.back' : 'x'));
+    if (a) location.hash = a.getAttribute('href');
+  });
+  show();
+});
+</script>
 </head>
 <body>
 <main>
   <h1>Sign in to MEDACAP</h1>
-  <p class="addr">Address to open from a CFAO network computer:<br><a href="/">http://10.68.0.15:8010/</a></p>
+  <p class="addr">Address to open from a CFAO network computer: <a href="/">http://10.68.0.15:8010/</a></p>
 
-  <div class="q">Do you know your MEDACAP password?</div>
-  <div class="fork">
-    <a href="#a"><b>YES</b>, I know it<span>Path A ↓</span></a>
-    <a href="#b"><b>NO</b>, not sure, or I forgot it<span>Path B ↓ (the easiest)</span></a>
-  </div>
+  <ol class="prog" data-path="a"><li><a href="#a1"><i>1</i><b>Credentials</b></a></li><li><a href="#a-done"><i>✓</i><b>Signed in</b></a></li></ol>
+  <ol class="prog" data-path="b"><li><a href="#b1"><i>1</i><b>Email button</b></a></li><li><a href="#b2"><i>2</i><b>Your address</b></a></li><li><a href="#b3"><i>3</i><b>Code in Outlook</b></a></li><li><a href="#b4"><i>4</i><b>Enter the code</b></a></li><li><a href="#b-done"><i>✓</i><b>Signed in</b></a></li></ol>
 
-  <h2 id="a">Path A — with my password</h2>
-  <div class="step"><p><span class="n">1</span> Type your @cfao.com email address <span class="n">2</span> Type your password <span class="n">3</span> Click <b>“Access your area”</b></p><img src="a1_en.jpg" alt="" loading="lazy"></div>
-  <div class="arrow short"></div>
-  <div class="done">✅ You are signed in</div>
-  <p class="ko">Password refused? Take <a href="#b">path B</a>.</p>
+  <section class="slide" id="start">
+    <p class="q">Do you know your MEDACAP password?</p>
+    <div class="fork">
+      <a href="#a1"><b>YES</b>, I know it<span>→</span></a>
+      <a href="#b1"><em>the easiest</em><b>NO</b>, not sure, or I forgot it<span>→</span></a>
+    </div>
+    <p class="hint">“Forgot your password?”: choose NO.</p>
+  </section>
 
-  <h2 id="b">Path B — no password, with a code sent by email</h2>
-  <p>The “Forgot your password?” link leads to the same place: follow this path.</p>
-  <div class="step"><p><span class="n">1</span> Click <b>“Sign in with your email”</b>, at the bottom of the screen</p><img src="b1_en.jpg" alt="" loading="lazy"></div>
-  <div class="arrow"><span>A new screen opens</span></div>
-  <div class="step"><p><span class="n">2</span> Type your @cfao.com email address <span class="n">3</span> Click <b>“Send me the code”</b></p><img src="b2_en.jpg" alt="" loading="lazy"></div>
-  <div class="arrow"><span>Do not close this page. Open Outlook.</span></div>
-  <div class="step"><p><span class="n">4</span> Open the email <b>“MEDACAP - Your sign-in code”</b> and read the 6-digit code. No email? Check your <b>Junk Email</b> folder.</p><img src="b3_en.jpg" alt="" loading="lazy"><div class="alt"><span class="n">4b</span> Shortcut: if you read this email on your CFAO computer, just click <b>“Open my session”</b>. You are done, you are signed in.</div></div>
-  <div class="arrow"><span>Go back to the MEDACAP page you left open</span></div>
-  <div class="step"><p><span class="n">5</span> Type the code <span class="n">6</span> Click <b>“Verify code”</b></p><img src="b4_en.jpg" alt="" loading="lazy"></div>
-  <div class="arrow short"></div>
-  <div class="done">✅ You are signed in</div>
+  <section class="slide step" id="a1" data-path="a" data-pos="0"><div class="txt"><h2>Type your credentials</h2><p><span class="n">1</span> Your @cfao.com email address<br><span class="n">2</span> Your password<br><span class="n">3</span> Click <b>“Access your area”</b></p></div><div class="shot"><img src="a1_en.jpg" alt=""></div><div class="nav"><a class="btn back" href="#start">← Back</a><a class="btn go" href="#a-done">Done, next step →</a></div></section>
+  <section class="slide done" id="a-done" data-path="a" data-pos="1"><div class="big">✅</div><b>You are signed in</b><p>You can close this guide.</p><p>Password refused? <a href="#b1">Sign in with a code by email →</a></p><div class="nav"><a class="btn back" href="#a1">← Back</a><a class="btn" href="#start">Start again</a></div></section>
 
-  <h2 id="aide">Not working?</h2>
-  <ul><li><b>No email after 5 minutes</b> (Junk Email included): write to <a href="mailto:jakaa-ext@cfao.com">jakaa-ext@cfao.com</a>.</li><li><b>“Incorrect or expired code”</b>: a code lasts 10 minutes and only the latest one works. Click “Send again” and use the new email.</li><li><b>The page does not open</b>: you must be on a CFAO network computer.</li></ul>
+  <section class="slide step" id="b1" data-path="b" data-pos="0"><div class="txt"><h2>Choose sign-in by email</h2><p><span class="n">1</span> Click <b>“Sign in with your email”</b>, at the bottom of the screen.</p></div><div class="shot"><img src="b1_en.jpg" alt=""></div><div class="nav"><a class="btn back" href="#start">← Back</a><a class="btn go" href="#b2">Done, next step →</a></div></section>
+  <section class="slide step" id="b2" data-path="b" data-pos="1"><div class="txt"><p class="then">A new screen opens:</p><h2>Ask for the code</h2><p><span class="n">2</span> Type your @cfao.com email address<br><span class="n">3</span> Click <b>“Send me the code”</b></p></div><div class="shot"><img src="b2_en.jpg" alt=""></div><div class="nav"><a class="btn back" href="#b1">← Back</a><a class="btn go" href="#b3">Done, next step →</a></div></section>
+  <section class="slide step" id="b3" data-path="b" data-pos="2"><div class="txt"><p class="then">Do not close the MEDACAP page. Open Outlook:</p><h2>Read the code in Outlook</h2><p><span class="n">4</span> Open the email <b>“MEDACAP - Your sign-in code”</b> and read the 6-digit code.<br>No email? Check your <b>Junk Email</b> folder.</p><div class="alt"><p><span class="n">4b</span> Shortcut: on your CFAO computer, just click <b>“Open my session”</b> in the email. You are done.</p><a href="#b-done">I clicked “Open my session” →</a></div></div><div class="shot"><img src="b3_en.jpg" alt=""></div><div class="nav"><a class="btn back" href="#b2">← Back</a><a class="btn go" href="#b4">Done, next step →</a></div></section>
+  <section class="slide step" id="b4" data-path="b" data-pos="3"><div class="txt"><p class="then">Go back to the MEDACAP page you left open:</p><h2>Type the code</h2><p><span class="n">5</span> Type the code<br><span class="n">6</span> Click <b>“Verify code”</b></p></div><div class="shot"><img src="b4_en.jpg" alt=""></div><div class="nav"><a class="btn back" href="#b3">← Back</a><a class="btn go" href="#b-done">Done, next step →</a></div></section>
+  <section class="slide done" id="b-done" data-path="b" data-pos="4"><div class="big">✅</div><b>You are signed in</b><p>You can close this guide.</p><div class="nav"><a class="btn back" href="#b4">← Back</a><a class="btn" href="#start">Start again</a></div></section>
+
+  <section class="help">
+    <h2>Not working?</h2>
+    <ul><li><b>No email after 5 minutes</b> (Junk Email included): write to <a href="mailto:jakaa-ext@cfao.com">jakaa-ext@cfao.com</a>.</li><li><b>“Incorrect or expired code”</b>: a code lasts 10 minutes and only the latest one works. Click “Send again” and use the new email.</li><li><b>The page does not open</b>: you must be on a CFAO network computer.</li></ul>
+  </section>
 </main>
 </body>
 </html>
