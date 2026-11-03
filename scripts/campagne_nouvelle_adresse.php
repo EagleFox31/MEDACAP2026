@@ -5,9 +5,7 @@ require_once __DIR__ . '/../core/medacap_config.php';
  * qui a encore des évaluations ou des collaborateurs avec un test en attente.
  * Contenu : nouvelle adresse, ce qui reste à faire (tableau par collaborateur), méthodes de connexion.
  *
- * Périmètre : techniciens CMI importés en juin/juillet 2026 (SCOPE_SUBSIDIARY, SCOPE_CREATED).
- * En attente = allocation Factuel/Declaratif d'un technicien actif (hors candidat), test actif, avec
- * active != true (test du technicien) ou, pour le déclaratif, activeManager != true (évaluation du manager).
+ * Périmètre et calcul des évaluations en attente : scripts/includes/campagne_cameroun.php.
  *
  * Usage:
  *   php scripts/campagne_nouvelle_adresse.php                         simulation (liste, aucun envoi)
@@ -15,36 +13,32 @@ require_once __DIR__ . '/../core/medacap_config.php';
  *                                                                     envoie le mail d'un seul manager à a@cfao.com
  *   php scripts/campagne_nouvelle_adresse.php --apply [--manager=<id|email>]  envoi réel (copie CAMPAIGN_CC), une seule fois par manager
  *   ... --rectif --manager=<id|email> [--test=<adresse>|--apply]  liste corrigée (copie sans Laurent GONIN)
+ *   ... --relance [--jours=3] [--test=<adresse>|--apply]            rappel aux managers qui ont encore des évaluations à faire,
+ *                                                                     --jours après leur dernier mail de campagne, jours ouvrés seulement
  *   --url=http://10.68.0.15:8010/                                     adresse annoncée (défaut : MEDACAP_PUBLIC_URL)
  */
 require __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../views/sendMail.php';
+require_once __DIR__ . '/includes/campagne_cameroun.php';
 
 use MongoDB\Client;
-use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 
-const CAMPAIGN = 'nouvelle-adresse-2026-11';
-const OLD_ADDRESS = '10.68.0.7';
-const EN_COUNTRIES =['Rwanda', 'Kenya', 'Uganda', 'Tanzania', 'Ghana', 'Nigeria', 'Malawi', 'Zambia'];
-// Périmètre : techniciens CMI importés en juin/juillet 2026 (users.created au format « jj-mm-aaaa … »)
-// CMI = CFAO Mobility Cameroon : les deux libellés coexistent dans users.subsidiary
-const SCOPE_SUBSIDIARY = ['CAMEROON MOTORS INDUSTRIES', 'CFAO MOBILITY CAMEROON'];
-const SCOPE_CREATED = '^\d\d-0[67]-2026';
-// Copie de chaque envoi réel : Annick ETOLO, support (Laurent GONIN, M.C. BENGONO et A.Y. BOKALLY retirés pour éviter le spam)
-const CAMPAIGN_CC = ['aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
-// Manager sans adresse : mail adressé à Annick ETOLO, qui le fait suivre
-const RELAY_TO = 'aetolo-ext@cfao.com';
-
-$opts = getopt('', ['test:', 'manager:', 'apply', 'url:', 'rectif']);
+$opts = getopt('', ['test:', 'manager:', 'apply', 'url:', 'rectif', 'relance', 'jours:']);
 // --rectif : liste corrigée aux managers déjà servis (--manager obligatoire), copie Annick ETOLO + support seulement
 $rectif = isset($opts['rectif']);
 if ($rectif && empty($opts['manager'])) {
     fwrite(STDERR, "[ERREUR] --rectif exige --manager\n");
     exit(1);
 }
-$campaign = $rectif ? CAMPAIGN . '-rectif' : CAMPAIGN;
+// --relance : rappel --jours (défaut 3) après le dernier mail reçu, tant que le manager a des évaluations à faire
+$relance = isset($opts['relance']);
+$jours = isset($opts['jours']) ? max(1, (int) $opts['jours']) : 3;
+if ($rectif && $relance) {
+    fwrite(STDERR, "[ERREUR] --rectif et --relance sont exclusifs\n");
+    exit(1);
+}
+$mode = $rectif ? 'rectif' : ($relance ? 'relance' : '');
+$campaign = $mode !== '' ? CAMPAIGN . '-' . $mode : CAMPAIGN;
 $cc = $rectif ? array_values(array_diff(CAMPAIGN_CC, ['lgonin@cfao.com', 'mcbengono@cfao.com', 'aybokally@cfao.com'])) : CAMPAIGN_CC;
 $testTo = isset($opts['test']) ? trim((string) $opts['test']) : '';
 $apply = isset($opts['apply']);
@@ -60,72 +54,12 @@ if ($testTo !== '' && $apply) {
 
 $uri = medacapMongoUri('mongodb://localhost:27017');
 $db = (new Client($uri))->academy;
-echo "Mongo: $uri\nAdresse annoncée: $url\nMode: " . ($apply ? 'ENVOI' : ($testTo !== '' ? "TEST -> $testTo" : 'SIMULATION')) . "\n\n";
+echo "Mongo: $uri\nAdresse annoncée: $url\nMode: " . ($apply ? 'ENVOI' : ($testTo !== '' ? "TEST -> $testTo" : 'SIMULATION')) . ($mode !== '' ? " ($mode)" : '') . "\n\n";
 
-$techs = [];
-foreach ($db->users->find([
-    'profile' => 'Technicien', 'active' => true, 'isCandidat' => ['$ne' => true],
-    'subsidiary' => ['$in' => SCOPE_SUBSIDIARY], 'created' => new Regex(SCOPE_CREATED, ''),
-]) as $t) {
-    $techs[(string) $t['_id']] = $t;
-}
-$techIds = array_map(function ($id) { return new ObjectId($id); }, array_keys($techs));
+$list = campagneLoadList($db);
 
-$pending = [];
-$allocs = $db->allocations->find([
-    'type' => ['$in' => ['Factuel', 'Declaratif']],
-    'activeTest' => ['$ne' => false],
-    'user' => ['$in' => $techIds],
-]);
-foreach ($allocs as $a) {
-    $tid = (string) $a['user'];
-    $mid = isset($techs[$tid]['manager']) ? (string) $techs[$tid]['manager'] : '';
-    if ($mid === '') {
-        continue;
-    }
-    $mgrTodo = $a['type'] === 'Declaratif' && ($a['activeManager'] ?? false) !== true;
-    $techTodo = ($a['active'] ?? false) !== true;
-    if (!$mgrTodo && !$techTodo) {
-        continue;
-    }
-    if (!isset($pending[$mid][$tid])) {
-        $pending[$mid][$tid] = ['mgr' => false, 'tech' => false];
-    }
-    $pending[$mid][$tid]['mgr'] = $pending[$mid][$tid]['mgr'] || $mgrTodo;
-    $pending[$mid][$tid]['tech'] = $pending[$mid][$tid]['tech'] || $techTodo;
-}
-
-$managers = [];
-foreach ($db->users->find(['_id' => ['$in' => array_map(function ($id) { return new ObjectId($id); }, array_keys($pending))], 'active' => true]) as $m) {
-    $managers[(string) $m['_id']] = $m;
-}
-
-/** Tests encore à passer par le manager lui-même. */
-function ownPendingTests($db, $managerId)
-{
-    return (int) $db->allocations->count([
-        'user' => $managerId,
-        'type' => ['$in' => ['Factuel', 'Declaratif']],
-        'activeTest' => ['$ne' => false],
-        'active' => ['$ne' => true],
-    ]);
-}
-
-function h($s)
-{
-    return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
-}
-
-// « M. Clovis Forbang » / « Mme … » selon users.gender, nom remis en casse normale
-function managerGreeting($manager, $isEn)
-{
-    $civ = ['Masculin' => $isEn ? 'Mr' : 'M.', 'Feminin' => $isEn ? 'Ms' : 'Mme'];
-    $gender = (string) ($manager['gender'] ?? '');
-    $name = mb_convert_case(mb_strtolower(trim(($manager['firstName'] ?? '') . ' ' . ($manager['lastName'] ?? '')), 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
-    return trim((isset($civ[$gender]) ? $civ[$gender] : '') . ' ' . $name);
-}
-
-function buildCampaignMail($manager, array $rows, $url, $ownTests, $rectif = false)
+/** $mode : '' (mail de campagne), 'rectif' (liste corrigée) ou 'relance' (rappel). */
+function buildCampaignMail($manager, array $rows, $url, $ownTests, $mode = '')
 {
     // Seules les évaluations du manager figurent dans le tableau
     $rows = array_filter($rows, function ($r) { return $r['mgr']; });
@@ -139,6 +73,12 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests, $rectif = fal
         'rTitle' => 'Correction',
         'rIntro' => 'The list of team members to evaluate in our previous message was wrong, following a reassignment. Here is the updated list (' . count($rows) . ' team member(s)):',
         'rLink' => 'MEDACAP is available at this address, from a CFAO network computer:',
+        'kSubject' => 'Reminder - MEDACAP: ' . count($rows) . ' team member(s) to evaluate',
+        'kTitle' => 'Reminder: assessments pending',
+        'kIntro' => count($rows) . ' of your team members are still waiting for your assessment in MEDACAP:',
+        'kIntroOne' => 'One of your team members is still waiting for your assessment in MEDACAP:',
+        'kLogin' => 'To sign in: your username <b>%s</b> (or your email address) and your usual password, or <b>“Sign in with your email”</b> to receive a code.',
+        'kHelp' => 'If you have any difficulty, simply reply to this email.',
         'todo' => 'What is still pending in your team',
         'todoIntro' => count($rows) . ' of your team members are still waiting for an action:',
         'todoOne' => 'You have 1 team member to evaluate:',
@@ -160,6 +100,12 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests, $rectif = fal
         'rTitle' => 'Rectificatif',
         'rIntro' => 'La liste de vos collaborateurs à évaluer figurant dans notre précédent message était erronée, suite à une réaffectation. Voici la liste à jour (' . count($rows) . ' collaborateur(s)) :',
         'rLink' => 'MEDACAP est accessible à cette adresse, depuis un poste du réseau CFAO :',
+        'kSubject' => 'Rappel - MEDACAP : ' . count($rows) . ' collaborateur(s) à évaluer',
+        'kTitle' => 'Rappel : évaluations en attente',
+        'kIntro' => count($rows) . ' de vos collaborateurs attendent encore votre évaluation dans MEDACAP :',
+        'kIntroOne' => 'Un de vos collaborateurs attend encore votre évaluation dans MEDACAP :',
+        'kLogin' => 'Pour vous connecter : votre identifiant <b>%s</b> (ou votre adresse mail) et votre mot de passe habituel, ou <b>« Connectez-vous avec votre mail »</b> pour recevoir un code.',
+        'kHelp' => 'En cas de difficulté, répondez simplement à ce mail.',
         'subject' => 'MEDACAP change d\'adresse : nouvelle adresse et évaluations en attente',
         'title' => 'MEDACAP change d\'adresse',
         'intro' => 'MEDACAP est désormais accessible à cette adresse, depuis un poste du réseau CFAO :',
@@ -266,12 +212,21 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests, $rectif = fal
         . '<li style="margin-bottom:8px;">' . $L['s3'] . $shot('etape4') . '</li>'
         . '</ol></li>'
         . '<li>' . $L['m3'] . '</li></ol>';
-    if ($rectif) {
+    if ($mode === 'rectif') {
         // Rectificatif : liste corrigée et adresse seulement
         $message = '<p>' . h($L['rIntro']) . '</p>' . $table
             . '<p style="margin-top:18px;">' . h($L['rLink']) . ' <a href="' . h($url) . '" style="color:#1F5FBF;font-weight:700;">' . h($url) . '</a></p>';
         $L['subject'] = $L['rSubject'];
         $L['title'] = $L['rTitle'];
+    } elseif ($mode === 'relance') {
+        // Relance : liste à jour, adresse et rappel court de la connexion
+        $message = '<p>' . h(count($rows) === 1 ? $L['kIntroOne'] : $L['kIntro']) . '</p>' . $table
+            . ($ownTests > 0 ? '<p>' . $L['own'] . '</p>' : '')
+            . '<p style="margin-top:18px;">' . h($L['rLink']) . ' <a href="' . h($url) . '" style="color:#1F5FBF;font-weight:700;">' . h($url) . '</a></p>'
+            . '<p>' . sprintf($L['kLogin'], h($manager['username'] ?? '')) . ' <a href="' . h($url . 'public/guide-connexion/' . ($isEn ? 'en' : 'fr') . '.html') . '" style="color:#1F5FBF;">' . h($L['guideLink']) . '</a></p>'
+            . '<p>' . h($L['kHelp']) . '</p>';
+        $L['subject'] = $L['kSubject'];
+        $L['title'] = $L['kTitle'];
     }
 
     $html = generateEmailTemplate([
@@ -289,38 +244,6 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests, $rectif = fal
     return [$L['subject'], $html];
 }
 
-function sendCampaignMail($to, $subject, $html, array $cc = [])
-{
-    $cc = array_values(array_diff($cc, [$to]));
-    $headers = buildHeaders($cc, SUPER_ADMIN_EMAIL, false) . "\r\nContent-Transfer-Encoding: quoted-printable";
-    return mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', quoted_printable_encode($html), $headers);
-}
-
-/* Destinataires, triés par filiale puis nom */
-$list = [];
-foreach ($pending as $mid => $techRows) {
-    if (!isset($managers[$mid])) {
-        echo "[IGNORÉ] manager $mid inactif ou introuvable (" . count($techRows) . " collaborateurs)\n";
-        continue;
-    }
-    $m = $managers[$mid];
-    $rows = [];
-    $mgrCount = 0;
-    foreach ($techRows as $tid => $p) {
-        $t = $techs[$tid];
-        $rows[$tid] = [
-            'name' => trim(($t['firstName'] ?? '') . ' ' . ($t['lastName'] ?? '')),
-            'mgr' => $p['mgr'],
-            'tech' => $p['tech'],
-        ];
-        $mgrCount += $p['mgr'] ? 1 : 0;
-    }
-    $list[$mid] = ['m' => $m, 'rows' => $rows, 'mgrCount' => $mgrCount, 'own' => ownPendingTests($db, $m['_id'])];
-}
-uasort($list, function ($a, $b) {
-    return strcmp(($a['m']['subsidiary'] ?? '') . ($a['m']['lastName'] ?? ''), ($b['m']['subsidiary'] ?? '') . ($b['m']['lastName'] ?? ''));
-});
-
 $withMail = 0;
 foreach ($list as $mid => $e) {
     $m = $e['m'];
@@ -332,10 +255,76 @@ foreach ($list as $mid => $e) {
 }
 echo "\nManagers : " . count($list) . " (avec adresse : $withMail)\n";
 
+/**
+ * Relances : managers déjà servis qui ont encore des évaluations à faire.
+ * Échéance = date (Douala) du dernier mail reçu + $jours ; envoi le premier jour ouvré à partir de l'échéance.
+ */
+function relancePlan($db, array $list, $jours, DateTimeImmutable $today)
+{
+    $plan = [];
+    foreach ($list as $mid => $e) {
+        if ($e['mgrCount'] === 0) {
+            continue;
+        }
+        $history = campagneMailHistory($db, $e['m']['_id']);
+        if (!$history) {
+            continue;
+        }
+        $last = campagneLocalDate(end($history)['sentAt']);
+        $due = DateTimeImmutable::createFromMutable($last)->setTime(0, 0)->modify("+$jours days");
+        $run = $due > $today ? $due : $today;
+        while ((int) $run->format('N') >= 6) {
+            $run = $run->modify('+1 day');
+        }
+        $plan[$mid] = [
+            'last' => $last, 'due' => $due, 'run' => $run, 'isDue' => $run == $today,
+            'relances' => count(array_filter($history, function ($r) { return $r['campaign'] === CAMPAIGN . '-relance'; })),
+        ];
+    }
+    return $plan;
+}
+
+$today = new DateTimeImmutable('today', new DateTimeZone(CAMPAIGN_TZ));
+$plan = $relance ? relancePlan($db, $list, $jours, $today) : [];
+if ($relance) {
+    echo "\nRelances (J+$jours, jours ouvrés) au " . $today->format('d/m/Y') . " :\n";
+    foreach ($plan as $mid => $p) {
+        $m = $list[$mid]['m'];
+        printf("  %-34s | dernier mail %s | relances %d | évals %2d | %s\n",
+            trim(($m['firstName'] ?? '') . ' ' . ($m['lastName'] ?? '')), $p['last']->format('d/m H:i'), $p['relances'],
+            $list[$mid]['mgrCount'], $p['isDue'] ? 'À RELANCER' : 'prévue le ' . $p['run']->format('d/m'));
+    }
+}
+
+// Aperçu joint au test de relance : qui sera relancé, et quand
+function relanceTestBox(array $plan, array $list, $jours)
+{
+    $days = ['', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
+    $td = 'padding:4px 8px;border-bottom:1px solid #E5E7EB;font-size:13px;';
+    $rows = '';
+    foreach ($plan as $mid => $p) {
+        $m = $list[$mid]['m'];
+        $rows .= '<tr><td style="' . $td . '">' . h(trim(($m['firstName'] ?? '') . ' ' . ($m['lastName'] ?? ''))) . '</td>'
+            . '<td style="' . $td . '">' . $p['last']->format('d/m H:i') . '</td>'
+            . '<td style="' . $td . '">' . $list[$mid]['mgrCount'] . '</td>'
+            . '<td style="' . $td . '"><b>' . $days[(int) $p['run']->format('N')] . ' ' . $p['run']->format('d/m') . '</b></td></tr>';
+    }
+    return '<div style="max-width:640px;margin:12px auto;padding:12px 16px;border:2px dashed #B45309;background:#FFFBEB;font-family:Arial,sans-serif;font-size:13px;color:#1F2937;">'
+        . '<b>[TEST] Relance automatique, à valider</b><br>'
+        . 'Envoi chaque jour ouvré à 8 h, ' . $jours . ' jours après le dernier mail reçu, tant que le manager a des évaluations à faire '
+        . '(copie : ' . h(implode(', ', CAMPAIGN_CC)) . '). Ci-dessous, le mail tel qu\'il sera reçu par un manager.'
+        . '<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin-top:8px;">'
+        . '<tr style="text-align:left;background:#FEF3C7;"><th style="' . $td . '">Manager</th><th style="' . $td . '">Dernier mail</th>'
+        . '<th style="' . $td . '">Évaluations</th><th style="' . $td . '">Relance prévue</th></tr>' . $rows . '</table></div>';
+}
+
 if ($testTo !== '') {
     $pick = null;
     $want = isset($opts['manager']) ? strtolower(trim((string) $opts['manager'])) : '';
     foreach ($list as $mid => $e) {
+        if ($relance && !isset($plan[$mid])) {
+            continue;
+        }
         if ($want === '' ? ($pick === null || count($e['rows']) > count($pick['rows'])) : ($want === strtolower($mid) || $want === strtolower((string) ($e['m']['email'] ?? '')))) {
             $pick = $e;
         }
@@ -344,7 +333,10 @@ if ($testTo !== '') {
         fwrite(STDERR, "[ERREUR] Manager introuvable : $want\n");
         exit(1);
     }
-    list($subject, $html) = buildCampaignMail($pick['m'], $pick['rows'], $url, $pick['own'], $rectif);
+    list($subject, $html) = buildCampaignMail($pick['m'], $pick['rows'], $url, $pick['own'], $mode);
+    if ($relance) {
+        $html = preg_replace('/<body[^>]*>/i', '$0' . relanceTestBox($plan, $list, $jours), $html, 1);
+    }
     $ok = sendCampaignMail($testTo, '[TEST] ' . $subject, $html);
     echo "\nTest : mail de " . trim($pick['m']['firstName'] . ' ' . $pick['m']['lastName']) . " envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
     exit($ok ? 0 : 1);
@@ -353,12 +345,11 @@ if ($testTo !== '') {
 // Compteur de campagne : mails réels envoyés (rectificatifs compris) et techniciens couverts
 function printCounter($db, array $list)
 {
-    $mails = $rectifs = $doneTechs = $doneManagers = $totalTechs = 0;
-    foreach ($db->mail_campaigns->find(['campaign' => ['$in' => [CAMPAIGN, CAMPAIGN . '-rectif']], 'ok' => true]) as $r) {
+    $mails = $rectifs = $relances = $doneTechs = $doneManagers = $totalTechs = 0;
+    foreach ($db->mail_campaigns->find(['campaign' => ['$in' => [CAMPAIGN, CAMPAIGN . '-rectif', CAMPAIGN . '-relance']], 'ok' => true]) as $r) {
         $mails++;
-        if ($r['campaign'] !== CAMPAIGN) {
-            $rectifs++;
-        }
+        $rectifs += $r['campaign'] === CAMPAIGN . '-rectif' ? 1 : 0;
+        $relances += $r['campaign'] === CAMPAIGN . '-relance' ? 1 : 0;
     }
     foreach ($list as $e) {
         $totalTechs += count($e['rows']);
@@ -368,7 +359,7 @@ function printCounter($db, array $list)
         }
     }
     echo "\n=== COMPTEUR ===\n"
-        . "Mails envoyés      : $mails (dont $rectifs rectificatif(s))\n"
+        . "Mails envoyés      : $mails (dont $rectifs rectificatif(s), $relances relance(s))\n"
         . "Managers servis    : $doneManagers / " . count($list) . "\n"
         . "Techniciens        : $doneTechs / $totalTechs\n";
 }
@@ -379,6 +370,10 @@ if (!$apply) {
     exit(0);
 }
 
+if ($relance && (int) $today->format('N') >= 6) {
+    echo "\nWeek-end : aucune relance.\n";
+    exit(0);
+}
 $want = isset($opts['manager']) ? strtolower(trim((string) $opts['manager'])) : '';
 $sent = $skipped = $failed = 0;
 foreach ($list as $mid => $e) {
@@ -386,11 +381,13 @@ foreach ($list as $mid => $e) {
     if ($want !== '' && $want !== strtolower($mid) && $want !== strtolower($email)) {
         continue;
     }
-    if ($db->mail_campaigns->findOne(['campaign' => $campaign, 'userId' => $e['m']['_id'], 'ok' => true])) {
+    // Relance : seulement à échéance (la relance envoyée repousse la suivante de $jours) ; sinon une seule fois par manager
+    if ($relance ? !(isset($plan[$mid]) && $plan[$mid]['isDue'])
+        : $db->mail_campaigns->findOne(['campaign' => $campaign, 'userId' => $e['m']['_id'], 'ok' => true])) {
         $skipped++;
         continue;
     }
-    list($subject, $html) = buildCampaignMail($e['m'], $e['rows'], $url, $e['own'], $rectif);
+    list($subject, $html) = buildCampaignMail($e['m'], $e['rows'], $url, $e['own'], $mode);
     if ($email === '') {
         // Relais : l'objet indique à qui transmettre
         $subject = 'À transmettre à ' . managerGreeting($e['m'], false) . ' - ' . $subject;
@@ -399,11 +396,11 @@ foreach ($list as $mid => $e) {
     $ok = sendCampaignMail($email, $subject, $html, $cc);
     $db->mail_campaigns->insertOne([
         'campaign' => $campaign, 'userId' => $e['m']['_id'], 'email' => $email, 'cc' => $cc, 'ok' => $ok,
-        'pendingTechs' => count($e['rows']), 'sentAt' => new UTCDateTime(),
+        'pendingTechs' => count($e['rows']), 'pendingEvals' => $e['mgrCount'], 'sentAt' => new UTCDateTime(),
     ]);
     $ok ? $sent++ : $failed++;
     echo ($ok ? '[OK]    ' : '[ÉCHEC] ') . $email . "\n";
 }
-echo "\nEnvoyés : $sent, déjà envoyés : $skipped, échecs : $failed\n";
+echo "\nEnvoyés : $sent, " . ($relance ? 'pas encore à échéance' : 'déjà envoyés') . " : $skipped, échecs : $failed\n";
 printCounter($db, $list);
 exit($failed > 0 ? 1 : 0);
