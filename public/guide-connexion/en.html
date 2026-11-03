@@ -3,44 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MEDACAP - Sign in</title>
+<title>MEDACAP - Sign in to MEDACAP</title>
 <style>
-  body { margin: 0; background: #F4F6F8; color: #1F2937; font: 16px/1.55 "Segoe UI", Arial, sans-serif; }
-  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
-  .card { background: #FFFFFF; border-top: 6px solid #D7000F; border-radius: 6px; padding: 24px 28px; }
-  h1 { margin: 0 0 4px; font-size: 24px; }
-  h2 { margin: 28px 0 8px; font-size: 19px; }
-  p { margin: 8px 0; }
-  .lead { color: #4B5563; }
+  :root { --red: #D7000F; --ink: #1F2937; --muted: #4B5563; --line: #9CA3AF; --mark: #FFC400; --ok: #047857; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F4F6F8; color: var(--ink); font: 16px/1.5 "Segoe UI", Arial, sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { margin: 0 0 6px; font-size: 26px; }
+  h2 { margin: 36px 0 12px; padding: 10px 14px; font-size: 19px; color: #fff; background: var(--red); border-radius: 8px; scroll-margin-top: 12px; }
   a { color: #1F5FBF; font-weight: 600; }
-  figure { margin: 12px 0 20px; }
-  img { display: block; max-width: 100%; height: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
-  .step { font-weight: 700; color: #D7000F; }
+  .addr { margin: 4px 0 0; color: var(--muted); }
+  .addr a { font-size: 20px; }
+  .q { margin: 24px 0 0; padding: 16px; background: #fff; border: 2px solid var(--ink); border-radius: 10px; text-align: center; font-weight: 700; font-size: 18px; }
+  .fork { display: flex; gap: 12px; margin-top: 12px; }
+  .fork a { flex: 1; display: block; padding: 12px; background: #fff; border: 2px solid var(--line); border-radius: 10px; text-align: center; color: var(--ink); font-weight: 400; text-decoration: none; }
+  .fork a span { display: block; margin-top: 6px; color: var(--red); font-weight: 700; }
+  .fork a:hover { border-color: var(--red); }
+  .step { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .step p { margin: 0 0 10px; }
+  .step img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .n { display: inline-block; min-width: 26px; height: 26px; margin: 0 4px 0 6px; padding: 0 6px; border-radius: 13px; background: var(--mark); color: #111; font-weight: 700; font-size: 14px; line-height: 26px; text-align: center; }
+  .step p .n:first-child { margin-left: 0; }
+  .alt { margin-top: 10px; padding: 10px 12px; border: 2px dashed var(--mark); border-radius: 8px; background: #FFFBEB; }
+  .arrow { position: relative; display: flex; justify-content: center; padding: 10px 0 22px; }
+  .arrow::before { content: ""; position: absolute; top: 0; bottom: 10px; left: 50%; width: 4px; margin-left: -2px; background: var(--line); }
+  .arrow::after { content: ""; position: absolute; bottom: 0; left: 50%; margin-left: -12px; border: 12px solid transparent; border-top: 14px solid var(--line); border-bottom: 0; }
+  .arrow span { position: relative; padding: 4px 12px; background: #F4F6F8; border: 2px solid var(--line); border-radius: 16px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .arrow.short { padding: 0; height: 34px; }
+  .done { padding: 14px; border-radius: 10px; background: #ECFDF5; border: 2px solid var(--ok); color: var(--ok); font-weight: 700; font-size: 18px; text-align: center; }
+  .ko { margin-top: 10px; color: var(--muted); font-size: 15px; }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 8px; }
+  @media (max-width: 480px) { .fork { flex-direction: column; } }
 </style>
 </head>
 <body>
 <main>
-  <div class="card">
-    <h1>Signing in to MEDACAP</h1>
-    <p class="lead">Address: <a href="/">http://10.68.0.15:8010/</a> (from a CFAO network computer)</p>
+  <h1>Sign in to MEDACAP</h1>
+  <p class="addr">Address to open from a CFAO network computer:<br><a href="/">http://10.68.0.15:8010/</a></p>
 
-    <h2>1. Username or email + password</h2>
-    <p>Type your username or your email address, then your password (it has not changed), and click <b>“Access your area”</b>.</p>
-    <figure><img src="etape1_en.jpg" width="560" alt="Password sign-in form"></figure>
-
-    <h2>2. Without a password, with a code sent by email</h2>
-    <p><span class="step">a.</span> Click <b>“Sign in with your email”</b>, enter your @cfao.com address, then <b>“Send me the code”</b>.</p>
-    <figure><img src="etape2_en.jpg" width="560" alt="Sign in with your email form"></figure>
-    <p><span class="step">b.</span> You receive an email <b>“MEDACAP - Your sign-in code”</b>: a 6-digit code (valid 10 minutes) and a button (30 minutes) that works from a CFAO network computer.</p>
-    <figure><img src="etape3_en.jpg" width="560" alt="Email containing the sign-in code"></figure>
-    <p><span class="step">c.</span> Type this code on the MEDACAP page you left open, then <b>“Verify code”</b>. The code is useful if you read the email somewhere other than your computer (phone): the button in the email only works on the CFAO network, the code works everywhere.</p>
-    <figure><img src="etape4_en.jpg" width="560" alt="Entering the code from the email"></figure>
-
-    <h2>3. Forgotten password</h2>
-    <p>Click <b>“Forgot your password?”</b> under the form and follow the same steps a, b and c.</p>
-
-    <p style="margin-top:28px;">Any problem? Write to <a href="mailto:jakaa-ext@cfao.com">jakaa-ext@cfao.com</a>.</p>
+  <div class="q">Do you know your MEDACAP password?</div>
+  <div class="fork">
+    <a href="#a"><b>YES</b>, I know it<span>Path A ↓</span></a>
+    <a href="#b"><b>NO</b>, not sure, or I forgot it<span>Path B ↓ (the easiest)</span></a>
   </div>
+
+  <h2 id="a">Path A — with my password</h2>
+  <div class="step"><p><span class="n">1</span> Type your @cfao.com email address <span class="n">2</span> Type your password <span class="n">3</span> Click <b>“Access your area”</b></p><img src="a1_en.jpg" alt="" loading="lazy"></div>
+  <div class="arrow short"></div>
+  <div class="done">✅ You are signed in</div>
+  <p class="ko">Password refused? Take <a href="#b">path B</a>.</p>
+
+  <h2 id="b">Path B — no password, with a code sent by email</h2>
+  <p>The “Forgot your password?” link leads to the same place: follow this path.</p>
+  <div class="step"><p><span class="n">1</span> Click <b>“Sign in with your email”</b>, at the bottom of the screen</p><img src="b1_en.jpg" alt="" loading="lazy"></div>
+  <div class="arrow"><span>A new screen opens</span></div>
+  <div class="step"><p><span class="n">2</span> Type your @cfao.com email address <span class="n">3</span> Click <b>“Send me the code”</b></p><img src="b2_en.jpg" alt="" loading="lazy"></div>
+  <div class="arrow"><span>Do not close this page. Open Outlook.</span></div>
+  <div class="step"><p><span class="n">4</span> Open the email <b>“MEDACAP - Your sign-in code”</b> and read the 6-digit code. No email? Check your <b>Junk Email</b> folder.</p><img src="b3_en.jpg" alt="" loading="lazy"><div class="alt"><span class="n">4b</span> Shortcut: if you read this email on your CFAO computer, just click <b>“Open my session”</b>. You are done, you are signed in.</div></div>
+  <div class="arrow"><span>Go back to the MEDACAP page you left open</span></div>
+  <div class="step"><p><span class="n">5</span> Type the code <span class="n">6</span> Click <b>“Verify code”</b></p><img src="b4_en.jpg" alt="" loading="lazy"></div>
+  <div class="arrow short"></div>
+  <div class="done">✅ You are signed in</div>
+
+  <h2 id="aide">Not working?</h2>
+  <ul><li><b>No email after 5 minutes</b> (Junk Email included): write to <a href="mailto:jakaa-ext@cfao.com">jakaa-ext@cfao.com</a>.</li><li><b>“Incorrect or expired code”</b>: a code lasts 10 minutes and only the latest one works. Click “Send again” and use the new email.</li><li><b>The page does not open</b>: you must be on a CFAO network computer.</li></ul>
 </main>
 </body>
 </html>
