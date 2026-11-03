@@ -5,6 +5,7 @@ require_once __DIR__ . '/../core/medacap_config.php';
  * qui a encore des évaluations ou des collaborateurs avec un test en attente.
  * Contenu : nouvelle adresse, ce qui reste à faire (tableau par collaborateur), méthodes de connexion.
  *
+ * Périmètre : techniciens CMI importés en juin/juillet 2026 (SCOPE_SUBSIDIARY, SCOPE_CREATED).
  * En attente = allocation Factuel/Declaratif d'un technicien actif (hors candidat), test actif, avec
  * active != true (test du technicien) ou, pour le déclaratif, activeManager != true (évaluation du manager).
  *
@@ -12,7 +13,8 @@ require_once __DIR__ . '/../core/medacap_config.php';
  *   php scripts/campagne_nouvelle_adresse.php                         simulation (liste, aucun envoi)
  *   php scripts/campagne_nouvelle_adresse.php --test=a@cfao.com [--manager=<id|email>]
  *                                                                     envoie le mail d'un seul manager à a@cfao.com
- *   php scripts/campagne_nouvelle_adresse.php --apply                 envoi réel, une seule fois par manager
+ *   php scripts/campagne_nouvelle_adresse.php --apply [--manager=<id|email>]  envoi réel (copie CAMPAIGN_CC), une seule fois par manager
+ *   ... --rectif --manager=<id|email> [--test=<adresse>|--apply]  liste corrigée (copie sans Laurent GONIN)
  *   --url=http://10.68.0.15:8010/                                     adresse annoncée (défaut : MEDACAP_PUBLIC_URL)
  */
 require __DIR__ . '/../vendor/autoload.php';
@@ -20,13 +22,30 @@ require_once __DIR__ . '/../views/sendMail.php';
 
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 
 const CAMPAIGN = 'nouvelle-adresse-2026-11';
 const OLD_ADDRESS = '10.68.0.7';
 const EN_COUNTRIES =['Rwanda', 'Kenya', 'Uganda', 'Tanzania', 'Ghana', 'Nigeria', 'Malawi', 'Zambia'];
+// Périmètre : techniciens CMI importés en juin/juillet 2026 (users.created au format « jj-mm-aaaa … »)
+// CMI = CFAO Mobility Cameroon : les deux libellés coexistent dans users.subsidiary
+const SCOPE_SUBSIDIARY = ['CAMEROON MOTORS INDUSTRIES', 'CFAO MOBILITY CAMEROON'];
+const SCOPE_CREATED = '^\d\d-0[67]-2026';
+// Copie de chaque envoi réel : Annick ETOLO, support (Laurent GONIN, M.C. BENGONO et A.Y. BOKALLY retirés pour éviter le spam)
+const CAMPAIGN_CC = ['aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
+// Manager sans adresse : mail adressé à Annick ETOLO, qui le fait suivre
+const RELAY_TO = 'aetolo-ext@cfao.com';
 
-$opts = getopt('', ['test:', 'manager:', 'apply', 'url:']);
+$opts = getopt('', ['test:', 'manager:', 'apply', 'url:', 'rectif']);
+// --rectif : liste corrigée aux managers déjà servis (--manager obligatoire), copie Annick ETOLO + support seulement
+$rectif = isset($opts['rectif']);
+if ($rectif && empty($opts['manager'])) {
+    fwrite(STDERR, "[ERREUR] --rectif exige --manager\n");
+    exit(1);
+}
+$campaign = $rectif ? CAMPAIGN . '-rectif' : CAMPAIGN;
+$cc = $rectif ? array_values(array_diff(CAMPAIGN_CC, ['lgonin@cfao.com', 'mcbengono@cfao.com', 'aybokally@cfao.com'])) : CAMPAIGN_CC;
 $testTo = isset($opts['test']) ? trim((string) $opts['test']) : '';
 $apply = isset($opts['apply']);
 $url = isset($opts['url']) ? rtrim((string) $opts['url'], '/') . '/' : medacapPublicUrl();
@@ -44,7 +63,10 @@ $db = (new Client($uri))->academy;
 echo "Mongo: $uri\nAdresse annoncée: $url\nMode: " . ($apply ? 'ENVOI' : ($testTo !== '' ? "TEST -> $testTo" : 'SIMULATION')) . "\n\n";
 
 $techs = [];
-foreach ($db->users->find(['profile' => 'Technicien', 'active' => true, 'isCandidat' => ['$ne' => true]]) as $t) {
+foreach ($db->users->find([
+    'profile' => 'Technicien', 'active' => true, 'isCandidat' => ['$ne' => true],
+    'subsidiary' => ['$in' => SCOPE_SUBSIDIARY], 'created' => new Regex(SCOPE_CREATED, ''),
+]) as $t) {
     $techs[(string) $t['_id']] = $t;
 }
 $techIds = array_map(function ($id) { return new ObjectId($id); }, array_keys($techs));
@@ -94,19 +116,34 @@ function h($s)
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 }
 
-function buildCampaignMail($manager, array $rows, $url, $ownTests)
+// « M. Clovis Forbang » / « Mme … » selon users.gender, nom remis en casse normale
+function managerGreeting($manager, $isEn)
 {
+    $civ = ['Masculin' => $isEn ? 'Mr' : 'M.', 'Feminin' => $isEn ? 'Ms' : 'Mme'];
+    $gender = (string) ($manager['gender'] ?? '');
+    $name = mb_convert_case(mb_strtolower(trim(($manager['firstName'] ?? '') . ' ' . ($manager['lastName'] ?? '')), 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
+    return trim((isset($civ[$gender]) ? $civ[$gender] : '') . ' ' . $name);
+}
+
+function buildCampaignMail($manager, array $rows, $url, $ownTests, $rectif = false)
+{
+    // Seules les évaluations du manager figurent dans le tableau
+    $rows = array_filter($rows, function ($r) { return $r['mgr']; });
     $isEn = in_array((string) ($manager['country'] ?? ''), EN_COUNTRIES, true);
     $L = $isEn ? [
         'subject' => 'MEDACAP has moved: new address and pending assessments',
         'title' => 'MEDACAP has a new address',
         'intro' => 'MEDACAP is now available at this address, from any computer on the CFAO network:',
         'old' => 'The former address (' . OLD_ADDRESS . ') is no longer in service. Please update your bookmarks.',
+        'rSubject' => 'Correction - MEDACAP: team members to evaluate',
+        'rTitle' => 'Correction',
+        'rIntro' => 'The list of team members to evaluate in our previous message was wrong, following a reassignment. Here is the updated list (' . count($rows) . ' team member(s)):',
+        'rLink' => 'MEDACAP is available at this address, from a CFAO network computer:',
         'todo' => 'What is still pending in your team',
         'todoIntro' => count($rows) . ' of your team members are still waiting for an action:',
-        'colName' => 'Team member', 'colMgr' => 'Your assessment', 'colTech' => 'Their test',
-        'yes' => 'To do', 'no' => 'Done',
-        'howEval' => 'To assess a team member: menu <b>“évaluer vos collaborateurs” › “Liste des collaborateurs à évaluer”</b>. Team members take their own tests with their own account.',
+        'todoOne' => 'You have 1 team member to evaluate:',
+        'colName' => 'Team member', 'colMgr' => 'Your assessment',
+        'yes' => 'To evaluate', 'no' => 'Evaluated',
         'own' => 'You also have ' . $ownTests . ' test(s) of your own to take: menu <b>“Mesure des compétences” › “Mes Tests à Passer”</b>.',
         'how' => 'How to sign in',
         'guide' => 'The steps below are simplified; the real screens are in the illustrated guide:',
@@ -119,15 +156,19 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests)
         'm3' => '<b>Forgotten password</b>: click <b>“Forgot your password?”</b> and follow the same 3 steps.',
         'cta' => 'Open MEDACAP',
     ] : [
+        'rSubject' => 'Rectificatif - MEDACAP : vos collaborateurs à évaluer',
+        'rTitle' => 'Rectificatif',
+        'rIntro' => 'La liste de vos collaborateurs à évaluer figurant dans notre précédent message était erronée, suite à une réaffectation. Voici la liste à jour (' . count($rows) . ' collaborateur(s)) :',
+        'rLink' => 'MEDACAP est accessible à cette adresse, depuis un poste du réseau CFAO :',
         'subject' => 'MEDACAP change d\'adresse : nouvelle adresse et évaluations en attente',
         'title' => 'MEDACAP change d\'adresse',
         'intro' => 'MEDACAP est désormais accessible à cette adresse, depuis un poste du réseau CFAO :',
         'old' => 'L\'ancienne adresse (' . OLD_ADDRESS . ') n\'est plus en service. Pensez à mettre à jour vos favoris.',
         'todo' => 'Ce qui reste à faire dans votre équipe',
         'todoIntro' => count($rows) . ' de vos collaborateurs attendent encore une action :',
-        'colName' => 'Collaborateur', 'colMgr' => 'Votre évaluation', 'colTech' => 'Son test',
-        'yes' => 'À faire', 'no' => 'Fait',
-        'howEval' => 'Pour évaluer un collaborateur : menu <b>« évaluer vos collaborateurs » › « Liste des collaborateurs à évaluer »</b>. Vos collaborateurs passent leurs tests avec leur propre compte.',
+        'todoOne' => 'Vous avez 1 collaborateur à évaluer :',
+        'colName' => 'Collaborateur', 'colMgr' => 'Votre évaluation',
+        'yes' => 'À évaluer', 'no' => 'Évalué',
         'own' => 'Vous avez aussi ' . $ownTests . ' test(s) à passer vous-même : menu <b>« Mesure des compétences » › « Mes Tests à Passer »</b>.',
         'how' => 'Comment vous connecter',
         'guide' => 'Les écrans ci-dessous sont simplifiés ; les vrais écrans sont dans le guide illustré :',
@@ -194,19 +235,25 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests)
     $table = '<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 12px;">'
         . '<tr style="background:#F4F6F8;text-align:left;">'
         . '<th style="' . $td . '">' . h($L['colName']) . '</th>'
-        . '<th style="' . $td . '">' . h($L['colMgr']) . '</th><th style="' . $td . '">' . h($L['colTech']) . '</th></tr>';
+        . '<th style="' . $td . '">' . h($L['colMgr']) . '</th></tr>';
     foreach ($rows as $r) {
         $table .= '<tr><td style="' . $td . '">' . h($r['name']) . '</td>'
-            . '<td style="' . $td . '">' . $badge($r['mgr']) . '</td><td style="' . $td . '">' . $badge($r['tech']) . '</td></tr>';
+            . '<td style="' . $td . '">' . $badge($r['mgr']) . '</td></tr>';
     }
     $table .= '</table>';
+    if (count($rows) === 1) {
+        // Un seul collaborateur : encadré plutôt qu'un tableau d'une ligne
+        $r = reset($rows);
+        $table = '<div style="margin:8px 0 12px;padding:12px 16px;background:#F4F6F8;border-left:4px solid #1F5FBF;font-size:15px;">'
+            . '<strong>' . h($r['name']) . '</strong> &mdash; ' . $badge($r['mgr']) . '</div>';
+        $L['todoIntro'] = $L['todoOne'];
+    }
 
     $message = '<p>' . $L['intro'] . '</p>'
         . '<p style="margin:12px 0;font-size:20px;font-weight:700;"><a href="' . h($url) . '" style="color:#1F5FBF;">' . h($url) . '</a></p>'
         . '<p>' . $L['old'] . '</p>'
-        . '<h3 style="margin:22px 0 6px;font-size:17px;">' . h($L['todo']) . '</h3>'
-        . '<p>' . h($L['todoIntro']) . '</p>' . $table
-        . '<p>' . $L['howEval'] . '</p>'
+        . ($rows ? '<h3 style="margin:22px 0 6px;font-size:17px;">' . h($L['todo']) . '</h3>'
+            . '<p>' . h($L['todoIntro']) . '</p>' . $table : '')
         . ($ownTests > 0 ? '<p>' . $L['own'] . '</p>' : '')
         . '<h3 style="margin:22px 0 6px;font-size:17px;">' . h($L['how']) . '</h3>'
         . '<p>' . $L['guide'] . ' <a href="' . h($url . 'public/guide-connexion/' . ($isEn ? 'en' : 'fr') . '.html') . '" style="color:#1F5FBF;font-weight:700;">' . h($L['guideLink']) . '</a></p>'
@@ -219,6 +266,13 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests)
         . '<li style="margin-bottom:8px;">' . $L['s3'] . $shot('etape4') . '</li>'
         . '</ol></li>'
         . '<li>' . $L['m3'] . '</li></ol>';
+    if ($rectif) {
+        // Rectificatif : liste corrigée et adresse seulement
+        $message = '<p>' . h($L['rIntro']) . '</p>' . $table
+            . '<p style="margin-top:18px;">' . h($L['rLink']) . ' <a href="' . h($url) . '" style="color:#1F5FBF;font-weight:700;">' . h($url) . '</a></p>';
+        $L['subject'] = $L['rSubject'];
+        $L['title'] = $L['rTitle'];
+    }
 
     $html = generateEmailTemplate([
         'lang' => $isEn ? 'en' : 'fr',
@@ -226,7 +280,7 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests)
         'companyTagline' => 'CFAO Mobility Academy',
         'teamName' => TEAM_NAME,
         'supportEmail' => SUPER_ADMIN_EMAIL,
-        'userName' => trim(($manager['firstName'] ?? '') . ' ' . ($manager['lastName'] ?? '')),
+        'userName' => managerGreeting($manager, $isEn),
         'title' => $L['title'],
         'message' => $message,
         'ctaText' => $L['cta'],
@@ -235,9 +289,10 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests)
     return [$L['subject'], $html];
 }
 
-function sendCampaignMail($to, $subject, $html)
+function sendCampaignMail($to, $subject, $html, array $cc = [])
 {
-    $headers = buildHeaders([], SUPER_ADMIN_EMAIL, false) . "\r\nContent-Transfer-Encoding: quoted-printable";
+    $cc = array_values(array_diff($cc, [$to]));
+    $headers = buildHeaders($cc, SUPER_ADMIN_EMAIL, false) . "\r\nContent-Transfer-Encoding: quoted-printable";
     return mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', quoted_printable_encode($html), $headers);
 }
 
@@ -289,35 +344,66 @@ if ($testTo !== '') {
         fwrite(STDERR, "[ERREUR] Manager introuvable : $want\n");
         exit(1);
     }
-    list($subject, $html) = buildCampaignMail($pick['m'], $pick['rows'], $url, $pick['own']);
+    list($subject, $html) = buildCampaignMail($pick['m'], $pick['rows'], $url, $pick['own'], $rectif);
     $ok = sendCampaignMail($testTo, '[TEST] ' . $subject, $html);
     echo "\nTest : mail de " . trim($pick['m']['firstName'] . ' ' . $pick['m']['lastName']) . " envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
     exit($ok ? 0 : 1);
 }
 
+// Compteur de campagne : mails réels envoyés (rectificatifs compris) et techniciens couverts
+function printCounter($db, array $list)
+{
+    $mails = $rectifs = $doneTechs = $doneManagers = $totalTechs = 0;
+    foreach ($db->mail_campaigns->find(['campaign' => ['$in' => [CAMPAIGN, CAMPAIGN . '-rectif']], 'ok' => true]) as $r) {
+        $mails++;
+        if ($r['campaign'] !== CAMPAIGN) {
+            $rectifs++;
+        }
+    }
+    foreach ($list as $e) {
+        $totalTechs += count($e['rows']);
+        if ($db->mail_campaigns->findOne(['campaign' => CAMPAIGN, 'userId' => $e['m']['_id'], 'ok' => true])) {
+            $doneManagers++;
+            $doneTechs += count($e['rows']);
+        }
+    }
+    echo "\n=== COMPTEUR ===\n"
+        . "Mails envoyés      : $mails (dont $rectifs rectificatif(s))\n"
+        . "Managers servis    : $doneManagers / " . count($list) . "\n"
+        . "Techniciens        : $doneTechs / $totalTechs\n";
+}
+
 if (!$apply) {
+    printCounter($db, $list);
     echo "\n[SIMULATION] Aucun envoi. --test=<adresse> pour un essai, --apply pour envoyer.\n";
     exit(0);
 }
 
+$want = isset($opts['manager']) ? strtolower(trim((string) $opts['manager'])) : '';
 $sent = $skipped = $failed = 0;
 foreach ($list as $mid => $e) {
     $email = trim((string) ($e['m']['email'] ?? ''));
-    if ($email === '') {
+    if ($want !== '' && $want !== strtolower($mid) && $want !== strtolower($email)) {
         continue;
     }
-    if ($db->mail_campaigns->findOne(['campaign' => CAMPAIGN, 'userId' => $e['m']['_id'], 'ok' => true])) {
+    if ($db->mail_campaigns->findOne(['campaign' => $campaign, 'userId' => $e['m']['_id'], 'ok' => true])) {
         $skipped++;
         continue;
     }
-    list($subject, $html) = buildCampaignMail($e['m'], $e['rows'], $url, $e['own']);
-    $ok = sendCampaignMail($email, $subject, $html);
+    list($subject, $html) = buildCampaignMail($e['m'], $e['rows'], $url, $e['own'], $rectif);
+    if ($email === '') {
+        // Relais : l'objet indique à qui transmettre
+        $subject = 'À transmettre à ' . managerGreeting($e['m'], false) . ' - ' . $subject;
+        $email = RELAY_TO;
+    }
+    $ok = sendCampaignMail($email, $subject, $html, $cc);
     $db->mail_campaigns->insertOne([
-        'campaign' => CAMPAIGN, 'userId' => $e['m']['_id'], 'email' => $email, 'ok' => $ok,
+        'campaign' => $campaign, 'userId' => $e['m']['_id'], 'email' => $email, 'cc' => $cc, 'ok' => $ok,
         'pendingTechs' => count($e['rows']), 'sentAt' => new UTCDateTime(),
     ]);
     $ok ? $sent++ : $failed++;
     echo ($ok ? '[OK]    ' : '[ÉCHEC] ') . $email . "\n";
 }
 echo "\nEnvoyés : $sent, déjà envoyés : $skipped, échecs : $failed\n";
+printCounter($db, $list);
 exit($failed > 0 ? 1 : 0);
