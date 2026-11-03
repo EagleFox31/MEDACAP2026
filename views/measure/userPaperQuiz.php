@@ -1690,6 +1690,9 @@ body.candidate-portal .container-xxl{
 .report-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);background:#0f172a;color:#fff;padding:.55rem .9rem;border-radius:10px;font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:10000}
 .report-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .orient-hint{color:#64748b;font-size:.9rem}
+/* Orientation à plus de 4 options : 2 colonnes pour limiter le défilement, 1 colonne sur mobile */
+.orient-opts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
+@media (max-width:768px){.orient-opts-grid{grid-template-columns:1fr}}
 .q-catchup-hidden{display:none!important}
 .catchup-banner{border-left:4px solid #f59e0b}
 /* Rattrapage : colonne unique + image réduite pour libérer de la place aux réponses */
@@ -1979,6 +1982,7 @@ body.candidate-portal .container-xxl{
               </div>
               <input type="hidden" name="orientationTag[]" value="<?php echo htmlspecialchars($oidStr); ?>">
 
+              <div class="<?php echo count($opts) > 4 ? 'orient-opts-grid' : ''; ?>">
               <?php foreach ($opts as $op): if(!is_string($op) || $op==='') continue;
                 $checked = in_array($op, $prevCh, true) ? ' checked' : ''; ?>
                 <label class="quiz-form__ans" style="margin:8px 0;">
@@ -1990,6 +1994,7 @@ body.candidate-portal .container-xxl{
                   <span class="text"><?php echo htmlspecialchars($op); ?></span>
                 </label>
               <?php endforeach; ?>
+              </div>
             </div>
             <?php endforeach; ?>
           </div>
