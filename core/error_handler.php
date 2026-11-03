@@ -294,3 +294,5 @@ register_shutdown_function(function () {
         error_log('[MEDACAP] enregistrement des warnings impossible : ' . $e->getMessage());
     }
 });
+
+require_once __DIR__ . '/presence.php';
