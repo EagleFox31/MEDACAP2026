@@ -87,6 +87,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     window.scrollTo(0, 0);
   }
+  // Adresse MEDACAP : fenêtre séparée (target=_blank seul n'ouvre qu'un onglet)
+  document.querySelector('.addr a').addEventListener('click', function (e) {
+    var w = window.open(this.href, '_blank', 'popup,left=0,top=0,width=' + screen.availWidth + ',height=' + screen.availHeight);
+    if (w) { w.opener = null; e.preventDefault(); }
+  });
   window.addEventListener('hashchange', show);
   document.addEventListener('keydown', function (e) {
     var cur = slides.filter(function (s) { return !s.hidden; })[0];
