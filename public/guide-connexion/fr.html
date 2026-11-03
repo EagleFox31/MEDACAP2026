@@ -3,44 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MEDACAP - Se connecter</title>
+<title>MEDACAP - Se connecter à MEDACAP</title>
 <style>
-  body { margin: 0; background: #F4F6F8; color: #1F2937; font: 16px/1.55 "Segoe UI", Arial, sans-serif; }
-  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
-  .card { background: #FFFFFF; border-top: 6px solid #D7000F; border-radius: 6px; padding: 24px 28px; }
-  h1 { margin: 0 0 4px; font-size: 24px; }
-  h2 { margin: 28px 0 8px; font-size: 19px; }
-  p { margin: 8px 0; }
-  .lead { color: #4B5563; }
+  :root { --red: #D7000F; --ink: #1F2937; --muted: #4B5563; --line: #9CA3AF; --mark: #FFC400; --ok: #047857; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F4F6F8; color: var(--ink); font: 16px/1.5 "Segoe UI", Arial, sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { margin: 0 0 6px; font-size: 26px; }
+  h2 { margin: 36px 0 12px; padding: 10px 14px; font-size: 19px; color: #fff; background: var(--red); border-radius: 8px; scroll-margin-top: 12px; }
   a { color: #1F5FBF; font-weight: 600; }
-  figure { margin: 12px 0 20px; }
-  img { display: block; max-width: 100%; height: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
-  .step { font-weight: 700; color: #D7000F; }
+  .addr { margin: 4px 0 0; color: var(--muted); }
+  .addr a { font-size: 20px; }
+  .q { margin: 24px 0 0; padding: 16px; background: #fff; border: 2px solid var(--ink); border-radius: 10px; text-align: center; font-weight: 700; font-size: 18px; }
+  .fork { display: flex; gap: 12px; margin-top: 12px; }
+  .fork a { flex: 1; display: block; padding: 12px; background: #fff; border: 2px solid var(--line); border-radius: 10px; text-align: center; color: var(--ink); font-weight: 400; text-decoration: none; }
+  .fork a span { display: block; margin-top: 6px; color: var(--red); font-weight: 700; }
+  .fork a:hover { border-color: var(--red); }
+  .step { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .step p { margin: 0 0 10px; }
+  .step img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .n { display: inline-block; min-width: 26px; height: 26px; margin: 0 4px 0 6px; padding: 0 6px; border-radius: 13px; background: var(--mark); color: #111; font-weight: 700; font-size: 14px; line-height: 26px; text-align: center; }
+  .step p .n:first-child { margin-left: 0; }
+  .alt { margin-top: 10px; padding: 10px 12px; border: 2px dashed var(--mark); border-radius: 8px; background: #FFFBEB; }
+  .arrow { position: relative; display: flex; justify-content: center; padding: 10px 0 22px; }
+  .arrow::before { content: ""; position: absolute; top: 0; bottom: 10px; left: 50%; width: 4px; margin-left: -2px; background: var(--line); }
+  .arrow::after { content: ""; position: absolute; bottom: 0; left: 50%; margin-left: -12px; border: 12px solid transparent; border-top: 14px solid var(--line); border-bottom: 0; }
+  .arrow span { position: relative; padding: 4px 12px; background: #F4F6F8; border: 2px solid var(--line); border-radius: 16px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .arrow.short { padding: 0; height: 34px; }
+  .done { padding: 14px; border-radius: 10px; background: #ECFDF5; border: 2px solid var(--ok); color: var(--ok); font-weight: 700; font-size: 18px; text-align: center; }
+  .ko { margin-top: 10px; color: var(--muted); font-size: 15px; }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 8px; }
+  @media (max-width: 480px) { .fork { flex-direction: column; } }
 </style>
 </head>
 <body>
 <main>
-  <div class="card">
-    <h1>Se connecter à MEDACAP</h1>
-    <p class="lead">Adresse : <a href="/">http://10.68.0.15:8010/</a> (depuis un poste du réseau CFAO)</p>
+  <h1>Se connecter à MEDACAP</h1>
+  <p class="addr">Adresse à ouvrir depuis un PC du réseau CFAO :<br><a href="/">http://10.68.0.15:8010/</a></p>
 
-    <h2>1. Identifiant ou adresse mail + mot de passe</h2>
-    <p>Saisissez votre identifiant ou votre adresse mail, puis votre mot de passe (il n'a pas changé), et cliquez sur <b>« Accedez à votre espace »</b>.</p>
-    <figure><img src="etape1_fr.jpg" width="560" alt="Formulaire de connexion par mot de passe"></figure>
-
-    <h2>2. Sans mot de passe, avec un code reçu par mail</h2>
-    <p><span class="step">a.</span> Cliquez sur <b>« Connectez-vous avec votre mail »</b>, saisissez votre adresse @cfao.com puis <b>« Recevoir le code »</b>.</p>
-    <figure><img src="etape2_fr.jpg" width="560" alt="Formulaire Connectez-vous avec votre mail"></figure>
-    <p><span class="step">b.</span> Vous recevez un mail <b>« MEDACAP - Votre code de connexion »</b> : un code à 6 chiffres (valable 10 minutes) et un bouton (30 minutes) utilisable depuis un poste du réseau CFAO.</p>
-    <figure><img src="etape3_fr.jpg" width="560" alt="Mail contenant le code de connexion"></figure>
-    <p><span class="step">c.</span> Tapez ce code sur la page MEDACAP restée ouverte, puis <b>« Valider le code »</b>. Le code sert notamment si vous lisez le mail ailleurs que sur votre poste (téléphone) : le bouton du mail ne marche que sur le réseau CFAO, le code marche partout.</p>
-    <figure><img src="etape4_fr.jpg" width="560" alt="Saisie du code reçu par mail"></figure>
-
-    <h2>3. Mot de passe oublié</h2>
-    <p>Cliquez sur <b>« Mot de passe oublié ? »</b> sous le formulaire et suivez les mêmes étapes a, b et c.</p>
-
-    <p style="margin-top:28px;">Un problème ? Écrivez à <a href="mailto:jakaa-ext@cfao.com">jakaa-ext@cfao.com</a>.</p>
+  <div class="q">Connaissez-vous votre mot de passe MEDACAP ?</div>
+  <div class="fork">
+    <a href="#a"><b>OUI</b>, je le connais<span>Chemin A ↓</span></a>
+    <a href="#b"><b>NON</b>, je ne sais pas, ou je l'ai oublié<span>Chemin B ↓ (le plus simple)</span></a>
   </div>
+
+  <h2 id="a">Chemin A — avec mon mot de passe</h2>
+  <div class="step"><p><span class="n">1</span> Tapez votre adresse mail @cfao.com <span class="n">2</span> Tapez votre mot de passe <span class="n">3</span> Cliquez sur <b>« Accedez à votre espace »</b></p><img src="a1_fr.jpg" alt="" loading="lazy"></div>
+  <div class="arrow short"></div>
+  <div class="done">✅ Vous êtes connecté</div>
+  <p class="ko">Mot de passe refusé ? Prenez le <a href="#b">chemin B</a>.</p>
+
+  <h2 id="b">Chemin B — sans mot de passe, avec un code reçu par mail</h2>
+  <p>Le lien « Mot de passe oublié ? » mène au même endroit : suivez ce chemin.</p>
+  <div class="step"><p><span class="n">1</span> Cliquez sur <b>« Connectez-vous avec votre mail »</b>, en bas de l'écran</p><img src="b1_fr.jpg" alt="" loading="lazy"></div>
+  <div class="arrow"><span>Un nouvel écran s'affiche</span></div>
+  <div class="step"><p><span class="n">2</span> Tapez votre adresse mail @cfao.com <span class="n">3</span> Cliquez sur <b>« Recevoir le code »</b></p><img src="b2_fr.jpg" alt="" loading="lazy"></div>
+  <div class="arrow"><span>Ne fermez pas cette page. Ouvrez Outlook.</span></div>
+  <div class="step"><p><span class="n">4</span> Ouvrez le mail <b>« MEDACAP - Votre code de connexion »</b> et lisez le code à 6 chiffres. Pas de mail ? Regardez dans <b>Courrier indésirable</b>.</p><img src="b3_fr.jpg" alt="" loading="lazy"><div class="alt"><span class="n">4b</span> Raccourci : si vous lisez ce mail sur votre PC CFAO, cliquez simplement sur <b>« Ouvrir ma session »</b>. C'est fini, vous êtes connecté.</div></div>
+  <div class="arrow"><span>Revenez sur la page MEDACAP restée ouverte</span></div>
+  <div class="step"><p><span class="n">5</span> Tapez le code <span class="n">6</span> Cliquez sur <b>« Valider le code »</b></p><img src="b4_fr.jpg" alt="" loading="lazy"></div>
+  <div class="arrow short"></div>
+  <div class="done">✅ Vous êtes connecté</div>
+
+  <h2 id="aide">Ça ne marche pas ?</h2>
+  <ul><li><b>Pas de mail après 5 minutes</b> (même dans Courrier indésirable) : écrivez à <a href="mailto:jakaa-ext@cfao.com">jakaa-ext@cfao.com</a>.</li><li><b>« Code incorrect ou expiré »</b> : le code dure 10 minutes et seul le dernier reçu marche. Cliquez sur « Renvoyer » et prenez le nouveau mail.</li><li><b>La page ne s'ouvre pas</b> : vous devez être sur un PC du réseau CFAO.</li></ul>
 </main>
 </body>
 </html>
