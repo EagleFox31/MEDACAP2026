@@ -61,6 +61,7 @@ function generateEmailTemplate(array $emailData): string
     $ctaLink2        = $emailData['ctaLink2']        ?? '#';
     $additionalInfo  = $emailData['additionalInfo']  ?? '';
     $supportEmail    = $emailData['supportEmail']    ?? SUPER_ADMIN_EMAIL;
+    $width           = (int) ($emailData['width']    ?? 600); // largeur max de la carte (px)
     $currentYear     = date('Y');
     $isEn            = isset($emailData['lang']) && $emailData['lang'] === 'en';
     $hello           = $isEn ? 'Hello' : 'Bonjour';
@@ -130,7 +131,8 @@ function generateEmailTemplate(array $emailData): string
     <table cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:#F4F6F8;padding:40px 20px;">
         <tr>
             <td align="center" valign="top">
-                <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);text-align:left;">
+                <!--[if mso]><table cellpadding="0" cellspacing="0" border="0" width="'.$width.'" align="center"><tr><td><![endif]-->
+                <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:'.$width.'px;background-color:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);text-align:left;">
                     <!-- Top accent bar -->
                     <tr>
                         <td style="height:6px;background-color:#D70006;line-height:6px;font-size:6px;">&nbsp;</td>
@@ -182,6 +184,7 @@ function generateEmailTemplate(array $emailData): string
                         </td>
                     </tr>
                 </table>
+                <!--[if mso]></td></tr></table><![endif]-->
             </td>
         </tr>
     </table>
