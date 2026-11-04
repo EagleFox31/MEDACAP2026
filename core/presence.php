@@ -32,6 +32,27 @@ register_shutdown_function(function () {
         return;
     }
     $now = time();
+    // Bouton « Déconnecter » de connectedUsers.php (users.sessionsRevokedAt) : une session ouverte avant la révocation
+    // est vidée à la fin de cette requête, la suivante renvoie à la page de connexion.
+    try {
+        $cursor = medacapErrManager()->executeQuery('academy.users', new MongoDB\Driver\Query(
+            array('_id' => new MongoDB\BSON\ObjectId($id), 'sessionsRevokedAt' => array('$exists' => true)),
+            array('projection' => array('sessionsRevokedAt' => 1), 'limit' => 1)
+        ));
+        foreach ($cursor as $u) {
+            $loginAt = isset($_SESSION['medacapLoginAt']) ? (int) $_SESSION['medacapLoginAt'] : 0;
+            if ($u->sessionsRevokedAt instanceof MongoDB\BSON\UTCDateTime
+                && $loginAt <= $u->sessionsRevokedAt->toDateTime()->getTimestamp()) {
+                $_SESSION = array();
+                if (session_status() === PHP_SESSION_ACTIVE) {
+                    session_destroy();
+                }
+                return;
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('[MEDACAP] presence (révocation) : ' . $e->getMessage());
+    }
     if (isset($_SESSION['medacapLastSeen']) && $now - (int) $_SESSION['medacapLastSeen'] < 60) {
         return;
     }

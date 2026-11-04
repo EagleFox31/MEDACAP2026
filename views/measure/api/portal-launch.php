@@ -56,6 +56,7 @@ try {
     $_SESSION['agency'] = $login['agency'] ?? null;
     $_SESSION['department'] = $login['department'] ?? null;
     $_SESSION['country'] = $login['country'] ?? null;
+    $_SESSION['medacapLoginAt'] = time();
 
     $guide = 'true';
     $params = http_build_query([

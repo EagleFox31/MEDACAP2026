@@ -60,6 +60,7 @@ try {
     $_SESSION['email'] = $login['email'] ?? '';
     $_SESSION['test'] = $login['test'] ?? false;
     $_SESSION['id'] = $userIdHex;
+    $_SESSION['medacapLoginAt'] = time();
     $_SESSION['subsidiary'] = $login['subsidiary'] ?? null;
     $_SESSION['agency'] = $login['agency'] ?? null;
     $_SESSION['department'] = $login['department'] ?? null;

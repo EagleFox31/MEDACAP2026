@@ -701,12 +701,24 @@ if (!$reviewMode && $_SERVER['REQUEST_METHOD']==='POST') {
       $as_tot = 0; foreach ($as_answers as $a) if ($a !== 'null' && $a !== '' && $a !== null) $as_tot++;
       $as_set['questions']=$as_qids; $as_set['answers']=$as_answers; $as_set['total']=$as_tot; $as_set['originalOrder']=$paperQOids;
     }
+    // Temps supplémentaire accordé depuis connectedUsers.php : proposé au candidat à chaque autosave tant qu'il n'a pas
+    // cliqué sur OK ; le chrono envoyé avec bonus_ack inclut déjà le bonus.
+    $as_reply = ['ok'=>true];
+    $as_update = [];
+    $as_bonus = ($exam && isset($exam['bonus']['status']) && $exam['bonus']['status'] === 'pending') ? $exam['bonus'] : null;
+    if ($as_bonus && post_str('bonus_ack','') === (string)$as_bonus['id']) {
+      $as_set['bonus.status'] = 'accepted';
+      $as_set['bonus.acceptedAt'] = date('Y-m-d H:i:s');
+      $as_update['$inc'] = ['bonusMinutes'=>(int)$as_bonus['minutes']];
+    } elseif ($as_bonus) {
+      $as_reply['bonus'] = ['id'=>(string)$as_bonus['id'], 'minutes'=>(int)$as_bonus['minutes']];
+    }
     if ($exam) {
-      $exams->updateOne(['_id'=>$exam['_id']], ['$set'=>$as_set]);
+      $exams->updateOne(['_id'=>$exam['_id']], array_merge(['$set'=>$as_set], $as_update));
     } else {
       $exams->insertOne(array_merge(['user'=>$userOid,'paper'=>$paperOid,'active'=>true,'created'=>date('Y-m-d H:i:s')], $as_set));
     }
-    echo json_encode(['ok'=>true]);
+    echo json_encode($as_reply);
     exit;
   }
 
@@ -2058,6 +2070,16 @@ body.candidate-portal .container-xxl{
       </div>
     </div>
   </div>
+
+  <div id="bonusModal" class="exit-modal" aria-hidden="true">
+    <div class="exit-modal-card" role="dialog" aria-modal="true" aria-labelledby="bonusModalTitle">
+      <h4 id="bonusModalTitle" class="exit-modal-title">Temps supplémentaire</h4>
+      <p id="bonusModalText" class="exit-modal-text"></p>
+      <div class="exit-modal-actions">
+        <button type="button" class="btn-modal-confirm" onclick="acceptBonus()">OK</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="reportToast" class="report-toast" role="status" aria-live="polite"></div>
 
@@ -2518,13 +2540,57 @@ function updateTotals(){
     answeredProgressFillEl.style.width = Math.min(100, Math.round((answered / total) * 100)) + '%';
   }
 }
+// Une sauvegarde à la fois : deux requêtes rapprochées peuvent être traitées dans le désordre et l'ancien état
+// écraserait le nouveau. Un clic pendant l'envoi relance une sauvegarde (état à jour) à la fin de celui-ci.
+var autoSaveBusy = false, autoSaveAgain = false;
 function autoSave(){
   if(isReview) return;
+  if (autoSaveBusy) { autoSaveAgain = true; return; }
+  autoSaveBusy = true;
   var fd=new FormData(formEl);
   fd.set('autosave','1');
   const paperId = new URLSearchParams(window.location.search).get('paper');
   if (paperId) fd.set('paper', paperId);
-  fetch(window.location.pathname + window.location.search,{method:'POST',body:fd,credentials:'same-origin'}).catch(function(){});
+  if (bonusAck) fd.set('bonus_ack', bonusAck);
+  // Session fermée (déconnexion depuis connectedUsers.php ou expirée) : la page renvoie vers la connexion
+  fetch(window.location.pathname + window.location.search,{method:'POST',body:fd,credentials:'same-origin'})
+    .then(function(r){
+      if (r.redirected) { window.location.href = r.url; return; }
+      // La réponse peut être précédée d'une balise <link> émise par un include : on lit le JSON à partir de {"ok"
+      return r.text().then(function(t){
+        var i = t.indexOf('{"ok"');
+        var j = i >= 0 ? JSON.parse(t.slice(i)) : null;
+        if (j && j.bonus) offerBonus(j.bonus); else if (j) bonusAck = '';
+      });
+    })
+    .catch(function(){})
+    .then(function(){
+      autoSaveBusy = false;
+      if (autoSaveAgain) { autoSaveAgain = false; autoSave(); }
+    });
+}
+// Sauvegarde aussi sans action du candidat : le temps supplémentaire lui parvient en moins d'une minute.
+if(!isReview){ setInterval(autoSave, 60000); }
+
+// Temps supplémentaire : ajouté au chrono au clic sur OK, confirmé au serveur par les autosaves suivants (bonus_ack).
+var bonusAck = '', bonusOffer = null;
+const bonusModalEl = document.getElementById('bonusModal');
+function offerBonus(b){
+  if (b.id === bonusAck || bonusOffer || !bonusModalEl) return;
+  bonusOffer = b;
+  document.getElementById('bonusModalText').textContent = b.minutes + ' minutes supplémentaires vous sont accordées pour cette épreuve.';
+  bonusModalEl.classList.add('show');
+  bonusModalEl.setAttribute('aria-hidden','false');
+}
+function acceptBonus(){
+  if (!bonusOffer) return;
+  time += bonusOffer.minutes * 60;
+  tick();
+  bonusAck = bonusOffer.id;
+  bonusOffer = null;
+  bonusModalEl.classList.remove('show');
+  bonusModalEl.setAttribute('aria-hidden','true');
+  autoSave();
 }
 function displayQuestionNumber(itemIndex) {
   const it = items[itemIndex];
