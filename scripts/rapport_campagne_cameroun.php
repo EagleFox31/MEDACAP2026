@@ -170,12 +170,13 @@ $html = generateEmailTemplate([
     'message' => $message,
     'ctaText' => 'Ouvrir MEDACAP',
     'ctaLink' => $url,
+    'width' => CAMPAIGN_MAIL_WIDTH,
 ]);
 $subject = 'MEDACAP - Suivi hebdomadaire Cameroun au ' . $now->format('d/m/Y');
 
 if ($testTo !== '') {
-    $html = preg_replace('/<body[^>]*>/i', '$0<div style="max-width:640px;margin:12px auto;padding:12px 16px;border:2px dashed #B45309;background:#FFFBEB;font-family:Arial,sans-serif;font-size:13px;color:#1F2937;">'
-        . '<b>[TEST] Rapport du vendredi, à valider</b><br>Destinataires, jour et heure de l\'envoi réel : à définir.</div>', $html, 1);
+    $html = preg_replace('/<body[^>]*>/i', '$0' . campagneTestBox(
+        '<b>[TEST] Rapport du vendredi, à valider</b><br>Destinataires, jour et heure de l\'envoi réel : à définir.'), $html, 1);
     $ok = sendCampaignMail($testTo, '[TEST] ' . $subject, $html, [], $attachments);
     echo "\nTest envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
     exit($ok ? 0 : 1);

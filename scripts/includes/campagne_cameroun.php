@@ -22,6 +22,16 @@ const CAMPAIGN_CC = ['aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
 // Manager sans adresse : mail adressé à Annick ETOLO, qui le fait suivre
 const RELAY_TO = 'aetolo-ext@cfao.com';
 const CAMPAIGN_TZ = 'Africa/Douala';
+// Largeur des mails de campagne (tableaux par manager) ; les autres mails MEDACAP restent à 600 px
+const CAMPAIGN_MAIL_WIDTH = 800;
+
+// Encadré « [TEST] » placé au-dessus du mail d'essai, à la largeur de la carte (table : Outlook ignore max-width sur un div)
+function campagneTestBox($innerHtml)
+{
+    return '<table cellpadding="0" cellspacing="0" border="0" width="' . CAMPAIGN_MAIL_WIDTH . '" align="center" style="width:100%;max-width:' . CAMPAIGN_MAIL_WIDTH . 'px;margin:12px auto;">'
+        . '<tr><td style="padding:12px 16px;border:2px dashed #B45309;background:#FFFBEB;font-family:Arial,sans-serif;font-size:13px;color:#1F2937;">'
+        . $innerHtml . '</td></tr></table>';
+}
 
 /**
  * Managers ayant des collaborateurs en attente, triés par filiale puis nom :

@@ -240,6 +240,7 @@ function buildCampaignMail($manager, array $rows, $url, $ownTests, $mode = '')
         'message' => $message,
         'ctaText' => $L['cta'],
         'ctaLink' => $url,
+        'width' => CAMPAIGN_MAIL_WIDTH,
     ]);
     return [$L['subject'], $html];
 }
@@ -309,13 +310,12 @@ function relanceTestBox(array $plan, array $list, $jours)
             . '<td style="' . $td . '">' . $list[$mid]['mgrCount'] . '</td>'
             . '<td style="' . $td . '"><b>' . $days[(int) $p['run']->format('N')] . ' ' . $p['run']->format('d/m') . '</b></td></tr>';
     }
-    return '<div style="max-width:640px;margin:12px auto;padding:12px 16px;border:2px dashed #B45309;background:#FFFBEB;font-family:Arial,sans-serif;font-size:13px;color:#1F2937;">'
-        . '<b>[TEST] Relance automatique, à valider</b><br>'
+    return campagneTestBox('<b>[TEST] Relance automatique, à valider</b><br>'
         . 'Envoi chaque jour ouvré à 8 h, ' . $jours . ' jours après le dernier mail reçu, tant que le manager a des évaluations à faire '
         . '(copie : ' . h(implode(', ', CAMPAIGN_CC)) . '). Ci-dessous, le mail tel qu\'il sera reçu par un manager.'
         . '<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin-top:8px;">'
         . '<tr style="text-align:left;background:#FEF3C7;"><th style="' . $td . '">Manager</th><th style="' . $td . '">Dernier mail</th>'
-        . '<th style="' . $td . '">Évaluations</th><th style="' . $td . '">Relance prévue</th></tr>' . $rows . '</table></div>';
+        . '<th style="' . $td . '">Évaluations</th><th style="' . $td . '">Relance prévue</th></tr>' . $rows . '</table>');
 }
 
 if ($testTo !== '') {
