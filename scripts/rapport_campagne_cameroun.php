@@ -164,7 +164,9 @@ $message = '<p>Voici l\'avancement au ' . $now->format('d/m/Y à H:i') . ' de la
     . '<h3 style="margin:18px 0 6px;font-size:17px;">Pièces jointes</h3>'
     . '<ul style="padding-left:20px;margin:0;">'
     . '<li><b>Suivi QCM</b> : statut de chaque QCM par technicien, tableau de bord, synthèse par agence.</li>'
-    . '<li><b>Résultats QCM</b> : notes théoriques, pratiques et globales par niveau.</li></ul>';
+    . '<li><b>Résultats QCM</b> : notes théoriques, pratiques et globales par niveau.</li></ul>'
+    // Adresse en texte, sans lien ni bouton : un lien http vers une IP fait bloquer les pièces jointes par Outlook (essais du 05/11)
+    . '<p style="margin:16px 0 0;">Adresse de MEDACAP, à saisir dans le navigateur : <b>' . h(preg_replace('#^https?://#', '', rtrim($url, '/'))) . '</b></p>';
 
 $html = generateEmailTemplate([
     'lang' => 'fr',
@@ -175,8 +177,6 @@ $html = generateEmailTemplate([
     'userName' => 'à tous',
     'title' => 'Suivi hebdomadaire - Cameroun',
     'message' => $message,
-    'ctaText' => 'Ouvrir MEDACAP',
-    'ctaLink' => $url,
     'width' => REPORT_MAIL_WIDTH,
 ]);
 $subject = 'MEDACAP - Suivi hebdomadaire Cameroun au ' . $now->format('d/m/Y');
