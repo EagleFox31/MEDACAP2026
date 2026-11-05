@@ -109,7 +109,8 @@ for ($i = 0; $i < 9; $i++) {
 
 // Sauvegarde du fichier
 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-$writer->setPreCalculateFormulas(false); // Laisser Excel calculer les formules fraîches
+// Valeurs calculées à l'écriture : une pièce jointe s'ouvre en mode protégé, où Excel ne recalcule pas (sinon tout à 0)
+$writer->setPreCalculateFormulas(true);
 $writer->setIncludeCharts(true);
 $writer->save($outPath);
 copy($outPath, $outFixed);
