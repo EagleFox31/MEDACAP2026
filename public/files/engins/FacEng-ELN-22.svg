@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#dc2626"/></marker>
+    <marker id="ai" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2563eb"/></marker>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="44" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">Alimentation d'une LED témoin</text>
+
+  <g stroke="#0f172a" stroke-width="4" fill="none">
+    <path d="M190 262 V160 H320"/>
+    <path d="M480 160 H600 V246"/>
+    <path d="M600 318 V440 H190 V298"/>
+  </g>
+
+  <!-- Batterie 24 V -->
+  <line x1="150" y1="262" x2="230" y2="262" stroke="#0f172a" stroke-width="5"/>
+  <line x1="170" y1="298" x2="210" y2="298" stroke="#0f172a" stroke-width="9"/>
+  <text x="240" y="258" font-size="20" font-weight="700" fill="#dc2626">+</text>
+  <text x="222" y="312" font-size="22" font-weight="700" fill="#0f172a">–</text>
+  <rect x="44" y="258" width="92" height="44" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+  <text x="90" y="288" text-anchor="middle" font-size="22" font-weight="800" fill="#991b1b">24 V</text>
+
+  <!-- Résistance -->
+  <rect x="320" y="138" width="160" height="44" fill="#fef3c7" stroke="#b45309" stroke-width="4"/>
+  <text x="400" y="122" text-anchor="middle" font-size="24" font-weight="800" fill="#92400e">R = ?</text>
+
+  <!-- LED -->
+  <path d="M570 246 H630 L600 300 Z" fill="#fecaca" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
+  <line x1="568" y1="302" x2="632" y2="302" stroke="#0f172a" stroke-width="5"/>
+  <line x1="600" y1="302" x2="600" y2="318" stroke="#0f172a" stroke-width="4"/>
+  <line x1="642" y1="258" x2="676" y2="236" stroke="#dc2626" stroke-width="3" marker-end="url(#ah)"/>
+  <line x1="642" y1="282" x2="676" y2="260" stroke="#dc2626" stroke-width="3" marker-end="url(#ah)"/>
+  <text x="652" y="300" font-size="20" font-weight="700" fill="#0f172a">LED témoin</text>
+  <text x="652" y="326" font-size="18" fill="#334155">2 V – 20 mA</text>
+
+  <!-- Courant -->
+  <line x1="510" y1="140" x2="570" y2="140" stroke="#2563eb" stroke-width="3" marker-end="url(#ai)"/>
+  <text x="540" y="128" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4ed8">I</text>
+</svg>

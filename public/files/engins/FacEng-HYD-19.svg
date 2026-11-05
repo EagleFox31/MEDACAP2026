@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0f172a"/></marker>
+    <marker id="ahls" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker>
+    <marker id="ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6d28d9"/></marker>
+    <linearGradient id="cy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>
+    <g id="tp">
+      <circle r="12" fill="#ffffff" stroke="#0f172a" stroke-width="3"/>
+      <circle r="4" fill="#0f172a"/>
+    </g>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="44" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">Circuit Load Sensing – points de mesure</text>
+
+  <!-- Réservoir -->
+  <path d="M60 462 V520 H300 V462" fill="#e0f2fe" stroke="#0f172a" stroke-width="4"/>
+  <text x="180" y="546" text-anchor="middle" font-size="17" fill="#334155">Réservoir</text>
+
+  <!-- Pompe à cylindrée variable + régulateur LS -->
+  <path d="M170 420 V495" stroke="#0f172a" stroke-width="4" fill="none"/>
+  <circle cx="170" cy="380" r="40" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+  <path d="M170 343 L183 366 L157 366 Z" fill="#0f172a"/>
+  <line x1="135" y1="420" x2="208" y2="338" stroke="#0f172a" stroke-width="3.5" marker-end="url(#ah)"/>
+  <text x="30" y="372" font-size="16" fill="#334155">Pompe</text>
+  <text x="30" y="392" font-size="16" fill="#334155">variable</text>
+  <rect x="240" y="360" width="110" height="56" fill="#fef3c7" stroke="#b45309" stroke-width="3"/>
+  <text x="295" y="385" text-anchor="middle" font-size="16" font-weight="700" fill="#78350f">Régulateur</text>
+  <text x="295" y="405" text-anchor="middle" font-size="16" font-weight="700" fill="#78350f">LS</text>
+  <line x1="210" y1="388" x2="240" y2="388" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5"/>
+
+  <!-- Refoulement pompe -> distributeur -->
+  <path d="M170 340 V230 H470" stroke="#0f172a" stroke-width="4" fill="none"/>
+  <circle cx="170" cy="230" r="7" fill="#0f172a"/>
+  <path d="M170 230 V176" stroke="#0f172a" stroke-width="3" fill="none"/>
+  <use href="#tp" x="170" y="164"/>
+  <text x="192" y="171" font-size="20" font-weight="800" fill="#0f172a">M1</text>
+
+  <!-- Distributeur -->
+  <rect x="470" y="190" width="150" height="90" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"/>
+  <text x="545" y="230" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Distributeur</text>
+  <text x="545" y="254" text-anchor="middle" font-size="16" fill="#334155">section levage</text>
+
+  <!-- Manipulateur et pilotage -->
+  <rect x="470" y="78" width="130" height="46" rx="6" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/>
+  <text x="535" y="107" text-anchor="middle" font-size="17" font-weight="700" fill="#4c1d95">Manipulateur</text>
+  <path d="M380 101 H470" stroke="#6d28d9" stroke-width="3" stroke-dasharray="8 5" fill="none" marker-end="url(#ahp)"/>
+  <text x="372" y="98" text-anchor="end" font-size="15" fill="#4c1d95">alimentation</text>
+  <text x="372" y="116" text-anchor="end" font-size="15" fill="#4c1d95">pilotage</text>
+  <path d="M505 124 V190" stroke="#6d28d9" stroke-width="3" stroke-dasharray="8 5" fill="none" marker-end="url(#ahp)"/>
+  <path d="M570 124 V190" stroke="#6d28d9" stroke-width="3" stroke-dasharray="8 5" fill="none" marker-end="url(#ahp)"/>
+  <circle cx="570" cy="156" r="5" fill="#6d28d9"/>
+  <path d="M570 156 H628" stroke="#6d28d9" stroke-width="3" fill="none"/>
+  <use href="#tp" x="640" y="156"/>
+  <text x="626" y="135" font-size="20" font-weight="800" fill="#0f172a">M3</text>
+
+  <!-- Vérin -->
+  <path d="M620 250 H660 V400 H690" fill="none" stroke="#0f172a" stroke-width="4"/>
+  <rect x="690" y="180" width="80" height="240" rx="6" fill="url(#cy)" stroke="#0f172a" stroke-width="3"/>
+  <rect x="696" y="292" width="68" height="16" fill="#475569"/>
+  <rect x="722" y="105" width="16" height="187" fill="#cbd5e1" stroke="#0f172a" stroke-width="2"/>
+  <rect x="680" y="68" width="100" height="38" rx="4" fill="#334155"/>
+  <text x="730" y="93" text-anchor="middle" font-size="16" fill="#ffffff">charge</text>
+
+  <!-- Ligne LS -->
+  <path d="M520 280 V320 H330 V358" fill="none" stroke="#b45309" stroke-width="3" stroke-dasharray="10 6" marker-end="url(#ahls)"/>
+  <text x="380" y="311" text-anchor="middle" font-size="17" fill="#b45309" font-weight="700">ligne LS</text>
+  <circle cx="450" cy="320" r="5" fill="#b45309"/>
+  <path d="M450 320 V340" stroke="#b45309" stroke-width="3" fill="none"/>
+  <use href="#tp" x="450" y="352"/>
+  <text x="472" y="359" font-size="20" font-weight="800" fill="#0f172a">M2</text>
+
+  <!-- Retour réservoir -->
+  <path d="M590 280 V440 H260 V478" fill="none" stroke="#0f172a" stroke-width="4" marker-end="url(#ah)"/>
+  <text x="530" y="432" text-anchor="middle" font-size="16" fill="#334155">retour</text>
+  <circle cx="420" cy="440" r="6" fill="#0f172a"/>
+  <path d="M420 440 V462" stroke="#0f172a" stroke-width="3" fill="none"/>
+  <use href="#tp" x="420" y="474"/>
+  <text x="442" y="481" font-size="20" font-weight="800" fill="#0f172a">M4</text>
+</svg>
