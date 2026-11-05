@@ -1,0 +1,100 @@
+name: CI .15
+
+# Repli de ci-github.yml sur le runner auto-hébergé de la .15 (Docker Desktop, PowerShell 5.1).
+# Appelé seulement si un job « CI GitHub » a échoué. Première étape : vérifier que ces jobs n'ont pas
+# démarré (runners GitHub bloqués, ex. facturation). S'ils ont tourné et échoué, c'est une vraie
+# erreur de code : ce job échoue aussi, sans rien refaire. Mêmes contrôles que ci-github.yml, en conteneurs.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  actions: read
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  checks:
+    name: Contrôles sur la .15
+    runs-on: [self-hosted, windows, medacap-015]
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WS: ${{ github.workspace }}
+    steps:
+      - name: Fins de ligne conservées (scripts shell)
+        run: |
+          if (Get-Command git -ErrorAction SilentlyContinue) { git config --global core.autocrlf false }
+          exit 0
+
+      - uses: actions/checkout@v4
+
+      - name: Runners GitHub indisponibles ?
+        id: repli
+        run: |
+          & .\scripts\ci\repli-necessaire.ps1 -Prefix 'CI GitHub'
+          exit $LASTEXITCODE
+
+      - name: PHP 8.4 - php -l et classes du moteur de quiz
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          docker run --rm -v "${env:WS}:/src" -w /src php:8.4-cli bash scripts/ci/php.sh
+          exit $LASTEXITCODE
+
+      - name: Scripts shell (bash -n)
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          docker run --rm -v "${env:WS}:/src" -w /src php:8.4-cli bash scripts/ci/shell.sh
+          exit $LASTEXITCODE
+
+      - name: Scripts shell exécutables dans Git
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          $h = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = 'application/vnd.github+json' }
+          $tree = Invoke-RestMethod -UseBasicParsing -Headers $h -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/git/trees/$env:GITHUB_SHA`?recursive=1"
+          $bad = @($tree.tree | Where-Object { $_.type -eq 'blob' -and ($_.path -eq 'deploy.sh' -or $_.path -like 'docker/mongo-init/*.sh') -and $_.mode -ne '100755' } | ForEach-Object { $_.path })
+          if ($bad.Count -gt 0) { Write-Host "::error::Bit exécutable perdu (git update-index --chmod=+x) : $($bad -join ', ')"; exit 1 }
+          Write-Host "Bits exécutables OK"
+
+      - name: Migrations Mongo (syntaxe JavaScript)
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          docker run --rm -v "${env:WS}:/src" -w /src node:20-alpine sh -c 'for f in docker/migrations/*.js; do node --check $f || exit 1; done'
+          exit $LASTEXITCODE
+
+      - name: Scripts PowerShell (analyse sans exécution)
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          $failed = $false
+          $files = Get-ChildItem -Recurse -File -Filter *.ps1 | Where-Object { $_.FullName -notmatch '\\(vendor|\.git)\\' }
+          foreach ($f in $files) {
+            $errors = $null
+            $text = [IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8)
+            [System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$errors) | Out-Null
+            $rel = $f.FullName.Substring($env:WS.Length + 1) -replace '\\', '/'
+            foreach ($e in $errors) { Write-Host "::error file=$rel,line=$($e.Extent.StartLineNumber)::$($e.Message)"; $failed = $true }
+          }
+          Write-Host "$($files.Count) scripts PowerShell analysés"
+          if ($failed) { exit 1 }
+
+      - name: docker-compose.server.yml valide
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $env:MEDACAP_TAG = 'ci'
+          docker compose -f docker-compose.server.yml --env-file .env.server.example config --quiet
+          exit $LASTEXITCODE
+
+      - name: Construction de l'image déployée sur la .15
+        if: ${{ !cancelled() && steps.repli.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          docker build --target server -f docker/Dockerfile -t medacap84-ci:latest .
+          exit $LASTEXITCODE

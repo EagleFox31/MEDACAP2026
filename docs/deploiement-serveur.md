@@ -65,6 +65,45 @@ docker compose -f docker-compose.server.yml --env-file .env.server ps
 Après un redémarrage du serveur, la stack ne repart qu'au lancement de Docker Desktop (session ouverte),
 comme les autres applications de la .15.
 
+### Déploiement automatique (GitHub Actions, runner auto-hébergé)
+
+Chaque push sur `main` (hors `docs/` et `*.md`) lance `.github/workflows/deploy-015.yml` :
+
+1. **CI** (`ci-github.yml`, aussi sur chaque PR via `pr.yml`) : syntaxe PHP 8.4 de tous les fichiers, scripts
+   shell/PowerShell, migrations, compose serveur, construction de l'image `server`. Un échec arrête tout : rien
+   n'est déployé. **Repli** : si les runners GitHub ne démarrent pas (facturation du compte), `ci-local.yml` refait
+   les mêmes contrôles (`scripts/ci/`) sur la .15, en conteneurs. Le repli n'a lieu que si les jobs GitHub
+   n'ont aucune étape (`scripts/ci/repli-necessaire.ps1`) ; une vraie erreur de code n'est jamais relancée.
+   En mode repli, l'exécution reste affichée « en échec » (jobs « CI GitHub » non démarrés) : le job
+   « CI .15 », le bilan du déploiement et le panneau Deployments font foi.
+2. **Déploiement** sur le runner `medacap-015` de la .15 : `.\deploy-server.ps1 <commit>` dans `E:\medacap84`
+   (sauvegarde, image, santé, retour arrière de `deploy.sh`).
+3. **Vérification en ligne** : `.deploy\current` = commit demandé, puis `http://localhost:8010/` répond 200
+   avec la page de connexion. Sinon, retour automatique à la version précédente.
+4. **Release** GitHub `vX.Y.Z` = la version en production. Base : plus haute entre le dernier tag et `VERSION` ;
+   branche `major/` ou « BREAKING » → majeure, branche `feat/` → mineure, sinon corrective. Notes : PR fusionnées.
+   Script `scripts/ci/release.sh` (git, curl, jq, API REST) : sur GitHub, ou sur la .15 dans `alpine` en repli.
+
+Retour : bilan du job (onglet Actions), panneau « Deployments » du dépôt (version en ligne et lien vers le site),
+e-mail GitHub en cas d'échec (Settings > Notifications > Actions). Le runner se connecte à GitHub en sortie
+(443) : aucun port ouvert sur le serveur. Un seul déploiement à la fois. Mises à jour des actions : Dependabot.
+Le fichier `VERSION` n'est pas réécrit par la release.
+
+Installation, une fois, PowerShell administrateur avec le compte qui fait tourner Docker Desktop :
+```powershell
+# Jeton : GitHub > dépôt > Settings > Actions > Runners > New self-hosted runner (valable 1 heure)
+E:\medacap84\scripts\installer-runner-015.ps1 -Token <jeton>
+```
+Le script vérifie le clone, la clé et Docker, télécharge le runner (empreinte SHA256 contrôlée) et
+l'installe en service Windows sous ce compte (mot de passe demandé).
+
+- Déploiement manuel ou retour à une version : GitHub > Actions > « Déploiement .15 » > Run workflow,
+  avec un commit (même effet que `.\deploy-server.ps1 <commit>`).
+- Docker Desktop arrêté (session fermée après un redémarrage) : le job échoue sur `docker` ; ouvrir la
+  session, puis relancer le job.
+- `DEPLOY_BRANCH` de `.env.server` doit rester `main`, la branche qui déclenche le workflow.
+- Clone ailleurs que `E:\medacap84` : variable de dépôt `MEDACAP_DIR` (Settings > Secrets and variables > Actions > Variables).
+
 ## Installation sur un serveur Linux (une fois)
 
 1. Proxy pour le démon Docker (téléchargement des images de base) :
@@ -99,9 +138,10 @@ comme les autres applications de la .15.
 
 ## Mises à jour
 
-Après chaque merge sur `main`, sur le serveur : `cd /opt/medacap84 && ./deploy.sh`. Le script récupère
-le dernier commit sur GitHub (via le proxy) et ne fait rien s'il est déjà en ligne. Rien ne tourne en tâche
-de fond : le serveur ne contacte GitHub que lorsqu'on lance le script.
+Sur la .15, automatique après chaque merge sur `main` (voir ci-dessus). Sur un serveur Linux,
+après chaque merge sur `main` : `cd /opt/medacap84 && ./deploy.sh`. Le script récupère
+le dernier commit sur GitHub (via le proxy) et ne fait rien s'il est déjà en ligne. Sur Linux, rien ne
+tourne en tâche de fond : le serveur ne contacte GitHub que lorsqu'on lance le script.
 
 Historique des versions : `.deploy/history`. Version en ligne : `.deploy/current`.
 

@@ -1,0 +1,28 @@
+name: CI
+
+# Contrôles de chaque PR vers main : runners GitHub, ou runner de la .15 s'ils ne démarrent pas.
+# En repli, le job « CI GitHub » reste rouge (non démarré) : c'est « CI .15 » qui fait foi.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-github:
+    name: CI GitHub
+    uses: ./.github/workflows/ci-github.yml
+
+  ci-local:
+    name: CI .15
+    needs: ci-github
+    if: ${{ !cancelled() && needs.ci-github.result == 'failure' }}
+    uses: ./.github/workflows/ci-local.yml

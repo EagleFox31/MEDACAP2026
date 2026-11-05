@@ -1,0 +1,68 @@
+name: CI GitHub
+
+# Contrôles du code sur les runners GitHub (ubuntu-latest). Appelé par pr.yml et deploy-015.yml.
+# Si ces runners ne démarrent pas (facturation du compte), ci-local.yml refait les mêmes contrôles sur la .15.
+# Les contrôles eux-mêmes sont dans scripts/ci/ pour être identiques des deux côtés.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP 8.4 - syntaxe de tous les fichiers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: none
+      - name: php -l et classes du moteur de quiz
+        run: bash scripts/ci/php.sh
+
+  scripts:
+    name: Scripts de déploiement et migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scripts shell (bash -n)
+        run: bash scripts/ci/shell.sh
+      - name: Scripts shell exécutables dans Git
+        run: |
+          bad=$(git ls-files -s 'deploy.sh' 'docker/mongo-init/*.sh' | awk '$1 != "100755" {print $4}')
+          if [ -n "$bad" ]; then echo "::error::Bit exécutable perdu (git update-index --chmod=+x) : $bad"; exit 1; fi
+      - name: Migrations Mongo (syntaxe JavaScript)
+        run: |
+          for f in docker/migrations/*.js; do node --check "$f" || exit 1; done
+      - name: Scripts PowerShell (analyse sans exécution)
+        shell: pwsh
+        run: |
+          $failed = $false
+          foreach ($f in git ls-files '*.ps1') {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f), [ref]$null, [ref]$errors) | Out-Null
+            foreach ($e in $errors) { Write-Output "::error file=$f,line=$($e.Extent.StartLineNumber)::$($e.Message)"; $failed = $true }
+          }
+          if ($failed) { exit 1 }
+
+  docker:
+    name: Image serveur (cible server) et compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker-compose.server.yml valide
+        run: MEDACAP_TAG=ci docker compose -f docker-compose.server.yml --env-file .env.server.example config --quiet
+      - uses: docker/setup-buildx-action@v3
+      - name: Construction de l'image déployée sur la .15
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          target: server
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

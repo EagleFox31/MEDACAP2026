@@ -1,0 +1,9 @@
+# Mises à jour des actions GitHub utilisées par la CI et le déploiement (PR hebdomadaire, testée par la CI).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
