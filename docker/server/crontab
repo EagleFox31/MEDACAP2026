@@ -3,3 +3,5 @@
 */15 * * * * php /var/www/html/cronjobs/check_paper_completion_threshold.php
 # Cache quotidien des résultats par filiale (resultSubsidiary.php).
 30 2 * * * php /var/www/html/cronjobs/generate_subsidiary_reports.php
+# Campagne Cameroun : relance des managers 3 jours après leur dernier mail, jours ouvrés à 8 h.
+0 8 * * 1-5 php /var/www/html/scripts/campagne_nouvelle_adresse.php --relance --apply
