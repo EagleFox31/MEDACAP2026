@@ -114,6 +114,49 @@ function paperReportComputeElapsedAndSpeed(array $paper, $global, $exam, int $an
     ];
 }
 
+function paperReportToTimestamp($v): ?int
+{
+    if ($v instanceof MongoDB\BSON\UTCDateTime) {
+        return (int) floor(((int) (string) $v) / 1000);
+    }
+    $s = paperReportToStr($v);
+    if ($s === '') {
+        return null;
+    }
+    $ts = strtotime($s);
+    return $ts === false ? null : $ts;
+}
+
+function paperReportCountAnswered($answers): int
+{
+    $count = 0;
+    foreach (paperReportToArr($answers) as $a) {
+        $s = paperReportToStr($a);
+        if ($s !== '' && $s !== 'null') {
+            $count++;
+        }
+    }
+    return $count;
+}
+
+/**
+ * Le results global est écrit au premier dépôt et n'est pas mis à jour après
+ * une réouverture ou un rattrapage : dans ce cas, l'exam porte les réponses à jour.
+ */
+function paperReportGlobalIsStale($global, $exam): bool
+{
+    if (!$global || !$exam) {
+        return false;
+    }
+    $examTs = paperReportToTimestamp($exam['updated'] ?? null);
+    $globalTs = paperReportToTimestamp($global['created'] ?? null);
+    if ($examTs !== null && $globalTs !== null && $examTs > $globalTs) {
+        return true;
+    }
+    return paperReportCountAnswered($exam['answers'] ?? [])
+        > paperReportCountAnswered($global['userAnswers'] ?? []);
+}
+
 function paperReportNormalizeAnswersByPaperIndex(array $paperQuestions, $global, $exam): array
 {
     $n = count($paperQuestions);
@@ -122,7 +165,7 @@ function paperReportNormalizeAnswersByPaperIndex(array $paperQuestions, $global,
         $out[$i] = ['answered' => false, 'correct' => false, 'user_answer' => ''];
     }
 
-    if ($global && isset($global['answers'])) {
+    if ($global && isset($global['answers']) && !paperReportGlobalIsStale($global, $exam)) {
         $resultAnswers = array_values(paperReportToArr($global['answers']));
         $resultQuestions = array_values(paperReportToArr($global['questions'] ?? []));
         $userAnswers = array_values(paperReportToArr($global['userAnswers'] ?? []));
@@ -374,6 +417,21 @@ function paperReportLoadPaperContext($db, MongoDB\BSON\ObjectId $paperId): ?arra
         }
     }
 
+    // Domaines demandés par le client (papers.domains) : remplacent les spécialités dans les notes
+    $domainOf = [];
+    $domainOrder = [];
+    foreach (paperReportToArr($paper['domains'] ?? []) as $dom) {
+        $dom = paperReportToArr($dom);
+        $dLabel = paperReportToStr($dom['label'] ?? '');
+        if ($dLabel === '') {
+            continue;
+        }
+        $domainOrder[] = $dLabel;
+        foreach (paperReportToArr($dom['questions'] ?? []) as $dq) {
+            $domainOf[(string) $dq] = $dLabel;
+        }
+    }
+
     $paperQuestions = [];
     $specialtyTotals = [];
     $levelTotals = ['Junior' => 0, 'Senior' => 0, 'Expert' => 0];
@@ -385,10 +443,11 @@ function paperReportLoadPaperContext($db, MongoDB\BSON\ObjectId $paperId): ?arra
             continue;
         }
         $qd = $qmap[$k];
-        $spec = paperReportToStr($qd['speciality'] ?? '');
-        if ($spec === '') {
-            $spec = '(Sans spécialité)';
+        $origSpec = paperReportToStr($qd['speciality'] ?? '');
+        if ($origSpec === '') {
+            $origSpec = '(Sans spécialité)';
         }
+        $spec = $domainOf !== [] ? ($domainOf[$k] ?? 'Autres') : $origSpec;
         $level = paperReportToStr($qd['level'] ?? '');
         if (!isset($levelTotals[$level])) {
             $level = 'Autre';
@@ -412,14 +471,32 @@ function paperReportLoadPaperContext($db, MongoDB\BSON\ObjectId $paperId): ?arra
             'label' => paperReportToStr($qd['label'] ?? ''),
             'level' => $level,
             'speciality' => $spec,
-            'groupe_fonctionnel' => $spec,
+            'groupe_fonctionnel' => $origSpec,
             'answer' => paperReportToStr($qd['answer'] ?? ''),
         ];
         $specialtyTotals[$spec] = ($specialtyTotals[$spec] ?? 0) + 1;
     }
-    ksort($specialtyTotals);
+    if ($domainOf !== []) {
+        // Ordre défini par le client, puis « Autres » s'il reste des questions hors domaine
+        $ordered = [];
+        foreach (array_merge($domainOrder, ['Autres']) as $dLabel) {
+            if (isset($specialtyTotals[$dLabel])) {
+                $ordered[$dLabel] = $specialtyTotals[$dLabel];
+            }
+        }
+        $specialtyTotals = $ordered;
+    } else {
+        ksort($specialtyTotals);
+    }
     $specialtyList = array_keys($specialtyTotals);
-    $macroMap = paperBuildMacroMap($specialtyList);
+    if ($domainOf !== []) {
+        $macroMap = [];
+        foreach ($specialtyList as $dLabel) {
+            $macroMap[$dLabel] = [$dLabel];
+        }
+    } else {
+        $macroMap = paperBuildMacroMap($specialtyList);
+    }
 
     return [
         'paper' => $paper,
@@ -434,6 +511,7 @@ function paperReportLoadPaperContext($db, MongoDB\BSON\ObjectId $paperId): ?arra
         'specialty_level_totals' => $specialtyLevelTotals,
         'level_totals' => $levelTotals,
         'macro_map' => $macroMap,
+        'has_domains' => $domainOf !== [],
         'q_total' => count($paperQuestions),
     ];
 }
@@ -483,6 +561,15 @@ function paperReportBuildCandidateData(
         $status = 'Terminé';
         $finishedAt = paperReportToStr($global['created'] ?? '');
         $timeSpent = paperReportToStr($global['time'] ?? '');
+        if (paperReportGlobalIsStale($global, $exam)) {
+            $finishedAt = paperReportToStr($exam['updated'] ?? $finishedAt);
+            $timeSpent = sprintf(
+                '%02d:%02d:%02d',
+                (int) ($exam['hour'] ?? 0),
+                (int) ($exam['minute'] ?? 0),
+                (int) ($exam['second'] ?? 0)
+            );
+        }
     } elseif ($allocStatus === 'done' || ($exam && empty($exam['active']))) {
         $status = 'Terminé';
         $finishedAt = paperReportToStr($alloc['finishedAt'] ?? $exam['updated'] ?? $alloc['updated'] ?? $exam['created'] ?? '');

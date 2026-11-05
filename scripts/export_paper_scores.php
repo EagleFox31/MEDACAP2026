@@ -6,6 +6,7 @@ require_once __DIR__ . '/../core/medacap_config.php';
  * Usage:
  *   php scripts/export_paper_scores.php --paper-id=6a82dbf45b3b2bb665098ec2
  *   php scripts/export_paper_scores.php --paper-ids=6a82dbf45b3b2bb665098ec2,6a82dafa726d3580f703ecc2
+ *   Options : --db=dump1105 (copie restaurée d'un dump) --out-dir=/var/www/html/output
  */
 
 if (defined('MEDACAP_PAPER_SCORES_LOADED')) {
@@ -54,9 +55,11 @@ $paperIdStr = (string) argValue($argv, 'paper-id', '');
 $paperIdsStr = (string) argValue($argv, 'paper-ids', '');
 $mongoUri = (string) argValue($argv, 'mongo-uri', medacapMongoUri('mongodb://10.68.0.7:27017'));
 $bundleLabel = argValue($argv, 'label');
+$dbName = (string) argValue($argv, 'db', 'academy');
+$outDir = argValue($argv, 'out-dir');
 
 $client = new Client($mongoUri);
-$db = $client->academy;
+$db = $client->selectDatabase($dbName);
 
 try {
     if ($paperIdsStr !== '') {
@@ -70,7 +73,7 @@ try {
         if ($ids === array()) {
             throw new RuntimeException('No valid --paper-ids');
         }
-        $result = paperReportExportMultiExcel($db, $ids, null, $bundleLabel);
+        $result = paperReportExportMultiExcel($db, $ids, $outDir, $bundleLabel);
         echo json_encode(array(
             'ok' => true,
             'mode' => 'multi',
@@ -89,7 +92,7 @@ try {
         exit(1);
     }
 
-    $result = paperReportExportExcel($db, new ObjectId($paperIdStr));
+    $result = paperReportExportExcel($db, new ObjectId($paperIdStr), $outDir);
 } catch (RuntimeException $e) {
     fwrite(STDERR, "ERROR: " . $e->getMessage() . "\n");
     exit(1);
