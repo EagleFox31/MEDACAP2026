@@ -1,0 +1,219 @@
+name: Déploiement .15
+
+# Push sur main -> CI (ci.yml) -> déploiement sur la .15 par le runner auto-hébergé (connexion sortante
+# vers GitHub, aucun port ouvert) -> vérification en ligne -> retour arrière si le site ne répond pas.
+# deploy-server.ps1 garde sa sauvegarde, son contrôle de santé et son retour arrière.
+# Suivi : onglet Actions (bilan du job), panneau « Deployments » du dépôt, e-mail GitHub en cas d'échec.
+# Voir docs/deploiement-serveur.md.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: "Commit à déployer (vide = dernier commit de main ; sert aussi au retour à une version)"
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  deployments: write
+
+# Exécutions en file, jamais en parallèle ni interrompues : un push arrivé pendant un déploiement attend,
+# et seul le plus récent des pushs en attente est déployé.
+concurrency:
+  group: deploy-015
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Déploiement sur la .15
+    needs: ci
+    runs-on: [self-hosted, windows, medacap-015]
+    timeout-minutes: 45
+    env:
+      MEDACAP_DIR: ${{ vars.MEDACAP_DIR || 'E:\medacap84' }}
+      DEPLOY_SHA: ${{ github.event.inputs.commit || github.sha }}
+      SMOKE_URL: ${{ vars.SMOKE_URL || 'http://localhost:8010/' }}
+      PROD_URL: ${{ vars.PROD_URL || 'http://10.68.0.15:8010/' }}
+      GH_TOKEN: ${{ github.token }}
+      GH_API: ${{ github.api_url }}/repos/${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Préparer
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Set-Location -LiteralPath $env:MEDACAP_DIR
+          if (-not (Test-Path .\deploy-server.ps1)) { throw "deploy-server.ps1 absent de $env:MEDACAP_DIR" }
+          $prev = ''
+          if (Test-Path .deploy\current) { $prev = (Get-Content .deploy\current -TotalCount 1).Trim() }
+          Add-Content -Path $env:GITHUB_ENV -Encoding Ascii -Value "PREVIOUS_SHA=$prev"
+          Add-Content -Path $env:GITHUB_ENV -Encoding Ascii -Value "STARTED_AT=$((Get-Date).ToString('o'))"
+          Write-Host "Version en ligne avant deploiement : $prev"
+          # Entrée dans le panneau Deployments ; un échec de l'API n'empêche pas le déploiement.
+          try {
+            $h = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = 'application/vnd.github+json' }
+            $body = @{ ref = $env:DEPLOY_SHA; environment = 'production'; production_environment = $true
+                       auto_merge = $false; required_contexts = @(); description = 'MEDACAP 8.4 sur la .15' } | ConvertTo-Json
+            $d = Invoke-RestMethod -UseBasicParsing -Method Post -Uri "$env:GH_API/deployments" -Headers $h -Body $body -ContentType 'application/json'
+            Add-Content -Path $env:GITHUB_ENV -Encoding Ascii -Value "DEPLOYMENT_ID=$($d.id)"
+            $s = @{ state = 'in_progress'; log_url = $env:RUN_URL; environment_url = $env:PROD_URL } | ConvertTo-Json
+            Invoke-RestMethod -UseBasicParsing -Method Post -Uri "$env:GH_API/deployments/$($d.id)/statuses" -Headers $h -Body $s -ContentType 'application/json' | Out-Null
+          } catch { Write-Warning "Suivi GitHub Deployments indisponible : $($_.Exception.Message)" }
+
+      - name: Déployer
+        id: deploy
+        shell: powershell
+        run: |
+          # Docker écrit sa progression sur stderr : ne pas la traiter comme une erreur.
+          $ErrorActionPreference = 'Continue'
+          Set-Location -LiteralPath $env:MEDACAP_DIR -ErrorAction Stop
+          & .\deploy-server.ps1 $env:DEPLOY_SHA
+          exit $LASTEXITCODE
+
+      - name: Vérifier en ligne
+        id: smoke
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-Location -LiteralPath $env:MEDACAP_DIR
+          $current = (Get-Content .deploy\current -TotalCount 1).Trim()
+          if (-not $current.StartsWith($env:DEPLOY_SHA)) { throw "Version en ligne $current au lieu de $env:DEPLOY_SHA" }
+          $last = ''
+          for ($i = 1; $i -le 10; $i++) {
+            try {
+              $r = Invoke-WebRequest -UseBasicParsing -Uri $env:SMOKE_URL -TimeoutSec 20
+              if ($r.StatusCode -eq 200 -and $r.Content -match 'CFAO Academy' -and $r.Content -notmatch 'Fatal error|Uncaught') {
+                Write-Host "Site OK ($env:SMOKE_URL, essai $i) - version $($current.Substring(0, 12))"
+                exit 0
+              }
+              $last = "HTTP $($r.StatusCode), page inattendue"
+            } catch { $last = $_.Exception.Message }
+            Write-Host "Essai $i : $last"
+            Start-Sleep -Seconds 6
+          }
+          throw "Le site ne repond pas correctement : $last"
+
+      - name: Retour à la version précédente
+        id: rollback
+        if: failure() && steps.smoke.outcome == 'failure' && env.PREVIOUS_SHA != '' && !startsWith(env.PREVIOUS_SHA, env.DEPLOY_SHA)
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          Set-Location -LiteralPath $env:MEDACAP_DIR -ErrorAction Stop
+          Write-Host "Retour a $env:PREVIOUS_SHA"
+          & .\deploy-server.ps1 $env:PREVIOUS_SHA
+          exit $LASTEXITCODE
+
+      - name: Bilan
+        if: always()
+        shell: powershell
+        env:
+          JOB_STATUS: ${{ job.status }}
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          ROLLBACK_OUTCOME: ${{ steps.rollback.outcome }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          ACTOR: ${{ github.actor }}
+          T_OK: "✅ Déployé et vérifié en ligne"
+          T_KO: "❌ Déploiement en échec"
+          T_CANCEL: "⚠️ Déploiement annulé"
+          T_DEPLOY_KO: "deploy-server.ps1 a échoué : la version précédente a été remise en service par deploy.sh."
+          T_SMOKE_KO: "Le site ne répondait pas correctement après le déploiement."
+          T_RB_OK: "Retour à la version précédente : effectué."
+          T_RB_KO: "Retour à la version précédente : ÉCHEC, intervention manuelle nécessaire."
+          T_HEAD: |
+            | | |
+            |---|---|
+            | Résultat | {0} |
+            | Commit demandé | `{1}` {2} |
+            | Version en ligne | `{3}` |
+            | Version précédente | `{4}` |
+            | Durée | {5} |
+            | Site | {6} |
+            | Lancé par | {7} |
+        run: |
+          $ErrorActionPreference = 'Continue'
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Set-Location -LiteralPath $env:MEDACAP_DIR
+          $current = ''
+          if (Test-Path .deploy\current) { $current = (Get-Content .deploy\current -TotalCount 1).Trim() }
+          $title = switch ($env:JOB_STATUS) { 'success' { $env:T_OK } 'cancelled' { $env:T_CANCEL } default { $env:T_KO } }
+          $duration = ''
+          if ($env:STARTED_AT) { $duration = '{0:mm\:ss}' -f ((Get-Date) - [DateTime]::Parse($env:STARTED_AT)) }
+          $msg = ''
+          if ($env:COMMIT_MSG) { $msg = ($env:COMMIT_MSG -split "`n")[0] }
+          $short = { param($s) if ($s.Length -ge 12) { $s.Substring(0, 12) } else { $s } }
+          $md = "## $title`n`n" + ($env:T_HEAD -f $title, (& $short $env:DEPLOY_SHA), $msg, (& $short $current), (& $short $env:PREVIOUS_SHA), $duration, $env:PROD_URL, $env:ACTOR) + "`n"
+          if ($env:DEPLOY_OUTCOME -eq 'failure') { $md += "`n- $env:T_DEPLOY_KO" }
+          if ($env:SMOKE_OUTCOME -eq 'failure') { $md += "`n- $env:T_SMOKE_KO" }
+          if ($env:ROLLBACK_OUTCOME -eq 'success') { $md += "`n- $env:T_RB_OK" }
+          if ($env:ROLLBACK_OUTCOME -eq 'failure') { $md += "`n- $env:T_RB_KO" }
+          if (Test-Path .deploy\history) { $md += "`n`n``````text`n" + ((Get-Content .deploy\history -Tail 5) -join "`n") + "`n``````" }
+          [IO.File]::AppendAllText($env:GITHUB_STEP_SUMMARY, $md + "`n", (New-Object Text.UTF8Encoding($false)))
+          if ($env:DEPLOYMENT_ID) {
+            try {
+              $state = switch ($env:JOB_STATUS) { 'success' { 'success' } 'cancelled' { 'error' } default { 'failure' } }
+              $h = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = 'application/vnd.github+json' }
+              $s = @{ state = $state; log_url = $env:RUN_URL; environment_url = $env:PROD_URL; description = (& $short $current) } | ConvertTo-Json
+              Invoke-RestMethod -UseBasicParsing -Method Post -Uri "$env:GH_API/deployments/$env:DEPLOYMENT_ID/statuses" -Headers $h -Body $s -ContentType 'application/json' | Out-Null
+            } catch { Write-Warning "Statut GitHub Deployments non mis a jour : $($_.Exception.Message)" }
+          }
+
+  # Release = ce qui est en production. Version SemVer calculée depuis la plus haute de : dernier tag vX.Y.Z,
+  # fichier VERSION. Depuis la dernière release : branche ou commit « major/ » ou « BREAKING » -> majeure,
+  # branche « feat/ » ou commit « feat: » -> mineure, sinon corrective. Notes = PR fusionnées (GitHub).
+  release:
+    name: Release
+    needs: deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Calculer la version et publier la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ -n "$(git tag --points-at "$SHA" --list 'v*')" ]; then
+            echo "Commit déjà publié : $(git tag --points-at "$SHA" --list 'v*')"; exit 0
+          fi
+          last_tag=$(git tag --merged "$SHA" --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1)
+          file_version=$(tr -d ' \r\n' < VERSION 2>/dev/null || true)
+          base=$(printf '%s\n%s\n' "${last_tag#v}" "$file_version" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1)
+          base=${base:-0.0.0}
+          range="$SHA"; [ -n "$last_tag" ] && range="$last_tag..$SHA"
+          subjects=$(git log --format='%s%n%b' "$range")
+          IFS=. read -r major minor patch <<< "$base"
+          if grep -qiE 'BREAKING|^Merge pull request #[0-9]+ from [^/]+/major/' <<< "$subjects"; then
+            major=$((major + 1)); minor=0; patch=0; kind=majeure
+          elif grep -qE '^feat(\(.+\))?!?:|^Merge pull request #[0-9]+ from [^/]+/feat/' <<< "$subjects"; then
+            minor=$((minor + 1)); patch=0; kind=mineure
+          else
+            patch=$((patch + 1)); kind=corrective
+          fi
+          tag="v$major.$minor.$patch"
+          echo "Base $base (dernier tag : ${last_tag:-aucun}, VERSION : ${file_version:-absent}) -> $tag ($kind)"
+          notes_args=(--generate-notes)
+          [ -n "$last_tag" ] && notes_args+=(--notes-start-tag "$last_tag")
+          gh release create "$tag" --target "$SHA" --title "MEDACAP $tag" "${notes_args[@]}" --latest
+          {
+            echo "## Release $tag ($kind)"
+            echo
+            echo "${{ github.server_url }}/${{ github.repository }}/releases/tag/$tag"
+          } >> "$GITHUB_STEP_SUMMARY"

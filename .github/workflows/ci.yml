@@ -1,0 +1,88 @@
+name: CI
+
+# Contrôles du code, sur chaque PR vers main et avant chaque déploiement (appelé par deploy-015.yml).
+# Remplace l'ancien medacap84-smoke.yml, limité à quelques fichiers.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP 8.4 - syntaxe de tous les fichiers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: none
+      - name: php -l sur chaque fichier PHP suivi par Git
+        run: |
+          git ls-files -z '*.php' ':(exclude)vendor/**' > /tmp/php-files
+          echo "$(tr -cd '\0' < /tmp/php-files | wc -c) fichiers PHP"
+          failed=0
+          while IFS= read -r -d '' f; do
+            out=$(php -l "$f" 2>&1) || { echo "::error file=$f::$out"; failed=1; }
+          done < /tmp/php-files
+          exit $failed
+      - name: Classes du moteur de quiz présentes
+        run: |
+          php -r '
+            require "views/measure/includes/quiz_validator.php";
+            require "views/measure/includes/quiz_factuel_engine.php";
+            foreach (["QuizConstants","QuizValidator","QuizDataFetcher","QuizPercentageCalculator","QuizQuestionGenerator","QuizResultProcessor"] as $c) {
+              if (!class_exists($c)) { fwrite(STDERR, "Classe absente : $c\n"); exit(1); }
+            }
+            echo "Classes du quiz OK\n";
+          '
+
+  scripts:
+    name: Scripts de déploiement et migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scripts shell (bash -n)
+        run: |
+          git ls-files -z 'deploy.sh' '*.sh' | xargs -0 -r -n1 bash -n
+      - name: Scripts shell exécutables dans Git
+        run: |
+          bad=$(git ls-files -s 'deploy.sh' 'docker/mongo-init/*.sh' | awk '$1 != "100755" {print $4}')
+          if [ -n "$bad" ]; then echo "::error::Bit exécutable perdu (git update-index --chmod=+x) : $bad"; exit 1; fi
+      - name: Migrations Mongo (syntaxe JavaScript)
+        run: |
+          for f in docker/migrations/*.js; do node --check "$f" || exit 1; done
+      - name: Scripts PowerShell (analyse sans exécution)
+        shell: pwsh
+        run: |
+          $failed = $false
+          foreach ($f in git ls-files '*.ps1') {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f), [ref]$null, [ref]$errors) | Out-Null
+            foreach ($e in $errors) { Write-Output "::error file=$f,line=$($e.Extent.StartLineNumber)::$($e.Message)"; $failed = $true }
+          }
+          if ($failed) { exit 1 }
+
+  docker:
+    name: Image serveur (cible server) et compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker-compose.server.yml valide
+        run: MEDACAP_TAG=ci docker compose -f docker-compose.server.yml --env-file .env.server.example config --quiet
+      - uses: docker/setup-buildx-action@v3
+      - name: Construction de l'image déployée sur la .15
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          target: server
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
