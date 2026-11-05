@@ -20,6 +20,8 @@ function medacapOpenLoginSession($login, $connections)
     $_SESSION['agency'] = isset($login['agency']) ? $login['agency'] : '';
     $_SESSION['department'] = isset($login['department']) ? $login['department'] : '';
     $_SESSION['country'] = isset($login['country']) ? $login['country'] : '';
+    // Comparé à users.sessionsRevokedAt par core/presence.php (bouton « Déconnecter » de connectedUsers.php)
+    $_SESSION['medacapLoginAt'] = time();
 
     $userId = new MongoDB\BSON\ObjectId((string) $_SESSION['id']);
     $userConnected = $connections->findOne(array(
