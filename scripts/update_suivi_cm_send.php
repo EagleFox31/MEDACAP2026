@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../core/medacap_config.php';
 /**
- * Met à jour le classeur de suivi complet (avec Tableau de bord) pour CFAO Cameroun.
+ * Met à jour le classeur de suivi pour CFAO Cameroun.
  * Prend le modèle `suivi_qcm_techniciens_cm_2026-08-27_151656-send.xlsx`,
  * réactualise les statuts des 37 techniciens depuis Mongo prod,
- * et recalcule tous les indicateurs du Tableau de bord.
+ * et recalcule les indicateurs de la feuille Synthese agences (feuille Tableau de bord retirée).
  */
 require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../core/mongo_compat.php';
@@ -88,24 +88,9 @@ foreach ($cohort as $i => $entry) {
     }
 }
 
-// Tableau de bord, « Charge par manager » (A31:A39) : managers actuels, les plus chargés d'abord
-$dashboardSheet = $spreadsheet->getSheetByName('Tableau de bord');
-$followed = array();
-for ($r = 2; $r <= 38; $r++) {
-    $name = trim((string) $sheetSuivi->getCell('H' . $r)->getValue());
-    if ($name !== '') {
-        $followed[$name] = isset($followed[$name]) ? $followed[$name] + 1 : 1;
-    }
-}
-arsort($followed);
-if (count($followed) > 9) {
-    echo '[ATTENTION] ' . count($followed) . " managers, le tableau de bord n'en affiche que 9 : "
-        . implode(', ', array_slice(array_keys($followed), 9)) . " absents\n";
-}
-$names = array_slice(array_keys($followed), 0, 9);
-for ($i = 0; $i < 9; $i++) {
-    $dashboardSheet->setCellValue('A' . (31 + $i), isset($names[$i]) ? $names[$i] : '');
-}
+// Feuille « Tableau de bord » retirée (05/11) : aucune autre feuille n'y fait référence
+$spreadsheet->removeSheetByIndex($spreadsheet->getIndex($spreadsheet->getSheetByName('Tableau de bord')));
+$spreadsheet->setActiveSheetIndexByName('Suivi QCM');
 
 // Sauvegarde du fichier
 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -119,48 +104,11 @@ echo "Mise à jour enregistrée :\n";
 echo "  -> {$outPath}\n";
 echo "  -> {$outFixed}\n\n";
 
-// Recalcul des valeurs pour la synthèse texte
-$calcSpreadsheet = IOFactory::load($outPath);
-$dashboard = $calcSpreadsheet->getSheetByName('Tableau de bord');
-
-echo "=== SYNTHÈSE ACTUALISÉE AU {$todayHuman} ===\n\n";
-
-$inscrits = $dashboard->getCell('B6')->getCalculatedValue();
-$techs = $dashboard->getCell('B7')->getCalculatedValue();
-$managers = $dashboard->getCell('B8')->getCalculatedValue();
-
-$finiTout = $dashboard->getCell('B9')->getCalculatedValue();
-$auMoinsUn = $dashboard->getCell('B10')->getCalculatedValue();
-$rienCommence = $dashboard->getCell('B11')->getCalculatedValue();
-
-$qcmApplicables = $dashboard->getCell('E10')->getCalculatedValue();
-$qcmTermines = $dashboard->getCell('E6')->getCalculatedValue();
-$pctAvancement = round($dashboard->getCell('F6')->getCalculatedValue() * 100, 1);
-
-echo "- {$inscrits} inscrits ({$techs} techniciens et {$managers} managers), répartis sur 6 agences.\n";
-echo "- Avancement global : {$pctAvancement} %, soit {$qcmTermines} QCM terminés sur {$qcmApplicables} applicables.\n";
-echo "- {$finiTout} personnes ont terminé l'intégralité de leurs tests ; {$auMoinsUn} ont terminé au moins un QCM ; {$rienCommence} n'ont encore rien entamé.\n\n";
-
-echo "Points d'attention — par agence :\n";
-$syntheseAg = $calcSpreadsheet->getSheetByName('Synthese agences');
+// Synthèse texte, à partir de la feuille « Synthese agences »
+$syntheseAg = IOFactory::load($outPath)->getSheetByName('Synthese agences');
+echo "=== SYNTHÈSE ACTUALISÉE AU {$todayHuman} ===\n";
 for ($ar = 2; $ar <= 7; $ar++) {
     $ag = $syntheseAg->getCell("A{$ar}")->getValue();
     $pctAg = round($syntheseAg->getCell("H{$ar}")->getCalculatedValue() * 100, 1);
-    $doneAg = $syntheseAg->getCell("E{$ar}")->getCalculatedValue();
-    $totAg = $syntheseAg->getCell("B{$ar}")->getCalculatedValue();
     echo "  - {$ag} : {$pctAg} % d'avancement\n";
 }
-
-echo "\nQCM d'évaluation manager en attente :\n";
-$totalMgrAttente = 0;
-$mgrLines = [];
-for ($mr = 31; $mr <= 39; $mr++) {
-    $mgrName = $dashboard->getCell("A{$mr}")->getValue();
-    $aFaire = $dashboard->getCell("C{$mr}")->getCalculatedValue();
-    $fait = $dashboard->getCell("D{$mr}")->getCalculatedValue();
-    if ($aFaire > 0) {
-        $totalMgrAttente += $aFaire;
-        $mgrLines[] = "{$aFaire} pour M. {$mgrName}";
-    }
-}
-echo "Total en attente : {$totalMgrAttente} évaluations ouvertes, dont " . implode(', ', array_slice($mgrLines, 0, 3)) . "...\n";

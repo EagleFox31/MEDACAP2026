@@ -143,14 +143,13 @@ foreach ($rows as $r) {
 $table .= '</table>';
 
 $kpi = function ($value, $label) {
-    return '<td style="padding:10px 12px;background:#F4F6F8;border-radius:6px;text-align:center;width:25%;">'
+    return '<td style="padding:10px 12px;background:#F4F6F8;border-radius:6px;text-align:center;width:33%;">'
         . '<div style="font-size:22px;font-weight:700;color:#1F2937;">' . $value . '</div>'
         . '<div style="font-size:12px;color:#4B5563;">' . h($label) . '</div></td>';
 };
 $message = '<p>Voici l\'avancement au ' . $now->format('d/m/Y à H:i') . ' de la Mesure de compétences des Techniciens de CFAO Equipment Cameroun - vague 2026.</p>'
     . '<table cellpadding="0" cellspacing="6" style="width:100%;margin:8px 0 14px;"><tr>'
     . $kpi($upToDate . ' / ' . count($rows), 'managers ayant testé tous leurs techniciens')
-    . $kpi($totEvals, 'techniciens à évaluer par les managers')
     . $kpi($totTechTests, 'techniciens ayant encore un test à passer')
     . $kpi($connected . ' / ' . count($rows), 'managers connectés depuis la semaine passée')
     . '</tr></table>'
@@ -163,7 +162,7 @@ $message = '<p>Voici l\'avancement au ' . $now->format('d/m/Y à H:i') . ' de la
     . '<li>Tant qu\'il reste des techniciens à évaluer, le manager reçoit un rappel automatique par mail tous les 3 jours ouvrés.</li></ul>'
     . '<h3 style="margin:18px 0 6px;font-size:17px;">Pièces jointes</h3>'
     . '<ul style="padding-left:20px;margin:0;">'
-    . '<li><b>Suivi QCM</b> : statut de chaque QCM par technicien, tableau de bord, synthèse par agence.</li>'
+    . '<li><b>Suivi QCM</b> : statut de chaque QCM par technicien, synthèse par agence.</li>'
     . '<li><b>Résultats QCM</b> : notes théoriques, pratiques et globales par niveau.</li></ul>'
     // Adresse en texte, sans lien ni bouton : un lien http vers une IP fait bloquer les pièces jointes par Outlook (essais du 05/11)
     . '<p style="margin:16px 0 0;">Adresse de MEDACAP, à saisir dans le navigateur : <b>' . h(preg_replace('#^https?://#', '', rtrim($url, '/'))) . '</b></p>';
