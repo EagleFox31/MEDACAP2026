@@ -167,7 +167,8 @@ function sendCampaignMail($to, $subject, $html, array $cc = [], array $attachmen
     foreach ($attachments as $name => $path) {
         $name = preg_replace('/[^A-Za-z0-9._-]+/', '_', $name);
         $body .= "--$boundary\r\n"
-            . 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; name="' . $name . "\"\r\n"
+            // Type générique : Outlook bloque ces mails (relais anonyme) quand le type Excel est déclaré (essais du 05/11)
+            . 'Content-Type: application/octet-stream; name="' . $name . "\"\r\n"
             . "Content-Transfer-Encoding: base64\r\n"
             . 'Content-Disposition: attachment; filename="' . $name . "\"\r\n\r\n"
             . chunk_split(base64_encode((string) file_get_contents($path))) . "\r\n";

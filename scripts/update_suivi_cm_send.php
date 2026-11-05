@@ -34,7 +34,11 @@ $allocCol = $db->allocations;
 $examsCol = $db->exams;
 
 $cohort = cfaoCmLoadCohort();
-$spreadsheet = IOFactory::load($template);
+// Graphique « AvancementAgence » du tableau de bord : sans includeCharts, il est perdu mais son lien reste
+// dans sheet1.xml.rels, et Excel signale un classeur à réparer.
+$reader = IOFactory::createReader('Xlsx');
+$reader->setIncludeCharts(true);
+$spreadsheet = $reader->load($template);
 
 $sheetSuivi = $spreadsheet->getSheetByName('Suivi QCM');
 $sheetLegende = $spreadsheet->getSheetByName('Legende');
@@ -106,6 +110,7 @@ for ($i = 0; $i < 9; $i++) {
 // Sauvegarde du fichier
 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 $writer->setPreCalculateFormulas(false); // Laisser Excel calculer les formules fraîches
+$writer->setIncludeCharts(true);
 $writer->save($outPath);
 copy($outPath, $outFixed);
 
