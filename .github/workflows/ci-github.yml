@@ -1,12 +1,10 @@
-name: CI
+name: CI GitHub
 
-# Contrôles du code, sur chaque PR vers main et avant chaque déploiement (appelé par deploy-015.yml).
-# Remplace l'ancien medacap84-smoke.yml, limité à quelques fichiers.
+# Contrôles du code sur les runners GitHub (ubuntu-latest). Appelé par pr.yml et deploy-015.yml.
+# Si ces runners ne démarrent pas (facturation du compte), ci-local.yml refait les mêmes contrôles sur la .15.
+# Les contrôles eux-mêmes sont dans scripts/ci/ pour être identiques des deux côtés.
 
 on:
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
   workflow_call:
 
 permissions:
@@ -23,25 +21,8 @@ jobs:
           php-version: '8.4'
           coverage: none
           tools: none
-      - name: php -l sur chaque fichier PHP suivi par Git
-        run: |
-          git ls-files -z '*.php' ':(exclude)vendor/**' > /tmp/php-files
-          echo "$(tr -cd '\0' < /tmp/php-files | wc -c) fichiers PHP"
-          failed=0
-          while IFS= read -r -d '' f; do
-            out=$(php -l "$f" 2>&1) || { echo "::error file=$f::$out"; failed=1; }
-          done < /tmp/php-files
-          exit $failed
-      - name: Classes du moteur de quiz présentes
-        run: |
-          php -r '
-            require "views/measure/includes/quiz_validator.php";
-            require "views/measure/includes/quiz_factuel_engine.php";
-            foreach (["QuizConstants","QuizValidator","QuizDataFetcher","QuizPercentageCalculator","QuizQuestionGenerator","QuizResultProcessor"] as $c) {
-              if (!class_exists($c)) { fwrite(STDERR, "Classe absente : $c\n"); exit(1); }
-            }
-            echo "Classes du quiz OK\n";
-          '
+      - name: php -l et classes du moteur de quiz
+        run: bash scripts/ci/php.sh
 
   scripts:
     name: Scripts de déploiement et migrations
@@ -49,8 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Scripts shell (bash -n)
-        run: |
-          git ls-files -z 'deploy.sh' '*.sh' | xargs -0 -r -n1 bash -n
+        run: bash scripts/ci/shell.sh
       - name: Scripts shell exécutables dans Git
         run: |
           bad=$(git ls-files -s 'deploy.sh' 'docker/mongo-init/*.sh' | awk '$1 != "100755" {print $4}')

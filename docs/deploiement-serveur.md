@@ -69,14 +69,20 @@ comme les autres applications de la .15.
 
 Chaque push sur `main` (hors `docs/` et `*.md`) lance `.github/workflows/deploy-015.yml` :
 
-1. **CI** (`ci.yml`, aussi sur chaque PR) : syntaxe PHP 8.4 de tous les fichiers, scripts shell/PowerShell,
-   migrations, compose serveur, construction de l'image `server`. Un échec arrête tout : rien n'est déployé.
+1. **CI** (`ci-github.yml`, aussi sur chaque PR via `pr.yml`) : syntaxe PHP 8.4 de tous les fichiers, scripts
+   shell/PowerShell, migrations, compose serveur, construction de l'image `server`. Un échec arrête tout : rien
+   n'est déployé. **Repli** : si les runners GitHub ne démarrent pas (facturation du compte), `ci-local.yml` refait
+   les mêmes contrôles (`scripts/ci/`) sur la .15, en conteneurs. Le repli n'a lieu que si les jobs GitHub
+   n'ont aucune étape (`scripts/ci/repli-necessaire.ps1`) ; une vraie erreur de code n'est jamais relancée.
+   En mode repli, l'exécution reste affichée « en échec » (jobs « CI GitHub » non démarrés) : le job
+   « CI .15 », le bilan du déploiement et le panneau Deployments font foi.
 2. **Déploiement** sur le runner `medacap-015` de la .15 : `.\deploy-server.ps1 <commit>` dans `E:\medacap84`
    (sauvegarde, image, santé, retour arrière de `deploy.sh`).
 3. **Vérification en ligne** : `.deploy\current` = commit demandé, puis `http://localhost:8010/` répond 200
    avec la page de connexion. Sinon, retour automatique à la version précédente.
 4. **Release** GitHub `vX.Y.Z` = la version en production. Base : plus haute entre le dernier tag et `VERSION` ;
    branche `major/` ou « BREAKING » → majeure, branche `feat/` → mineure, sinon corrective. Notes : PR fusionnées.
+   Script `scripts/ci/release.sh` (git, curl, jq, API REST) : sur GitHub, ou sur la .15 dans `alpine` en repli.
 
 Retour : bilan du job (onglet Actions), panneau « Deployments » du dépôt (version en ligne et lien vers le site),
 e-mail GitHub en cas d'échec (Settings > Notifications > Actions). Le runner se connecte à GitHub en sortie

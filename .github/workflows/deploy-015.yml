@@ -1,7 +1,7 @@
 name: Déploiement .15
 
-# Push sur main -> CI (ci.yml) -> déploiement sur la .15 par le runner auto-hébergé (connexion sortante
-# vers GitHub, aucun port ouvert) -> vérification en ligne -> retour arrière si le site ne répond pas.
+# Push sur main -> CI (ci-github.yml ; ci-local.yml sur la .15 si les runners GitHub ne démarrent pas)
+# -> déploiement sur la .15 par le runner auto-hébergé (connexion sortante vers GitHub, aucun port ouvert) -> vérification en ligne -> retour arrière si le site ne répond pas.
 # deploy-server.ps1 garde sa sauvegarde, son contrôle de santé et son retour arrière.
 # Suivi : onglet Actions (bilan du job), panneau « Deployments » du dépôt, e-mail GitHub en cas d'échec.
 # Voir docs/deploiement-serveur.md.
@@ -22,6 +22,7 @@ on:
 permissions:
   contents: read
   deployments: write
+  actions: read
 
 # Exécutions en file, jamais en parallèle ni interrompues : un push arrivé pendant un déploiement attend,
 # et seul le plus récent des pushs en attente est déployé.
@@ -30,13 +31,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  ci:
-    name: CI
-    uses: ./.github/workflows/ci.yml
+  ci-github:
+    name: CI GitHub
+    uses: ./.github/workflows/ci-github.yml
+
+  ci-local:
+    name: CI .15
+    needs: ci-github
+    if: ${{ !cancelled() && needs.ci-github.result == 'failure' }}
+    uses: ./.github/workflows/ci-local.yml
 
   deploy:
     name: Déploiement sur la .15
-    needs: ci
+    needs: [ci-github, ci-local]
+    if: ${{ !cancelled() && (needs.ci-github.result == 'success' || needs.ci-local.result == 'success') }}
     runs-on: [self-hosted, windows, medacap-015]
     timeout-minutes: 45
     env:
@@ -170,13 +178,12 @@ jobs:
             } catch { Write-Warning "Statut GitHub Deployments non mis a jour : $($_.Exception.Message)" }
           }
 
-  # Release = ce qui est en production. Version SemVer calculée depuis la plus haute de : dernier tag vX.Y.Z,
-  # fichier VERSION. Depuis la dernière release : branche ou commit « major/ » ou « BREAKING » -> majeure,
-  # branche « feat/ » ou commit « feat: » -> mineure, sinon corrective. Notes = PR fusionnées (GitHub).
-  release:
-    name: Release
+  # Release = ce qui est en production (règles de version dans scripts/ci/release.sh).
+  release-github:
+    name: Release GitHub
     needs: deploy
-    if: github.event_name == 'push'
+    # Condition explicite : sinon success() tient compte de « CI GitHub » en échec (mode repli) et saute le job.
+    if: ${{ !cancelled() && github.event_name == 'push' && needs.deploy.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -188,32 +195,39 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.sha }}
+        run: bash scripts/ci/release.sh
+
+  # Repli : même script dans un conteneur alpine sur la .15, sur un clone complet (historique + tags).
+  release-local:
+    name: Release .15
+    needs: [deploy, release-github]
+    if: ${{ !cancelled() && github.event_name == 'push' && needs.deploy.result == 'success' && needs.release-github.result == 'failure' }}
+    runs-on: [self-hosted, windows, medacap-015]
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SHA: ${{ github.sha }}
+      WS: ${{ github.workspace }}
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Fins de ligne conservées (scripts shell)
         run: |
-          set -euo pipefail
-          if [ -n "$(git tag --points-at "$SHA" --list 'v*')" ]; then
-            echo "Commit déjà publié : $(git tag --points-at "$SHA" --list 'v*')"; exit 0
-          fi
-          last_tag=$(git tag --merged "$SHA" --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1)
-          file_version=$(tr -d ' \r\n' < VERSION 2>/dev/null || true)
-          base=$(printf '%s\n%s\n' "${last_tag#v}" "$file_version" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1)
-          base=${base:-0.0.0}
-          range="$SHA"; [ -n "$last_tag" ] && range="$last_tag..$SHA"
-          subjects=$(git log --format='%s%n%b' "$range")
-          IFS=. read -r major minor patch <<< "$base"
-          if grep -qiE 'BREAKING|^Merge pull request #[0-9]+ from [^/]+/major/' <<< "$subjects"; then
-            major=$((major + 1)); minor=0; patch=0; kind=majeure
-          elif grep -qE '^feat(\(.+\))?!?:|^Merge pull request #[0-9]+ from [^/]+/feat/' <<< "$subjects"; then
-            minor=$((minor + 1)); patch=0; kind=mineure
-          else
-            patch=$((patch + 1)); kind=corrective
-          fi
-          tag="v$major.$minor.$patch"
-          echo "Base $base (dernier tag : ${last_tag:-aucun}, VERSION : ${file_version:-absent}) -> $tag ($kind)"
-          notes_args=(--generate-notes)
-          [ -n "$last_tag" ] && notes_args+=(--notes-start-tag "$last_tag")
-          gh release create "$tag" --target "$SHA" --title "MEDACAP $tag" "${notes_args[@]}" --latest
-          {
-            echo "## Release $tag ($kind)"
-            echo
-            echo "${{ github.server_url }}/${{ github.repository }}/releases/tag/$tag"
-          } >> "$GITHUB_STEP_SUMMARY"
+          if (Get-Command git -ErrorAction SilentlyContinue) { git config --global core.autocrlf false }
+          exit 0
+      - uses: actions/checkout@v4
+      - name: Runners GitHub indisponibles ?
+        run: |
+          & .\scripts\ci\repli-necessaire.ps1 -Prefix 'Release GitHub'
+          exit $LASTEXITCODE
+      - name: Calculer la version et publier la release
+        run: |
+          $ErrorActionPreference = 'Continue'
+          docker run --rm -v "${env:WS}:/src:ro" -v "${env:GITHUB_STEP_SUMMARY}:/summary.md" `
+            -e SHA -e GH_TOKEN -e GITHUB_API_URL -e GITHUB_REPOSITORY -e GITHUB_STEP_SUMMARY=/summary.md `
+            alpine:3.20 sh -c 'apk add -q --no-cache bash git curl jq && git clone -q --filter=blob:none --no-checkout https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git /r && cd /r && bash /src/scripts/ci/release.sh'
+          exit $LASTEXITCODE
