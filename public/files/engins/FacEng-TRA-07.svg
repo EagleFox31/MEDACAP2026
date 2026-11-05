@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#334155"/></marker>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">Pont d'engin à réducteurs dans les moyeux</text>
+
+  <!-- Vue d'ensemble du pont -->
+  <rect x="96" y="80" width="34" height="140" rx="8" fill="#334155"/>
+  <rect x="670" y="80" width="34" height="140" rx="8" fill="#334155"/>
+  <rect x="130" y="125" width="54" height="50" rx="6" fill="#fde68a" stroke="#b45309" stroke-width="3"/>
+  <rect x="616" y="125" width="54" height="50" rx="6" fill="#fde68a" stroke="#b45309" stroke-width="3"/>
+  <rect x="184" y="138" width="180" height="24" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"/>
+  <rect x="436" y="138" width="180" height="24" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"/>
+  <line x1="190" y1="150" x2="358" y2="150" stroke="#0f172a" stroke-width="3" stroke-dasharray="10 5"/>
+  <line x1="442" y1="150" x2="610" y2="150" stroke="#0f172a" stroke-width="3" stroke-dasharray="10 5"/>
+  <circle cx="400" cy="150" r="38" fill="#cbd5e1" stroke="#0f172a" stroke-width="3"/>
+  <text x="400" y="102" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">différentiel</text>
+  <line x1="400" y1="188" x2="400" y2="232" stroke="#0f172a" stroke-width="5"/>
+  <text x="400" y="250" text-anchor="middle" font-size="15" fill="#334155">arbre venant de la boîte</text>
+  <text x="274" y="128" text-anchor="middle" font-size="15" fill="#334155">arbre de roue</text>
+  <text x="138" y="198" font-size="15" font-weight="700" fill="#92400e">réducteur</text>
+  <text x="662" y="198" text-anchor="end" font-size="15" font-weight="700" fill="#92400e">réducteur</text>
+  <text x="113" y="240" text-anchor="middle" font-size="15" fill="#334155">roue</text>
+  <text x="687" y="240" text-anchor="middle" font-size="15" fill="#334155">roue</text>
+  <path d="M630 210 C 650 290 600 320 538 340" fill="none" stroke="#b45309" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+
+  <!-- Coupe du réducteur planétaire -->
+  <line x1="40" y1="272" x2="760" y2="272" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="400" y="296" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Réducteur de moyeu (vue de face)</text>
+  <circle cx="400" cy="420" r="112" fill="#f1f5f9" stroke="#475569" stroke-width="14" stroke-dasharray="5 5"/>
+  <circle cx="400" cy="420" r="120" fill="none" stroke="#0f172a" stroke-width="3"/>
+  <g fill="#fde68a" stroke="#b45309" stroke-width="3">
+    <circle cx="400" cy="349" r="36" stroke-dasharray="4 3"/>
+    <circle cx="461" cy="455" r="36" stroke-dasharray="4 3"/>
+    <circle cx="339" cy="455" r="36" stroke-dasharray="4 3"/>
+  </g>
+  <path d="M400 349 L461 455 L339 455 Z" fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round"/>
+  <g fill="#2563eb"><circle cx="400" cy="349" r="6"/><circle cx="461" cy="455" r="6"/><circle cx="339" cy="455" r="6"/></g>
+  <circle cx="400" cy="420" r="30" fill="#94a3b8" stroke="#0f172a" stroke-width="3" stroke-dasharray="4 3"/>
+  <circle cx="400" cy="420" r="8" fill="#0f172a"/>
+
+  <g font-size="15" fill="#0f172a">
+    <line x1="372" y1="420" x2="250" y2="380" stroke="#334155" stroke-width="2"/>
+    <text x="244" y="372" text-anchor="end" font-weight="700">Planétaire</text>
+    <text x="244" y="391" text-anchor="end" fill="#334155">entraîné par l'arbre de roue</text>
+    <line x1="295" y1="402" x2="232" y2="440" stroke="#334155" stroke-width="2"/>
+    <text x="226" y="446" text-anchor="end" font-weight="700">Couronne</text>
+    <text x="226" y="465" text-anchor="end" fill="#334155">fixée au carter du pont</text>
+    <line x1="497" y1="455" x2="560" y2="470" stroke="#334155" stroke-width="2"/>
+    <text x="566" y="476" font-weight="700">Satellites</text>
+    <line x1="430" y1="400" x2="560" y2="372" stroke="#2563eb" stroke-width="2"/>
+    <text x="566" y="370" font-weight="700" fill="#1d4ed8">Porte-satellites</text>
+    <text x="566" y="389" fill="#334155">entraîne le moyeu de roue</text>
+  </g>
+</svg>

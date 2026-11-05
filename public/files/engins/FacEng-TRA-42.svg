@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif"><rect width="800" height="560" rx="16" fill="#ffffff"/><rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>  <text x="400" y="40" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">Portée relevée sur la couronne – côté entraînement</text>
+  <path d="M140 118 L660 183 L660 200 L140 140 Z" fill="#9ca3af" stroke="#4b5563" stroke-width="2"/>
+  <path d="M140 440 L660 380 L660 402 L140 468 Z" fill="#6b7280" stroke="#4b5563" stroke-width="2"/>
+  <path d="M140 140 L660 200 L660 380 L140 440 Z" fill="#fcd34d" stroke="#92400e" stroke-width="3"/>
+  <path d="M175 398 C175 380 185 376 200 373 L600 327 C615 325 625 330 625 346 C625 362 615 368 600 370 L200 418 C185 420 175 416 175 398 Z" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5"/>
+  <g stroke="#cbd5e1" stroke-width="1.2"><line x1="210" y1="392" x2="590" y2="349"/><line x1="215" y1="404" x2="595" y2="359"/><line x1="205" y1="381" x2="580" y2="338"/></g>
+  <g font-size="18" font-weight="700" fill="#0f172a">
+    <text x="30" y="295">TALON</text><text x="30" y="316" font-size="15" font-weight="400">(extérieur)</text>
+    <text x="680" y="295">POINTE</text><text x="680" y="316" font-size="15" font-weight="400">(intérieur)</text>
+    <text x="400" y="132" text-anchor="middle">SOMMET de la dent</text>
+    <text x="400" y="458" text-anchor="middle">PIED de la dent</text>
+  </g>
+  <rect x="90" y="488" width="26" height="18" fill="#fcd34d" stroke="#92400e"/><text x="126" y="503" font-size="16" fill="#0f172a">produit de marquage</text>
+  <rect x="330" y="488" width="26" height="18" fill="#e5e7eb" stroke="#9ca3af"/><text x="366" y="503" font-size="16" fill="#0f172a">zone de contact (marquage chassé)</text>
+  <text x="400" y="535" text-anchor="middle" font-size="15" fill="#475569">Même portée sur toutes les dents relevées</text>
+</svg>

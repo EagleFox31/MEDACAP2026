@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <radialGradient id="g" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#6b7280"/></radialGradient>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="#0f172a">Distribution à pignons – carter déposé, après remontage</text>
+  <g>
+    <circle cx="515" cy="225" r="114" fill="url(#g)"/>
+    <circle cx="515" cy="225" r="121" fill="none" stroke="#4b5563" stroke-width="14" stroke-dasharray="9.5 9.5"/>
+    <circle cx="515" cy="225" r="30" fill="#374151"/>
+    <circle cx="515" cy="225" r="70" fill="none" stroke="#9ca3af" stroke-width="3"/>
+    <circle cx="390" cy="350" r="48" fill="url(#g)"/>
+    <circle cx="390" cy="350" r="55" fill="none" stroke="#4b5563" stroke-width="12" stroke-dasharray="8.64 8.64"/>
+    <circle cx="390" cy="350" r="16" fill="#374151"/>
+    <circle cx="300" cy="430" r="58" fill="url(#g)"/>
+    <circle cx="300" cy="430" r="65" fill="none" stroke="#4b5563" stroke-width="12" stroke-dasharray="9.5 9.5"/>
+    <circle cx="300" cy="430" r="20" fill="#374151"/>
+  </g>
+  <path d="M300 430 L390 350 L515 225" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7 6"/>
+  <g fill="#facc15" stroke="#713f12" stroke-width="2">
+    <circle cx="337.4" cy="396.8" r="8"/>
+    <circle cx="360.1" cy="376.6" r="8"/>
+    <path d="M418.3 321.7 m-9 0 l9 -9 l9 9 l-9 9 z"/>
+    <path d="M430.1 286.7 m-9 0 l9 -9 l9 9 l-9 9 z"/>
+  </g>
+  <g font-size="18" fill="#0f172a">
+    <text x="640" y="110">pignon d'arbre</text><text x="640" y="132">à cames</text>
+    <line x1="636" y1="118" x2="600" y2="150" stroke="#334155" stroke-width="1.5"/>
+    <text x="470" y="420">pignon</text><text x="470" y="442">intermédiaire</text>
+    <line x1="466" y1="418" x2="430" y2="380" stroke="#334155" stroke-width="1.5"/>
+    <text x="400" y="510">pignon de vilebrequin</text>
+    <line x1="396" y1="504" x2="350" y2="470" stroke="#334155" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(40 80)">
+    <rect width="250" height="110" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <circle cx="26" cy="34" r="8" fill="#facc15" stroke="#713f12" stroke-width="2"/>
+    <text x="44" y="40" font-size="16" fill="#0f172a">repères vilebrequin /</text><text x="44" y="60" font-size="16" fill="#0f172a">intermédiaire</text>
+    <path d="M26 79 m-9 0 l9 -9 l9 9 l-9 9 z" fill="#facc15" stroke="#713f12" stroke-width="2"/>
+    <text x="44" y="85" font-size="16" fill="#0f172a">repères intermédiaire /</text><text x="44" y="104" font-size="16" fill="#0f172a">arbre à cames</text>
+  </g>
+</svg>

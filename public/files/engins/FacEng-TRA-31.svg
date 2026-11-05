@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2e8f0"/><stop offset="0.5" stop-color="#94a3b8"/><stop offset="1" stop-color="#475569"/></linearGradient>
+    <linearGradient id="cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#94a3b8"/><stop offset="1" stop-color="#334155"/></linearGradient>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="46" text-anchor="middle" font-size="25" font-weight="700" fill="#0f172a">Arbre de transmission à deux cardans – vue de côté</text>
+  <rect x="30" y="130" width="150" height="150" rx="14" fill="url(#cs)"/>
+  <text x="105" y="212" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">Boîte</text>
+  <rect x="180" y="192" width="40" height="26" fill="#64748b"/>
+  <g transform="rotate(18 230 205)"><rect x="230" y="191" width="390" height="28" rx="6" fill="url(#sh)" stroke="#334155" stroke-width="2"/>
+    <rect x="300" y="186" width="60" height="38" rx="4" fill="#64748b"/></g>
+  <circle cx="230" cy="205" r="20" fill="#f59e0b" stroke="#78350f" stroke-width="3"/>
+  <circle cx="601" cy="325.5" r="20" fill="#f59e0b" stroke="#78350f" stroke-width="3"/>
+  <rect x="611" y="312" width="45" height="26" fill="#64748b"/>
+  <rect x="656" y="270" width="120" height="110" rx="14" fill="url(#cs)"/>
+  <text x="716" y="332" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">Pont</text>
+  <g stroke="#2563eb" stroke-width="2.5" stroke-dasharray="9 6">
+    <line x1="230" y1="205" x2="420" y2="205"/>
+    <line x1="420" y1="264" x2="601" y2="325.5"/>
+    <line x1="601" y1="325.5" x2="450" y2="325.5"/>
+  </g>
+  <path d="M340 205 A110 110 0 0 1 334.6 239" fill="none" stroke="#dc2626" stroke-width="4"/>
+  <text x="356" y="236" font-size="30" font-weight="800" fill="#dc2626">α1</text>
+  <path d="M491 325.5 A110 110 0 0 1 496.4 291.5" fill="none" stroke="#dc2626" stroke-width="4"/>
+  <text x="432" y="312" font-size="30" font-weight="800" fill="#dc2626">α2</text>
+  <text x="230" y="168" text-anchor="middle" font-size="18" fill="#334155">cardan avant</text>
+  <text x="601" y="384" text-anchor="middle" font-size="18" fill="#334155">cardan arrière</text>
+  <rect x="60" y="440" width="680" height="80" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="473" text-anchor="middle" font-size="19" fill="#0f172a">Sortie de boîte et entrée de pont parallèles</text>
+  <text x="400" y="501" text-anchor="middle" font-size="19" fill="#0f172a">Fourches de l'arbre montées en phase (dans le même plan)</text>
+</svg>

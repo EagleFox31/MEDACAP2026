@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <g id="gauge">
+      <circle r="44" fill="#ffffff" stroke="#1f2937" stroke-width="6"/>
+      <path d="M-29 21 A36 36 0 1 1 29 21" fill="none" stroke="#94a3b8" stroke-width="5" stroke-dasharray="3 6"/>
+      <circle r="5" fill="#1f2937"/>
+    </g>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0f172a"/></marker>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="46" text-anchor="middle" font-size="25" font-weight="700" fill="#0f172a">Centrale hydraulique – vérin en butée</text>
+  <g stroke="#0f172a" stroke-width="4" fill="none">
+    <path d="M200 380 V210 H620"/>
+    <path d="M200 210 V150"/>
+    <path d="M420 210 V245"/>
+    <path d="M420 325 V350"/>
+    <path d="M420 420 V470"/>
+    <path d="M200 460 V470"/>
+    <path d="M140 465 V500 H480 V465"/>
+  </g>
+  <circle cx="200" cy="210" r="7" fill="#0f172a"/><circle cx="420" cy="210" r="7" fill="#0f172a"/>
+  <g>
+    <circle cx="200" cy="420" r="40" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+    <path d="M200 383 L214 407 L186 407 Z" fill="#0f172a"/>
+    <line x1="80" y1="420" x2="160" y2="420" stroke="#0f172a" stroke-width="4"/>
+    <line x1="82" y1="413" x2="82" y2="427" stroke="#0f172a" stroke-width="4"/>
+    <circle cx="60" cy="420" r="22" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"/><text x="60" y="428" text-anchor="middle" font-size="22" font-weight="700">M</text>
+    <text x="255" y="428" font-size="19" fill="#334155">Pompe</text>
+  </g>
+  <g>
+    <rect x="380" y="245" width="80" height="80" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+    <line x1="432" y1="255" x2="432" y2="312" stroke="#0f172a" stroke-width="3.5" marker-end="url(#ah)"/>
+    <line x1="420" y1="245" x2="420" y2="258" stroke="#0f172a" stroke-width="4"/>
+    <line x1="420" y1="312" x2="420" y2="325" stroke="#0f172a" stroke-width="4"/>
+    <path d="M460 285 l8 -12 l8 24 l8 -24 l8 24 l8 -12" fill="none" stroke="#0f172a" stroke-width="3"/>
+    <line x1="470" y1="300" x2="500" y2="270" stroke="#0f172a" stroke-width="3" marker-end="url(#ah)"/>
+    <path d="M410 222 H360 V285 H378" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+    <text x="512" y="292" font-size="19" fill="#334155">Limiteur de pression</text>
+  </g>
+  <g>
+    <circle cx="420" cy="385" r="35" fill="#ecfeff" stroke="#0e7490" stroke-width="4"/>
+    <line x1="398" y1="407" x2="442" y2="363" stroke="#0e7490" stroke-width="3.5" marker-end="url(#ah)"/>
+    <rect x="470" y="360" width="200" height="50" rx="8" fill="#ecfeff" stroke="#0e7490" stroke-width="2"/>
+    <text x="570" y="394" text-anchor="middle" font-size="26" font-weight="800" fill="#0e7490">30 L/min</text>
+  </g>
+  <g transform="translate(200 105)"><use href="#gauge"/><line x1="0" y1="0" x2="27" y2="-20" stroke="#dc2626" stroke-width="4" stroke-linecap="round"/></g>
+  <rect x="260" y="82" width="150" height="50" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="335" y="116" text-anchor="middle" font-size="26" font-weight="800" fill="#92400e">200 bar</text>
+  <rect x="620" y="170" width="160" height="80" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"/>
+  <text x="700" y="205" text-anchor="middle" font-size="17" fill="#0f172a">Distributeur</text>
+  <text x="700" y="228" text-anchor="middle" font-size="17" fill="#0f172a">→ vérin en butée</text>
+  <text x="310" y="530" text-anchor="middle" font-size="19" fill="#334155">Réservoir</text>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <g id="gauge">
+      <circle r="40" fill="#ffffff" stroke="#1f2937" stroke-width="6"/>
+      <path d="M-26 19 A32 32 0 1 1 26 19" fill="none" stroke="#94a3b8" stroke-width="5" stroke-dasharray="3 6"/>
+      <circle r="5" fill="#1f2937"/>
+    </g>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0f172a"/></marker>
+    <linearGradient id="cy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="44" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">Circuit Load Sensing – mesures en charge (levage)</text>
+  <g stroke="#0f172a" stroke-width="4" fill="none">
+    <path d="M170 360 V230 H470"/>
+    <path d="M170 230 V170"/>
+    <path d="M170 450 V490 H120"/>
+  </g>
+  <circle cx="170" cy="230" r="7" fill="#0f172a"/>
+  <circle cx="170" cy="400" r="40" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+  <path d="M170 363 L183 386 L157 386 Z" fill="#0f172a"/>
+  <line x1="135" y1="440" x2="208" y2="358" stroke="#0f172a" stroke-width="3.5" marker-end="url(#ah)"/>
+  <rect x="240" y="370" width="110" height="60" fill="#fef3c7" stroke="#b45309" stroke-width="3"/>
+  <text x="295" y="398" text-anchor="middle" font-size="16" font-weight="700" fill="#78350f">Régulateur</text>
+  <text x="295" y="418" text-anchor="middle" font-size="16" font-weight="700" fill="#78350f">LS</text>
+  <line x1="210" y1="400" x2="240" y2="400" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5"/>
+  <text x="80" y="500" font-size="18" fill="#334155">Pompe à cylindrée variable</text>
+  <rect x="470" y="190" width="150" height="90" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"/>
+  <text x="545" y="230" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Distributeur</text>
+  <text x="545" y="254" text-anchor="middle" font-size="16" fill="#334155">section levage</text>
+  <path d="M520 280 V330 H345 V370" fill="none" stroke="#b45309" stroke-width="3" stroke-dasharray="10 6" marker-end="url(#ah)"/>
+  <text x="420" y="322" text-anchor="middle" font-size="17" fill="#b45309" font-weight="700">ligne LS</text>
+  <path d="M620 250 H660 V400 H690" fill="none" stroke="#0f172a" stroke-width="4"/>
+  <rect x="690" y="180" width="80" height="240" rx="6" fill="url(#cy)" stroke="#0f172a" stroke-width="3"/>
+  <rect x="696" y="292" width="68" height="16" fill="#475569"/>
+  <rect x="722" y="105" width="16" height="187" fill="#cbd5e1" stroke="#0f172a" stroke-width="2"/>
+  <rect x="680" y="68" width="100" height="38" rx="4" fill="#334155"/>
+  <text x="730" y="93" text-anchor="middle" font-size="16" fill="#ffffff">charge</text>
+  <g transform="translate(170 125)"><use href="#gauge"/><line x1="0" y1="0" x2="24" y2="-22" stroke="#dc2626" stroke-width="4" stroke-linecap="round"/></g>
+  <text x="366" y="131" font-size="18" fill="#0f172a"><tspan font-weight="700">M1</tspan> : sortie pompe</text>
+  <rect x="222" y="100" width="134" height="48" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+  <text x="289" y="133" text-anchor="middle" font-size="25" font-weight="800" fill="#991b1b">175 bar</text>
+  <path d="M440 330 V420" fill="none" stroke="#b45309" stroke-width="3" stroke-dasharray="10 6"/>
+  <circle cx="440" cy="330" r="6" fill="#b45309"/>
+  <g transform="translate(440 465)"><use href="#gauge"/><line x1="0" y1="0" x2="22" y2="-24" stroke="#b45309" stroke-width="4" stroke-linecap="round"/></g>
+  <text x="498" y="455" font-size="19" font-weight="700" fill="#0f172a">M2</text>
+  <text x="498" y="478" font-size="16" fill="#334155">pression LS</text>
+  <rect x="590" y="460" width="134" height="48" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+  <text x="657" y="493" text-anchor="middle" font-size="25" font-weight="800" fill="#92400e">167 bar</text>
+</svg>

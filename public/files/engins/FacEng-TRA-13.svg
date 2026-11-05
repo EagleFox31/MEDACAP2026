@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="46" text-anchor="middle" font-size="26" font-weight="700" fill="#0f172a">Fiche de relevé – pressions de transmission</text>
+  <text x="400" y="76" text-anchor="middle" font-size="18" fill="#475569">Huile à 80 °C – moteur à 2 000 tr/min – manomètre 0–40 bar sur prises de test</text>
+  <rect x="60" y="100" width="680" height="54" fill="#1e3a5f"/>
+  <g font-size="20" font-weight="700" fill="#ffffff">
+    <text x="80" y="135">Prise de test</text><text x="380" y="135" text-anchor="middle">Mesuré</text><text x="600" y="135" text-anchor="middle">Valeur constructeur</text>
+  </g>
+  <g font-size="21" fill="#0f172a">
+    <rect x="60" y="154" width="680" height="54" fill="#f8fafc"/>
+    <text x="80" y="189">Pression principale</text><text x="380" y="189" text-anchor="middle" font-weight="700">16,5 bar</text><text x="600" y="189" text-anchor="middle">16 – 18 bar</text>
+    <rect x="60" y="208" width="680" height="54" fill="#ffffff"/>
+    <text x="80" y="243">Embrayage marche AV</text><text x="380" y="243" text-anchor="middle" font-weight="700">16,0 bar</text><text x="600" y="243" text-anchor="middle">15 – 17 bar</text>
+    <rect x="60" y="262" width="680" height="54" fill="#f8fafc"/>
+    <text x="80" y="297">Embrayage marche AR</text><text x="380" y="297" text-anchor="middle" font-weight="700">9,5 bar</text><text x="600" y="297" text-anchor="middle">15 – 17 bar</text>
+    <rect x="60" y="316" width="680" height="54" fill="#ffffff"/>
+    <text x="80" y="351">Embrayage 1re</text><text x="380" y="351" text-anchor="middle" font-weight="700">16,0 bar</text><text x="600" y="351" text-anchor="middle">15 – 17 bar</text>
+    <rect x="60" y="370" width="680" height="54" fill="#f8fafc"/>
+    <text x="80" y="405">Embrayage 2e</text><text x="380" y="405" text-anchor="middle" font-weight="700">15,8 bar</text><text x="600" y="405" text-anchor="middle">15 – 17 bar</text>
+    <rect x="60" y="424" width="680" height="54" fill="#ffffff"/>
+    <text x="80" y="459">Embrayage 3e</text><text x="380" y="459" text-anchor="middle" font-weight="700">16,1 bar</text><text x="600" y="459" text-anchor="middle">15 – 17 bar</text>
+  </g>
+  <rect x="60" y="100" width="680" height="378" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <line x1="290" y1="100" x2="290" y2="478" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="470" y1="100" x2="470" y2="478" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="520" text-anchor="middle" font-size="19" fill="#334155">Symptôme : la machine patine en marche arrière, sur tous les rapports</text>
+</svg>
