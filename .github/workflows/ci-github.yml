@@ -15,7 +15,7 @@ jobs:
     name: PHP 8.4 - syntaxe de tous les fichiers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -28,7 +28,7 @@ jobs:
     name: Scripts de déploiement et migrations
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Scripts shell (bash -n)
         run: bash scripts/ci/shell.sh
       - name: Scripts shell exécutables dans Git
@@ -53,7 +53,7 @@ jobs:
     name: Image serveur (cible server) et compose
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: docker-compose.server.yml valide
         run: MEDACAP_TAG=ci docker compose -f docker-compose.server.yml --env-file .env.server.example config --quiet
       - uses: docker/setup-buildx-action@v3

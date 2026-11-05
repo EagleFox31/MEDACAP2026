@@ -188,7 +188,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Calculer la version et publier la release
@@ -219,7 +219,7 @@ jobs:
         run: |
           if (Get-Command git -ErrorAction SilentlyContinue) { git config --global core.autocrlf false }
           exit 0
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Runners GitHub indisponibles ?
         run: |
           & .\scripts\ci\repli-necessaire.ps1 -Prefix 'Release GitHub'
