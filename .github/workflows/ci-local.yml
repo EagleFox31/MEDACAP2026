@@ -30,7 +30,7 @@ jobs:
           if (Get-Command git -ErrorAction SilentlyContinue) { git config --global core.autocrlf false }
           exit 0
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Runners GitHub indisponibles ?
         id: repli
