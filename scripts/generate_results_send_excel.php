@@ -7,7 +7,7 @@ require_once __DIR__ . '/../core/medacap_config.php';
  *   - Théorique : note du QCM Factuel ;
  *   - Pratique  : note validée par le manager (résultat « Technicien - Manager ») ;
  *                 tant que le manager n'a pas évalué → « En attente évaluation manager » ;
- *   - Global    : moyenne théorique + pratique (même calcul que bilanTest.php).
+ *   (colonne Global retirée le 05/11 : seules les notes théorique et pratique sont affichées)
  *
  * Valeurs figées (aucune formule).
  *
@@ -33,6 +33,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 const RES_WAIT_MGR = 'En attente évaluation manager';
 const RES_NOT_DONE = 'Pas composé';
 const RES_OUT = '—';
+const RES_COLS_PER_LEVEL = 2; // Théorique, Pratique
 
 const RES_COLOR_HEADER = '24235C';
 const RES_COLOR_GOOD = 'D5F5E3';   // ≥ 80 %
@@ -164,7 +165,7 @@ try {
 $managerCache = array();
 $people = array();
 $notComposed = 0;
-$stats = array('theo' => 0, 'prat' => 0, 'wait' => 0, 'global' => 0);
+$stats = array('theo' => 0, 'prat' => 0, 'wait' => 0);
 foreach ($cohort as $entry) {
     $user = cfaoCmResolveUser($usersCol, $entry);
     if (!$user || !hasTechnicianQcmPath($user)) {
@@ -205,10 +206,6 @@ foreach ($cohort as $entry) {
             $composed = true;
             $stats['wait']++;
         }
-        if ($theo !== null && $prat !== null) {
-            $lv['g'] = (int) ceil(($theo + $prat) / 2);
-            $stats['global']++;
-        }
         $p['levels'][$level] = $lv;
     }
     if (!$composed) {
@@ -233,18 +230,17 @@ $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Résultats');
 $sheet->setShowGridlines(false);
 
-$lastCol = resCol(4 + count($levels) * 3);
+$lastCol = resCol(4 + count($levels) * RES_COLS_PER_LEVEL);
 
 resText($sheet, 'A1', 'Résultats QCM techniciens — Cameroun');
 $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16)->getColor()->setRGB(RES_COLOR_HEADER);
 resText($sheet, 'A2', 'Situation au ' . $generatedAt . ' · ' . count($people) . ' techniciens ont composé au moins un test'
     . ($notComposed > 0 ? ' (' . $notComposed . ' n\'ont encore rien composé : voir le fichier de suivi)' : '') . '.');
 $sheet->getStyle('A2')->getFont()->getColor()->setRGB('5D6D7E');
-resText($sheet, 'A3', 'Notes en %. Vert : 80 % et plus · Jaune : 60 à 79 % · Rouge : moins de 60 %. '
-    . 'Le global d\'un niveau n\'existe qu\'une fois la pratique évaluée par le manager.');
+resText($sheet, 'A3', 'Notes en %. Vert : 80 % et plus · Jaune : 60 à 79 % · Rouge : moins de 60 %.');
 $sheet->getStyle('A3')->getFont()->setItalic(true)->setSize(9)->getColor()->setRGB('5D6D7E');
 
-// En-tête sur deux lignes : niveau puis Théorique / Pratique / Global.
+// En-tête sur deux lignes : niveau puis Théorique / Pratique (colonne Global retirée le 05/11).
 $h1 = 5;
 $h2 = 6;
 foreach (array('Nom', 'Agence', 'Manager', 'Niveau cible') as $i => $label) {
@@ -253,12 +249,12 @@ foreach (array('Nom', 'Agence', 'Manager', 'Niveau cible') as $i => $label) {
     $sheet->mergeCells($c . $h1 . ':' . $c . $h2);
 }
 foreach ($levels as $i => $level) {
-    $c1 = resCol(5 + $i * 3);
-    $c3 = resCol(7 + $i * 3);
+    $c1 = resCol(5 + $i * RES_COLS_PER_LEVEL);
+    $c3 = resCol(4 + ($i + 1) * RES_COLS_PER_LEVEL);
     resText($sheet, $c1 . $h1, $level);
     $sheet->mergeCells($c1 . $h1 . ':' . $c3 . $h1);
-    foreach (array('Théorique', 'Pratique', 'Global') as $j => $sub) {
-        resText($sheet, resCol(5 + $i * 3 + $j) . $h2, $sub);
+    foreach (array('Théorique', 'Pratique') as $j => $sub) {
+        resText($sheet, resCol(5 + $i * RES_COLS_PER_LEVEL + $j) . $h2, $sub);
     }
 }
 $head = $sheet->getStyle('A' . $h1 . ':' . $lastCol . $h2);
@@ -277,9 +273,8 @@ foreach ($people as $p) {
     resText($sheet, 'D' . $r, $p['level_max']);
     foreach ($levels as $i => $level) {
         $lv = $p['levels'][$level];
-        resWriteScore($sheet, resCol(5 + $i * 3) . $r, $lv['t']);
-        resWriteScore($sheet, resCol(6 + $i * 3) . $r, $lv['p']);
-        resWriteScore($sheet, resCol(7 + $i * 3) . $r, $lv['g'], true);
+        resWriteScore($sheet, resCol(5 + $i * RES_COLS_PER_LEVEL) . $r, $lv['t']);
+        resWriteScore($sheet, resCol(6 + $i * RES_COLS_PER_LEVEL) . $r, $lv['p']);
     }
     $sheet->getRowDimension($r)->setRowHeight(30);
     $r++;
@@ -293,14 +288,14 @@ $sheet->getStyle('A' . $h1 . ':' . $lastCol . $lastRow)->getBorders()->getAllBor
     ->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('D5D8DC');
 // Séparation nette entre niveaux.
 foreach ($levels as $i => $level) {
-    $sheet->getStyle(resCol(5 + $i * 3) . $h1 . ':' . resCol(5 + $i * 3) . $lastRow)->getBorders()->getLeft()
+    $sheet->getStyle(resCol(5 + $i * RES_COLS_PER_LEVEL) . $h1 . ':' . resCol(5 + $i * RES_COLS_PER_LEVEL) . $lastRow)->getBorders()->getLeft()
         ->setBorderStyle(Border::BORDER_MEDIUM)->getColor()->setRGB(RES_COLOR_HEADER);
 }
 
 foreach (array('A' => 34, 'B' => 12, 'C' => 32, 'D' => 10) as $col => $w) {
     $sheet->getColumnDimension($col)->setWidth($w);
 }
-for ($i = 5; $i <= 4 + count($levels) * 3; $i++) {
+for ($i = 5; $i <= 4 + count($levels) * RES_COLS_PER_LEVEL; $i++) {
     $sheet->getColumnDimension(resCol($i))->setWidth(14);
 }
 $sheet->setAutoFilter('A' . $h2 . ':' . $lastCol . $lastRow);
@@ -327,10 +322,9 @@ $rows = array(
     array('Moins de 60 %', 'Niveau insuffisant.', RES_COLOR_LOW),
     array(RES_WAIT_MGR, 'Le technicien a fait sa pratique ; la note sera connue quand son manager l\'aura évaluée.', RES_COLOR_WAIT),
     array(RES_NOT_DONE, 'Le technicien n\'a pas encore fait ce test.', RES_COLOR_OUT),
-    array(RES_OUT, 'Niveau au-dessus du niveau cible du technicien, ou global pas encore calculable.', RES_COLOR_OUT),
+    array(RES_OUT, 'Niveau au-dessus du niveau cible du technicien.', RES_COLOR_OUT),
     array('Théorique', 'Note du QCM de connaissances.', null),
     array('Pratique', 'Note des tâches professionnelles, validée par le manager (accord technicien + manager).', null),
-    array('Global', 'Moyenne de la note théorique et de la note pratique du niveau.', null),
     array('Données', 'Valeurs figées au ' . $generatedAt . ', sans formule.', null),
 );
 resText($leg, 'A1', 'Légende');
@@ -357,4 +351,4 @@ $writer->save($outPath);
 echo 'Export : ' . $outPath . "\n";
 echo 'Techniciens avec au moins un test : ' . count($people) . ' | rien composé : ' . $notComposed . "\n";
 echo 'Notes théoriques : ' . $stats['theo'] . ' | pratiques validées : ' . $stats['prat']
-    . ' | pratiques en attente manager : ' . $stats['wait'] . ' | globaux : ' . $stats['global'] . "\n";
+    . ' | pratiques en attente manager : ' . $stats['wait'] . "\n";
