@@ -7,7 +7,7 @@ require_once __DIR__ . '/../core/medacap_config.php';
  * Usage:
  *   php scripts/rapport_campagne_cameroun.php                          simulation (tableau en console, aucun envoi)
  *   php scripts/rapport_campagne_cameroun.php --test=a@cfao.com        envoie le rapport à a@cfao.com seulement
- *   php scripts/rapport_campagne_cameroun.php --apply --to=a@cfao.com,b@cfao.com   envoi réel (copie support)
+ *   php scripts/rapport_campagne_cameroun.php --apply                  envoi réel à REPORT_TO, copie REPORT_CC (--to=… pour un autre destinataire)
  *   --url=http://10.68.0.15:8010/                                      adresse du lien (défaut : MEDACAP_PUBLIC_URL)
  */
 require __DIR__ . '/../vendor/autoload.php';
@@ -19,6 +19,9 @@ use MongoDB\BSON\UTCDateTime;
 const REPORT_CAMPAIGN = 'rapport-cameroun';
 // Carte plus large que les mails aux managers : tableau à 4 colonnes + indicateurs
 const REPORT_MAIL_WIDTH = 1000;
+// Envoi réel : M.C. BENGONO, copie Laurent GONIN, A.Y. BOKALLY, Annick ETOLO, support (--to remplace le destinataire)
+const REPORT_TO = ['mcbengono@cfao.com'];
+const REPORT_CC = ['lgonin@cfao.com', 'aybokally@cfao.com', 'aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
 
 $opts = getopt('', ['test:', 'apply', 'to:', 'url:']);
 $testTo = isset($opts['test']) ? trim((string) $opts['test']) : '';
@@ -30,8 +33,7 @@ if ($testTo !== '' && $apply) {
     exit(1);
 }
 if ($apply && !$to) {
-    fwrite(STDERR, "[ERREUR] --apply exige --to=<adresses>\n");
-    exit(1);
+    $to = REPORT_TO;
 }
 
 $uri = medacapMongoUri('mongodb://localhost:27017');
@@ -182,13 +184,13 @@ $subject = 'MEDACAP - Suivi hebdomadaire Cameroun au ' . $now->format('d/m/Y');
 
 if ($testTo !== '') {
     $html = preg_replace('/<body[^>]*>/i', '$0' . campagneTestBox(
-        '<b>[TEST] Rapport du vendredi, à valider</b><br>Destinataires, jour et heure de l\'envoi réel : à définir.', REPORT_MAIL_WIDTH), $html, 1);
+        '<b>[TEST] Rapport du vendredi, à valider</b><br>Envoi réel à ' . h(implode(', ', REPORT_TO)) . ', copie : ' . h(implode(', ', REPORT_CC)) . '.', REPORT_MAIL_WIDTH), $html, 1);
     $ok = sendCampaignMail($testTo, '[TEST] ' . $subject, $html, [], $attachments);
     echo "\nTest envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
     exit($ok ? 0 : 1);
 }
 
-$cc = [SUPER_ADMIN_EMAIL];
+$cc = REPORT_CC;
 $ok = sendCampaignMail(implode(', ', $to), $subject, $html, $cc, $attachments);
 $db->mail_campaigns->insertOne([
     'campaign' => REPORT_CAMPAIGN, 'email' => implode(', ', $to), 'cc' => $cc, 'ok' => $ok,
