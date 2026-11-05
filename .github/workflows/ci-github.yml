@@ -58,7 +58,7 @@ jobs:
         run: MEDACAP_TAG=ci docker compose -f docker-compose.server.yml --env-file .env.server.example config --quiet
       - uses: docker/setup-buildx-action@v3
       - name: Construction de l'image déployée sur la .15
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: docker/Dockerfile
