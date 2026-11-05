@@ -293,12 +293,21 @@ function paperReportExcelBuildSpreadsheet(array $paperBlocks, ?array $options = 
         }
     }
 
+    // Épreuve seule avec domaines client : une colonne par domaine avant la note globale
+    $domainCols = array();
+    if (!$multi && !empty($paperBlocks[0]['ctx']['has_domains'])) {
+        $domainCols = $paperBlocks[0]['ctx']['specialty_list'];
+    }
+
     $headers = array('Candidat');
     if ($multi) {
         $headers[] = 'Épreuve';
     }
+    foreach ($domainCols as $domain) {
+        $headers[] = $domain . ' /20';
+    }
     foreach ($activeLevels as $level) {
-        $headers[] = $level . ' /20';
+        $headers[] = ($domainCols !== array() && count($activeLevels) === 1) ? 'Note globale /20' : $level . ' /20';
     }
     if ($includeCompletudeGlobale) {
         $headers[] = 'Complétude glob. /20';
@@ -336,6 +345,13 @@ function paperReportExcelBuildSpreadsheet(array $paperBlocks, ?array $options = 
         }
 
         $levelCol = $scoreColStart;
+        foreach ($domainCols as $domain) {
+            $cellAddress = Coordinate::stringFromColumnIndex($levelCol) . $row;
+            $sn = isset($c['specialty_notes'][$domain]) ? $c['specialty_notes'][$domain] : array();
+            $note = ($sn['answered'] ?? 0) > 0 ? ($sn['note_maitrise'] ?? null) : null;
+            paperReportExcelStyleScoreCell($global, $cellAddress, $note);
+            $levelCol++;
+        }
         foreach ($activeLevels as $level) {
             $cellAddress = Coordinate::stringFromColumnIndex($levelCol) . $row;
             if (!in_array($level, $paperLevels, true)) {
@@ -364,8 +380,11 @@ function paperReportExcelBuildSpreadsheet(array $paperBlocks, ?array $options = 
     paperReportExcelSetGlobalColumnWidths(
         $global,
         $multi,
-        count($activeLevels) + ($includeCompletudeGlobale ? 1 : 0)
+        count($domainCols) + count($activeLevels) + ($includeCompletudeGlobale ? 1 : 0)
     );
+    for ($i = 0; $i < count($domainCols); $i++) {
+        $global->getColumnDimensionByColumn($scoreColStart + $i)->setWidth(24);
+    }
     $global->freezePane('A' . $dataStartRow);
 
     foreach ($candidateEntries as $entry) {
@@ -378,7 +397,8 @@ function paperReportExcelBuildSpreadsheet(array $paperBlocks, ?array $options = 
             $multi,
             $includeCompletudeGlobale,
             $includeCharts,
-            $chartCounter
+            $chartCounter,
+            !empty($entry['pb']['ctx']['has_domains'])
         );
     }
 
@@ -393,8 +413,10 @@ function paperReportExcelAddCandidateSheet(
     bool $multi,
     bool $includeCompletudeGlobale = true,
     bool $includeCharts = true,
-    int $chartCounter = 1
+    int $chartCounter = 1,
+    bool $byDomain = false
 ): void {
+    $groupWord = $byDomain ? 'domaine' : 'spécialité';
     $sheet = $spreadsheet->createSheet();
     $sheet->setTitle($sheetTitle);
 
@@ -454,11 +476,11 @@ function paperReportExcelAddCandidateSheet(
         $r += 2;
     }
 
-    $sheet->setCellValue('A' . $r, 'Notes par spécialité (/20)');
+    $sheet->setCellValue('A' . $r, 'Notes par ' . $groupWord . ' (/20)');
     $sheet->getStyle('A' . $r)->getFont()->setBold(true)->setName('Arial');
     $r++;
     $specHeaderRow = $r;
-    $sheet->fromArray(array('Spécialité', 'Note maîtrise /20'), null, 'A' . $r);
+    $sheet->fromArray(array($byDomain ? 'Domaine' : 'Spécialité', 'Note maîtrise /20'), null, 'A' . $r);
     paperReportExcelStyleHeaderRow($sheet, 'A' . $r . ':B' . $r);
     $specStart = $r + 1;
     $r = $specStart;
@@ -497,11 +519,11 @@ function paperReportExcelAddCandidateSheet(
     $sheet->getColumnDimension('G')->setWidth(10);
 
     if ($includeCharts && $chartDataStart !== null && $chartDataEnd !== null) {
-        paperReportExcelAddMasteryChart($sheet, $chartDataStart, $chartDataEnd, 'I' . $specHeaderRow, $chartCounter);
+        paperReportExcelAddMasteryChart($sheet, $chartDataStart, $chartDataEnd, 'I' . $specHeaderRow, $chartCounter, $groupWord);
     }
 }
 
-function paperReportExcelAddMasteryChart($sheet, int $dataStartRow, int $dataEndRow, string $anchorCell, int $chartCounter = 1): void
+function paperReportExcelAddMasteryChart($sheet, int $dataStartRow, int $dataEndRow, string $anchorCell, int $chartCounter = 1, string $groupWord = 'spécialité'): void
 {
     $n = $dataEndRow - $dataStartRow + 1;
     if ($n <= 0) {
@@ -527,7 +549,7 @@ function paperReportExcelAddMasteryChart($sheet, int $dataStartRow, int $dataEnd
 
     $plotArea = new PlotArea(null, array($series));
     $legend = new Legend(Legend::POSITION_RIGHT, null, false);
-    $chartTitle = new Title('Maîtrise par spécialité (/20)');
+    $chartTitle = new Title('Maîtrise par ' . $groupWord . ' (/20)');
     $chartName = 'mastery_chart_' . max(1, $chartCounter);
     $chart = new Chart($chartName, $chartTitle, $legend, $plotArea, false);
     $chart->setTopLeftPosition($anchorCell);
