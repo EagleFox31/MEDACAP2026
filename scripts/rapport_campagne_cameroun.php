@@ -1,13 +1,14 @@
 <?php
 require_once __DIR__ . '/../core/medacap_config.php';
 /**
- * Rapport de fin de semaine, campagne Cameroun : avancement des évaluations par manager (mail)
- * + classeurs de suivi et de résultats habituels en pièces jointes (update_suivi_cm_send.php, generate_results_send_excel.php).
+ * Rapport de fin de semaine, campagne Cameroun, en deux mails :
+ *   1. bilan (avancement par manager) + classeur de suivi (update_suivi_cm_send.php) : à tous les managers, copie BILAN_CC ;
+ *   2. classeur de résultats (generate_results_send_excel.php) : à RESULTS_TO, copie RESULTS_CC.
  *
  * Usage:
  *   php scripts/rapport_campagne_cameroun.php                          simulation (tableau en console, aucun envoi)
- *   php scripts/rapport_campagne_cameroun.php --test=a@cfao.com        envoie le rapport à a@cfao.com seulement
- *   php scripts/rapport_campagne_cameroun.php --apply                  envoi réel à REPORT_TO, copie REPORT_CC (--to=… pour un autre destinataire)
+ *   php scripts/rapport_campagne_cameroun.php --test=a@cfao.com        envoie les deux mails à a@cfao.com seulement
+ *   php scripts/rapport_campagne_cameroun.php --apply                  envoi réel des deux mails
  *   --url=http://10.68.0.15:8010/                                      adresse du lien (défaut : MEDACAP_PUBLIC_URL)
  */
 require __DIR__ . '/../vendor/autoload.php';
@@ -19,27 +20,26 @@ use MongoDB\BSON\UTCDateTime;
 const REPORT_CAMPAIGN = 'rapport-cameroun';
 // Carte plus large que les mails aux managers : tableau à 4 colonnes + indicateurs
 const REPORT_MAIL_WIDTH = 1000;
-// Envoi réel : M.C. BENGONO, copie Laurent GONIN, A.Y. BOKALLY, Annick ETOLO, support (--to remplace le destinataire)
-const REPORT_TO = ['mcbengono@cfao.com'];
-const REPORT_CC = ['lgonin@cfao.com', 'aybokally@cfao.com', 'aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
+// Deux mails le vendredi :
+//  1. bilan + classeur de suivi : un seul mail à tous les managers de la campagne qui ont une adresse ;
+//  2. classeur de résultats : M.C. BENGONO.
+const BILAN_CC = ['aetolo-ext@cfao.com', 'mcbengono@cfao.com', 'lgonin@cfao.com', 'aybokally@cfao.com', 'jakaa-ext@cfao.com'];
+const RESULTS_TO = ['mcbengono@cfao.com'];
+const RESULTS_CC = ['lgonin@cfao.com', 'aybokally@cfao.com', 'aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
 
-$opts = getopt('', ['test:', 'apply', 'to:', 'url:']);
+$opts = getopt('', ['test:', 'apply', 'url:']);
 $testTo = isset($opts['test']) ? trim((string) $opts['test']) : '';
 $apply = isset($opts['apply']);
-$to = isset($opts['to']) ? array_values(array_filter(array_map('trim', explode(',', (string) $opts['to'])))) : [];
 $url = isset($opts['url']) ? rtrim((string) $opts['url'], '/') . '/' : medacapPublicUrl();
 if ($testTo !== '' && $apply) {
     fwrite(STDERR, "[ERREUR] --test et --apply sont exclusifs\n");
     exit(1);
 }
-if ($apply && !$to) {
-    $to = REPORT_TO;
-}
 
 $uri = medacapMongoUri('mongodb://localhost:27017');
 $db = (new Client($uri))->academy;
 $now = new DateTimeImmutable('now', new DateTimeZone(CAMPAIGN_TZ));
-echo "Mongo: $uri\nMode: " . ($apply ? 'ENVOI -> ' . implode(', ', $to) : ($testTo !== '' ? "TEST -> $testTo" : 'SIMULATION')) . "\n\n";
+echo "Mongo: $uri\nMode: " . ($apply ? 'ENVOI' : ($testTo !== '' ? "TEST -> $testTo" : 'SIMULATION')) . "\n\n";
 
 /* Managers de la campagne (servis au moins une fois), avec ce qui leur reste */
 $list = campagneLoadList($db, false);
@@ -51,6 +51,18 @@ $managers = [];
 foreach ($db->users->find(['_id' => ['$in' => array_values($served)]]) as $m) {
     $managers[(string) $m['_id']] = $m;
 }
+// Destinataires du bilan : managers ayant une adresse en base
+$bilanTo = [];
+$noMail = [];
+foreach ($managers as $m) {
+    $email = trim((string) ($m['email'] ?? ''));
+    if ($email !== '') {
+        $bilanTo[strtolower($email)] = $email;
+    } else {
+        $noMail[] = trim(($m['firstName'] ?? '') . ' ' . ($m['lastName'] ?? ''));
+    }
+}
+$bilanTo = array_values($bilanTo);
 
 // Dernière activité : lastSeen (présence) sinon début de la dernière connexion (chaîne jj-mm-aaaa hh:mm:ss)
 function lastActivity($db, $userId)
@@ -94,6 +106,11 @@ foreach ($rows as $r) {
 }
 echo "\nManagers : " . count($rows) . " | ont testé tous leurs techniciens : $upToDate | connectés depuis 7 jours : $connected"
     . " | techniciens à évaluer : $totEvals | techniciens avec un test à passer : $totTechTests\n";
+echo "\nMail 1, bilan -> " . implode(', ', $bilanTo) . "\n  copie : " . implode(', ', BILAN_CC) . "\n";
+if ($noMail) {
+    echo "  [SANS ADRESSE] " . implode(', ', $noMail) . " : ne recevront pas le bilan\n";
+}
+echo "Mail 2, résultats -> " . implode(', ', RESULTS_TO) . "\n  copie : " . implode(', ', RESULTS_CC) . "\n";
 
 /* Classeurs joints : régénérés à partir de la base */
 function runGenerator($script, $pattern)
@@ -114,19 +131,31 @@ function runGenerator($script, $pattern)
 }
 
 if (!$apply && $testTo === '') {
-    echo "\n[SIMULATION] Aucun envoi, classeurs non régénérés. --test=<adresse> pour un essai, --apply --to=… pour envoyer.\n";
+    echo "\n[SIMULATION] Aucun envoi, classeurs non régénérés. --test=<adresse> pour un essai, --apply pour envoyer.\n";
     exit(0);
 }
 
 $suivi = runGenerator('update_suivi_cm_send.php', '/->\s+(\S+-send\.xlsx)$/');
 $resultats = runGenerator('generate_results_send_excel.php', '/^Export : (\S+)$/');
 $stamp = $now->format('Y-m-d');
-$attachments = [
-    "suivi_qcm_techniciens_cm_$stamp.xlsx" => $suivi,
-    "resultats_qcm_techniciens_cm_$stamp.xlsx" => $resultats,
-];
-echo "Pièces jointes : " . implode(', ', array_keys($attachments)) . "\n";
+$suiviAtt = ["suivi_qcm_techniciens_cm_$stamp.xlsx" => $suivi];
+$resultatsAtt = ["resultats_qcm_techniciens_cm_$stamp.xlsx" => $resultats];
 
+$template = function ($userName, $title, $message) {
+    return generateEmailTemplate([
+        'lang' => 'fr',
+        'companyName' => 'MEDACAP',
+        'companyTagline' => 'CFAO Mobility Academy',
+        'teamName' => TEAM_NAME,
+        'supportEmail' => SUPER_ADMIN_EMAIL,
+        'userName' => $userName,
+        'title' => $title,
+        'message' => $message,
+        'width' => REPORT_MAIL_WIDTH,
+    ]);
+};
+
+/* Mail 1 : bilan + suivi, à tous les managers */
 /* Mail */
 $td = 'padding:8px 10px;border-bottom:1px solid #E5E7EB;font-size:14px;';
 $tdL = $td . 'text-align:left;';
@@ -162,39 +191,53 @@ $message = '<p>Voici l\'avancement au ' . $now->format('d/m/Y à H:i') . ' de la
     . '<li><b>Techniciens avec un test à passer</b> : techniciens de l\'équipe qui n\'ont pas encore terminé leur QCM ou leur auto-évaluation.</li>'
     . '<li><b>Dernière connexion</b> : en rouge, le manager ne s\'est pas connecté à MEDACAP depuis 7 jours.</li>'
     . '<li>Tant qu\'il reste des techniciens à évaluer, le manager reçoit un rappel automatique par mail tous les 3 jours ouvrés.</li></ul>'
-    . '<h3 style="margin:18px 0 6px;font-size:17px;">Pièces jointes</h3>'
-    . '<ul style="padding-left:20px;margin:0;">'
-    . '<li><b>Suivi QCM</b> : statut de chaque QCM par technicien, synthèse par agence.</li>'
-    . '<li><b>Résultats QCM</b> : notes théoriques et pratiques par niveau.</li></ul>'
+    . '<h3 style="margin:18px 0 6px;font-size:17px;">Pièce jointe</h3>'
+    . '<p style="margin:0;"><b>Suivi QCM</b> : statut de chaque QCM par technicien, synthèse par agence.</p>'
     // Adresse en texte, sans lien ni bouton : un lien http vers une IP fait bloquer les pièces jointes par Outlook (essais du 05/11)
     . '<p style="margin:16px 0 0;">Adresse de MEDACAP, à saisir dans le navigateur : <b>' . h(preg_replace('#^https?://#', '', rtrim($url, '/'))) . '</b></p>';
+$mails = [
+    'bilan' => [
+        'to' => $bilanTo, 'cc' => BILAN_CC, 'att' => $suiviAtt,
+        'subject' => 'MEDACAP - Suivi hebdomadaire Cameroun au ' . $now->format('d/m/Y'),
+        'html' => $template('à tous', 'Suivi hebdomadaire - Cameroun', $message),
+    ],
+];
 
-$html = generateEmailTemplate([
-    'lang' => 'fr',
-    'companyName' => 'MEDACAP',
-    'companyTagline' => 'CFAO Mobility Academy',
-    'teamName' => TEAM_NAME,
-    'supportEmail' => SUPER_ADMIN_EMAIL,
-    'userName' => 'à tous',
-    'title' => 'Suivi hebdomadaire - Cameroun',
-    'message' => $message,
-    'width' => REPORT_MAIL_WIDTH,
-]);
-$subject = 'MEDACAP - Suivi hebdomadaire Cameroun au ' . $now->format('d/m/Y');
+/* Mail 2 : résultats, à M.C. BENGONO */
+$resultsUser = $db->users->findOne(['email' => RESULTS_TO[0]]);
+$resultsMessage = '<p>Veuillez trouver ci-joint les résultats au ' . $now->format('d/m/Y à H:i')
+    . ' de la Mesure de compétences des Techniciens de CFAO Equipment Cameroun - vague 2026.</p>'
+    . '<ul style="padding-left:20px;margin:0 0 8px;line-height:1.6;">'
+    . '<li><b>Résultats QCM</b> : notes théoriques et pratiques de chaque technicien, par niveau.</li>'
+    . '<li>Vert : 80 % et plus, jaune : 60 à 79 %, rouge : moins de 60 %.</li>'
+    . '<li>« En attente évaluation manager » : la note pratique sera connue quand le manager aura évalué le technicien.</li></ul>';
+$mails['resultats'] = [
+    'to' => RESULTS_TO, 'cc' => RESULTS_CC, 'att' => $resultatsAtt,
+    'subject' => 'MEDACAP - Résultats QCM Cameroun au ' . $now->format('d/m/Y'),
+    'html' => $template($resultsUser ? managerGreeting($resultsUser, false) : 'à tous', 'Résultats QCM - Cameroun', $resultsMessage),
+];
 
-if ($testTo !== '') {
-    $html = preg_replace('/<body[^>]*>/i', '$0' . campagneTestBox(
-        '<b>[TEST] Rapport du vendredi, à valider</b><br>Envoi réel à ' . h(implode(', ', REPORT_TO)) . ', copie : ' . h(implode(', ', REPORT_CC)) . '.', REPORT_MAIL_WIDTH), $html, 1);
-    $ok = sendCampaignMail($testTo, '[TEST] ' . $subject, $html, [], $attachments);
-    echo "\nTest envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
-    exit($ok ? 0 : 1);
+$allOk = true;
+foreach ($mails as $kind => $mail) {
+    if (!$mail['to']) {
+        echo "\n[$kind] aucun destinataire, mail non envoyé\n";
+        $allOk = false;
+        continue;
+    }
+    if ($testTo !== '') {
+        $html = preg_replace('/<body[^>]*>/i', '$0' . campagneTestBox(
+            '<b>[TEST] Rapport du vendredi, mail ' . ($kind === 'bilan' ? '1/2 (bilan)' : '2/2 (résultats)') . '</b><br>'
+            . 'Envoi réel à : ' . h(implode(', ', $mail['to'])) . '<br>Copie : ' . h(implode(', ', $mail['cc'])), REPORT_MAIL_WIDTH), $mail['html'], 1);
+        $ok = sendCampaignMail($testTo, '[TEST] ' . $mail['subject'], $html, [], $mail['att']);
+        echo "\nTest $kind envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
+    } else {
+        $ok = sendCampaignMail(implode(', ', $mail['to']), $mail['subject'], $mail['html'], $mail['cc'], $mail['att']);
+        $db->mail_campaigns->insertOne([
+            'campaign' => REPORT_CAMPAIGN . '-' . $kind, 'email' => implode(', ', $mail['to']), 'cc' => $mail['cc'], 'ok' => $ok,
+            'pendingEvals' => $totEvals, 'sentAt' => new UTCDateTime(),
+        ]);
+        echo "\nMail $kind envoyé : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
+    }
+    $allOk = $allOk && $ok;
 }
-
-$cc = REPORT_CC;
-$ok = sendCampaignMail(implode(', ', $to), $subject, $html, $cc, $attachments);
-$db->mail_campaigns->insertOne([
-    'campaign' => REPORT_CAMPAIGN, 'email' => implode(', ', $to), 'cc' => $cc, 'ok' => $ok,
-    'pendingEvals' => $totEvals, 'sentAt' => new UTCDateTime(),
-]);
-echo "\nRapport envoyé : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
-exit($ok ? 0 : 1);
+exit($allOk ? 0 : 1);

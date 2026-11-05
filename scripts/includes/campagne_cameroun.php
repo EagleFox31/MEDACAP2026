@@ -17,8 +17,8 @@ const EN_COUNTRIES =['Rwanda', 'Kenya', 'Uganda', 'Tanzania', 'Ghana', 'Nigeria'
 // CMI = CFAO Mobility Cameroon : les deux libellés coexistent dans users.subsidiary
 const SCOPE_SUBSIDIARY = ['CAMEROON MOTORS INDUSTRIES', 'CFAO MOBILITY CAMEROON'];
 const SCOPE_CREATED = '^\d\d-0[67]-2026';
-// Copie de chaque envoi réel (mails et relances aux managers) : Annick ETOLO, M.C. BENGONO, Laurent GONIN, A.Y. BOKALLY, support
-const CAMPAIGN_CC = ['aetolo-ext@cfao.com', 'mcbengono@cfao.com', 'lgonin@cfao.com', 'aybokally@cfao.com', 'jakaa-ext@cfao.com'];
+// Copie de chaque envoi réel : Annick ETOLO, support (Laurent GONIN, M.C. BENGONO et A.Y. BOKALLY retirés pour éviter le spam)
+const CAMPAIGN_CC = ['aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
 // Manager sans adresse : mail adressé à Annick ETOLO, qui le fait suivre
 const RELAY_TO = 'aetolo-ext@cfao.com';
 const CAMPAIGN_TZ = 'Africa/Douala';
