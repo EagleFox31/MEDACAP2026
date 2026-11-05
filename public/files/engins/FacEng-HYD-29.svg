@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">  <style>.m{fill:#9ca3af;stroke:#1f2937;stroke-width:2}.f{fill:#cbd5e1;stroke:#1f2937;stroke-width:2}.n{fill:#64748b;stroke:#1f2937;stroke-width:2}.r{fill:#f59e0b;stroke:#78350f;stroke-width:2}</style>
+  <defs>
+    <g id="A"><path class="m" d="M-72 250 H-50 V262 H0 V286 H-72 Z"/><rect x="-10" y="270" width="10" height="12" fill="#ffffff"/><circle cx="-5" cy="276" r="5.5" fill="#111827"/><path class="f" d="M0 266 H40 V280 H76 V286 H0 Z"/><path class="n" d="M-50 236 H50 V279 H40 V262 H-50 Z"/></g>
+    <g id="B"><path class="m" d="M-72 250 H-45 V260 H-18 V270 L0 284 V286 H-72 Z"/><path class="f" d="M-14 264 H30 V280 H76 V286 H2 V284 H0 L-14 273 Z"/><path class="n" d="M-45 238 H42 V279 H30 V263 H-14 V260 H-45 Z"/></g>
+    <g id="C"><path class="m" d="M-72 250 H-20 V264 H10 V274 L-12 280 H-30 V286 H-72 Z"/><path class="f" d="M-30 280 H76 V286 H-30 Z"/><path class="r" d="M-8 280 L10 274.5 L14 268 H26 V280 Z"/><path class="n" d="M-20 238 H40 V279 H26 V266 H10 V264 H-20 Z"/></g>
+  </defs><rect width="800" height="560" rx="16" fill="#ffffff"/><rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>  <text x="400" y="44" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">Trois raccords hydrauliques serrés – vues en coupe</text>
+  <rect x="15" y="76" width="245" height="340" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <circle cx="137" cy="118" r="26" fill="#1e3a5f"/><text x="137" y="128" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">A</text>
+  <g transform="translate(137 300) scale(1.55) translate(-2 -300)"><use href="#A"/><use href="#A" transform="translate(0 600) scale(1 -1)"/><line x1="-76" y1="300" x2="80" y2="300" stroke="#64748b" stroke-width="1" stroke-dasharray="10 3 2 3"/></g>
+  <rect x="277" y="76" width="245" height="340" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <circle cx="399" cy="118" r="26" fill="#1e3a5f"/><text x="399" y="128" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">B</text>
+  <g transform="translate(399 300) scale(1.55) translate(-2 -300)"><use href="#B"/><use href="#B" transform="translate(0 600) scale(1 -1)"/><line x1="-76" y1="300" x2="80" y2="300" stroke="#64748b" stroke-width="1" stroke-dasharray="10 3 2 3"/></g>
+  <rect x="540" y="76" width="245" height="340" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <circle cx="662" cy="118" r="26" fill="#1e3a5f"/><text x="662" y="128" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">C</text>
+  <g transform="translate(662 300) scale(1.55) translate(-2 -300)"><use href="#C"/><use href="#C" transform="translate(0 600) scale(1 -1)"/><line x1="-76" y1="300" x2="80" y2="300" stroke="#64748b" stroke-width="1" stroke-dasharray="10 3 2 3"/></g>
+  <g font-size="15" fill="#334155" text-anchor="middle"><text x="400" y="446">côté gauche : corps mâle (sur l'organe)</text><text x="400" y="468">côté droit : extrémité du tube ou du flexible</text></g>
+  <rect x="120" y="500" width="22" height="16" class="m"/><text x="150" y="514" font-size="16" fill="#0f172a">corps mâle</text>
+  <rect x="270" y="500" width="22" height="16" class="f"/><text x="300" y="514" font-size="16" fill="#0f172a">embout / tube</text>
+  <rect x="440" y="500" width="22" height="16" class="n"/><text x="470" y="514" font-size="16" fill="#0f172a">écrou</text>
+  <rect x="560" y="500" width="22" height="16" class="r"/><text x="590" y="514" font-size="16" fill="#0f172a">bague</text>
+</svg>

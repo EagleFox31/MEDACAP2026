@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="j" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b5563"/><stop offset="0.3" stop-color="#f3f4f6"/><stop offset="0.55" stop-color="#d1d5db"/><stop offset="1" stop-color="#374151"/></linearGradient>
+  </defs>
+  <rect width="800" height="560" rx="16" fill="#ffffff"/>
+  <rect x="1" y="1" width="798" height="558" rx="16" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="400" y="44" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">Maneton après dépose du chapeau de bielle</text>
+  <rect x="40" y="150" width="70" height="200" rx="10" fill="#6b7280" stroke="#1f2937" stroke-width="3"/>
+  <rect x="440" y="150" width="70" height="200" rx="10" fill="#6b7280" stroke="#1f2937" stroke-width="3"/>
+  <rect x="110" y="180" width="330" height="140" fill="url(#j)" stroke="#1f2937" stroke-width="3"/>
+  <rect x="150" y="242" width="250" height="16" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+  <line x1="140" y1="242" x2="120" y2="242" stroke="#dc2626" stroke-width="2"/>
+  <line x1="140" y1="258" x2="120" y2="258" stroke="#dc2626" stroke-width="2"/>
+  <text x="275" y="380" text-anchor="middle" font-size="18" fill="#0f172a">fil calibré écrasé</text>
+  <line x1="275" y1="362" x2="275" y2="262" stroke="#334155" stroke-width="1.5"/>
+  <g>
+    <rect x="560" y="90" width="200" height="420" rx="8" fill="#fef9c3" stroke="#a16207" stroke-width="3"/>
+    <text x="660" y="124" text-anchor="middle" font-size="18" font-weight="700" fill="#713f12">Échelle (mm)</text>
+    <rect x="580" y="150" width="60" height="8" fill="#15803d"/><text x="652" y="161" font-size="20" fill="#0f172a">0,025</text>
+    <rect x="580" y="205" width="60" height="12" fill="#15803d"/><text x="652" y="218" font-size="20" fill="#0f172a">0,038</text>
+    <rect x="580" y="265" width="60" height="16" fill="#15803d"/><text x="652" y="280" font-size="20" fill="#0f172a">0,051</text>
+    <rect x="580" y="330" width="60" height="24" fill="#15803d"/><text x="652" y="349" font-size="20" fill="#0f172a">0,076</text>
+    <rect x="580" y="405" width="60" height="32" fill="#15803d"/><text x="652" y="428" font-size="20" fill="#0f172a">0,102</text>
+  </g>
+  <text x="40" y="470" font-size="19" fill="#0f172a">Chapeau serré au couple, vilebrequin non tourné,</text>
+  <text x="40" y="496" font-size="19" fill="#0f172a">puis chapeau déposé pour lire la largeur du fil.</text>
+</svg>
