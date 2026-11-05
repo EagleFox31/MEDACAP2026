@@ -17,6 +17,8 @@ use MongoDB\Client;
 use MongoDB\BSON\UTCDateTime;
 
 const REPORT_CAMPAIGN = 'rapport-cameroun';
+// Carte plus large que les mails aux managers : tableau à 4 colonnes + indicateurs
+const REPORT_MAIL_WIDTH = 1000;
 
 $opts = getopt('', ['test:', 'apply', 'to:', 'url:']);
 $testTo = isset($opts['test']) ? trim((string) $opts['test']) : '';
@@ -62,20 +64,20 @@ function lastActivity($db, $userId)
     return $d ?: null;
 }
 
+// Connexion récente : au cours des 7 derniers jours
+$weekAgo = $now->modify('-7 days');
 $rows = [];
 $totEvals = $totTechTests = $upToDate = 0;
 foreach ($managers as $mid => $m) {
     $e = isset($list[$mid]) ? $list[$mid] : null;
     $evals = $e ? $e['mgrCount'] : 0;
     $techTests = $e ? count(array_filter($e['rows'], function ($r) { return $r['tech']; })) : 0;
-    $history = campagneMailHistory($db, $m['_id']);
-    $relances = count(array_filter($history, function ($r) { return $r['campaign'] === CAMPAIGN . '-relance'; }));
     $seen = lastActivity($db, $m['_id']);
     $rows[] = [
         'name' => trim(($m['firstName'] ?? '') . ' ' . ($m['lastName'] ?? '')),
-        'evals' => $evals, 'techTests' => $techTests, 'mails' => count($history), 'relances' => $relances,
+        'evals' => $evals, 'techTests' => $techTests,
         'seen' => $seen,
-        'seenSince' => $seen && $history && $seen >= campagneLocalDate($history[0]['sentAt']),
+        'seenSince' => $seen && $seen >= $weekAgo,
     ];
     $totEvals += $evals;
     $totTechTests += $techTests;
@@ -85,10 +87,11 @@ usort($rows, function ($a, $b) { return ($b['evals'] <=> $a['evals']) ?: strcmp(
 $connected = count(array_filter($rows, function ($r) { return $r['seenSince']; }));
 
 foreach ($rows as $r) {
-    printf("%-34s | évaluations à faire %2d | techniciens avec un test à passer %2d | mails %d (relances %d) | %s\n",
-        $r['name'], $r['evals'], $r['techTests'], $r['mails'], $r['relances'], $r['seen'] ? $r['seen']->format('d/m/Y H:i') : 'jamais');
+    printf("%-34s | techniciens à évaluer %2d | techniciens avec un test à passer %2d | %s\n",
+        $r['name'], $r['evals'], $r['techTests'], $r['seen'] ? $r['seen']->format('d/m/Y H:i') : 'jamais');
 }
-echo "\nManagers : " . count($rows) . " | ont testé tous leurs techniciens : $upToDate | connectés depuis le premier mail : $connected | évaluations à faire : $totEvals | techniciens avec un test à passer : $totTechTests\n";
+echo "\nManagers : " . count($rows) . " | ont testé tous leurs techniciens : $upToDate | connectés depuis 7 jours : $connected"
+    . " | techniciens à évaluer : $totEvals | techniciens avec un test à passer : $totTechTests\n";
 
 /* Classeurs joints : régénérés à partir de la base */
 function runGenerator($script, $pattern)
@@ -123,18 +126,19 @@ $attachments = [
 echo "Pièces jointes : " . implode(', ', array_keys($attachments)) . "\n";
 
 /* Mail */
-$td = 'padding:6px 8px;border-bottom:1px solid #E5E7EB;font-size:14px;';
+$td = 'padding:8px 10px;border-bottom:1px solid #E5E7EB;font-size:14px;';
+$tdL = $td . 'text-align:left;';
+$tdC = $td . 'text-align:center;';
 $table = '<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 12px;">'
-    . '<tr style="background:#F4F6F8;text-align:left;">'
-    . '<th style="' . $td . '">Manager</th><th style="' . $td . '">Évaluations à faire</th>'
-    . '<th style="' . $td . '">Techniciens avec un test à passer</th><th style="' . $td . '">Mails reçus</th>'
-    . '<th style="' . $td . '">Dernière connexion</th></tr>';
+    . '<tr style="background:#F4F6F8;">'
+    . '<th style="' . $tdL . 'width:40%;">Manager</th><th style="' . $tdC . 'width:20%;">Techniciens à évaluer</th>'
+    . '<th style="' . $tdC . 'width:20%;">Techniciens avec un test à passer</th>'
+    . '<th style="' . $tdC . 'width:20%;">Dernière connexion</th></tr>';
 foreach ($rows as $r) {
-    $table .= '<tr><td style="' . $td . '">' . h($r['name']) . '</td>'
-        . '<td style="' . $td . '">' . ($r['evals'] > 0 ? '<b style="color:#B45309;">' . $r['evals'] . '</b>' : '<span style="color:#047857;">Terminé</span>') . '</td>'
-        . '<td style="' . $td . '">' . $r['techTests'] . '</td>'
-        . '<td style="' . $td . '">' . $r['mails'] . ($r['relances'] ? ' (dont ' . $r['relances'] . ' relance' . ($r['relances'] > 1 ? 's' : '') . ')' : '') . '</td>'
-        . '<td style="' . $td . 'white-space:nowrap;' . ($r['seenSince'] ? '' : 'color:#B91C1C;') . '">' . ($r['seen'] ? $r['seen']->format('d/m H:i') : 'Jamais') . '</td></tr>';
+    $table .= '<tr><td style="' . $tdL . '">' . h($r['name']) . '</td>'
+        . '<td style="' . $tdC . '">' . ($r['evals'] > 0 ? '<b style="color:#B45309;">' . $r['evals'] . '</b>' : '<span style="color:#047857;">Terminé</span>') . '</td>'
+        . '<td style="' . $tdC . '">' . $r['techTests'] . '</td>'
+        . '<td style="' . $tdC . 'white-space:nowrap;' . ($r['seenSince'] ? '' : 'color:#B91C1C;') . '">' . ($r['seen'] ? $r['seen']->format('d/m H:i') : 'Jamais') . '</td></tr>';
 }
 $table .= '</table>';
 
@@ -146,14 +150,17 @@ $kpi = function ($value, $label) {
 $message = '<p>Voici l\'avancement au ' . $now->format('d/m/Y à H:i') . ' de la Mesure de compétences des Techniciens de CFAO Equipment Cameroun - vague 2026.</p>'
     . '<table cellpadding="0" cellspacing="6" style="width:100%;margin:8px 0 14px;"><tr>'
     . $kpi($upToDate . ' / ' . count($rows), 'managers ayant testé tous leurs techniciens')
-    . $kpi($totEvals, 'évaluations à faire par les managers')
+    . $kpi($totEvals, 'techniciens à évaluer par les managers')
     . $kpi($totTechTests, 'techniciens ayant encore un test à passer')
-    . $kpi($connected . ' / ' . count($rows), 'managers connectés depuis le premier mail')
+    . $kpi($connected . ' / ' . count($rows), 'managers connectés depuis la semaine passée')
     . '</tr></table>'
     . '<h3 style="margin:18px 0 6px;font-size:17px;">Par manager</h3>' . $table
-    . '<p style="font-size:13px;color:#4B5563;">Évaluations à faire : nombre de techniciens que le manager doit encore évaluer.'
-    . 'En rouge : aucune connexion depuis le premier mail. '
-    . 'Les managers qui ont encore des évaluations à faire reçoivent une relance automatique 3 jours ouvrés après leur dernier mail.</p>'
+    . '<p style="font-size:13px;color:#374151;margin:12px 0 4px;"><b>Comment lire ce tableau</b></p>'
+    . '<ul style="font-size:13px;color:#4B5563;padding-left:20px;margin:0 0 8px;line-height:1.6;">'
+    . '<li><b>Techniciens à évaluer</b> : techniciens dont le manager n\'a pas encore rempli l\'évaluation. « Terminé » : tous sont évalués.</li>'
+    . '<li><b>Techniciens avec un test à passer</b> : techniciens de l\'équipe qui n\'ont pas encore terminé leur QCM ou leur auto-évaluation.</li>'
+    . '<li><b>Dernière connexion</b> : en rouge, le manager ne s\'est pas connecté à MEDACAP depuis 7 jours.</li>'
+    . '<li>Tant qu\'il reste des techniciens à évaluer, le manager reçoit un rappel automatique par mail tous les 3 jours ouvrés.</li></ul>'
     . '<h3 style="margin:18px 0 6px;font-size:17px;">Pièces jointes</h3>'
     . '<ul style="padding-left:20px;margin:0;">'
     . '<li><b>Suivi QCM</b> : statut de chaque QCM par technicien, tableau de bord, synthèse par agence.</li>'
@@ -170,13 +177,13 @@ $html = generateEmailTemplate([
     'message' => $message,
     'ctaText' => 'Ouvrir MEDACAP',
     'ctaLink' => $url,
-    'width' => CAMPAIGN_MAIL_WIDTH,
+    'width' => REPORT_MAIL_WIDTH,
 ]);
 $subject = 'MEDACAP - Suivi hebdomadaire Cameroun au ' . $now->format('d/m/Y');
 
 if ($testTo !== '') {
     $html = preg_replace('/<body[^>]*>/i', '$0' . campagneTestBox(
-        '<b>[TEST] Rapport du vendredi, à valider</b><br>Destinataires, jour et heure de l\'envoi réel : à définir.'), $html, 1);
+        '<b>[TEST] Rapport du vendredi, à valider</b><br>Destinataires, jour et heure de l\'envoi réel : à définir.', REPORT_MAIL_WIDTH), $html, 1);
     $ok = sendCampaignMail($testTo, '[TEST] ' . $subject, $html, [], $attachments);
     echo "\nTest envoyé à $testTo : " . ($ok ? 'OK' : 'ÉCHEC') . "\n";
     exit($ok ? 0 : 1);

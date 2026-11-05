@@ -26,9 +26,9 @@ const CAMPAIGN_TZ = 'Africa/Douala';
 const CAMPAIGN_MAIL_WIDTH = 800;
 
 // Encadré « [TEST] » placé au-dessus du mail d'essai, à la largeur de la carte (table : Outlook ignore max-width sur un div)
-function campagneTestBox($innerHtml)
+function campagneTestBox($innerHtml, $width = CAMPAIGN_MAIL_WIDTH)
 {
-    return '<table cellpadding="0" cellspacing="0" border="0" width="' . CAMPAIGN_MAIL_WIDTH . '" align="center" style="width:100%;max-width:' . CAMPAIGN_MAIL_WIDTH . 'px;margin:12px auto;">'
+    return '<table cellpadding="0" cellspacing="0" border="0" width="' . $width . '" align="center" style="width:100%;max-width:' . $width . 'px;margin:12px auto;">'
         . '<tr><td style="padding:12px 16px;border:2px dashed #B45309;background:#FFFBEB;font-family:Arial,sans-serif;font-size:13px;color:#1F2937;">'
         . $innerHtml . '</td></tr></table>';
 }
