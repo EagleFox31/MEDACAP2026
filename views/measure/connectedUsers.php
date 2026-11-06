@@ -96,6 +96,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bonus'])) {
     header('Location: ' . cuUrl([]));
     exit();
 }
+// Bouton « Rouvrir » d'une épreuve terminée le jour même (1 à 60 min, 5 par défaut) : allocation remise « en cours », QCM
+// déverrouillé, chrono à N min, réponses et orientation conservées. Les résultats QCM déjà calculés sont archivés avec l'état
+// d'avant dans exam_reopens et supprimés : userPaperQuiz.php ne les recalcule à la clôture que s'ils n'existent pas.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reopen'])) {
+    $cuReopenId = (string) $_POST['reopen'];
+    $cuReopenMin = max(1, min(60, (int) ($_POST['minutes'] ?? 5)));
+    $cuTarget = preg_match('/^[0-9a-f]{24}$/i', $cuReopenId) && hash_equals($_SESSION['cuToken'], (string) ($_POST['token'] ?? ''))
+        ? $academy->users->findOne(['_id' => new MongoDB\BSON\ObjectId($cuReopenId)], ['projection' => ['profile' => 1, 'subsidiary' => 1, 'firstName' => 1, 'lastName' => 1]])
+        : null;
+    $cuExam = $cuTarget && ($cuTarget['profile'] ?? '') === 'Candidat'
+        && ($cuIsSuperAdmin || (string) ($cuTarget['subsidiary'] ?? '') === $cuSubsidiary)
+        ? $academy->exams->findOne(['user' => $cuTarget['_id']], ['sort' => ['updated' => -1]])
+        : null;
+    $cuAlloc = $cuExam && isset($cuExam['paper'])
+        ? $academy->allocations->findOne(['user' => $cuTarget['_id'], 'paper' => $cuExam['paper'],
+            'status' => ['$in' => ['done', 'awaiting_orientation']]])
+        : null;
+    $cuToday = date('Y-m-d');
+    $cuName = $cuTarget ? trim(($cuTarget['firstName'] ?? '') . ' ' . ($cuTarget['lastName'] ?? '')) : '';
+    if (!$cuAlloc) {
+        $_SESSION['cuFlash'] = 'Réouverture refusée : aucune épreuve terminée pour ce candidat.';
+    } elseif (substr((string) ($cuExam['updated'] ?? $cuExam['created'] ?? ''), 0, 10) !== $cuToday) {
+        $_SESSION['cuFlash'] = 'Réouverture refusée : l\'épreuve de ' . $cuName . ' ne date pas d\'aujourd\'hui.';
+    } else {
+        $cuResFilter = ['user' => $cuTarget['_id'], 'paper' => $cuExam['paper'], 'type' => 'Factuel', 'level' => 'Mixed'];
+        $cuOldResults = iterator_to_array($academy->results->find($cuResFilter), false);
+        $academy->exam_reopens->insertOne([
+            'user' => $cuTarget['_id'], 'paper' => $cuExam['paper'], 'minutes' => $cuReopenMin,
+            'by' => new MongoDB\BSON\ObjectId($_SESSION['id']), 'at' => date('Y-m-d H:i:s'),
+            'allocation' => $cuAlloc, 'exam' => $cuExam, 'results' => $cuOldResults,
+        ]);
+        $academy->results->deleteMany($cuResFilter);
+        $academy->allocations->updateOne(['_id' => $cuAlloc['_id']], ['$set' => ['status' => 'in_progress', 'active' => true], '$unset' => ['finishedAt' => '']]);
+        $academy->exams->updateOne(['_id' => $cuExam['_id']], ['$set' => ['active' => true, 'lockQcm' => false,
+            'hour' => 0, 'minute' => $cuReopenMin, 'second' => 0, 'updated' => date('Y-m-d H:i:s')]]);
+        $_SESSION['cuFlash'] = 'Épreuve de ' . $cuName . ' rouverte avec ' . $cuReopenMin . ' min : il doit recharger la page (F5) ou se reconnecter.';
+    }
+    header('Location: ' . cuUrl([]));
+    exit();
+}
 $cuFlash = $_SESSION['cuFlash'] ?? '';
 unset($_SESSION['cuFlash']);
 
@@ -242,6 +282,7 @@ function cuExamInfo($e, $paper, $now, $isOnline, $stallSeconds, $rightAnswers)
         'paperId' => (string) ($e['paper'] ?? ''),
         'bonus' => isset($e['bonus']['status']) ? $e['bonus'] : null,
         'bonusMinutes' => (int) ($e['bonusMinutes'] ?? 0),
+        'lockQcm' => !empty($e['lockQcm']),
     ];
 }
 
@@ -292,7 +333,7 @@ if ($cuExamView && $cuRows) {
         'sort' => ['updated' => -1],
         'projection' => ['user' => 1, 'paper' => 1, 'active' => 1, 'answers' => 1, 'questions' => 1,
             'hour' => 1, 'minute' => 1, 'second' => 1, 'updated' => 1, 'created' => 1, 'bonus' => 1, 'bonusMinutes' => 1,
-            'orientationAnswers' => 1],
+            'orientationAnswers' => 1, 'lockQcm' => 1],
         'typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array'],
     ]);
     foreach ($cuExamDocs as $e) {
@@ -371,6 +412,25 @@ if ($cuExamView && $cuRows) {
         });
         $cuGroups[$g] = $list;
     }
+}
+
+/** Bouton « Rouvrir » d'une épreuve terminée (ou QCM verrouillé en attente d'orientation) dont la dernière sauvegarde date d'aujourd'hui. */
+function cuReopenButton($r, $now)
+{
+    $x = $r['exam'];
+    if (!in_array($x['state'], ['done', 'timeup'], true) && empty($x['lockQcm'])) {
+        return '';
+    }
+    if (date('Y-m-d', $now - $x['saveAgo']) !== date('Y-m-d', $now)) {
+        return '';
+    }
+    $name = trim(($r['u']['firstName'] ?? '') . ' ' . ($r['u']['lastName'] ?? ''));
+    return '<form method="post" class="cu-kick cu-bonus cu-reopen" data-confirm="' . cuEsc('L\'épreuve de ' . $name . ' repasse en cours avec {minutes} min. Ses réponses sont conservées et son score sera recalculé à la nouvelle clôture.') . '"'
+        . ' data-confirm-title="Rouvrir l\'épreuve ?" data-confirm-ok="Rouvrir">'
+        . '<input type="hidden" name="token" value="' . cuEsc($_SESSION['cuToken']) . '">'
+        . '<input type="number" name="minutes" value="5" min="1" max="60" step="1" required aria-label="Minutes"> min '
+        . '<button type="submit" name="reopen" value="' . cuEsc($r['u']['_id']) . '" title="Remettre l\'épreuve en cours avec du temps">Rouvrir</button>'
+        . '</form>';
 }
 
 /** Bouton « Déconnecter » d'une ligne (sauf soi-même, un Super Admin vu par un Admin, ou une session déjà fermée). */
@@ -779,7 +839,7 @@ openBackgroundContainer();
                                         <?php if ($x['pace'] !== null): ?><span class="st-detail"><?= cuPace($x['pace']) ?> / question</span><?php endif; ?>
                                     </td>
                                 <?php endif; ?>
-                                <td><?= cuKickButton($r, $cuIsSuperAdmin) ?></td>
+                                <td><?= cuKickButton($r, $cuIsSuperAdmin) ?><?= cuReopenButton($r, $now) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
