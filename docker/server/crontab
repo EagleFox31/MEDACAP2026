@@ -5,3 +5,7 @@
 30 2 * * * php /var/www/html/cronjobs/generate_subsidiary_reports.php
 # Campagne Cameroun : relance des managers 3 jours après leur dernier mail, jours ouvrés à 8 h.
 0 8 * * 1-5 php /var/www/html/scripts/campagne_nouvelle_adresse.php --relance --apply
+# Campagne Cameroun, le vendredi : bilan + suivi Excel aux managers à 12 h 30, résultats Excel à Mme Bengono à 14 h 30.
+# Liste CFAO et modèles du suivi : dans exports/ (volume de données), voir rapport_015.ps1.
+30 12 * * 5 php /var/www/html/scripts/rapport_campagne_cameroun.php --apply --partie=bilan
+30 14 * * 5 php /var/www/html/scripts/rapport_campagne_cameroun.php --apply --partie=resultats

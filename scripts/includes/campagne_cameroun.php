@@ -26,9 +26,9 @@ const CAMPAIGN_TZ = 'Africa/Douala';
 const CAMPAIGN_MAIL_WIDTH = 800;
 
 // Encadré « [TEST] » placé au-dessus du mail d'essai, à la largeur de la carte (table : Outlook ignore max-width sur un div)
-function campagneTestBox($innerHtml)
+function campagneTestBox($innerHtml, $width = CAMPAIGN_MAIL_WIDTH)
 {
-    return '<table cellpadding="0" cellspacing="0" border="0" width="' . CAMPAIGN_MAIL_WIDTH . '" align="center" style="width:100%;max-width:' . CAMPAIGN_MAIL_WIDTH . 'px;margin:12px auto;">'
+    return '<table cellpadding="0" cellspacing="0" border="0" width="' . $width . '" align="center" style="width:100%;max-width:' . $width . 'px;margin:12px auto;">'
         . '<tr><td style="padding:12px 16px;border:2px dashed #B45309;background:#FFFBEB;font-family:Arial,sans-serif;font-size:13px;color:#1F2937;">'
         . $innerHtml . '</td></tr></table>';
 }
@@ -167,7 +167,8 @@ function sendCampaignMail($to, $subject, $html, array $cc = [], array $attachmen
     foreach ($attachments as $name => $path) {
         $name = preg_replace('/[^A-Za-z0-9._-]+/', '_', $name);
         $body .= "--$boundary\r\n"
-            . 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; name="' . $name . "\"\r\n"
+            // Type générique : Outlook bloque ces mails (relais anonyme) quand le type Excel est déclaré (essais du 05/11)
+            . 'Content-Type: application/octet-stream; name="' . $name . "\"\r\n"
             . "Content-Transfer-Encoding: base64\r\n"
             . 'Content-Disposition: attachment; filename="' . $name . "\"\r\n\r\n"
             . chunk_split(base64_encode((string) file_get_contents($path))) . "\r\n";
