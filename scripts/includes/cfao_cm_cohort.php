@@ -11,6 +11,8 @@ function cfaoCmCohortSourcePath()
 {
     $candidates = array(
         __DIR__ . '/../../Copie de Copie de Liste_techniciens_marques_CFAO (1) - Copie.xlsx',
+        // Serveur : exports/ est sur le volume de données, partagé par web et cron et conservé aux déploiements.
+        __DIR__ . '/../../exports/Copie de Copie de Liste_techniciens_marques_CFAO (1) - Copie.xlsx',
         'C:/wamp64/www/MEDACAP/Copie de Copie de Liste_techniciens_marques_CFAO (1) - Copie.xlsx',
     );
     foreach ($candidates as $path) {

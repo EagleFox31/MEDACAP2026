@@ -83,10 +83,10 @@ RUN rm -rf /var/www/html/vendor && cp -a /opt/medacap-deps/vendor /var/www/html/
 # leur contenu versionné sert de graine, recopiée par l'entrypoint sans écraser l'existant.
 RUN set -eu; \
     mkdir -p /opt/medacap-seed /var/lib/medacap/data; \
-    for p in public/files caches scripts/out views/measure/calendar_events.json views/measure/display_event.php; do \
+    for p in public/files caches scripts/out exports views/measure/calendar_events.json views/measure/display_event.php; do \
       mkdir -p "/opt/medacap-seed/$(dirname "$p")"; \
       if [ -e "$p" ]; then mv "$p" "/opt/medacap-seed/$p"; fi; \
       ln -s "/var/lib/medacap/data/$p" "$p"; \
     done; \
-    mkdir -p /opt/medacap-seed/scripts/out; \
+    mkdir -p /opt/medacap-seed/scripts/out /opt/medacap-seed/exports; \
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /opt/medacap-build-date
