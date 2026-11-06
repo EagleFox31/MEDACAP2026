@@ -27,9 +27,15 @@ const BILAN_CC = ['aetolo-ext@cfao.com', 'mcbengono@cfao.com', 'lgonin@cfao.com'
 const RESULTS_TO = ['mcbengono@cfao.com'];
 const RESULTS_CC = ['lgonin@cfao.com', 'aybokally@cfao.com', 'aetolo-ext@cfao.com', 'jakaa-ext@cfao.com'];
 
-$opts = getopt('', ['test:', 'apply', 'url:']);
+$opts = getopt('', ['test:', 'apply', 'url:', 'partie:']);
 $testTo = isset($opts['test']) ? trim((string) $opts['test']) : '';
 $apply = isset($opts['apply']);
+// --partie=bilan ou --partie=resultats : un seul des 2 mails (le cron les envoie à des heures différentes)
+$partie = isset($opts['partie']) ? (string) $opts['partie'] : '';
+if (!in_array($partie, ['', 'bilan', 'resultats'], true)) {
+    fwrite(STDERR, "[ERREUR] --partie=bilan ou --partie=resultats\n");
+    exit(1);
+}
 $url = isset($opts['url']) ? rtrim((string) $opts['url'], '/') . '/' : medacapPublicUrl();
 if ($testTo !== '' && $apply) {
     fwrite(STDERR, "[ERREUR] --test et --apply sont exclusifs\n");
@@ -135,11 +141,14 @@ if (!$apply && $testTo === '') {
     exit(0);
 }
 
-$suivi = runGenerator('update_suivi_cm_send.php', '/->\s+(\S+-send\.xlsx)$/');
-$resultats = runGenerator('generate_results_send_excel.php', '/^Export : (\S+)$/');
 $stamp = $now->format('Y-m-d');
-$suiviAtt = ["suivi_qcm_techniciens_cm_$stamp.xlsx" => $suivi];
-$resultatsAtt = ["resultats_qcm_techniciens_cm_$stamp.xlsx" => $resultats];
+$suiviAtt = $resultatsAtt = [];
+if ($partie !== 'resultats') {
+    $suiviAtt = ["suivi_qcm_techniciens_cm_$stamp.xlsx" => runGenerator('update_suivi_cm_send.php', '/->\s+(\S+-send\.xlsx)$/')];
+}
+if ($partie !== 'bilan') {
+    $resultatsAtt = ["resultats_qcm_techniciens_cm_$stamp.xlsx" => runGenerator('generate_results_send_excel.php', '/^Export : (\S+)$/')];
+}
 
 $template = function ($userName, $title, $message) {
     return generateEmailTemplate([
@@ -216,6 +225,10 @@ $mails['resultats'] = [
     'subject' => 'MEDACAP - Résultats QCM Cameroun au ' . $now->format('d/m/Y'),
     'html' => $template($resultsUser ? managerGreeting($resultsUser, false) : 'à tous', 'Résultats QCM - Cameroun', $resultsMessage),
 ];
+
+if ($partie !== '') {
+    $mails = [$partie => $mails[$partie]];
+}
 
 $allOk = true;
 foreach ($mails as $kind => $mail) {
