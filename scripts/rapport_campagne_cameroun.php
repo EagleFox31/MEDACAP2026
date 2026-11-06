@@ -95,6 +95,7 @@ foreach ($managers as $mid => $m) {
     $seen = lastActivity($db, $m['_id']);
     $rows[] = [
         'name' => trim(($m['firstName'] ?? '') . ' ' . ($m['lastName'] ?? '')),
+        'agency' => trim((string) ($m['agency'] ?? '')),
         'evals' => $evals, 'techTests' => $techTests,
         'seen' => $seen,
         'seenSince' => $seen && $seen >= $weekAgo,
@@ -107,8 +108,8 @@ usort($rows, function ($a, $b) { return ($b['evals'] <=> $a['evals']) ?: strcmp(
 $connected = count(array_filter($rows, function ($r) { return $r['seenSince']; }));
 
 foreach ($rows as $r) {
-    printf("%-34s | techniciens à évaluer %2d | techniciens avec un test à passer %2d | %s\n",
-        $r['name'], $r['evals'], $r['techTests'], $r['seen'] ? $r['seen']->format('d/m/Y H:i') : 'jamais');
+    printf("%-34s | %-12s | techniciens à évaluer %2d | techniciens avec un test à passer %2d | %s\n",
+        $r['name'], $r['agency'] !== '' ? $r['agency'] : '-', $r['evals'], $r['techTests'], $r['seen'] ? $r['seen']->format('d/m/Y H:i') : 'jamais');
 }
 echo "\nManagers : " . count($rows) . " | ont testé tous leurs techniciens : $upToDate | connectés depuis 7 jours : $connected"
     . " | techniciens à évaluer : $totEvals | techniciens avec un test à passer : $totTechTests\n";
@@ -171,11 +172,13 @@ $tdL = $td . 'text-align:left;';
 $tdC = $td . 'text-align:center;';
 $table = '<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 12px;">'
     . '<tr style="background:#F4F6F8;">'
-    . '<th style="' . $tdL . 'width:40%;">Manager</th><th style="' . $tdC . 'width:20%;">Techniciens à évaluer</th>'
-    . '<th style="' . $tdC . 'width:20%;">Techniciens avec un test à passer</th>'
-    . '<th style="' . $tdC . 'width:20%;">Dernière connexion</th></tr>';
+    . '<th style="' . $tdL . 'width:30%;">Manager</th><th style="' . $tdL . 'width:16%;">Agence</th>'
+    . '<th style="' . $tdC . 'width:18%;">Techniciens à évaluer</th>'
+    . '<th style="' . $tdC . 'width:18%;">Techniciens avec un test à passer</th>'
+    . '<th style="' . $tdC . 'width:18%;">Dernière connexion</th></tr>';
 foreach ($rows as $r) {
     $table .= '<tr><td style="' . $tdL . '">' . h($r['name']) . '</td>'
+        . '<td style="' . $tdL . '">' . ($r['agency'] !== '' ? h($r['agency']) : '-') . '</td>'
         . '<td style="' . $tdC . '">' . ($r['evals'] > 0 ? '<b style="color:#B45309;">' . $r['evals'] . '</b>' : '<span style="color:#047857;">Terminé</span>') . '</td>'
         . '<td style="' . $tdC . '">' . $r['techTests'] . '</td>'
         . '<td style="' . $tdC . 'white-space:nowrap;' . ($r['seenSince'] ? '' : 'color:#B91C1C;') . '">' . ($r['seen'] ? $r['seen']->format('d/m H:i') : 'Jamais') . '</td></tr>';
@@ -203,7 +206,7 @@ $message = '<p>Voici l\'avancement au ' . $now->format('d/m/Y à H:i') . ' de la
     . '<h3 style="margin:18px 0 6px;font-size:17px;">Pièce jointe</h3>'
     . '<p style="margin:0;"><b>Suivi QCM</b> : statut de chaque QCM par technicien, synthèse par agence.</p>'
     // Adresse en texte, sans lien ni bouton : un lien http vers une IP fait bloquer les pièces jointes par Outlook (essais du 05/11)
-    . '<p style="margin:16px 0 0;">Adresse de MEDACAP, à saisir dans le navigateur : <b>' . h(preg_replace('#^https?://#', '', rtrim($url, '/'))) . '</b></p>';
+    . ($url !== '' ? '<p style="margin:16px 0 0;">Adresse de MEDACAP, à saisir dans le navigateur : <b>' . h(preg_replace('#^https?://#', '', rtrim($url, '/'))) . '</b></p>' : '');
 $mails = [
     'bilan' => [
         'to' => $bilanTo, 'cc' => BILAN_CC, 'att' => $suiviAtt,
