@@ -2015,7 +2015,8 @@ body.candidate-portal .container-xxl{
             <button type="button" class="btn btn-outline-secondary" id="btnPrev">‹ Précédent</button>
             <div class="d-flex gap-2">
               <?php if(!$reviewMode): ?>
-                <button type="submit" class="btn btn-secondary" name="save">Sauvegarder</button>
+                <?php /* Enregistrement en AJAX (autosave) : le candidat reste sur la question en cours. */ ?>
+                <button type="button" class="btn btn-secondary" id="btnSave">Sauvegarder</button>
                 <?php /* #btnNext : navigation Précédent/Suivant ; sur la dernière étape, finishSubmitName()
                          soumet valid, valid_orientation (temps supplémentaire orientation) ou valid_catchup. */ ?>
                 <button type="button" class="btn btn-primary" id="btnNext">Suivant ›</button>
@@ -2542,22 +2543,24 @@ function updateTotals(){
 }
 // Une sauvegarde à la fois : deux requêtes rapprochées peuvent être traitées dans le désordre et l'ancien état
 // écraserait le nouveau. Un clic pendant l'envoi relance une sauvegarde (état à jour) à la fin de celui-ci.
-var autoSaveBusy = false, autoSaveAgain = false;
+var autoSaveBusy = false, autoSaveAgain = false, autoSaveInflight = null;
 function autoSave(){
-  if(isReview) return;
-  if (autoSaveBusy) { autoSaveAgain = true; return; }
+  if(isReview) return Promise.resolve(false);
+  if (autoSaveBusy) { autoSaveAgain = true; return autoSaveInflight; }
   autoSaveBusy = true;
+  var saveOk = false;
   var fd=new FormData(formEl);
   fd.set('autosave','1');
   const paperId = new URLSearchParams(window.location.search).get('paper');
   if (paperId) fd.set('paper', paperId);
   if (bonusAck) fd.set('bonus_ack', bonusAck);
   // Session fermée (déconnexion depuis connectedUsers.php ou expirée) : la page renvoie vers la connexion
-  fetch(window.location.pathname + window.location.search,{method:'POST',body:fd,credentials:'same-origin'})
+  autoSaveInflight = fetch(window.location.pathname + window.location.search,{method:'POST',body:fd,credentials:'same-origin'})
     .then(function(r){
       if (r.redirected) { window.location.href = r.url; return; }
       // La réponse peut être précédée d'une balise <link> émise par un include : on lit le JSON à partir de {"ok"
       return r.text().then(function(t){
+        saveOk = /"ok"\s*:\s*true/.test(t);
         var i = t.indexOf('{"ok"');
         var j = i >= 0 ? JSON.parse(t.slice(i)) : null;
         if (j && j.bonus) offerBonus(j.bonus); else if (j) bonusAck = '';
@@ -2567,10 +2570,25 @@ function autoSave(){
     .then(function(){
       autoSaveBusy = false;
       if (autoSaveAgain) { autoSaveAgain = false; autoSave(); }
+      return saveOk;
     });
+  return autoSaveInflight;
 }
 // Sauvegarde aussi sans action du candidat : le temps supplémentaire lui parvient en moins d'une minute.
 if(!isReview){ setInterval(autoSave, 60000); }
+// Bouton « Sauvegarder » : enregistre en arrière-plan et confirme, sans quitter la question affichée.
+(function(){
+  var btnSave = document.getElementById('btnSave');
+  if (!btnSave) return;
+  btnSave.addEventListener('click', function(){
+    if (btnSave.disabled) return;
+    btnSave.disabled = true;
+    autoSave().then(function(ok){
+      btnSave.disabled = false;
+      showReportToast(ok ? 'Réponses sauvegardées ✓' : 'Échec de la sauvegarde : vérifiez la connexion et réessayez.');
+    });
+  });
+})();
 
 // Temps supplémentaire : ajouté au chrono au clic sur OK, confirmé au serveur par les autosaves suivants (bonus_ack).
 var bonusAck = '', bonusOffer = null;
