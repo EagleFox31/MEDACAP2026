@@ -2705,6 +2705,37 @@ buildGrid(); show(startIndex);
 // Bouton de raccourci vers orientation
 const goBtn = document.getElementById('goOrientation');
 if (goBtn) goBtn.addEventListener('click', ()=> show(orientationStartIndex));
+// Plein écran pendant l'épreuve : le navigateur exige un clic du candidat
+// (pas de plein écran automatique au chargement), d'où l'écran d'accueil.
+(function(){
+  if (isReview) return;
+  var de = document.documentElement;
+  var req = de.requestFullscreen || de.webkitRequestFullscreen || de.msRequestFullscreen;
+  var enabled = document.fullscreenEnabled || document.webkitFullscreenEnabled || document.msFullscreenEnabled;
+  if (!req || !enabled) return; // ex. iPhone : l'épreuve reste en mode normal
+  function isFs(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement); }
+  function goFs(){ try { var p = req.call(de); if (p && p.catch) p.catch(function(){}); } catch(e){} }
+
+  var ov = document.createElement('div');
+  ov.id = 'fsOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:20000;background:rgba(15,23,42,.85);display:flex;align-items:center;justify-content:center;padding:16px';
+  ov.innerHTML = '<div style="background:#fff;border-radius:12px;max-width:420px;width:100%;padding:24px;text-align:center">'
+    + '<p style="font-size:1.05rem;margin:0 0 16px">L’épreuve s’affiche en plein écran.</p>'
+    + '<button type="button" class="btn btn-primary" id="fsStart">Continuer en plein écran</button></div>';
+  document.body.appendChild(ov);
+  document.getElementById('fsStart').addEventListener('click', function(){ goFs(); ov.remove(); });
+
+  var fab = document.createElement('button');
+  fab.type = 'button'; fab.id = 'fsBack'; fab.className = 'btn btn-sm btn-outline-secondary';
+  fab.textContent = 'Plein écran';
+  fab.style.cssText = 'position:fixed;top:10px;right:10px;z-index:19999;display:none;background:#fff';
+  fab.addEventListener('click', goFs);
+  document.body.appendChild(fab);
+  function sync(){ fab.style.display = (isFs() || document.getElementById('fsOverlay')) ? 'none' : ''; }
+  document.addEventListener('fullscreenchange', sync);
+  document.addEventListener('webkitfullscreenchange', sync);
+  ov.addEventListener('click', function(){ setTimeout(sync, 300); });
+})();
 </script>
 
 <?php closeBackgroundContainer(); ?>
